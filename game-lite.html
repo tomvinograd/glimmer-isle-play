@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794842697;</script>
+<script>window.GAME_BUILD = 1794842845;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1512,13 +1512,13 @@ nav .navwide .bang { top: 4px; right: 6px; }
   }
   async function throwGroup(autoThrow) {
     if (!E || E.type !== "wild" || busy) return;
-    const C = S.autoCfg, plan = [];
+    const C = S.autoCfg, plan = []; let missing = null;
     E.list.forEach((w, k) => {
       if (autoThrow && C.only === "new" && S.caught[key(w.sp, w.evo)]) return;
-      const jar = autoThrow ? JAR_DOWN[w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low].find(j => S.jars[j] > 0) : (S.jars[E.jar] > 0 ? E.jar : null);
-      if (!jar) return; S.jars[jar]--; plan.push({ w, k, jar });
+      const want = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, jar = autoThrow ? JAR_DOWN[want].find(j => S.jars[j] > 0) : (S.jars[E.jar] > 0 ? E.jar : null);
+      if (!jar) { if (autoThrow && !missing) missing = { k: want, w }; return; } S.jars[jar]--; plan.push({ w, k, jar });
     });
-    if (!plan.length) { if (autoThrow) { toast(C.only === "new" ? "Walked past: you have all of these (Auto rule: only new ones)" : "Walked past: no jars left"); E = null; save(); render(); } else toast("No jars of that kind"); return; }
+    if (!plan.length) { if (autoThrow && missing) { autoOff(true); jarPopup(missing.k, missing.w); return; } if (autoThrow) { toast("Walked past: you have all of these (Auto rule: only new ones)"); E = null; save(); render(); } else toast("No jars of that kind"); return; }
     busy = true; renderActions();
     const st = $("stage"), sx = st.clientWidth * .55, sy = st.clientHeight + 30;
     await Promise.all(plan.map(async (p, idx) => {
@@ -2525,6 +2525,16 @@ nav .navwide .bang { top: 4px; right: 6px; }
   let confirmBuy = null;
   const marketPrice = (q, lvl) => q >= 3 ? 150 + lvl * 10 : 50 + lvl * 5;  // 16 Nov: much cheaper (Purple 55, Gold 160 at level 1)
   function closePopup() { const p = document.querySelector(".popwrap"); if (p) p.remove(); }
+  const JAR_NAME = { plain: "plain", bright: "bright", star: "star" }, JAR_PRICE = { plain: 15, bright: 45, star: 120 };
+  function jarPopup(k, w) {
+    closePopup(); const n = 5, cost = JAR_PRICE[k] * n;
+    const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<div class="popbg"></div><div class="popup" role="dialog">${art(w.sp, w.evo, 70)}
+      <h3>Out of ${JAR_NAME[k]} jars</h3><p>Auto stopped. Buy ${JAR_NAME[k]} jars to catch ${fname(w.sp, w.evo)}, or walk on. You have ${S.coins} coins.</p>
+      <div class="popbtns"><button class="mb" data-act="jarwalk">Walk on</button><button class="mb" data-act="jarshop">Shop</button><button class="mb gold" data-act="jarbuy:${k}" ${S.coins >= cost ? "" : "disabled"}>Buy ${n} ${IC.coin}${cost}</button></div></div>`;
+    document.body.appendChild(d);
+  }
+  function autoResume() { S.auto = true; autoSession = true; autoNext = performance.now() + 500; save(); render(); }
   function keepsakePopup(m, missing) {
     closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2], buys = Math.ceil(missing / per);
     const d = document.createElement("div"); d.className = "popwrap";
@@ -2718,7 +2728,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   function autoPicksUp() { return S.auto && E && (E.type === "chest" || E.type === "gather"); }  // Auto opens chests and gathers even with catching off
   function autoCatchOn() { return S.auto && S.autoCfg && S.autoCfg.catch; }
   function autoPause() { if (!autoCatchOn()) autoOff(true); }
-  const JAR_DOWN = { star: ["star", "bright", "plain"], bright: ["bright", "plain", "star"], plain: ["plain", "bright", "star"] };  // the chosen jar, then cheaper ones, then better ones (never walk past for want of the cheap jar)
+  const JAR_DOWN = { star: ["star", "bright", "plain"], bright: ["bright", "plain"], plain: ["plain"] };  // the chosen jar, then cheaper ones (none left: Auto stops and asks)
   async function autoAct() {
     if (autoLock) return; autoLock = true;
     try {
@@ -2738,7 +2748,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       }
       if (!S.jars.plain && !S.jars.bright && !S.jars.star) { autoOff(true); toast("Auto stopped: out of jars"); return; }
       const rule = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, jar = JAR_DOWN[rule].find(k => S.jars[k] > 0);
-      if (!jar) { toast("Walked past: no jars left"); return nextWild(); }
+      if (!jar) { autoOff(true); jarPopup(rule, w); return; }  // out of the jars Auto may use: stop and ask
       if (w.q >= C.treat && S.treats > 0 && !E.treat) { S.treats--; E.treat = true; }
       E.jar = jar; render();
       await throwJar(true);
@@ -2836,6 +2846,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "gotoshop") { closePopup(); sheetUid = null; view = "shop"; shopTab = "market"; marketFocus = n; showMap = false; render();
       setTimeout(() => { const r = $("mk-" + n); if (r) r.scrollIntoView({ block: "center", behavior: "smooth" }); }, 60); setTimeout(() => { marketFocus = null; }, 4000); }
     else if (a === "closepop") closePopup();
+    else if (a === "jarbuy") { const cost = JAR_PRICE[arg] * 5; if (S.coins >= cost) { S.coins -= cost; S.jars[arg] += 5; sfx("coin"); closePopup(); toast(`Bought 5 ${JAR_NAME[arg]} jars`); autoResume(); } }
+    else if (a === "jarwalk") { closePopup(); nextWild(); autoResume(); }
+    else if (a === "jarshop") { closePopup(); view = "shop"; shopTab = "jars"; showMap = false; render(); window.scrollTo(0, 0); toast("Buy jars, then go back to the Glumi"); }
     else if (a === "shoptab") { shopTab = arg; confirmBuy = null; reqPick = null; confirmGive = null; render(); }
     else if (a === "reqpick") { reqPick = arg === "" ? null : +arg; confirmGive = null; render(); window.scrollTo(0, 0); }
     else if (a === "give") { const r = reqPick !== null ? S.requests[reqPick] : null, m = mon(n); if (!r || r.done || !m || !reqMatches(r).includes(m)) return;
