@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794860465;</script>
+<script>window.GAME_BUILD = 1794861022;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1055,6 +1055,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .compass .chold { position: absolute; inset: -11px; width: calc(100% + 22px); height: calc(100% + 22px); pointer-events: none; transform: rotate(-90deg); overflow: visible; }
   .compass .chold circle { fill: none; stroke: #ff7a12; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; filter: drop-shadow(0 0 3px rgba(255,140,20,.8)); animation: holdfill var(--hold, 550ms) linear forwards; }
   @keyframes holdfill { to { stroke-dashoffset: 0; } }
+  .ltiers { display: flex; justify-content: space-between; align-items: end; margin: 10px 2px 0; }
+  .ltiers span { display: grid; justify-items: center; gap: 2px; }
+  .ltiers small { font: 800 9.5px var(--display); color: var(--brown); }
+  .ltiers .next { opacity: .38; filter: grayscale(.6); }
+  .ltiers .cur small { color: #d9822b; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2034,7 +2039,25 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const gymDone = (z, d) => [0, 1, 2].every(i => gymBeat(z, d, i));
   const gymDiffOpen = (z, d) => d === 0 || gymDone(z, d - 1);
   // daily duels
-  const DRANKS = [[0, "Sprout"], [60, "Pebble"], [150, "Breeze"], [300, "Comet"], [500, "Star"], [800, "Glimmer"]];
+  // ladder tiers by rank points; [points, name, color, foe level bonus, foe grade weights Green..Rainbow]
+  const DRANKS = [[0, "Bronze", "#cd8a4a", -2, [30, 60, 10, 0, 0]], [60, "Silver", "#b9c3cf", 0, [0, 70, 30, 0, 0]], [150, "Gold", "#f2b42c", 2, [0, 50, 40, 10, 0]],
+                  [300, "Platinum", "#6fd0c4", 4, [0, 30, 50, 20, 0]], [500, "Diamond", "#6fa8ff", 6, [0, 10, 50, 35, 5]], [800, "Master", "#b07cff", 9, [0, 0, 40, 50, 10]]];
+  const ladderTier = p => DRANKS.filter(r => p >= r[0]).length - 1;
+  function tierBadge(i, size) {  // shield in the tier's metal color, a star, one pip per tier above Bronze
+    const c = DRANKS[i][2], id = "tb" + i + "-" + size;
+    const pips = Array.from({ length: i }, (_, k) => `<circle cx="${32 + (k - (i - 1) / 2) * 7}" cy="52" r="2.6" fill="#fff"/>`).join("");
+    return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="${c}" stop-opacity="0"/></linearGradient></defs>`
+      + `<path d="M32 4 L56 12 V30 C56 45 45 55 32 60 C19 55 8 45 8 30 V12 Z" fill="${c}" stroke="rgba(70,45,25,.55)" stroke-width="2.5"/><path d="M32 4 L56 12 V30 C56 45 45 55 32 60 C19 55 8 45 8 30 V12 Z" fill="url(#${id})"/>`
+      + `<path d="M32 17 l4.4 9 9.8 1.4 -7.1 6.9 1.7 9.8 -8.8 -4.6 -8.8 4.6 1.7 -9.8 -7.1 -6.9 9.8 -1.4 Z" fill="#fff" stroke="rgba(70,45,25,.35)" stroke-width="1.5"/>${i === 5 ? '<path d="M22 9 l4 4 6-6 6 6 4-4 -2 7 H24 Z" fill="#ffd34d" stroke="rgba(70,45,25,.5)" stroke-width="1.2"/>' : ""}${pips}</svg>`;
+  }
+  function ladderRank(d) {  // change rank points; tell the player when the tier changes
+    const L = ladderState(), t0 = ladderTier(L.pts); L.pts = Math.max(0, L.pts + d); const t1 = ladderTier(L.pts);
+    if (t1 > t0) toast(`Promoted to ${DRANKS[t1][1]}! Fights get tougher`); else if (t1 < t0) toast(`Down to ${DRANKS[t1][1]}`);
+  }
+  function ladderFoes() {
+    const T = DRANKS[ladderTier(ladderState().pts)], t = ladderTier(ladderState().pts), pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []), L = avgLvl();
+    return Array.from({ length: t === 0 ? 2 : 3 }, () => foeMon(pickOf(pool), L + T[3] + rnd(-1, 1), wpick(T[4])));
+  }
   function duelState() { if (!S.duel) S.duel = { date: "", left: 5, pts: 0, wins: 0 }; if (S.duel.date !== today()) { S.duel.date = today(); S.duel.left = 5; } return S.duel; }
   const duelRank = p => DRANKS.filter(r => p >= r[0]).pop()[1];
   const avgLvl = () => { const t = team(); return t.length ? Math.round(t.reduce((a, m) => a + m.lvl, 0) / t.length) : 1; };
@@ -2069,7 +2092,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
     if (P.mode === "gym") { if (!S.gyms) S.gyms = {}; S.gyms[gymKey(P.z, P.d, P.i)] = 1; }
     if (P.mode === "duel") { const D = duelState(); D.pts += 12; D.wins++; }
-    if (P.mode === "ladder") { const L = ladderState(); L.pts += 12; L.wins++; ladderPts(LADDER_WIN); }
+    if (P.mode === "ladder") { const L = ladderState(); ladderRank(12); L.wins++; ladderPts(LADDER_WIN); }
     if (P.mode === "tower") S.tower = Math.max(S.tower || 0, P.f);
     for (const r of P.rewards) giveReward(r);
     track("win", null, { gym: 40, ladder: 30, tower: 30, duel: 30 }[P.mode] || 20); return P.rewards;
@@ -2077,14 +2100,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   async function finishArena(won) {
     const P = BT.prep; let given = [];
     if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); }
-    if (!won && P.mode === "ladder") { const L = ladderState(); L.pts = Math.max(0, L.pts - 5); ladderPts(LADDER_LOSS); }
+    if (!won && P.mode === "ladder") { ladderRank(-5); ladderPts(LADDER_LOSS); }
     save(); await resultScreen(won, given, 0);
     BT = null; prep = null; arenaSub = P.back; render(); save();
   }
   async function startPrep(quick) {
     const P = prep; if (!P || !team().length) return;
     if (P.mode === "duel") duelState().left--;
-    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { const L = ladderState(); L.pts = Math.max(0, L.pts - 5); ladderPts(LADDER_LOSS); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
+    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-5); ladderPts(LADDER_LOSS); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
   }
   const rchips = rs => rs.map(r => `<span class="rchip">${RW[r.k][0]}${r.n}</span>`).join("");
@@ -2130,9 +2153,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         return `<button class="lnode${got ? " done" : can ? " claim" : ""}" data-act="ladclaim" ${can ? "" : "disabled"} aria-label="${need} ladder points">${got ? "\u2713" : RW[LADDER_REW[k].k][0]}<small>${need}</small></button>`; }).join("");
       return `${back("hub")}<h3>Ladder</h3><span></span></div>
         <div class="ltrack"><span class="lwins"><b>${L.lp}</b><small>points</small></span><div class="lline"><i style="width:${ladderFill(L.lp)}%"></i></div><div class="lnodes">${nodes}</div></div>
-        <div class="lrank"><span class="drank${ART["rank-" + duelRank(L.pts).toLowerCase()] ? " pic" : ""}">${ART["rank-" + duelRank(L.pts).toLowerCase()] ? artIcon("rank-" + duelRank(L.pts).toLowerCase()) : IC.crown}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
+        <div class="lrank"><span class="drank pic">${tierBadge(ladderTier(L.pts), 54)}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
+        <div class="ltiers">${DRANKS.map((r, i) => `<span class="${i < ladderTier(L.pts) ? "past" : i === ladderTier(L.pts) ? "cur" : "next"}">${tierBadge(i, i === ladderTier(L.pts) ? 34 : 26)}<small>${r[1]}</small></span>`).join("")}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
-        <p class="hint" style="margin:0">Opponents are teams near your level. Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, a loss ${LADDER_LOSS}. Rank: a win +12, a loss -5.</p>
+        <p class="hint" style="margin:0">Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, a loss ${LADDER_LOSS}. Rank: a win +12, a loss -5. Higher tiers bring stronger teams (Bronze: your level, Master: far above) and more coins.</p>
         <button class="mb gold pbig" data-act="laddergo">Match</button>`;
     }
     if (arenaSub === "tower") {
@@ -2246,7 +2270,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (L.lp === undefined) { L.lp = L.wins * LADDER_WIN; const took = L.claimed ? LADDER_MS_OLD[L.claimed - 1] * LADDER_WIN : 0; L.claimed = LADDER_MS.filter(m => m <= took).length; setTimeout(() => { ladderClaim(); render(); }, 0); }
     return L; }
   function prepLadder() {
-    openPrep({ mode: "ladder", title: "Ladder match", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "ladder" }); }
+    const t = ladderTier(ladderState().pts); openPrep({ mode: "ladder", title: `Ladder match · ${DRANKS[t][1]}`, name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: ladderFoes(), rewards: [{ k: "coins", n: Math.round((25 + avgLvl() * 3) * (1 + t * .3)) }], quick: true, back: "ladder" }); }
   // ================= CLOUD CLIMB =================
   const climbRewards = f => [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }] : [])];
   let climbing = false;
