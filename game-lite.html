@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794867190;</script>
+<script>window.GAME_BUILD = 1794867353;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1179,7 +1179,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   ];
   const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 85, 12, 3, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 77, 15, 8, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 72, 17, 11, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 67, 19, 14, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 62, 21, 17, 0], count: 10 }];
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }];
-  const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, RB_PITY = 100, RB_PITY_MULT = 10;  // a Rainbow for sure after 100 catches made at x10 or higher
+  const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, EVOLVE_FRUIT = 10, RB_PITY = 100, RB_PITY_MULT = 10;  // a Rainbow for sure after 100 catches made at x10 or higher
   const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 1, MAX_STARS = 5, STAR_BONUS = .1;
   const FLEE_AFTER = [5, 6, 8, 10, 14];  // missed jars before a wild Glumi runs away, by grade Green..Rainbow
@@ -2036,7 +2036,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
         ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
-        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glumi: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glumi or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glumi, sometimes Rainbow."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
+        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glumi: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glumi or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glumi, sometimes Rainbow."], ["egg4", EGG_ICON(4), "Rainbow egg", S.egg4 || 0, 4, "Hatches a Rainbow Glumi."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
       tiles = items.filter(i => i[3] > 0).map(([k, ic, nm, n, q]) => `<button class="btile${bagPick === k ? " on" : ""}" data-act="bagpick:${k}" style="--gc:${GRADES[q].c}">${ic}<b>${n >= 10000 ? (n / 1000).toFixed(1) + "K" : n}</b></button>`);
       const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span>${/^egg/.test(p[0]) && p[3] > 0 ? `<button class="mb gold" data-act="openegg:${p[0].slice(3)}">Open</button>` : ""}</div>`;
     } else {
@@ -2235,11 +2235,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ================= GRADE COLLECTION per zone (Atlas) =================
   const GC_REW = { 1: { k: "plain", n: 2 }, 2: { k: "bright", n: 1 }, 3: { k: "star", n: 1 }, 4: { k: "star", n: 2 } };
   function bestQ() { if (!S.bestQ) { S.bestQ = {}; for (const m of S.mons) S.bestQ[m.sp] = Math.max(S.bestQ[m.sp] || 0, m.q); } return S.bestQ; }
+  const gcRew = (g, k, n) => k === n - 1 ? (g === 4 ? { k: "egg4", n: 1 } : { k: "fruit", n: 1 }) : GC_REW[g];  // last step: moonfruit, Rainbow page: a rainbow egg
   let atlasGrade = 1;
   const rbPityText = () => `A Rainbow for sure after ${Math.max(0, RB_PITY - (S.rbPity || 0))} more catches at x${RB_PITY_MULT} or higher`;
   function gradeBlock(z) {
     const Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(), have = Z.sp.filter(sp => (B[sp] || 0) >= g).length, cl = (st.gq && st.gq[g]) || 0;
-    const nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && have >= need, r = k === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g];
+    const nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && have >= need, r = gcRew(g, k, Z.sp.length);
       return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="gclaim:${z}" ${can ? "" : "disabled"}>${done ? IC.star : RW[r.k][0]}<small>${need}</small></button>`; }).join("");
     return `<div class="gcol${g === 4 ? " rb" : ""}" style="--gc:${GRADES[g].c}"><div class="gcsw"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>
       <div class="gcmini">${Z.sp.map(sp => `<span class="${(B[sp] || 0) >= g ? "" : "no"}">${art(sp, 0, 30)}</span>`).join("")}</div>
@@ -2490,12 +2491,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     });
   }
   // ================= EGGS =================
-  const EGG_COL = { 1: ["#bcd6ff", "#5a8df0"], 2: ["#e3d0ff", "#9a6ff0"], 3: ["#ffeaa6", "#f0a52a"] };
-  const EGG_ODDS = { 1: [[1, 2, 3], [75, 22, 3]], 2: [[2, 3, 4], [75, 22, 3]], 3: [[3, 4], [92, 8]] };
-  const eggCount = () => (S.egg1 || 0) + (S.egg2 || 0) + (S.egg3 || 0);
+  const EGG_COL = { 1: ["#bcd6ff", "#5a8df0"], 2: ["#e3d0ff", "#9a6ff0"], 3: ["#ffeaa6", "#f0a52a"], 4: ["#ffd1ec", "#c79bff"] };
+  const EGG_ODDS = { 1: [[1, 2, 3], [75, 22, 3]], 2: [[2, 3, 4], [75, 22, 3]], 3: [[3, 4], [92, 8]], 4: [[4], [100]] };
+  const eggCount = () => (S.egg1 || 0) + (S.egg2 || 0) + (S.egg3 || 0) + (S.egg4 || 0);
   function EGG_SVG(t, id) {
     const [a, b] = EGG_COL[t];
-    return `<svg viewBox="0 0 100 120" aria-hidden="true"><defs><radialGradient id="eg${id}" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient></defs>
+    const fill = t === 4 ? `<linearGradient id="eg${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9b9b"/><stop offset=".25" stop-color="#ffd36b"/><stop offset=".5" stop-color="#8ae68a"/><stop offset=".75" stop-color="#7fd4ff"/><stop offset="1" stop-color="#c79bff"/></linearGradient>`
+      : `<radialGradient id="eg${id}" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
+    return `<svg viewBox="0 0 100 120" aria-hidden="true"><defs>${fill}</defs>
       <path d="M50 4C76 4 93 44 93 72C93 99 73 116 50 116C27 116 7 99 7 72C7 44 24 4 50 4Z" fill="url(#eg${id})" stroke="#5b4636" stroke-width="3"/>
       <circle cx="50" cy="72" r="24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="3 5"/>
       <path d="M50 50 55 66 71 72 55 78 50 94 45 78 29 72 45 66Z" fill="#ffd76a" stroke="#c48a1c" stroke-width="1.6" stroke-linejoin="round"/>
@@ -2504,7 +2507,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   const EGG_ICON = t => ART[EGG_ART[t]] ? artIcon(EGG_ART[t]) : EGG_SVG(t, "i" + t + Math.random().toString(36).slice(2, 6));
   const eggBig = (t, id) => ART[EGG_ART[t]] ? `<img src="${ART[EGG_ART[t]]}" alt="">` : EGG_SVG(t, id);
-  Object.assign(RW, { egg1: [EGG_ICON(1), "blue egg"], egg2: [EGG_ICON(2), "purple egg"], egg3: [EGG_ICON(3), "gold egg"] });
+  Object.assign(RW, { egg1: [EGG_ICON(1), "blue egg"], egg2: [EGG_ICON(2), "purple egg"], egg3: [EGG_ICON(3), "gold egg"], egg4: [EGG_ICON(4), "rainbow egg"] });
   function hatchEgg(t) {
     if (!((S["egg" + t] || 0) > 0)) return;
     const pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []); if (!pool.length) return;
@@ -2564,7 +2567,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function monCard(m, i, inTeam) {
     const s = SP[m.sp], cost = 5 + m.lvl * 3, b = [];
     b.push(`<button class="mb" data-act="lvl:${m.uid}" ${S.leaves >= cost && m.lvl < lvlCap() ? "" : "disabled"}>${IC.up}${IC.leaf}${m.lvl >= lvlCap() ? "max" : cost}</button>`);
-    if (s.evo && !m.evo) b.push(`<button class="mb gold" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= 1 && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}${m.lvl >= EVOLVE_AT ? "Evolve" : "Lv " + EVOLVE_AT}</button>`);
+    if (s.evo && !m.evo) b.push(`<button class="mb gold" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}${m.lvl >= EVOLVE_AT ? "Evolve" : "Lv " + EVOLVE_AT}</button>`);
     if (inTeam && i > 0) b.push(`<button class="mb" data-act="lead:${m.uid}">${IC.star}Lead</button>`);
     if (inTeam && S.team.length > 1) b.push(`<button class="mb" data-act="den:${m.uid}">${IC.home}</button>`);
     if (!inTeam) b.push(`<button class="mb" data-act="join:${m.uid}" ${S.team.length >= slots() ? "disabled" : ""}>+ Team</button>`);
@@ -2604,7 +2607,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     L.push(`<button class="big2 gold" data-act="lvl:${m.uid}" ${!capped && S.leaves >= cost ? "" : "disabled"}>${IC.up}Level up<small>${capped ? (atAsc ? (ascOf(m) >= MAX_ASC ? "Highest level reached" : `Level ${m.lvl} is the top: ascend to keep leveling`) : `Highest level for now: raise your Explorer level (now ${S.xlvl})`) : `Costs ${cost} leaves · you have ${S.leaves}`}</small></button>`);
     { const a = ascOf(m), need = ASC_COST[a], have = S.keepsakes[m.sp] || 0;
       if (a < MAX_ASC) L.push(`<button class="big2 ascend${atAsc && have >= need ? " ready" : ""}" data-act="ascend:${m.uid}" ${atAsc ? "" : "disabled"}>${IC.up}Ascend${a ? ` again (${a + 1} of ${MAX_ASC})` : ""}<small>${atAsc ? `Costs ${need} ${s.name} keepsakes · you have ${have}` : `At level ${ascTop(m)} · needs ${need} ${s.name} keepsakes (you have ${have})`}. +${Math.round(ASC_BONUS * 100)}% stats, levels up to ${ascTop(m) + ASC_EVERY}</small></button>`); }
-    if (s.evo && !m.evo) L.push(`<button class="big2" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= 1 && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}Evolve into ${s.evo}<small>${m.lvl < EVOLVE_AT ? `Reach level ${EVOLVE_AT} first` : `Costs 1 moonfruit and 60 coins · you have ${S.fruit} and ${S.coins}`}</small></button>`);
+    if (s.evo && !m.evo) L.push(`<button class="big2" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}Evolve into ${s.evo}<small>${m.lvl < EVOLVE_AT ? `Reach level ${EVOLVE_AT} first` : `Costs ${EVOLVE_FRUIT} moonfruit and 60 coins · you have ${S.fruit} and ${S.coins}`}</small></button>`);
     { const st = m.stars || 0, have = S.starCores[m.sp] || 0, need = st + 1;
       ST.push(`<button class="big2 starup" data-act="starup:${m.uid}" ${st < MAX_STARS && have >= need ? "" : "disabled"}>${IC.star}${st >= MAX_STARS ? "All stars reached" : `Star up to ${st + 1} of ${MAX_STARS}`}<small>${st >= MAX_STARS ? `+${Math.round(MAX_STARS * STAR_BONUS * 100)}% HP, Attack and Defense` : `Costs ${need} ${s.name} star core${need > 1 ? "s" : ""} · you have ${have}. Release a Rainbow ${s.name} to get ${RAINBOW_STAR_CORES}`}</small></button>`); }
     if (!inTeam) T.push(`<button class="big2" data-act="addteam:${m.uid}">${IC.up.replace('M12 19V5M6 11l6-6 6 6', 'M12 5v14M5 12h14')}Add to team<small>${S.team.length < slots() ? "There is a free spot" : "You choose who it swaps with"}</small></button>`);
@@ -2660,7 +2663,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
                `<div class="gcbar"><span class="gcbi">${ic}</span><b>${n}</b><span class="gctrack"><i style="width:${Math.min(100, v / mx * 100)}%"></i></span><em>${v}${n === "Work" ? "/h" : ""}</em></div>`).join("")}
            </div><button class="gcnav" data-act="sheetnav:1" aria-label="Next Glumi">\u203A</button></div>
            <div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
-             ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= 1 && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
+             ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
              ${bigBtn}
              <button class="gx${multi ? " on" : ""}" data-act="sheetmulti" aria-label="Level up as many times as you can" ${lvlN > 1 && !(atAsc && ascOf(m) < MAX_ASC) ? "" : "disabled"}>\u2303\u2303</button></div>`;
       body = `<div class="gcard q${m.q}" style="--gc:${GRADES[m.q].c}">
@@ -3340,7 +3343,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "agrade") { atlasGrade = Math.min(4, Math.max(1, atlasGrade + n)); render(); }
     else if (a === "gclaim") { const z = n, Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(); if (!st.gq) st.gq = {}; const cl = st.gq[g] || 0, have = Z.sp.filter(sp => (B[sp] || 0) >= g).length;
       const sum = {};
-      for (let j = cl; j < Z.sp.length && have >= j + 1; j++) { const r = j === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g]; giveReward(r); sum[r.k] = (sum[r.k] || 0) + r.n; st.gq[g] = j + 1; }
+      for (let j = cl; j < Z.sp.length && have >= j + 1; j++) { const r = gcRew(g, j, Z.sp.length); giveReward(r); sum[r.k] = (sum[r.k] || 0) + r.n; st.gq[g] = j + 1; }
       if (Object.keys(sum).length) { sfx("claim"); save(); toast("Got " + Object.entries(sum).map(([k, n]) => `${n} ${RW[k][1]}${n > 1 && !RW[k][1].endsWith("s") && k !== "glow" ? "s" : ""}`).join(", ")); render(); } }
     else if (a === "sheettab") { sheetTab = arg; render(); }
     else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
@@ -3437,8 +3440,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "starup") { const m = mon(n); if (m) { const st = m.stars || 0, need = st + 1, have = S.starCores[m.sp] || 0; if (st < MAX_STARS && have >= need) { S.starCores[m.sp] = have - need; m.stars = st + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} reached ${m.stars} star${m.stars > 1 ? "s" : ""}!`); } } }
     else if (a === "lvl") { const m = mon(n), cost = 5 + m.lvl * 3; if (m && S.leaves >= cost && m.lvl < lvlCap() && m.lvl < ascTop(m)) { S.leaves -= cost; m.lvl++; m.hp = maxHp(m); track("lvl"); sfx("up"); save(); render(); } }
     else if (a === "evolve") {
-      const m = mon(n); if (m && SP[m.sp].evo && !m.evo && m.lvl >= EVOLVE_AT && S.fruit >= 1 && S.coins >= 60) {
-        S.fruit--; S.coins -= 60; track("evolve"); sfx("win"); m.evo = 1; m.q = m.q >= 4 ? 4 : Math.min(3, m.q + wpick([70, 25, 5])); m.hp = maxHp(m); S.caught[key(m.sp, 1)] = 1; S.seen[key(m.sp, 1)] = 1; save();
+      const m = mon(n); if (m && SP[m.sp].evo && !m.evo && m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60) {
+        S.fruit -= EVOLVE_FRUIT; S.coins -= 60; track("evolve"); sfx("win"); m.evo = 1; m.q = m.q >= 4 ? 4 : Math.min(3, m.q + wpick([70, 25, 5])); m.hp = maxHp(m); S.caught[key(m.sp, 1)] = 1; S.seen[key(m.sp, 1)] = 1; save();
         view = "explore"; render(); reveal(m, "Evolved!").then(() => { view = "team"; render(); });
       }
     }
