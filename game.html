@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794850596;</script>
+<script>window.GAME_BUILD = 1794851271;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2523,7 +2523,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const workBest = Math.max(...Object.keys(PLACES).map(k => workerRate(m, k)));
       const lvlN = levelsAffordable(m), multi = sheetMulti && lvlN > 1;
       const bigBtn = atAsc && ascOf(m) < MAX_ASC
-        ? `<button class="gbig asc" data-act="ascend:${m.uid}" ${ascReady ? "" : "disabled"}><b>Ascend</b><small>${IC.heart || ""}${keeps}/${aNeed} ${s.name} keepsakes</small></button>`
+        ? `<button class="gbig asc" data-act="ascend:${m.uid}"><b>Ascend</b><small>${IC.heart || ""}${keeps}/${aNeed} ${s.name} keepsakes</small></button>`
         : `<button class="gbig" data-act="${multi ? "lvlmax" : "lvl"}:${m.uid}" ${lvlReady ? "" : "disabled"}><b>${capped ? "Top level" : multi ? `Level up x${lvlN}` : "Level up"}</b><small>${IC.leaf}${S.leaves}/${multi ? levelsCost(m, lvlN) : cost}</small></button>`;
       const tabBody = sheetTab === "skill"
         ? `<div class="skilltab"><div class="skrow"><span class="skic" style="background:${EL[s.el].color}">${IC.star}</span><div><b>${SKILLS[s.el]}</b><small>When the energy bar is full: a strong ${EL[s.el].name} hit, about 3 times a normal attack. Extra strong against ${EL[BEATS[s.el]].name}, weak against ${EL[weakTo(s.el)].name}.</small></div></div>
@@ -2836,6 +2836,16 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     document.body.appendChild(d);
   }
   function autoResume() { S.auto = true; autoSession = true; autoNext = performance.now() + 500; save(); render(); }
+  // not enough keepsakes to ascend: open a duplicate's release page, or the shop row of that kind
+  function goForKeepsakes(m, missing) {
+    const free = x => x.uid !== m.uid && x.sp === m.sp && !S.team.includes(x.uid) && !x.lock && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid));
+    const dup = S.mons.filter(free).sort((a, b) => a.q - b.q || a.lvl - b.lvl)[0];
+    if (dup) { view = "team"; teamTab = "team"; sheetUid = dup.uid; sheetPage = "bye"; confirmRelease = null; render();
+      toast(`${missing} more ${SP[m.sp].name} keepsake${missing > 1 ? "s" : ""} needed: release this one`); return; }
+    sheetUid = null; view = "shop"; shopTab = "market"; marketFocus = m.sp; showMap = false; render();
+    setTimeout(() => { const r = $("mk-" + m.sp); if (r) r.scrollIntoView({ block: "center", behavior: "auto" }); }, 150); setTimeout(() => { marketFocus = null; }, 4000);
+    toast(`No spare ${SP[m.sp].name}: buy one here, then release it for keepsakes`);
+  }
   function keepsakePopup(m, missing) {
     closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2], buys = Math.ceil(missing / per);
     const d = document.createElement("div"); d.className = "popwrap";
@@ -3218,7 +3228,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const p = sellPrice(m); S.coins += p; S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
-      if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { keepsakePopup(m, need - have); return; }
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, treat: 25, leaves: 20 }, p = prices[arg]; if (S.coins < p) return;
