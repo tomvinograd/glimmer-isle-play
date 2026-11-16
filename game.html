@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794849453;</script>
+<script>window.GAME_BUILD = 1794850596;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1039,6 +1039,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .trainer .trimg { height: auto; }
 .trainer.me { width: 96px; } .trainer.foe { width: 72px; }
 .ibld svg image, .placepic svg image { image-rendering: auto; }
+canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 92; background: none !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2266,26 +2267,108 @@ nav .navwide .bang { top: 4px; right: 6px; }
   const GRADE_TRAIL = ["#7f9bff", "#6f8cff", "#a67cff", "#ffc94a", "#ff9ad1"];
   function skyIntro(list) {
     return new Promise(done => {
-      const f = S.auto ? .65 : 1, T = ms => Math.round(ms * f), W = innerWidth, H = innerHeight, Z = ZONES[S.zone];
-      const best = list.reduce((a, w) => Math.max(a, w.q), 1);
-      const fx = document.createElement("div"); fx.id = "skyfx";
-      let html = "";
-      for (let i = 0; i < 70; i++) html += `<i class="skystar" style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:-${(Math.random() * 1.2).toFixed(2)}s;opacity:${(.3 + Math.random() * .6).toFixed(2)}"></i>`;
-      const comets = list.slice(0, 10).map(w => w.q).concat([1, 1, 2, 1].slice(0, Math.max(0, 6 - list.length)));
-      comets.forEach((q, i) => {
-        const y = H * (.12 + .76 * (i + .5) / comets.length) + (Math.random() - .5) * 30, x = W * (.42 + Math.random() * .38), w = 180 + Math.random() * 160, h = q >= 3 ? 20 : q === 2 ? 15 : 11;
-        const c = q === 4 ? "url(#none)" : GRADE_TRAIL[q];
-        html += `<span class="comet${q === 4 ? " rainbow" : ""}" style="left:${x - w}px;top:${y - h / 2}px;width:${w}px;height:${h}px;--c:${GRADE_TRAIL[q]};--d:${T(i * 55)}ms;--dur:${T(620)}ms"><b></b></span>`;
+      const SPEED = S.auto ? 1.5 : 1, END = 1950, W = innerWidth, H = innerHeight, dpr = Math.min(2, devicePixelRatio || 1);
+      const cv = document.createElement("canvas"); cv.id = "skyfx"; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr); document.body.appendChild(cv);
+      let seed = 1234567; const rr = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+      const clamp = x => Math.max(0, Math.min(1, x)), ease = x => 1 - Math.pow(1 - clamp(x), 3), easeIn = x => clamp(x) * clamp(x);
+      const stars = Array.from({ length: 110 }, () => ({ x: rr() * W, y: rr() * H, r: .5 + rr() * 1.3, ph: rr() * 6.28, sp: 2 + rr() * 4 }));
+      const qs = list.slice(0, 9).map(w => w.q); while (qs.length < 7) qs.push(rr() < .3 ? 2 : 1);
+      const ANG = 20 * Math.PI / 180, dx = Math.cos(ANG), dy = Math.sin(ANG);
+      const best = qs.indexOf(Math.max(...list.map(w => w.q)));
+      const comets = qs.map((q, i) => {
+        const yT = H * (.1 + .8 * (i + .5) / qs.length) + (rr() - .5) * 26, xT = W * (.55 + rr() * .3);
+        return { q, xT, yT, t0: i * 60 + rr() * 40, dur: 520 + rr() * 160, len: W * (.55 + rr() * .25) * (q >= 3 ? 1.15 : 1), wid: q >= 3 ? 15 : q === 2 ? 11 : 8 };
       });
-      html += `<span class="skyburst${best === 4 ? " rainbow" : ""}" style="left:${W * .78}px;top:${H * .55}px;--c:${GRADE_TRAIL[best]};--d:${T(620)}ms"></span>`;
-      html += `<div class="skyspeed" style="--a:${Z.far};--b:${Z.ground};--p:${Z.path}"></div><div class="skyclouds">${[[10, 55, 160], [40, 40, 220], [72, 58, 180], [25, 78, 200], [62, 82, 230], [88, 35, 150], [50, 62, 260]].map(([x, y, r], i) => `<i style="left:${x}%;top:${y}%;width:${r}px;height:${r}px;animation-delay:${i * 30}ms"></i>`).join("")}</div>`;
-      fx.innerHTML = html; document.body.appendChild(fx);
-      let ended = false;
-      const end = () => { if (ended) return; ended = true; fx.classList.add("fade"); done(); setTimeout(() => fx.remove(), 450); };
-      fx.addEventListener("click", end);
-      setTimeout(() => !ended && fx.classList.add("speed"), T(1250));
-      setTimeout(() => !ended && fx.classList.add("puff"), T(1600));
-      setTimeout(end, T(1950));
+      if (best >= 0) { comets[best].xT = W * .7; comets[best].yT = H * .5; }
+      const bx = best >= 0 ? comets[best].xT : W * .7, by = best >= 0 ? comets[best].yT : H * .5, bc = GRADE_TRAIL[Math.max(1, qs[best] || 1)];
+      const sparks = Array.from({ length: 26 }, () => ({ a: rr() * 6.28, v: 120 + rr() * 260, r: 1.5 + rr() * 2.5 }));
+      const streaks = Array.from({ length: 70 }, () => ({ a: rr() * 6.28, d: .05 + rr() * .5, w: .6 + rr() * 1.6 }));
+      const puffs = Array.from({ length: 26 }, (_, i) => ({ a: i / 26 * 6.28 + rr() * .2, s: .8 + rr() * .5 }));
+      const rainbow = (g, x0, y0, x1, y1) => { const gr = ctx.createLinearGradient(x0, y0, x1, y1); ["rgba(155,227,138,0)", "#9be38a", "#7fc8ff", "#c49bff", "#ff9ad1"].forEach((c, k) => gr.addColorStop(k / 4, c)); return gr; };
+      function starShape(x, y, R, col, a) {
+        ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y);
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 2.6); g.addColorStop(0, "rgba(255,255,255,.95)"); g.addColorStop(.25, col); g.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * 2.6, 0, 6.28); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.beginPath();
+        for (let k = 0; k < 8; k++) { const rad = k % 2 ? R * .28 : R * (k % 4 ? 1 : 1.25), an = k * Math.PI / 4 - Math.PI / 2; ctx.lineTo(Math.cos(an) * rad, Math.sin(an) * rad); }
+        ctx.closePath(); ctx.fill(); ctx.restore();
+      }
+      function draw(t) {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+        const zoom = 1 + easeIn((t - 1150) / 300) * 1.6;
+        // night sky
+        if (t < 1500) {
+          ctx.save(); ctx.translate(bx, by); ctx.scale(zoom, zoom); ctx.translate(-bx, -by);
+          const sky = ctx.createRadialGradient(W * .7, H * .5, 0, W * .6, H * .5, Math.max(W, H)); sky.addColorStop(0, "#43246f"); sky.addColorStop(.55, "#24113f"); sky.addColorStop(1, "#160a2a");
+          ctx.fillStyle = sky; ctx.fillRect(-W, -H, W * 3, H * 3);
+          for (const st of stars) { ctx.globalAlpha = .35 + .55 * (.5 + .5 * Math.sin(st.ph + t / 1000 * st.sp)); ctx.fillStyle = "#dfe6ff"; ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 6.28); ctx.fill(); }
+          ctx.globalAlpha = 1;
+          // comets
+          for (const c of comets) {
+            const p = ease((t - c.t0) / c.dur); if (p <= 0) continue;
+            const hx = c.xT - (1 - p) * W * 1.1 * dx, hy = c.yT - (1 - p) * W * 1.1 * dy;
+            let L = c.len * Math.min(1, .35 + p), fade = 1;
+            if (t > 780) { fade = 1 - clamp((t - 780) / 380); L *= .4 + .6 * fade; }
+            const tx = hx - dx * L, ty = hy - dy * L, nx = -dy, ny = dx, w = c.wid;
+            const col = GRADE_TRAIL[c.q];
+            ctx.save(); ctx.globalAlpha = fade;
+            const g = c.q === 4 ? rainbow(0, tx, ty, hx, hy) : ctx.createLinearGradient(tx, ty, hx, hy);
+            if (c.q !== 4) { g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(.6, col + "99"); g.addColorStop(1, col); }
+            ctx.shadowColor = col; ctx.shadowBlur = 14; ctx.fillStyle = g; ctx.beginPath();
+            ctx.moveTo(tx, ty); ctx.quadraticCurveTo(hx - dx * L * .3 + nx * w, hy - dy * L * .3 + ny * w, hx + nx * w * .55, hy + ny * w * .55);
+            ctx.arc(hx, hy, w * .55, Math.atan2(ny, nx), Math.atan2(-ny, -nx)); ctx.quadraticCurveTo(hx - dx * L * .3 - nx * w, hy - dy * L * .3 - ny * w, tx, ty); ctx.fill();
+            ctx.shadowBlur = 0; ctx.globalAlpha = fade * .8; ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = Math.max(1, w * .18);
+            ctx.beginPath(); ctx.moveTo(hx - dx * L * .55, hy - dy * L * .55); ctx.lineTo(hx, hy); ctx.stroke();
+            ctx.restore();
+            starShape(hx, hy, c.q >= 3 ? 13 : 10, col, fade);
+          }
+          // the burst
+          const bp = (t - 760) / 420;
+          if (bp > 0) {
+            const R = 34 + 66 * ease(bp) + Math.sin(t / 90) * 2;
+            ctx.save();
+            const g = ctx.createRadialGradient(bx, by, 0, bx, by, R * 1.9); g.addColorStop(0, "#fff"); g.addColorStop(.18, "#fff"); g.addColorStop(.42, bc); g.addColorStop(.75, bc + "55"); g.addColorStop(1, "rgba(255,255,255,0)");
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, R * 1.9, 0, 6.28); ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(bx, by, R, 0, 6.28); ctx.stroke();
+            ctx.translate(bx, by); ctx.rotate(t / 900); ctx.globalAlpha = .55 * clamp(bp * 2);
+            for (let k = 0; k < 12; k++) { ctx.rotate(Math.PI / 6); ctx.fillStyle = "rgba(255,255,255,.5)"; ctx.beginPath(); ctx.moveTo(0, -R * .4); ctx.lineTo(4, -R * (2 + (k % 3) * .5)); ctx.lineTo(-4, -R * (2 + (k % 3) * .5)); ctx.fill(); }
+            ctx.restore();
+            for (const sp of sparks) { const d = sp.v * clamp(bp) * 1.1; ctx.globalAlpha = 1 - clamp(bp); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(bx + Math.cos(sp.a) * d, by + Math.sin(sp.a) * d, sp.r, 0, 6.28); ctx.fill(); }
+            ctx.globalAlpha = 1; starShape(bx, by, 16 + 10 * ease(bp), bc, 1);
+          }
+          ctx.restore();
+          // rushing into the burst: stars stretch into streaks
+          const zp = clamp((t - 1150) / 330);
+          if (zp > 0) {
+            for (const k of streaks) {
+              const r0 = (k.d + zp * 1.2) * Math.max(W, H), r1 = r0 * (1 + .25 + zp * .9);
+              ctx.globalAlpha = .7 * Math.sin(zp * Math.PI) + .2; ctx.strokeStyle = "#fff"; ctx.lineWidth = k.w + zp * 2;
+              ctx.beginPath(); ctx.moveTo(bx + Math.cos(k.a) * r0, by + Math.sin(k.a) * r0); ctx.lineTo(bx + Math.cos(k.a) * r1, by + Math.sin(k.a) * r1); ctx.stroke();
+            }
+            ctx.globalAlpha = easeIn(zp); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+          }
+        }
+        // clouds open from the middle
+        if (t >= 1450) {
+          const u = clamp((t - 1450) / 480), cp = u * u * (3 - 2 * u), cx = W / 2, cy = H * .55, diag = Math.hypot(W, H);
+          const R = diag * (.03 + .62 * cp), pr = 80 + 50 * cp;
+          ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.moveTo(cx + R, cy); ctx.arc(cx, cy, R, 0, Math.PI * 2, true); ctx.closePath(); ctx.fill("evenodd");
+          for (const p of puffs) {
+            const r = pr * p.s, x = cx + Math.cos(p.a) * (R + r * .2), y = cy + Math.sin(p.a) * (R + r * .2);
+            const g = ctx.createRadialGradient(x - r * .3, y - r * .35, r * .1, x, y, r); g.addColorStop(0, "#ffffff"); g.addColorStop(.7, "#f6f8fd"); g.addColorStop(1, "#dfe7f4");
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.28); ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
+      }
+      if (window.__skyHold !== undefined) { draw(window.__skyHold); return; }   // tests: draw one exact moment
+      let ended = false, t0 = performance.now();
+      const end = () => { if (ended) return; ended = true; cv.remove(); done(); };
+      cv.addEventListener("click", end);
+      const loop = now => { if (ended) return; const t = (now - t0) * SPEED; if (t >= END) return end(); draw(t); requestAnimationFrame(loop); };
+      draw(0); requestAnimationFrame(loop);
+      setTimeout(end, END / SPEED + 1500);   // never stay stuck
     });
   }
   // ================= EGGS =================
