@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794838816;</script>
+<script>window.GAME_BUILD = 1794839862;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1703,7 +1703,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     }
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
     if (E && E.type === "gather") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="gather">${E.kind === "bush" ? "Shake" : E.kind === "pouch" ? "Open" : E.kind === "herb" ? "Pick" : E.kind === "ore" ? "Mine" : "Collect"}</button><button class="round big" data-act="leave">${IC.run}</button></div>`; return; }
-    if (E && E.type === "rival") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="rivalgo">${IC.sword.replace("<svg", '<svg width="28" height="28"')} Battle</button><button class="round big" data-act="leave">${IC.run}</button></div>`; return; }
+    if (E && E.type === "rival") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="rivalgo">${IC.sword.replace("<svg", '<svg width="28" height="28"')} Battle</button><button class="round big" data-act="rivalquick" ${front() ? "" : "disabled"}>${IC.fast.replace("<svg", '<svg width="24" height="24"')} Quick</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div>`; return; }
     if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo" ${S.glow >= E.stake ? "" : "disabled"}>${IC.glow.replace("<svg", '<svg width="26" height="26"')} ${E.stake}</button><button class="round big" data-act="leave">${IC.run}</button></div>`; return; }
     const M = curM(), next = MULTS.filter(multOpen);
     A.innerHTML = `<div class="dock"><div class="side">${zoneCard()}</div>
@@ -1964,6 +1964,15 @@ nav .navwide .bang { top: 4px; right: 6px; }
     return `<div class="gcol" style="--gc:${GRADES[g].c}"><div class="gcsw"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>
       <div class="gcmini">${Z.sp.map(sp => `<span class="${(B[sp] || 0) >= g ? "" : "no"}">${art(sp, 0, 30)}</span>`).join("")}</div>
       <div class="mtrack">${nodes}</div><p class="hint" style="margin:0">${have} of ${Z.sp.length} kinds caught as ${GRADES[g].name} or better · Rainbow for sure within ${Math.max(1, PITY - (S.pity || 0))} wild Glumis</p></div>`;
+  }
+  // Quick battle with a trainer met on the path: same fight rules (simulate), same rewards as winning a full fight
+  async function quickRival(byAuto) {
+    if (!E || E.type !== "rival" || busy || !front()) return;
+    busy = true; const foes = E.foes, won = simulate(team(), foes), M = curM(); let rew = [];
+    if (won) { const lv = Math.max(...foes.map(f => f.lvl)), coins = (5 + lv * 2) * M.m; S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); rew = [{ k: "coins", n: coins }]; }
+    E = null; save();
+    await resultScreen(won, rew, byAuto ? 2000 : 0);
+    busy = false; render(); await flushBanners();
   }
   const NAVI = { menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
                  close: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
@@ -2413,7 +2422,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto throws at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
     { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
-    { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["skip", "Walk on"]] },
+    { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
     const C = S.autoCfg, label = r => (r.opts.find(o => o[0] === C[r.k]) || r.opts[0])[1];
@@ -2566,7 +2575,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     return S.auto ? `<button class="autochip on" data-act="autopause" aria-label="Pause Auto">${IC.auto}<span>Auto on</span><b>Pause</b></button>`
                   : `<button class="autochip" data-act="autopause" aria-label="Continue Auto">${IC.auto}<span>Auto paused</span><b>Continue</b></button>`;
   }
-  const TAKE_OVER = new Set(["throw", "jar", "treat", "leave", "chest", "gather", "rivalgo", "luckgo"]);  // an encounter's own buttons
+  const TAKE_OVER = new Set(["throw", "jar", "treat", "leave", "chest", "gather", "rivalgo", "rivalquick", "luckgo"]);  // an encounter's own buttons
   function autoPicksUp() { return S.auto && E && (E.type === "chest" || E.type === "gather"); }  // Auto opens chests and gathers even with catching off
   function autoCatchOn() { return S.auto && S.autoCfg && S.autoCfg.catch; }
   function autoPause() { if (!autoCatchOn()) autoOff(true); }
@@ -2578,7 +2587,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       if (E.type === "chest") return void await openChest();
       if (E.type === "gather") return void await gatherNode();
       if (E.type === "wild" && E.list.length > 1) { if (E.list.some(w => w.q >= C.treat) && S.treats > 0 && !E.treat) { S.treats--; E.treat = true; } return void await throwGroup(true); }
-      if (E.type === "rival") { if (C.rivals === "fight" && front()) await startBattle(E.foes, "rival"); else { E = null; save(); render(); } return; }
+      if (E.type === "rival") { if (C.rivals === "fight" && front()) await startBattle(E.foes, "rival"); else if (C.rivals === "quick" && front()) await quickRival(true); else { E = null; save(); render(); } return; }
       if (E.type !== "wild") { E = null; save(); render(); return; }  // luck stall: walk on, spend nothing
       if (E.boss) { autoOff(); return; }
       const w = E.list[E.i];
@@ -2616,6 +2625,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "goreq") { if (!E && !BT && !busy) { view = "shop"; shopTab = "requests"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); } }
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
+    else if (a === "rivalquick") quickRival(false);
     else if (a === "arenasub") { arenaSub = arg; if (arg !== "prep") prep = null; render(); window.scrollTo(0, 0); }
     else if (a === "gymz") { if (zoneOpen(n)) { gymZ = n; if (!gymDiffOpen(n, gymD)) gymD = 0; arenaSub = "gym"; render(); window.scrollTo(0, 0); } }
     else if (a === "gymd") { if (gymDiffOpen(gymZ, n)) { gymD = n; render(); } }
