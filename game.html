@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794859728;</script>
+<script>window.GAME_BUILD = 1794859852;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1505,7 +1505,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(3, 5) * M.m : kind === 1 ? rnd(4, 8) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
       else { E = { type: "gather", kind: "pouch", n: 2 * M.m }; }  // a little coin pouch on the path
     }
-    if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list.concat(...(E.waves || []))); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
+    if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
     busy = false; save(); render();
     if (E && E.type === "wild" && E.intro) starEntrance();
     await flushBanners();
@@ -2191,17 +2191,18 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const CATCH_PTS = [5, 10, 30, 80, 300];  // by grade
   const EVBARS = {
     catch: { name: "Catch points", how: "Catch Glumis: Blue 10, Purple 30, Gold 80, Rainbow 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
-             rew: [{ k: "glow", n: 30 }, { k: "plain", n: 3 }, { k: "egg1", n: 1 }, { k: "bright", n: 2 }, { k: "glow", n: 80 }, { k: "egg2", n: 1 }, { k: "star", n: 1 }] },
+             rew: [{ k: "glow", n: 30, need: 80 }, { k: "plain", n: 3, need: 100 }, { k: "egg1", n: 1, need: 250 }, { k: "bright", n: 2, need: 180 }, { k: "glow", n: 80, need: 220 }, { k: "egg2", n: 1, need: 450 }, { k: "star", n: 1, need: 400 }] },
     fight: { name: "Battle points", how: "Win fights: path trainers 20, gyms 40, ladder and climb 30", icon: () => IC.sword, steps: [60, 150, 300, 500, 800, 1200, 1800],
-             rew: [{ k: "coins", n: 100 }, { k: "glow", n: 40 }, { k: "egg1", n: 1 }, { k: "coins", n: 300 }, { k: "glow", n: 100 }, { k: "egg2", n: 1 }, { k: "egg3", n: 1 }] },
+             rew: [{ k: "coins", n: 100, need: 50 }, { k: "glow", n: 40, need: 70 }, { k: "egg1", n: 1, need: 180 }, { k: "coins", n: 300, need: 140 }, { k: "glow", n: 100, need: 170 }, { k: "egg2", n: 1, need: 320 }, { k: "egg3", n: 1, need: 500 }] },
   };
   const nextMidnight = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); };
-  // EVBARS steps are running totals; a bar holds only the points toward its next reward, so its target is the gap
+  // EVBARS steps: the old running totals, only used to convert old saves. A bar holds the points toward its next
+  // reward; the target is that reward's need, doubled on the 2nd time through the list, tripled on the 3rd...
   const evTotal = (k, t) => { const st = EVBARS[k].steps; return t < 0 ? 0 : t < st.length ? st[t] : st[st.length - 1] + (t - st.length + 1) * 1000; };
-  const evTarget = (k, t) => evTotal(k, t) - evTotal(k, t - 1);
+  const evTarget = (k, t) => { const R = EVBARS[k].rew; return R[t % R.length].need * (1 + Math.floor(t / R.length)); };
   function evState() {
-    if (!S.ev || S.ev.day !== today()) S.ev = { day: today(), v: 2, catch: { pts: 0, tier: 0 }, fight: { pts: 0, tier: 0 } };
-    if (S.ev.v !== 2) { S.ev.v = 2; for (const k of ["catch", "fight"]) { const E2 = S.ev[k]; E2.pts = Math.max(0, E2.pts - evTotal(k, E2.tier - 1)); } setTimeout(() => { evClaimAll("catch"); evClaimAll("fight"); }, 0); }
+    if (!S.ev || S.ev.day !== today()) S.ev = { day: today(), v: 3, catch: { pts: 0, tier: 0 }, fight: { pts: 0, tier: 0 } };
+    if (S.ev.v !== 3) { if (S.ev.v !== 2) for (const k of ["catch", "fight"]) { const E2 = S.ev[k]; E2.pts = Math.max(0, E2.pts - evTotal(k, E2.tier - 1)); } S.ev.v = 3; setTimeout(() => { evClaimAll("catch"); evClaimAll("fight"); }, 0); }
     return S.ev;
   }
   // a full bar pays out at once and starts again from 0 (extra points carry over)
