@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794869328;</script>
+<script>window.GAME_BUILD = 1794869822;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1156,6 +1156,61 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .skuse.on { background: #e6f8ea; color: #3e9e57; }
   .autochip.gapping { background-image: linear-gradient(#f5b23c, #f5b23c); background-repeat: no-repeat; background-position: left bottom; background-size: 100% 4px; animation-name: agap; animation-timing-function: linear; animation-fill-mode: forwards; }
   @keyframes agap { to { background-size: 0% 4px; } }
+  /* Atlas zone page, Lumi-like */
+  .lz { position: relative; border-radius: 16px; overflow: hidden; padding: 10px 10px 8px; display: grid; gap: 8px; background: var(--zbg) center/cover; min-height: calc(100vh - 150px); }
+  .lz::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(55,38,25,.62), rgba(55,38,25,.08) 26%, rgba(55,38,25,.08) 64%, rgba(55,38,25,.66)); }
+  .lz > * { position: relative; }
+  .lzhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #fff; }
+  .lzhead b { display: block; font: 800 20px/1.1 var(--display); text-shadow: 0 2px 3px rgba(40,20,10,.65); }
+  .lzhead small { font-weight: 700; font-size: 12px; text-shadow: 0 1px 2px rgba(40,20,10,.7); }
+  .lztrack { display: flex; align-items: center; gap: 4px; padding: 6px 8px 12px; border-radius: 34px; background: color-mix(in srgb, var(--gc) 40%, rgba(80,58,40,.82)); box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
+  .lz.rbg .lztrack { background: linear-gradient(90deg, rgba(255,140,140,.75), rgba(255,211,107,.75), rgba(138,230,138,.75), rgba(127,212,255,.75), rgba(199,155,255,.8)); }
+  .lzcount { flex: none; position: relative; display: grid; justify-items: center; margin-right: 4px; }
+  .lzcard { width: 42px; height: 50px; border-radius: 8px; display: grid; place-items: center; background: linear-gradient(135deg, color-mix(in srgb, var(--gc) 35%, #fff), var(--gc)); box-shadow: 0 0 0 3px #fff, 0 3px 5px rgba(0,0,0,.3); }
+  .lz.rbg .lzcard { background: linear-gradient(135deg, #ffb3b3, #ffe08a, #a8f0a8, #9fdcff, #d4b8ff); }
+  .lzcount b { position: absolute; bottom: -12px; padding: 0 7px; border-radius: 10px; background: #fff; color: #5b3f2a; font: 800 11px/17px var(--display); white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .lznode { flex: 1; position: relative; height: 48px; border: 0; padding: 0; background: none; display: grid; place-items: center; }
+  .lznode > span { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: #6b4a33; box-shadow: inset 0 2px 4px rgba(0,0,0,.4), 0 0 0 2px rgba(255,255,255,.25); }
+  .lznode > span svg, .lznode > span img { width: 26px !important; height: 26px; }
+  .lznode.done > span { background: color-mix(in srgb, var(--gc) 40%, #fff); }
+  .lznode.claim > span { background: #ffe08a; box-shadow: 0 0 12px 3px #ffe27a, 0 0 0 2px #fff; animation: zpulse 1.1s ease-in-out infinite; }
+  .lznode:disabled { opacity: 1; }
+  .lznode small { position: absolute; bottom: -13px; min-width: 22px; padding: 0 6px; border-radius: 10px; background: #fff; color: #5b3f2a; font: 800 11px/17px var(--display); text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .lznode small svg { width: 11px; height: 11px; vertical-align: -1px; }
+  .lzpity { margin: 6px 2px 0; color: #fff; font: 700 12.5px var(--body); text-shadow: 0 1px 3px rgba(0,0,0,.75); }
+  .lzpity svg { width: 13px; height: 13px; vertical-align: -2px; }
+  .lzrev { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+  .lzmap { position: relative; height: max(250px, calc(100vh - 470px)); }
+  .lzdrawn { position: absolute; inset: 0; border-radius: 12px; overflow: hidden; } .lzdrawn svg { width: 100%; height: 100%; }
+  .lzpin { position: absolute; width: 74px; height: 74px; margin: -37px 0 0 -37px; border: 0; padding: 0; border-radius: 50%; --pc: #7a5440; --pr: #5e3f2f;
+    background: radial-gradient(circle, var(--pc) 0 60%, var(--pr) 61% 100%); box-shadow: 0 5px 9px rgba(40,25,10,.4); }
+  .lzpin::after { content: ""; position: absolute; left: 50%; bottom: -15px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--pr); box-shadow: 0 0 0 3px var(--pc); }
+  .lzpin .lzin { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; overflow: hidden; }
+  .lzpin .lzin svg, .lzpin .lzin img { width: 58px !important; height: auto; }
+  .lzpin.big { width: 96px; height: 96px; margin: -48px 0 0 -48px; }
+  .lzpin.big .lzin svg, .lzpin.big .lzin img { width: 78px !important; }
+  .lzpin.lit { --pc: color-mix(in srgb, var(--gc) 22%, #fff); --pr: var(--gc); }
+  .lzpin.lit::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; border: 2px dashed rgba(255,255,255,.85); pointer-events: none; }
+  .lzpin.rb { background: radial-gradient(circle, #fff7fb 0 60%, transparent 61%), conic-gradient(#ff8a8a, #ffd36b, #8ae68a, #7fd4ff, #c79bff, #ff8a8a); --pr: #c79bff; }
+  .lzpin.dim .lzin > * { filter: grayscale(.55) brightness(.72); opacity: .9; }
+  .lzpin.unknown .lzin > * { filter: brightness(0) opacity(.5); }
+  .lzpin.reveal { --pc: #6b4a33; --pr: #fff; animation: revpulse 1s ease-in-out infinite; z-index: 3; }
+  .lzpin.reveal .lzin > * { filter: brightness(0) opacity(.5); }
+  .lzpin.pop { animation: lzpop .75s cubic-bezier(.3,1.6,.5,1); z-index: 3; }
+  @keyframes lzpop { 0% { transform: scale(.55); filter: brightness(2.6); } 55% { transform: scale(1.25); filter: brightness(1.4); } 100% { transform: scale(1); filter: none; } }
+  .lzpin.sel { box-shadow: 0 0 0 4px #fff, 0 5px 9px rgba(40,25,10,.4); }
+  .lzinfo { position: absolute; left: 4px; right: 4px; bottom: 4px; z-index: 5; }
+  .lzbar { display: flex; align-items: center; gap: 10px; }
+  .lzgrade { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 4px; border-radius: 30px; box-shadow: 0 2px 5px rgba(0,0,0,.3);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--gc) 45%, #fff), #fffaf2 30% 70%, color-mix(in srgb, var(--gc) 45%, #fff)); }
+  .lzgrade.rb { background: linear-gradient(90deg, #ffd0d0, #fff3c4, #d4f7d4, #d4efff, #eadcff); }
+  .lzgrade b { font: 800 19px var(--display); color: #5b3f2a; }
+  .lzgrade button { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #8a6d55; background: #fff; color: #5b3f2a; font: 900 20px/1 var(--display); padding: 0; }
+  .lzgo { flex: none; min-width: 118px; height: 48px; border: 0; border-radius: 26px; background: linear-gradient(#ffd98a, #f5a623); color: #fff; font: 800 22px var(--display); text-shadow: 0 1px 2px rgba(120,60,0,.55); box-shadow: 0 3px 0 #c47f0a, 0 0 0 3px #fff3d6; display: grid; place-items: center; }
+  .lzgo.here { font-size: 18px; } .lzgo svg { width: 22px; height: 22px; } .lzgo:disabled { filter: saturate(.55); }
+  .lz .zcards { padding: 2px; }
+  .lz .zcard.sel { box-shadow: 0 0 0 3px var(--gc), 0 3px 8px rgba(0,0,0,.3); }
+  .lzx { justify-self: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255,255,255,.9); color: #6b4a33; font: 900 24px var(--display); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3189,7 +3244,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (document.querySelector(".shade, #skyfx, .banner, .sheet")) return;
     const z = ZONES.findIndex(Z => Z.sp.includes(S.reveal[0])); if (z < 0) { S.reveal.shift(); return; }
     view = "atlas"; atlasZone = z; atlasPin = null; revealTrip = true; render(); window.scrollTo(0, 0);
-    setTimeout(() => { const m = document.querySelector(".zmap"); if (m) m.scrollIntoView({ block: "center" }); }, 60);
+    setTimeout(() => { const m = document.querySelector(".lzmap"); if (m) m.scrollIntoView({ block: "center" }); }, 60);
   }, 500);
   function revealPin(sp) {
     S.reveal = S.reveal.filter(x => x !== sp); revealAnim = sp; atlasPin = sp; save(); sfx("claim"); render();
@@ -3216,41 +3271,56 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return `<div class="atlas"><div class="head"><h2>Atlas</h2><button class="round" data-act="map" aria-label="Back to the path" style="font-size:16px">Back</button></div>
       <p class="hint" style="margin:0">Tap an island to see its Glumis</p><div class="wmap">${pts}</div></div>`;
   }
+  const LZ_CHECK = '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#5fcf6a" stroke="#fff" stroke-width="2"/><path d="M6.5 12.5l3.8 3.8 7.2-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const LZ_CARD = '<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3l2.2 6.4L21 12l-6.8 2.6L12 21l-2.2-6.4L3 12l6.8-2.6z" fill="#fff" stroke="rgba(60,40,20,.35)" stroke-width="1"/></svg>';
+  const LZ_POS = { 3: [[22, 20], [78, 20], [50, 86]], 4: [[21, 18], [79, 18], [21, 78], [79, 78]] };
   function pageAtlas() {
     if (atlasZone === null && ART["map-world"]) return pageWorld();
-    const z = atlasZone ?? S.zone, Z = ZONES[z], st = S.zones[z], open = zoneOpen(z), got = caughtIn(z);
-    const cards = ZONES.map((ZZ, i) => `<button class="zcard${i === z ? " sel" : ""}" data-act="atlaszone:${i}"><span class="zpic" style="--sky:${ZZ.sky[0]};--gr:${ZZ.ground}${ART["bg-" + i] ? `;background:url(${ART["bg-" + i]}) center 55%/cover` : ""}">
-      ${i === S.zone ? `<span class="here">${IC.balloon}</span>` : ""}
-      ${zoneOpen(i) ? "" : `<span class="zl">${IC.lock}${caughtIn(i - 1)}/${ZONES[i - 1].sp.length}</span>`}</span><span class="zn">${ZZ.name}<small>${caughtIn(i)} of ${ZZ.sp.length} caught</small></span></button>`).join("");
-    const ms = milestones(z), claimed = st.claimed || 0;
-    let upTo = claimed; while (upTo < ms.length && reached(z, ms[upTo])) upTo++;  // rewards ready to collect: claimed .. upTo-1
-    const track = ms.map((m, k) => { const done = k < claimed, can = !done && k < upTo, [label, icon] = REWARD[m.kind](z);
-      return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="claim:${z}" ${can ? "" : "disabled"} aria-label="${label}">${done ? IC.star : icon}<small>${m.need === "boss" ? "Guardian" : m.need + " caught"}</small></button>`; }).join("");
+    const z = atlasZone ?? S.zone, Z = ZONES[z], st = S.zones[z], open = zoneOpen(z), got = caughtIn(z), g = atlasGrade, B = bestQ(), total = Z.sp.length;
+    // the reward track of the chosen grade
+    let nodes = [], haveN = 0;
+    if (g === 1) {
+      const ms = milestones(z), claimed = st.claimed || 0; let upTo = claimed; while (upTo < ms.length && reached(z, ms[upTo])) upTo++;
+      haveN = got;
+      nodes = ms.map((m, k) => { const done = k < claimed, can = !done && k < upTo, [label, icon] = REWARD[m.kind](z);
+        return `<button class="lznode${done ? " done" : can ? " claim" : ""}" data-act="claim:${z}" ${can ? "" : "disabled"} aria-label="${label}"><span>${done ? LZ_CHECK : icon}</span><small>${m.need === "boss" ? IC.crown : m.need}</small></button>`; });
+    } else {
+      const cl = (st.gq && st.gq[g]) || 0; haveN = Z.sp.filter(sp => (B[sp] || 0) >= g).length;
+      nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && haveN >= need, r = gcRew(g, k, total);
+        return `<button class="lznode${done ? " done" : can ? " claim" : ""}" data-act="gclaim:${z}" ${can ? "" : "disabled"} aria-label="${r.n} ${RW[r.k][1]}"><span>${done ? LZ_CHECK : RW[r.k][0]}</span><small>${need}</small></button>`; });
+    }
+    const track = `<div class="lztrack"><span class="lzcount"><span class="lzcard">${LZ_CARD}</span><b>${haveN}/${total}</b></span>${nodes.join("")}</div>`;
+    // medallions
     const waiting = sp => S.reveal && S.reveal.includes(sp);
-    const pin = (sp, [x, y]) => { const c = (st.caught[sp] || S.caught[key(sp, 0)]) && !waiting(sp), seen = S.seen[key(sp, 0)], cls = waiting(sp) ? "reveal" : c ? "caught" : seen ? "seen" : "unknown";
-      return `<button class="pin ${cls}${atlasPin === sp ? " sel" : ""}${revealAnim === sp ? " pop" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${c ? SP[sp].name : waiting(sp) ? "New Glumi: tap to reveal" : "Not caught yet"}"><span>${art(sp, 0, 50)}</span></button>${waiting(sp) ? `<span class="tapme" style="left:${x}%;top:${y}%">Tap!</span>` : ""}${revealAnim === sp ? `<span class="revburst" style="left:${x}%;top:${y}%"></span>` : ""}`; };
-    const bossSeen = S.seen[key(Z.boss, 0)], bossCls = st.cleared ? "boss caught" : bossReady(z) ? "boss" : "boss locked";
-    const bossPin = `<button class="pin ${bossCls}${atlasPin === Z.boss ? " sel" : ""}" data-act="atlaspin:${Z.boss}" style="left:50%;top:84%" aria-label="Guardian"><span class="${st.cleared ? "" : "silh"}">${art(Z.boss, 0, 62)}</span></button>`;
+    const pinH = (sp, [x, y], big) => {
+      const c = big ? (st.cleared || S.caught[key(sp, 0)]) : (st.caught[sp] || S.caught[key(sp, 0)]) && !waiting(sp), q = B[sp] ?? (big && st.cleared ? 1 : -1);
+      const cls = waiting(sp) ? "reveal" : !c ? "unknown" : q >= g ? "lit" : "dim";
+      return `<button class="lzpin ${cls}${big ? " big" : ""}${g === 4 && cls === "lit" ? " rb" : ""}${atlasPin === sp ? " sel" : ""}${revealAnim === sp ? " pop" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${c ? SP[sp].name : waiting(sp) ? "New Glumi: tap to reveal" : "Not caught yet"}"><span class="lzin">${art(sp, 0, big ? 84 : 62)}</span></button>`
+        + `${waiting(sp) ? `<span class="tapme" style="left:${x}%;top:${y}%">Tap!</span>` : ""}${revealAnim === sp ? `<span class="revburst" style="left:${x}%;top:${y}%"></span>` : ""}`;
+    };
+    const pos = LZ_POS[total] || Z.sp.map((_, k) => [50 + 34 * Math.cos(k / total * 6.283 - 1.57), 48 + 36 * Math.sin(k / total * 6.283 - 1.57)]);
     let info = "";
     if (atlasPin !== null) {
       const sp = atlasPin, s0 = SP[sp], boss = s0.tier === 3, has0 = S.caught[key(sp, 0)], has1 = s0.evo && S.caught[key(sp, 1)], known = has0 || S.seen[key(sp, 0)];
-      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Waiting for you on the path" : "Appears when you catch everything here, or after 60 steps") : has0 ? "Caught" : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
-      info = `<div class="card pininfo"><div class="${known ? "" : "sil"}">${art(sp, 0, 76)}</div><div style="display:grid;gap:4px"><span class="nmrow">${known ? s0.name : "???"}</span>
+      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Waiting for you on the path" : "Appears when you catch everything here, or after 60 steps") : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
+      info = `<div class="card pininfo lzinfo" data-act="atlaspin:${sp}"><div class="${known ? "" : "sil"}">${art(sp, 0, 70)}</div><div style="display:grid;gap:4px"><span class="nmrow">${known ? s0.name : "???"}</span>
         <div class="tags" style="justify-content:flex-start"><span class="tag2"><span class="el" style="background:${EL[s0.el].color}"></span>${EL[s0.el].name}</span><span class="tag2">${TIER[s0.tier].name}</span></div>
-        <span class="stats"><span>${status}</span></span>${s0.evo ? `<div class="forms"><span>${has0 ? "✓" : "○"} ${known ? s0.name : "???"}</span><span>→</span><span>${has1 ? "✓ " + s0.evo : "○ Evolved form"}</span></div>` : ""}</div></div>`;
+        <span class="stats"><span>${status}</span></span>${s0.evo ? `<div class="forms"><span>${has0 ? "\u2713" : "\u25cb"} ${known ? s0.name : "???"}</span><span>\u2192</span><span>${has1 ? "\u2713 " + s0.evo : "\u25cb Evolved form"}</span></div>` : ""}</div></div>`;
     }
-    return `<div class="atlas">
-      <div class="head"><h2>Atlas</h2><span style="display:flex;gap:6px">${ART["map-world"] ? `<button class="round" data-act="atlasworld" style="font-size:16px">World</button>` : ""}<button class="round" data-act="map" aria-label="Back to the path" style="font-size:16px">Back</button></span></div>
+    const cards = ZONES.map((ZZ, i) => `<button class="zcard${i === z ? " sel" : ""}" data-act="atlaszone:${i}"><span class="zpic" style="--sky:${ZZ.sky[0]};--gr:${ZZ.ground}${ART["bg-" + i] ? `;background:url(${ART["bg-" + i]}) center 55%/cover` : ""}">
+      ${i === S.zone ? `<span class="here">${IC.balloon}</span>` : ""}
+      ${zoneOpen(i) ? "" : `<span class="zl">${IC.lock}${caughtIn(i - 1)}/${ZONES[i - 1].sp.length}</span>`}</span><span class="zn">${ZZ.name}<small>${caughtIn(i)} of ${ZZ.sp.length} caught</small></span></button>`).join("");
+    const go = !open ? `<button class="lzgo" disabled aria-label="Locked">${IC.lock}</button>`
+      : z === S.zone ? `<button class="lzgo here" disabled>Here</button>` : `<button class="lzgo" data-act="travel:${z}">Go</button>`;
+    const newHere = Z.sp.some(sp => waiting(sp));
+    return `<div class="lz${g === 4 ? " rbg" : ""}" style="--gc:${GRADES[g].c};${ART["bg-" + z] ? `--zbg:url(${ART["bg-" + z]})` : `--zbg:none;background-color:${Z.ground}`}">
+      <div class="lzhead"><div><b>${Z.name}</b><small>Wild Lv ${Z.lv[0]}-${Z.lv[1]} · ${got}/${total} caught</small></div>${ART["map-world"] ? `<button class="round" data-act="atlasworld" style="font-size:15px">World</button>` : ""}</div>
+      ${open ? track + `<p class="lzpity">\u2726 ${rbPityText()}</p>` : `<p class="lzpity">${IC.lock} Catch every Glumi in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})</p>`}
+      ${newHere ? `<p class="revhint lzrev">New Glumi caught! Tap its silhouette</p>` : revealTrip ? `<button class="big2 gold" data-act="revealback">${IC.run}Back to the path<small>Keep exploring ${ZONES[S.zone].name}</small></button>` : ""}
+      <div class="lzmap">${ART["bg-" + z] ? "" : `<div class="lzdrawn">${zoneMapSVG(Z)}</div>`}${Z.sp.map((sp, k) => pinH(sp, pos[k])).join("")}${pinH(Z.boss, [50, 48], true)}${info}</div>
+      <div class="lzbar"><div class="lzgrade${g === 4 ? " rb" : ""}"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>${go}</div>
       <div class="zcards">${cards}</div>
-      <div class="head" style="align-items:baseline"><h3 style="margin:0;color:#5b3f2a">${Z.name}</h3><span class="stats"><span>Wild Lv ${Z.lv[0]}-${Z.lv[1]}</span><span>${got}/${Z.sp.length} caught</span></span></div>
-      ${open ? `<div class="mtrack">${track}</div>${gradeBlock(z)}` : ""}
-      ${Z.sp.some(sp => S.reveal && S.reveal.includes(sp)) ? `<p class="revhint">New Glumi caught! Tap its silhouette on the map</p>`
-        : revealTrip ? `<button class="big2 gold" data-act="revealback">${IC.run}Back to the path<small>Keep exploring ${ZONES[S.zone].name}</small></button>` : ""}
-      <div class="zmap">${zoneMapSVG(Z)}${Z.sp.map((sp, k) => pin(sp, PIN_POS[k])).join("")}${bossPin}</div>
-      ${info || `<p class="hint" style="margin:0">Tap a pin to see a Glumi. Gold pins are caught.</p>`}
-      ${open ? (z === S.zone ? `<button class="big2" disabled>${IC.balloon}You are here<small>Walk the path to find these Glumis</small></button>`
-                              : `<button class="big2 gold" data-act="travel:${z}">${IC.balloon}Travel here<small>Fly by balloon to ${Z.name}</small></button>`)
-             : `<button class="big2" disabled>${IC.lock.replace(/#fff/g, "#7a5638")}Locked<small>${z > 0 ? `Catch every Glumi in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})` : ""}</small></button>`}
+      <button class="lzx" data-act="map" aria-label="Close the Atlas">\u2715</button>
     </div>`;
   }
   function trainerSVG(color, back, who) {  // a trainer picture when there is one, else the drawing
