@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794868765;</script>
+<script>window.GAME_BUILD = 1794869008;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1154,6 +1154,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .skilltab .skrow { align-items: center; }
   .skuse { margin-left: auto; flex: none; border: 0; border-radius: 8px; padding: 5px 10px; background: #f5b23c; color: #fff; font: 800 12px var(--display); }
   .skuse.on { background: #e6f8ea; color: #3e9e57; }
+  .autochip.gapping { background-image: linear-gradient(#f5b23c, #f5b23c); background-repeat: no-repeat; background-position: left bottom; background-size: 100% 4px; animation-name: agap; animation-timing-function: linear; animation-fill-mode: forwards; }
+  @keyframes agap { to { background-size: 0% 4px; } }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1473,6 +1475,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   let autoStat = { caught: 0 }, showAuto = false, autoLock = false, autoSession = false, autoNext = 0, autoSeenE = null;
   const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // at Auto speed x2 (the pace Auto always had)
+  const AUTO_GAP_MS = 2500; let autoGapUntil = 0;  // wait after an encounter (at x2)
   const AUTO_SPEEDS = [1, 2, 3], autoSpd = () => AUTO_SPEEDS.includes(S.autoSpd) ? S.autoSpd : 2, autoPace = () => 2 / autoSpd();  // ms x autoPace  // Auto's pace: time between steps, and time to look at what appeared
   let S = fresh(), view = "explore", E = null, BT = null, busy = false, db = null, uid = null, saveTimer = null, saving = false, pendingSave = false, saveNote = "", confirmRelease = null, showMap = false;
   function readLocal() { try { const j = localStorage.getItem(LS); return j ? JSON.parse(j) : null; } catch { return null; } }
@@ -3316,7 +3319,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function autoTick() {
     if (!S.auto || !S.started || view !== "explore" || showMap || showAuto || BT || busy || document.querySelector(".shade")) return;
     const now = performance.now();
-    if (E !== autoSeenE) { const wasMine = autoSeenE && autoSeenE.manual; autoSeenE = E; if (E) { autoNext = now + AUTO_LOOK_MS * autoPace(); return; } if (wasMine) { autoNext = now + 800; return; } }
+    if (E !== autoSeenE) { const wasMine = autoSeenE && autoSeenE.manual; autoSeenE = E; if (E) { autoNext = now + AUTO_LOOK_MS * autoPace(); return; }
+      const gap = AUTO_GAP_MS * autoPace(); autoNext = now + gap; autoGapUntil = autoNext; renderStage(); return; }  // encounter over: time to pause Auto before the next step
     if (E && E.manual) return;  // the player took this one over
     if (now < autoNext) return;
     if (!E) { autoNext = now + AUTO_STEP_MS * autoPace(); step(); } else if (autoCatchOn() || autoPicksUp()) { autoNext = now + AUTO_STEP_MS * autoPace(); autoAct(); }
@@ -3342,7 +3346,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   setInterval(() => { autoTick(); autoBar(); }, 200);
   function autoChip() {
     if (!autoSession) return "";
-    return S.auto ? `<button class="autochip on" data-act="autopause" aria-label="Pause Auto">${IC.auto}<span>Auto on</span><b class="aspd" data-act="autospd" aria-label="Auto speed">×${autoSpd()}</b><b>Pause</b></button>`
+    return S.auto ? `<button class="autochip on${autoGapUntil > performance.now() ? " gapping" : ""}" data-act="autopause" aria-label="Pause Auto"${autoGapUntil > performance.now() ? ` style="animation-duration:${Math.round(autoGapUntil - performance.now())}ms"` : ""}>${IC.auto}<span>Auto on</span><b class="aspd" data-act="autospd" aria-label="Auto speed">×${autoSpd()}</b><b>Pause</b></button>`
                   : `<button class="autochip" data-act="autopause" aria-label="Continue Auto">${IC.auto}<span>Auto paused</span><b class="aspd" data-act="autospd" aria-label="Auto speed">×${autoSpd()}</b><b>Continue</b></button>`;
   }
   const TAKE_OVER = new Set(["throw", "jar", "treat", "leave", "chest", "gather", "rivalgo", "rivalquick", "luckgo"]);  // an encounter's own buttons
