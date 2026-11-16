@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794852583;</script>
+<script>window.GAME_BUILD = 1794855168;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2890,6 +2890,16 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     sfx("claim"); save(); toast(`Released ${pool.length}: +${k} ${SP[R.sp].name} keepsake${k > 1 ? "s" : ""}${c ? `, +${c} star cores` : ""}`);
     if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
+  // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
+  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", book: "team", release: "team" })[v] || v;
+  function resetTab(t, keepPrep) {
+    if (t === "shop") { shopTab = "jars"; marketFocus = null; reqPick = null; }
+    if (t === "team") { teamTab = "team"; sheetPage = "main"; sheetTab = "stats"; sheetMulti = false; rel = null; }
+    if (t === "arena" && !keepPrep) { arenaSub = "hub"; prep = null; }
+    if (t === "home") { homePlace = null; homePick = false; expPick = null; }
+    if (t === "menu") { tasksTab = "daily"; bagTab = "items"; shrinePick = []; shrineSure = false; }
+    if (t === "atlas") { atlasZone = null; atlasPin = null; }
+  }
   function keepsakePopup(m, missing) {
     closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2], buys = Math.ceil(missing / per);
     const d = document.createElement("div"); d.className = "popwrap";
@@ -3184,7 +3194,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
-    else if (a === "view") { if (arg !== "shrine") { shrineSure = false; } if (arg === "arena" && view !== "team" && arenaSub === "prep") { arenaSub = "hub"; prep = null; } view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; expPick = null; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
+    else if (a === "view") {
+      const from = tabOf(showMap ? "atlas" : view), to = tabOf(arg), keepPrep = to === "arena" && from === "team" && arenaSub === "prep";
+      if (from !== to) resetTab(to, keepPrep);
+      if (arg !== "shrine") shrineSure = false;
+      view = arg; settingsPage = null; bagPick = null; showMap = false; showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
     else if (a === "map") { if (!E && !BT && !busy) { showMap = false; view = view === "atlas" ? "explore" : "atlas"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); } }
     else if (a === "atlaszone") { atlasZone = n; atlasPin = null; render(); }
     else if (a === "atlaspin") { atlasPin = atlasPin === n ? null : n; render(); }
