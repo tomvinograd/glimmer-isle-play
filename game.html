@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794870663;</script>
+<script>window.GAME_BUILD = 1794870795;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1289,7 +1289,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     { name: "Cloud Steppes", lv: [36, 42], sp: [29, 30, 31], boss: 34, sky: ["#bfe0ff", "#f4f9ff"], far: "#d9e7f7", ground: "#c9e3c0", path: "#f4f1e6", props: ["cloud", "flower", "cloud", "rock"] }
   ];
   const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 85, 12, 3, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 77, 15, 8, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 72, 17, 11, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 67, 19, 14, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 62, 21, 17, 0], count: 10 }];
-  const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }];
+  const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }, { k: "prism", base: 1, price: 5000, c: "prism" }];  // prism: always catches
   const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, EVOLVE_FRUIT = 10, RB_PITY = 100, RB_PITY_MULT = 10;  // a Rainbow for sure after 100 catches made at x10 or higher
   const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 1, MAX_STARS = 5, STAR_BONUS = .1;
@@ -1447,7 +1447,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   if (ART["ui-home"]) TABI.home = artIcon("ui-home");
   if (ART["ui-glumis"]) TABI.team = artIcon("ui-glumis");
   { const JAR_ART = { [JARS[0].c]: "item-jar-plain", [JARS[1].c]: "item-jar-bright", [JARS[2].c]: "item-jar-star" }, drawnJar = IC.jar;
-    IC.jar = c => ART[JAR_ART[c]] ? artIcon(JAR_ART[c]) : drawnJar(c); }
+    IC.jar = c => c === "prism" ? `<svg viewBox="0 0 24 24"><defs><linearGradient id="pj${Math.random().toString(36).slice(2, 7)}" x1="0" y1="0" x2="1" y2="1"></linearGradient></defs><rect x="7" y="2.5" width="10" height="3.5" rx="1.2" fill="#fff3c4" stroke="#c79bff" stroke-width=".8"/><clipPath id="pjc"><path d="M6 8c0-1.2 1-2 2-2h8c1 0 2 .8 2 2v10a3.5 3.5 0 01-3.5 3.5h-5A3.5 3.5 0 016 18z"/></clipPath><g clip-path="url(#pjc)"><rect x="5" y="6" width="3" height="16" fill="#ff8a8a"/><rect x="7.6" y="6" width="3" height="16" fill="#ffd36b"/><rect x="10.2" y="6" width="3" height="16" fill="#8ae68a"/><rect x="12.8" y="6" width="3" height="16" fill="#7fd4ff"/><rect x="15.4" y="6" width="3" height="16" fill="#c79bff"/></g><path d="M12 10.5l1.1 2.4 2.4 1.1-2.4 1.1L12 17.5l-1.1-2.4-2.4-1.1 2.4-1.1z" fill="#fff"/></svg>` : ART[JAR_ART[c]] ? artIcon(JAR_ART[c]) : drawnJar(c); }
   const EGG_ART = { 1: "egg-blue", 2: "egg-purple", 3: "egg-gold" };
   const DRAGON_SLOTS = [2, 14, 20];  // the dragon families keep their drawn dragons until their art exists
   function art(sp, evo, size = 76) {
@@ -1513,7 +1513,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ================= STATE + SAVING =================
   const LS = "glimmerIsleSave";
   const freshZones = () => ZONES.map(() => ({ caught: {}, steps: 0, cleared: false }));
-  const fresh = () => ({ v: 2, t: 0, started: false, coins: 60, glow: 60, glowT: Date.now(), jars: { plain: 8, bright: 1, star: 0 }, treats: 2, leaves: 10, fruit: 0, requests: [], starCores: {}, keepsakes: {}, mons: [], team: [], eggs: [], seen: {}, caught: {}, zone: 0, zones: freshZones(), xlvl: 1, xxp: 0, mult: 1, pity: 0, nextUid: 1, wins: 0, autoCfg: { catch: true, low: "plain", mid: "bright", high: "star", treat: 3, only: "all", rivals: "fight", lantern: "glow" } });
+  const fresh = () => ({ v: 2, t: 0, started: false, coins: 60, glow: 60, glowT: Date.now(), jars: { plain: 8, bright: 1, star: 0, prism: 0 }, treats: 2, leaves: 10, fruit: 0, requests: [], starCores: {}, keepsakes: {}, mons: [], team: [], eggs: [], seen: {}, caught: {}, zone: 0, zones: freshZones(), xlvl: 1, xxp: 0, mult: 1, pity: 0, nextUid: 1, wins: 0, autoCfg: { catch: true, low: "plain", mid: "bright", high: "star", treat: 3, only: "all", rivals: "fight", lantern: "glow" } });
   function migrate(o) {
     if (!o) return null;
     if (o.v === 2) { const s = Object.assign(fresh(), o); s.zones = ZONES.map((_, i) => Object.assign({ caught: {}, steps: 0, cleared: false }, (o.zones || [])[i])); s.mons.forEach(m => { if (m.asc === undefined) m.asc = ascOf(m); if (m.q === 0) m.q = 1; }); /* NO_GREEN */ if (s.eggs && s.eggs.length) { s.coins += 90 * s.eggs.length; s.eggs = []; } /* EGGS_REMOVED */ return s; }
@@ -1729,7 +1729,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ---------- catching ----------
   const ringScale = () => { const T = 1300, ph = ((performance.now() - (E ? E.t0 : 0)) % (2 * T)) / T, p = ph < 1 ? ph : 2 - ph; return 1.7 - p * 1.2; };
   const RARE_JAR = { plain: .03, bright: .06, star: .3 };  // Gold and Rainbow: base catch chance by jar
-  function chance(w, jarK, timing = 1) { const J = JARS.find(j => j.k === jarK);
+  function chance(w, jarK, timing = 1) { const J = JARS.find(j => j.k === jarK); if (jarK === "prism") return 1;
     const base = w.q >= 3 ? RARE_JAR[jarK] * (SP[w.sp].tier === 3 ? .6 : 1) : J.base * TIER[SP[w.sp].tier].catch * GRADES[w.q].catch;
     return Math.min(.98, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1) * timing)); }
   async function throwJar(autoThrow) {
@@ -2048,7 +2048,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const w = E.list[E.i], must = tough(w) && !E.fought, J = JARS.find(j => j.k === E.jar), noJars = !S.jars.plain && !S.jars.bright && !S.jars.star;
       A.innerHTML = `<div class="dock"><div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round" data-act="treat" aria-label="Give treat" ${!S.treats || E.treat || must || busy ? "disabled" : ""}>${IC.treat}${S.treats}</button><span class="cap">Treat</span></div></div>
         <div style="display:grid;justify-items:center;gap:6px">${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>`}
-        <div class="row" style="gap:4px">${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k]}</button>`).join("")}</div></div>
+        <div class="row" style="gap:4px">${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div></div>
         <div class="side"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div></div></div>`;
       return;
     }
@@ -2080,7 +2080,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   // ================= TASKS: Starter (once), Daily (new every day), Challenge (once) =================
   const ELK = Object.keys(EL);
-  const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "energy"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"],
+  const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "energy"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"], prism: [IC.jar("prism"), "prism jar"],
                treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"] };
   function giveReward(r) { if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
   const TASKS = {
@@ -2150,7 +2150,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (bagTab === "items") {
       const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
-        ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
+        ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["prism", IC.jar("prism"), "Prism jar", S.jars.prism || 0, 4, "Always catches, even Rainbows."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
         ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glumi: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glumi or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glumi, sometimes Rainbow."], ["egg4", EGG_ICON(4), "Rainbow egg", S.egg4 || 0, 4, "Hatches a Rainbow Glumi."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
       tiles = items.filter(i => i[3] > 0).map(([k, ic, nm, n, q]) => `<button class="btile${bagPick === k ? " on" : ""}" data-act="bagpick:${k}" style="--gc:${GRADES[q].c}">${ic}<b>${n >= 10000 ? (n / 1000).toFixed(1) + "K" : n}</b></button>`);
       const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span>${/^egg/.test(p[0]) && p[3] > 0 ? `<button class="mb gold" data-act="openegg:${p[0].slice(3)}">Open</button>` : ""}</div>`;
@@ -2873,7 +2873,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const items = {
       jars: [row("plain", IC.jar(JARS[0].c), "Plain jar", `A simple jar · you have ${S.jars.plain}`, 15),
              row("bright", IC.jar(JARS[1].c), "Bright jar", `Catches more easily · you have ${S.jars.bright}`, 45),
-             row("star", IC.jar(JARS[2].c), "Star jar", `The best catch chance · you have ${S.jars.star}`, 120)],
+             row("star", IC.jar(JARS[2].c), "Star jar", `The best catch chance · you have ${S.jars.star}`, 120),
+             row("prism", IC.jar("prism"), "Prism jar", `Always catches, even Rainbows · you have ${S.jars.prism || 0}`, 5000)],
       supplies: [row("treat", IC.treat, "Treat", `Calms a Glumi before you throw · you have ${S.treats}`, 25),
                  row("leaves", IC.leaf, "10 leaves", `For leveling up · you have ${S.leaves}`, 20)],
     };
@@ -3126,7 +3127,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   let confirmBuy = null;
   const marketPrice = (q, lvl) => q >= 3 ? 150 + lvl * 10 : 50 + lvl * 5;  // 16 Nov: much cheaper (Purple 55, Gold 160 at level 1)
   function closePopup() { const p = document.querySelector(".popwrap"); if (p) p.remove(); }
-  const JAR_NAME = { plain: "plain", bright: "bright", star: "star" }, JAR_PRICE = { plain: 15, bright: 45, star: 120 };
+  const JAR_NAME = { plain: "plain", bright: "bright", star: "star", prism: "prism" }, JAR_PRICE = { plain: 15, bright: 45, star: 120, prism: 5000 };
   function jarPopup(k, w) {
     closePopup(); const n = 5, cost = JAR_PRICE[k] * n;
     const d = document.createElement("div"); d.className = "popwrap";
@@ -3222,7 +3223,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     { k: "catch", name: "Auto catch", about: "What Auto does when a Glumi appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
     { k: "low", name: "Jar for Blue", about: "Which jar Auto throws at Blue Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
     { k: "mid", name: "Jar for Purple", about: "Which jar Auto throws at Purple Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto throws at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto throws at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"], ["prism", "Prism jar"]] },
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
     { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
@@ -3430,7 +3431,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function autoPicksUp() { return S.auto && E && (E.type === "chest" || E.type === "gather"); }  // Auto opens chests and gathers even with catching off
   function autoCatchOn() { return S.auto && S.autoCfg && S.autoCfg.catch; }
   function autoPause() { if (!autoCatchOn()) autoOff(true); }
-  const JAR_DOWN = { star: ["star", "bright", "plain"], bright: ["bright", "plain"], plain: ["plain"] };  // the chosen jar, then cheaper ones (none left: Auto stops and asks)
+  const JAR_DOWN = { prism: ["prism", "star", "bright", "plain"], star: ["star", "bright", "plain"], bright: ["bright", "plain"], plain: ["plain"] };  // the chosen jar, then cheaper ones (none left: Auto stops and asks)
   async function autoAct() {
     if (autoLock) return; autoLock = true;
     try {
@@ -3660,7 +3661,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
     else if (a === "buy") {
-      const prices = { plain: 15, bright: 45, star: 120, treat: 25, leaves: 20 }, p = prices[arg]; if (S.coins < p) return;
+      const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, p = prices[arg]; if (S.coins < p) return;
 if (p === undefined) return;
       if (S.jars[arg] !== undefined) S.jars[arg]++; else if (arg === "treat") S.treats++; else if (arg === "leaves") S.leaves += 10; else if (arg === "glow") S.glow += 20; else if (arg === "fruit") S.fruit++;
       S.coins -= p; sfx("coin"); save(); render();
@@ -3671,7 +3672,7 @@ if (p === undefined) return;
   const local = migrate(readLocal()); if (local) S = local;
   S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult)) S.mult = 1;
   RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM);
-  S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
+  S.jars.prism = S.jars.prism || 0; S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
   render(); if (S.started) initProps();
   // swipe left / right on the path to change zone
   (function swipe() {
