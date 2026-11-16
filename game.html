@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794868409;</script>
+<script>window.GAME_BUILD = 1794868693;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2201,8 +2201,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const gymDiffOpen = (z, d) => d === 0 || gymDone(z, d - 1);
   // daily duels
   // ladder tiers by rank points; [points, name, color, foe level bonus, foe grade weights Green..Rainbow]
-  const DRANKS = [[0, "Bronze", "#cd8a4a", -2, [30, 60, 10, 0, 0]], [100, "Silver", "#b9c3cf", 0, [0, 70, 30, 0, 0]], [300, "Gold", "#f2b42c", 2, [0, 50, 40, 10, 0]],
-                  [600, "Platinum", "#6fd0c4", 4, [0, 30, 50, 20, 0]], [1000, "Diamond", "#6fa8ff", 5, [0, 10, 50, 35, 5]], [1600, "Master", "#b07cff", 6, [0, 0, 40, 50, 10]]];
+  const DRANKS = [[0, "Bronze", "#cd8a4a", 10, [30, 60, 10, 0, 0]], [100, "Silver", "#b9c3cf", 20, [0, 70, 30, 0, 0]], [300, "Gold", "#f2b42c", 35, [0, 50, 40, 10, 0]],
+                  [600, "Platinum", "#6fd0c4", 50, [0, 30, 50, 20, 0]], [1000, "Diamond", "#6fa8ff", 70, [0, 10, 50, 35, 5]], [1600, "Master", "#b07cff", 100, [0, 0, 40, 50, 10]]];  // [rank points, name, color, foe level, foe grade weights]
   const RANK_WIN = [12, 10, 8, 6, 5, 4], RANK_LOSS = [5, 6, 7, 8, 10, 12], FOE_BOOST = [1, 1.05, 1.12, 1.22, 1.25, 1.25], FOE_STARS = [0, 0, 0, 0, 0, 0];  // by tier (1.25 x the 80% wild cut = full strength)
   const ladderTier = p => DRANKS.filter(r => p >= r[0]).length - 1;
   function tierBadge(i, size) {  // shield in the tier's metal color, a star, one pip per tier above Bronze
@@ -2217,10 +2217,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (t1 > t0) toast(`Promoted to ${DRANKS[t1][1]}! Fights get tougher`); else if (t1 < t0) toast(`Down to ${DRANKS[t1][1]}`);
   }
   function ladderFoes() {
-    const teamAsc = Math.round(team().reduce((x, m) => x + ascOf(m), 0) / Math.max(1, team().length));  // foes ascended like your team: strength comes from tier
     const T = DRANKS[ladderTier(ladderState().pts)], t = ladderTier(ladderState().pts), pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []), L = avgLvl();
     if (t === DRANKS.length - 1) return Array.from({ length: 3 }, () => { const f = foeMon(pickOf(pool), 100, 4); f.evo = SP[f.sp].evo ? 1 : 0; f.stars = 0; f.asc = MAX_ASC; f.boost = FOE_BOOST[t]; f.hp = maxHp(f); return f; });  // Master: maxed Rainbows
-    return Array.from({ length: t === 0 ? 2 : 3 }, () => { const f = foeMon(pickOf(pool), L + T[3] + rnd(-1, 1), wpick(T[4])); f.boost = FOE_BOOST[t]; f.stars = FOE_STARS[t]; f.asc = teamAsc; f.hp = maxHp(f); return f; });
+    return Array.from({ length: t === 0 ? 2 : 3 }, () => { const f = foeMon(pickOf(pool), T[3] + rnd(-2, 2), wpick(T[4])); f.boost = FOE_BOOST[t]; f.stars = FOE_STARS[t]; f.hp = maxHp(f); return f; });
   }
   function duelState() { if (!S.duel) S.duel = { date: "", left: 5, pts: 0, wins: 0 }; if (S.duel.date !== today()) { S.duel.date = today(); S.duel.left = 5; } return S.duel; }
   const duelRank = p => DRANKS.filter(r => p >= r[0]).pop()[1];
@@ -2322,7 +2321,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <div class="lrank"><span class="drank pic">${tierBadge(ladderTier(L.pts), 54)}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
         <div class="ltiers">${DRANKS.map((r, i) => `<span class="${i < ladderTier(L.pts) ? "past" : i === ladderTier(L.pts) ? "cur" : "next"}">${tierBadge(i, i === ladderTier(L.pts) ? 34 : 26)}<small>${r[1]}</small></span>`).join("")}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
-        <p class="hint" style="margin:0">Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, a loss ${LADDER_LOSS}. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Higher tiers bring much stronger teams and more coins, and give fewer rank points. Master teams are level 100 Rainbow Glumis.</p>
+        <p class="hint" style="margin:0">Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, a loss ${LADDER_LOSS}. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but fewer rank points.</p>
         <button class="mb gold pbig" data-act="laddergo">Match</button>`;
     }
     if (arenaSub === "tower") {
