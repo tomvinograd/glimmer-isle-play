@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794840002;</script>
+<script>window.GAME_BUILD = 1794840164;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1227,7 +1227,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
   const lockText = i => `${ZONES[i].name} opens when you catch every Glumi in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
   const bossReady = i => !S.zones[i].cleared && (zoneAll(i) || S.zones[i].steps >= BOSS_STEPS);
-  const multOpen = M => S.glow >= M.m;  // a multiplier is there when you have the glow for one step with it
+  const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500 };  // glow you need to have to use each multiplier (Tom 16 Nov)
+  const multNeed = M => MULT_NEED[M.m] ?? M.m, multOpen = M => S.glow >= multNeed(M);
   const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return multOpen(want) ? want : [...MULTS].reverse().find(x => x.m <= want.m && multOpen(x)) || MULTS[0]; };
   function glowNextText() { if (S.glow >= glowCap()) return "Full"; const left = Math.max(1, Math.ceil((GLOW_EVERY - (Date.now() - S.glowT)) / 1000)); return `+1 in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
   function regen() { const now = Date.now(); if (S.glow >= glowCap()) { S.glowT = now; return; } const n = Math.floor((now - S.glowT) / GLOW_EVERY); if (n > 0) { S.glow = Math.min(glowCap(), S.glow + n); S.glowT = S.glow >= glowCap() ? now : S.glowT + n * GLOW_EVERY; } }
@@ -2664,7 +2665,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "step") step();
     else if (a === "mult") { const open = MULTS.filter(multOpen), i = open.findIndex(x => x.m === curM().m), nextLock = MULTS.find(x => !multOpen(x));
       S.mult = open[(i + 1) % open.length].m; save(); renderActions();
-      toast(open.length < 2 ? `x${nextLock.m} needs ${nextLock.m} glow` : `x${S.mult}: ${S.mult} glow a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${nextLock.m} glow` : ""}`); }
+      toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} glow` : `x${S.mult}: ${S.mult} glow a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} glow` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
     else if (a === "backtocatch") { view = "explore"; if (E) E.t0 = performance.now(); render(); window.scrollTo(0, 0); }
