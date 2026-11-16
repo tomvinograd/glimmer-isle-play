@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794836504;</script>
+<script>window.GAME_BUILD = 1794836759;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -850,6 +850,48 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .rchips { display: flex; gap: 4px; } .rchips .rchip { padding: 2px 5px; font-size: 11.5px; } .rchips .rchip svg { width: 15px; height: 15px; }
 .srow:has(.rchips) { grid-template-columns: 44px 1fr auto auto; }
 nav .navwide .bang { top: 4px; right: 6px; }
+/* ===== Glumi card page (Tom 16 Nov) ===== */
+.sheet.cardpage { top: calc(8px + env(safe-area-inset-top, 0px)); max-height: none; border-radius: 12px 12px 0 0 !important; padding-top: 12px; align-content: start; }
+.gcard { position: relative; height: 330px; border-radius: 14px; padding: 10px; overflow: hidden; box-shadow: 0 0 0 4px #fff, 0 0 0 6px color-mix(in srgb, var(--gc) 60%, #fff), 0 6px 18px rgba(91,70,54,.2);
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.55) 0 8%, transparent 9%), radial-gradient(circle at 80% 70%, rgba(255,255,255,.35) 0 6%, transparent 7%), linear-gradient(160deg, color-mix(in srgb, var(--gc) 35%, #fff), color-mix(in srgb, var(--gc) 70%, #fff)); }
+.gcard.q4 { background: linear-gradient(160deg, #c9f2c0, #bfe3ff 40%, #d9c4ff 70%, #ffc9e4); }
+.gpow { position: absolute; left: 10px; top: 10px; width: 52px; height: 52px; display: grid; place-items: center; font: 900 21px var(--display); color: #fff; text-shadow: 0 1px 2px rgba(40,30,20,.5);
+  background: var(--gc); clip-path: polygon(50% 0, 63% 13%, 82% 9%, 85% 28%, 100% 40%, 90% 57%, 96% 76%, 77% 82%, 68% 100%, 50% 91%, 32% 100%, 23% 82%, 4% 76%, 10% 57%, 0 40%, 15% 28%, 18% 9%, 37% 13%); }
+.gname { position: absolute; left: 70px; top: 22px; font: 800 20px var(--display); color: var(--brown); }
+.gwhere { position: absolute; right: 10px; top: 10px; padding: 3px 12px; border-radius: 7px; background: #e8574a; color: #fff; font: 800 13px var(--display); }
+.gtags { position: absolute; left: 12px; bottom: 14px; display: flex; gap: 6px; align-items: center; }
+.gel { height: 24px; padding: 0 9px; border-radius: 7px; display: grid; place-items: center; font: 800 12.5px var(--display); color: #fff; text-shadow: 0 1px 2px rgba(40,30,20,.35); box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
+.gart { position: absolute; left: 0; right: 0; top: 52px; bottom: 30px; display: grid; place-items: center; } .gart > * { filter: drop-shadow(0 6px 8px rgba(40,30,20,.2)); }
+.gstars { position: absolute; right: 14px; bottom: 50px; display: flex; gap: 1px; } .gstars i { font-style: normal; font-size: 16px; color: rgba(91,70,54,.25); } .gstars i.on { color: #ffb627; }
+.glv { position: absolute; right: 14px; bottom: 8px; font: 900 34px/1 var(--display); color: var(--brown); } .glv small { font-size: 14px; margin-right: 2px; }
+.ggrade { position: absolute; left: 56px; bottom: 20px; }
+.gside { position: absolute; right: 8px; top: 48px; display: grid; gap: 8px; }
+.gsb { width: 40px; height: 40px; border: 0; border-radius: 50%; display: grid; place-items: center; background: rgba(255,250,240,.95); color: var(--brown); font: 900 22px var(--display); box-shadow: 0 2px 8px rgba(40,30,20,.25); }
+.gsb svg { width: 20px; height: 20px; } .gsb.on { background: #5b4636; color: #fff; }
+.gcstats { display: grid; grid-template-columns: 28px 1fr 28px; align-items: center; gap: 4px; }
+.gcnav { height: 54px; border: 0; background: none; font: 900 34px var(--display); color: #f5a623; padding: 0; }
+.gcbars { display: grid; gap: 7px; }
+.gcbar { display: grid; grid-template-columns: 24px 64px 1fr 46px; align-items: center; gap: 6px; } .gcbar b { font: 800 14px var(--display); color: var(--brown); }
+.gcbi { width: 24px; height: 24px; border-radius: 6px; background: #5b4636; display: grid; place-items: center; } .gcbi svg { width: 15px; height: 15px; color: #fff; } .gcbi svg [fill]:not([fill="none"]) { fill: #fff; }
+.gctrack { height: 12px; border-radius: 6px; background: #f1e3d0; overflow: hidden; box-shadow: inset 0 0 0 2px #fff; }
+.gctrack i { display: block; height: 100%; background: linear-gradient(90deg, #ffd76a, #f5a524 60%, color-mix(in srgb, var(--gc, #f5a524) 70%, #fff)); }
+.gcbar em { font: 800 14px var(--display); font-style: normal; color: var(--brown); text-align: right; }
+.gacts { display: grid; grid-template-columns: 52px 52px 1fr 44px; gap: 8px; align-items: stretch; }
+.gsq { position: relative; border: 0; border-radius: 10px; background: #8fb6dc; color: #fff; display: grid; place-items: center; align-content: center; padding: 4px 0; box-shadow: 0 3px 0 #6c93ba; }
+.gsq svg { width: 24px; height: 24px; } .gsq small { font: 800 10.5px var(--display); } .gsq.hot::after { content: ""; position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: #e8483b; box-shadow: 0 0 0 2px #fff; }
+.gbig { border: 0; border-radius: 10px; padding: 6px 4px; display: grid; place-items: center; background: #7fd9d4; color: var(--brown); box-shadow: 0 3px 0 #4fb1ac; }
+.gbig b { font: 800 19px var(--display); } .gbig small { display: flex; align-items: center; gap: 3px; font: 800 12px var(--display); } .gbig small svg { width: 15px; height: 15px; }
+.gbig.asc { background: linear-gradient(#ffe08a, #f5b23c); box-shadow: 0 3px 0 #c47f0a; } .gbig:disabled { opacity: .6; }
+.gx { border: 0; border-radius: 10px; background: #ffd79a; color: var(--brown); font: 900 18px/1 var(--display); box-shadow: 0 3px 0 #e0a94c; } .gx.on { background: #f5a623; color: #fff; } .gx:disabled { opacity: .45; }
+.gtabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 4px; border-radius: 8px; background: #a9bfd8; }
+.gtabs button { border: 0; border-radius: 7px; padding: 9px 0; background: rgba(255,255,255,.35); font: 800 14px var(--display); color: #fff; } .gtabs button.on { background: var(--cream); color: var(--brown); }
+.gclose { justify-self: center; width: 46px; height: 46px; border: 0; border-radius: 50%; background: #5b4636; color: #fff; font: 900 20px var(--display); }
+.skilltab, .infotab { display: grid; gap: 8px; }
+.skrow { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.1); }
+.skic { flex: none; width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; } .skic svg { width: 20px; height: 20px; color: #fff; } .skic svg [fill]:not([fill="none"]) { fill: #fff; }
+.skrow b { display: block; font: 800 15px var(--display); color: var(--brown); } .skrow small { font-size: 12.5px; line-height: 1.35; color: var(--brown-2, #8a6d55); }
+.irow { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 8px; background: #fff; font-size: 13.5px; color: var(--brown-2, #8a6d55); } .irow b { color: var(--brown); text-align: right; }
+.tile .lockmini { position: absolute; left: 6px; bottom: 6px; width: 16px; height: 16px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1957,6 +1999,10 @@ nav .navwide .bang { top: 4px; right: 6px; }
     if (!inTeam) b.push(`<button class="mb" data-act="release:${m.uid}">${confirmRelease === m.uid ? "Sure?" : "Release"} ${IC.glow}${5 * (m.q + 1)}</button>`);
     return `<div class="card mon${inTeam && i === 0 ? " lead" : ""}">${art(m.sp, m.evo, 76)}<div class="info"><div class="nmrow">${fname(m.sp, m.evo)}${gChip(m.q)}<span class="el" style="background:${EL[s.el].color}"></span></div><div class="stats"><span>Lv ${m.lvl}</span><span>HP ${maxHp(m)}</span><span>ATK ${atk(m)}</span><span>DEF ${def(m)}</span></div><div class="mini-btns">${b.join("")}</div></div></div>`;
   }
+  let sheetTab = "stats", sheetMulti = false;
+  function levelsAffordable(m) { let n = 0, lv = m.lvl, leaves = S.leaves; const top = Math.min(lvlCap(), ascTop(m)); while (lv < top && leaves >= 5 + lv * 3 && n < 99) { leaves -= 5 + lv * 3; lv++; n++; } return n; }
+  function levelsCost(m, n) { let c = 0; for (let k = 0; k < n; k++) c += 5 + (m.lvl + k) * 3; return c; }
+  const teamOrder = () => [...S.mons].sort((x, y) => S.team.includes(y.uid) - S.team.includes(x.uid) || y.q - x.q || y.lvl - x.lvl);
   let sheetUid = null, swapIn = null, sheetPage = "main";  // sheetPage: main | level | stars | bye
   const weakTo = el => Object.keys(BEATS).find(k => BEATS[k] === el);
   function statBar(label, v, max, color) { return `<div class="sb"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / max * 100)}%;background:${color}"></i></div><b>${v}</b></div>`; }
@@ -2018,21 +2064,51 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (sheetPage === "bye" && !inTeam) body = `${back("Say goodbye")}${mini}
       <p class="hint" style="margin:0">Sell it for coins, or release it for ${s.name} keepsakes (used to ascend).</p>
       <div class="btns">${G.join("")}</div>`;
-    else body = `<div class="hero" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 150)}</div>
-      <div class="nmrow" style="font-size:26px;justify-content:center">${fname(m.sp, m.evo)}</div>
-      <div class="starrow" aria-label="${m.stars || 0} of ${MAX_STARS} stars">${Array.from({ length: MAX_STARS }, (_, k) => `<span class="${k < (m.stars || 0) ? "on" : ""}">\u2605</span>`).join("")}</div>
-      <div class="tags">${gChip(m.q)}<span class="tag2"><span class="el" style="background:${EL[s.el].color}"></span>${EL[s.el].name}</span><span class="tag2">${TIER[s.tier].name}</span><span class="tag2">Level ${m.lvl}</span>${ascOf(m) ? `<span class="tag2 asc">Ascended ${ascOf(m)}</span>` : ""}${inTeam ? `<span class="tag2">${lead ? "Leader" : "In team"}</span>` : ""}</div>
-      ${stats}
-      <p class="matchup">Strong against <b>${EL[BEATS[s.el]].name}</b> · Weak against <b>${EL[weakTo(s.el)].name}</b></p>
-      <div class="doors">
-        ${door("level", IC.up, "Level up", ascReady ? "Ready to ascend!" : capped && atAsc ? `Ascend at level ${m.lvl}` : `Level ${m.lvl} \u00b7 next costs ${cost} leaves`, ascReady || lvlReady)}
-        ${door("stars", IC.star, "Stars", `${st} of ${MAX_STARS} \u00b7 ${cores} star core${cores === 1 ? "" : "s"}`, starReady)}
-        ${!inTeam ? door("bye", IC.coin, "Sell or release", `Sell for ${sellPrice(m)} coins, or get keepsakes`, false) : ""}
-      </div>
-      ${T.length ? `<div class="btns">${T.join("")}</div>` : ""}`;
-    return `<button class="sheetbg" data-act="closesheet" aria-label="Close"></button><div class="sheet" role="dialog" aria-label="${fname(m.sp, m.evo)}">
+    else {
+      const where = lead ? "Leader" : inTeam ? "Team" : (typeof isAway === "function" && isAway(m.uid)) ? "Away" : (typeof workingAt === "function" && workingAt(m.uid)) ? "Working" : "";
+      const power = Math.round(atk(m) * 2 + def(m) * 1.5 + maxHp(m) / 2);
+      const workBest = Math.max(...Object.keys(PLACES).map(k => workerRate(m, k)));
+      const lvlN = levelsAffordable(m), multi = sheetMulti && lvlN > 1;
+      const bigBtn = atAsc && ascOf(m) < MAX_ASC
+        ? `<button class="gbig asc" data-act="ascend:${m.uid}" ${ascReady ? "" : "disabled"}><b>Ascend</b><small>${IC.heart || ""}${keeps}/${aNeed} ${s.name} keepsakes</small></button>`
+        : `<button class="gbig" data-act="${multi ? "lvlmax" : "lvl"}:${m.uid}" ${lvlReady ? "" : "disabled"}><b>${capped ? "Top level" : multi ? `Level up x${lvlN}` : "Level up"}</b><small>${IC.leaf}${S.leaves}/${multi ? levelsCost(m, lvlN) : cost}</small></button>`;
+      const tabBody = sheetTab === "skill"
+        ? `<div class="skilltab"><div class="skrow"><span class="skic" style="background:${EL[s.el].color}">${IC.star}</span><div><b>${SKILLS[s.el]}</b><small>When the energy bar is full: a strong ${EL[s.el].name} hit, about 3 times a normal attack. Extra strong against ${EL[BEATS[s.el]].name}, weak against ${EL[weakTo(s.el)].name}.</small></div></div>
+           <div class="skrow"><span class="skic" style="background:#5aa8ff">${IC.flag}</span><div><b>Shield</b><small>Costs 40 energy. Halves the damage it takes for 4 seconds.</small></div></div>
+           <div class="skrow"><span class="skic" style="background:#f5a623">${IC.fast}</span><div><b>Attack speed</b><small>${{ round: "Normal: one hit a second", tall: "Quick: a hit every 0.8 seconds", wide: "Slow but sturdy: a hit every 1.25 seconds" }[s.shape]}</small></div></div></div>`
+        : sheetTab === "info"
+        ? `<div class="infotab">${[["Kind", `${TIER[s.tier].name} ${EL[s.el].name} Glumi`], ["Found in", ZONES.filter(Z => Z.sp.includes(m.sp) || Z.boss === m.sp).map(Z => Z.name).join(", ") || "Unknown"],
+             ["Forms", s.evo ? `${s.name}${S.caught[key(m.sp, 0)] ? " \u2713" : ""} \u2192 ${s.evo}${S.caught[key(m.sp, 1)] ? " \u2713" : ""}` : `${s.name} (no evolution)`],
+             ["You own", `${S.mons.filter(x => x.sp === m.sp).length} of this kind`], ["Ascended", `${ascOf(m)} of ${MAX_ASC}`], ["Keepsakes", `${keeps}`], ["Star cores", `${cores}`]]
+             .map(([a, b]) => `<div class="irow"><span>${a}</span><b>${b}</b></div>`).join("")}
+             <p class="matchup">Strong against <b>${EL[BEATS[s.el]].name}</b> · Weak against <b>${EL[weakTo(s.el)].name}</b></p></div>`
+        : `<div class="gcstats"><button class="gcnav" data-act="sheetnav:-1" aria-label="Previous Glumi">\u2039</button><div class="gcbars">
+             ${[["Attack", atk(m), 70, IC.sword], ["Defense", def(m), 60, IC.flag], ["HP", maxHp(m), 260, IC.heart || IC.star], ["Work", Math.round(workBest), 30, IC.home]].map(([n, v, mx, ic]) =>
+               `<div class="gcbar"><span class="gcbi">${ic}</span><b>${n}</b><span class="gctrack"><i style="width:${Math.min(100, v / mx * 100)}%"></i></span><em>${v}${n === "Work" ? "/h" : ""}</em></div>`).join("")}
+           </div><button class="gcnav" data-act="sheetnav:1" aria-label="Next Glumi">\u203A</button></div>
+           <div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
+             ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= 1 && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
+             ${bigBtn}
+             <button class="gx${multi ? " on" : ""}" data-act="sheetmulti" aria-label="Level up as many times as you can" ${lvlN > 1 && !(atAsc && ascOf(m) < MAX_ASC) ? "" : "disabled"}>\u2303\u2303</button></div>`;
+      body = `<div class="gcard q${m.q}" style="--gc:${GRADES[m.q].c}">
+          <span class="gpow">${power}</span><b class="gname">${fname(m.sp, m.evo)}</b>${where ? `<span class="gwhere">${where}</span>` : ""}
+          <span class="gtags"><span class="gel" style="background:${EL[s.el].color}">${EL[s.el].name}</span>${gChip(m.q)}</span>
+          <div class="gart">${art(m.sp, m.evo, 210)}</div>
+          <span class="gstars">${Array.from({ length: MAX_STARS }, (_, k) => `<i class="${k < (m.stars || 0) ? "on" : ""}">\u2605</i>`).join("")}</span>
+          <span class="glv"><small>Lv.</small>${m.lvl}</span>
+          <div class="gside">
+            <button class="gsb${m.lock ? " on" : ""}" data-act="lockmon:${m.uid}" aria-label="${m.lock ? "Unlock" : "Lock"}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5" fill="currentColor" stroke="none"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
+            ${!inTeam ? `<button class="gsb" data-act="addteam:${m.uid}" aria-label="Add to team">+</button>` : !lead ? `<button class="gsb" data-act="lead:${m.uid}" aria-label="Make leader">${IC.star}</button>` : ""}
+            ${inTeam && S.team.length > 1 ? `<button class="gsb" data-act="den:${m.uid}" aria-label="Remove from team">\u2212</button>` : ""}
+            ${!inTeam ? `<button class="gsb" data-act="spage:bye" aria-label="Sell or release">${IC.coin}</button>` : ""}
+          </div></div>
+        ${tabBody}
+        <div class="gtabs">${[["stats", "Stats"], ["skill", "Skill"], ["info", "Info"]].map(([k, n]) => `<button class="${sheetTab === k ? "on" : ""}" data-act="sheettab:${k}">${n}</button>`).join("")}</div>`;
+    }
+    const mainPg = !["level", "stars", "bye"].includes(sheetPage) || (sheetPage === "bye" && inTeam);
+    return `<button class="sheetbg" data-act="closesheet" aria-label="Close"></button><div class="sheet${mainPg ? " cardpage" : ""}" role="dialog" aria-label="${fname(m.sp, m.evo)}">
       ${body}
-      <button class="mb" data-act="closesheet" style="justify-self:center;min-width:120px">Close</button></div>`;
+      ${mainPg ? `<button class="gclose" data-act="closesheet" aria-label="Close">✕</button>` : `<button class="mb" data-act="closesheet" style="justify-self:center;min-width:120px">Close</button>`}</div>`;
   }
   function pageBook() {
     const total = SP.reduce((n, s) => n + (s.evo ? 2 : 1), 0), got = Object.keys(S.caught).length;
@@ -2516,6 +2592,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
     const [a, arg] = b.dataset.act.split(":"); const n = arg !== undefined ? +arg : null;
     if (["addteam", "join", "hire", "give", "release", "sell"].includes(a) && isAway(n)) { toast("Away on an expedition"); return; }
+    if (["release", "sell", "give"].includes(a) && mon(n) && mon(n).lock) { toast("It's locked: unlock it on its card first"); return; }
     if (["pickslot", "swapto"].includes(a) && swapIn && isAway(swapIn)) { swapIn = null; toast("Away on an expedition"); render(); return; }
     if (S.auto && E && !BT && (TAKE_OVER.has(a) || (a === "view" && arg === "shop"))) { E.manual = true; autoBar(); }
     if (a !== "release" && a !== "sell") confirmRelease = null;
@@ -2536,6 +2613,11 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "agrade") { atlasGrade = Math.min(3, Math.max(1, atlasGrade + n)); render(); }
     else if (a === "gclaim") { const z = n, Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(); if (!st.gq) st.gq = {}; const cl = st.gq[g] || 0, have = Z.sp.filter(sp => (B[sp] || 0) >= g).length;
       if (cl < Z.sp.length && have >= cl + 1) { const r = cl === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g]; st.gq[g] = cl + 1; giveReward(r); sfx("claim"); save(); toast(`Got ${r.n} ${RW[r.k][1]}`); render(); } }
+    else if (a === "sheettab") { sheetTab = arg; render(); }
+    else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
+    else if (a === "sheetnav") { const L = teamOrder(), i = L.findIndex(x => x.uid === sheetUid); if (L.length) { sheetUid = L[(i + n + L.length) % L.length].uid; sheetPage = "main"; render(); } }
+    else if (a === "lockmon") { const m = mon(n); if (m) { m.lock = !m.lock; save(); toast(m.lock ? "Locked: it can't be sold or released" : "Unlocked"); render(); } }
+    else if (a === "lvlmax") { const m = mon(n); if (m) { const k = levelsAffordable(m); if (k) { S.leaves -= levelsCost(m, k); m.lvl += k; m.hp = maxHp(m); for (let j = 0; j < k; j++) track("lvl"); sfx("up"); save(); toast(`+${k} levels`); render(); } } }
     else if (a === "taskstab") { tasksTab = arg; render(); }
     else if (a === "taskclaim") { const [tab, id] = b.dataset.act.split(":").slice(1), t = TASKS[tab].find(x => x.id === id); if (t && taskReady(tab, t)) { tasksState().done[tab + ":" + id] = 1; giveReward(t.r); sfx("claim"); save(); toast(`Got ${t.r.n} ${RW[t.r.k][1]}`); render(); } }
     else if (a === "bagtab") { bagTab = arg; bagPick = null; render(); }
@@ -2612,7 +2694,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
         view = "explore"; render(); reveal(m, "Evolved!").then(() => { view = "team"; render(); });
       }
     }
-    else if (a === "sheet") { if (swapIn) return; sheetUid = n; sheetPage = "main"; confirmRelease = null; render(); }
+    else if (a === "sheet") { sheetTab = "stats"; if (swapIn) return; sheetUid = n; sheetPage = "main"; confirmRelease = null; render(); }
     else if (a === "spage") { sheetPage = arg; confirmRelease = null; render(); const sh = document.querySelector(".sheet"); if (sh) sh.scrollTop = 0; }
     else if (a === "closesheet") { sheetUid = null; sheetPage = "main"; render(); }
     else if (a === "addteam") { sheetUid = null; if (S.team.length < slots()) { S.team.push(n); save(); toast("Added to your team"); } else { swapIn = n; } render(); window.scrollTo(0, 0); }
