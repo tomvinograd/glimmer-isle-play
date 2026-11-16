@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794851271;</script>
+<script>window.GAME_BUILD = 1794852583;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1040,6 +1040,15 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .trainer.me { width: 96px; } .trainer.foe { width: 72px; }
 .ibld svg image, .placepic svg image { image-rendering: auto; }
 canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 92; background: none !important; }
+/* release several */
+.reltop { display: flex; align-items: center; gap: 8px; } .reltop .seg { margin-left: auto; } .reltop .mb { height: 32px; padding: 0 12px; }
+.relsel { padding: 5px 12px; border-radius: 8px; background: #5b4636; color: #fff; font: 800 14px var(--display); }
+.relgrid { padding: 10px; border-radius: 12px; background: #f3e7d6; min-height: 120px; align-content: start; }
+.relget { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: #fff6e2; } .relget b { font: 800 15px var(--display); color: var(--brown); white-space: nowrap; } .relget .rchips { flex-wrap: wrap; }
+.relnone { font-size: 12.5px; color: var(--brown-2, #8a6d55); }
+.relgrades { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; } .relgrades > span { font: 800 13px var(--display); color: var(--brown); width: 100%; } .relgrades .relg { flex: 1; }
+.relg { display: grid; justify-items: center; min-width: 54px; padding: 5px 6px; border: 0; border-radius: 9px; font: 800 12px var(--display); color: var(--brown); background: color-mix(in srgb, var(--gc) 22%, #fff); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--gc) 60%, #fff); }
+.relg small { font-size: 11px; opacity: .75; } .relg.on { background: var(--gc); color: #fff; } .relg:disabled { opacity: .4; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2516,7 +2525,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     }
     else if (sheetPage === "bye" && !inTeam) body = `${back("Say goodbye")}${mini}
       <p class="hint" style="margin:0">Sell it for coins, or release it for ${s.name} keepsakes (used to ascend).</p>
-      <div class="btns">${G.join("")}</div>`;
+      <div class="btns">${G.join("")}</div>
+      <button class="setrow" data-act="relopen:${m.uid}"><span>Release several ${s.name}s</span><b></b><i>›</i></button>`;
     else {
       const where = lead ? "Leader" : inTeam ? "Team" : (typeof isAway === "function" && isAway(m.uid)) ? "Away" : (typeof workingAt === "function" && workingAt(m.uid)) ? "Working" : "";
       const power = Math.round(atk(m) * 2 + def(m) * 1.5 + maxHp(m) / 2);
@@ -2840,11 +2850,45 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function goForKeepsakes(m, missing) {
     const free = x => x.uid !== m.uid && x.sp === m.sp && !S.team.includes(x.uid) && !x.lock && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid));
     const dup = S.mons.filter(free).sort((a, b) => a.q - b.q || a.lvl - b.lvl)[0];
-    if (dup) { view = "team"; teamTab = "team"; sheetUid = dup.uid; sheetPage = "bye"; confirmRelease = null; render();
-      toast(`${missing} more ${SP[m.sp].name} keepsake${missing > 1 ? "s" : ""} needed: release this one`); return; }
+    if (dup) { openRelease(m.sp, m.uid, missing); toast(`${missing} more ${SP[m.sp].name} keepsake${missing > 1 ? "s" : ""} needed`); return; }
     sheetUid = null; view = "shop"; shopTab = "market"; marketFocus = m.sp; showMap = false; render();
     setTimeout(() => { const r = $("mk-" + m.sp); if (r) r.scrollIntoView({ block: "center", behavior: "auto" }); }, 150); setTimeout(() => { marketFocus = null; }, 4000);
     toast(`No spare ${SP[m.sp].name}: buy one here, then release it for keepsakes`);
+  }
+  // ================= RELEASE SEVERAL =================
+  let rel = null;  // { sp, keep: uid not to offer, sel: [uids], sort, up, sure, back }
+  const relFree = (x, R) => x.sp === R.sp && x.uid !== R.keep && !S.team.includes(x.uid) && !x.lock && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid));
+  function openRelease(sp, keep, missing, pre) {
+    rel = { sp, keep, sel: [], sort: "grade", up: true, sure: false, back: sheetUid };
+    const pool = S.mons.filter(x => relFree(x, rel)).sort((a, b) => a.q - b.q || a.lvl - b.lvl);
+    if (pre) rel.sel = [pre];
+    else if (missing) { let got = 0; for (const x of pool) { if (got >= missing) break; rel.sel.push(x.uid); got += KEEPSAKES_BY_GRADE[x.q]; } }
+    sheetUid = null; view = "release"; render(); window.scrollTo(0, 0);
+  }
+  function pageRelease() {
+    const R = rel; if (!R) { view = "team"; return pageTeam(); }
+    const name = SP[R.sp].name, pool = S.mons.filter(x => relFree(x, R));
+    R.sel = R.sel.filter(u => pool.some(x => x.uid === u));
+    pool.sort((a, b) => (R.up ? 1 : -1) * (R.sort === "grade" ? (a.q - b.q || a.lvl - b.lvl) : (a.lvl - b.lvl || a.q - b.q)));
+    const picked = pool.filter(x => R.sel.includes(x.uid)), keeps = picked.reduce((a, x) => a + KEEPSAKES_BY_GRADE[x.q], 0), cores = picked.filter(x => x.q === 4).length * RAINBOW_STAR_CORES;
+    const gradeBtn = q => { const all = pool.filter(x => x.q === q), on = all.length && all.every(x => R.sel.includes(x.uid));
+      return `<button class="relg${on ? " on" : ""}" data-act="relgrade:${q}" style="--gc:${GRADES[q].c}" ${all.length ? "" : "disabled"} aria-label="${GRADES[q].name}">${GRADES[q].name}<small>${all.length}</small></button>`; };
+    return `<div class="sheethead"><button class="mb" data-act="relback" aria-label="Back">\u2039 Back</button><h3>Release ${name}s</h3><span class="shcount">${IC.keepsake || ""}${S.keepsakes[R.sp] || 0}</span></div>
+      <div class="reltop"><span class="relsel">Selected: ${picked.length}</span><span class="seg mini">${[["grade", "Grade"], ["level", "Level"]].map(([k, nm]) => `<button class="${R.sort === k ? "on" : ""}" data-act="relsort:${k}">${nm}</button>`).join("")}</span><button class="mb" data-act="relflip" aria-label="Flip order">${R.up ? "\u2191" : "\u2193"}</button></div>
+      ${pool.length ? `<div class="shgrid relgrid">${pool.map(x => `<button class="shtile${R.sel.includes(x.uid) ? " on" : ""}" data-act="relpick:${x.uid}" style="--gc:${GRADES[x.q].c}">${art(x.sp, x.evo, 48)}<span class="lv">Lv ${x.lvl}</span>${R.sel.includes(x.uid) ? '<i class="shck">\u2713</i>' : ""}</button>`).join("")}</div>`
+        : `<p class="hint">No spare ${name}s. Glumis in your team, locked, working or away can't be released here.</p>`}
+      <div class="relget"><b>You get:</b><span class="rchips">${keeps ? `<span class="rchip">${IC.keepsake || ""}${keeps} ${name} keepsake${keeps > 1 ? "s" : ""}</span>` : `<span class="relnone">nothing selected</span>`}${cores ? `<span class="rchip">${IC.core || IC.star}${cores} star cores</span>` : ""}</span></div>
+      <div class="relgrades"><span>Select by grade:</span>${[1, 2, 3, 4].map(gradeBtn).join("")}</div>
+      <button class="mb gold pbig${R.sure ? " sure" : ""}" data-act="relgo" ${picked.length ? "" : "disabled"} style="justify-self:center">${R.sure ? `Tap again to release ${picked.length}` : `Release ${picked.length || ""}`}</button>`;
+  }
+  function relDo() {
+    const R = rel; if (!R) return; const pool = S.mons.filter(x => relFree(x, R) && R.sel.includes(x.uid)); if (!pool.length) return;
+    if (!R.sure) { R.sure = true; render(); return; }
+    let k = 0, c = 0; for (const x of pool) { k += KEEPSAKES_BY_GRADE[x.q]; if (x.q === 4) c += RAINBOW_STAR_CORES; }
+    S.keepsakes[R.sp] = (S.keepsakes[R.sp] || 0) + k; if (c) S.starCores[R.sp] = (S.starCores[R.sp] || 0) + c;
+    S.mons = S.mons.filter(x => !R.sel.includes(x.uid)); R.sel = []; R.sure = false;
+    sfx("claim"); save(); toast(`Released ${pool.length}: +${k} ${SP[R.sp].name} keepsake${k > 1 ? "s" : ""}${c ? `, +${c} star cores` : ""}`);
+    if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
   function keepsakePopup(m, missing) {
     closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2], buys = Math.ceil(missing / per);
@@ -2992,7 +3036,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
-    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "shrine" ? pageShrine() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
@@ -3094,6 +3138,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
     else if (a === "rivalquick") quickRival(false);
+    else if (a === "relopen") { const m = mon(n); if (m) openRelease(m.sp, null, 0, m.uid); }
+    else if (a === "relpick") { if (rel) { rel.sure = false; const i = rel.sel.indexOf(n); if (i > -1) rel.sel.splice(i, 1); else rel.sel.push(n); render(); } }
+    else if (a === "relgrade") { if (rel) { rel.sure = false; const all = S.mons.filter(x => relFree(x, rel) && x.q === n).map(x => x.uid), on = all.every(u => rel.sel.includes(u));
+      rel.sel = on ? rel.sel.filter(u => !all.includes(u)) : [...new Set([...rel.sel, ...all])]; render(); } }
+    else if (a === "relsort") { if (rel) { rel.sort = arg; render(); } }
+    else if (a === "relflip") { if (rel) { rel.up = !rel.up; render(); } }
+    else if (a === "relgo") relDo();
+    else if (a === "relback") { const back = rel && (rel.keep || rel.back); rel = null; view = "team"; sheetUid = back && mon(back) ? back : null; sheetPage = "main"; render(); }
     else if (a === "openegg") { bagPick = null; hatchEgg(n); render(); }
     else if (a === "shrinepick") { shrineSure = false; const i = shrinePick.indexOf(n); if (i > -1) shrinePick.splice(i, 1); else if (shrinePick.length < 5 && mon(n) && shrineFree(mon(n))) shrinePick.push(n); else if (shrinePick.length >= 5) toast("All 5 slots are full"); render(); }
     else if (a === "shrinequick") { shrineSure = false; const pool = S.mons.filter(m => shrineFree(m) && !shrinePick.includes(m.uid)).sort((a, b) => a.q - b.q || a.lvl - b.lvl); while (shrinePick.length < 5 && pool.length) shrinePick.push(pool.shift().uid); render(); }
