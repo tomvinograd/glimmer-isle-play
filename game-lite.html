@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794869822;</script>
+<script>window.GAME_BUILD = 1794870663;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1729,7 +1729,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 
   // ---------- catching ----------
   const ringScale = () => { const T = 1300, ph = ((performance.now() - (E ? E.t0 : 0)) % (2 * T)) / T, p = ph < 1 ? ph : 2 - ph; return 1.7 - p * 1.2; };
-  function chance(w, jarK, timing = 1) { const J = JARS.find(j => j.k === jarK); return Math.min(.98, Math.max(.02, J.base * TIER[SP[w.sp].tier].catch * GRADES[w.q].catch * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1) * timing)); }
+  const RARE_JAR = { plain: .03, bright: .06, star: .3 };  // Gold and Rainbow: base catch chance by jar
+  function chance(w, jarK, timing = 1) { const J = JARS.find(j => j.k === jarK);
+    const base = w.q >= 3 ? RARE_JAR[jarK] * (SP[w.sp].tier === 3 ? .6 : 1) : J.base * TIER[SP[w.sp].tier].catch * GRADES[w.q].catch;
+    return Math.min(.98, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1) * timing)); }
   async function throwJar(autoThrow) {
     const w = E && E.type === "wild" ? E.list[E.i] : null; if (!w || busy) return;
     if (tough(w) && !E.fought) { toast("Battle it first"); return; }
