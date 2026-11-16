@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794839862;</script>
+<script>window.GAME_BUILD = 1794840002;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1190,7 +1190,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     return null;
   }
   let autoStat = { caught: 0 }, showAuto = false, autoLock = false, autoSession = false, autoNext = 0, autoSeenE = null;
-  const AUTO_STEP_MS = 1500, AUTO_LOOK_MS = 1800;  // Auto's pace: time between steps, and time to look at what appeared
+  const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // Auto's pace: time between steps, and time to look at what appeared
   let S = fresh(), view = "explore", E = null, BT = null, busy = false, db = null, uid = null, saveTimer = null, saving = false, pendingSave = false, saveNote = "", confirmRelease = null, showMap = false;
   function readLocal() { try { const j = localStorage.getItem(LS); return j ? JSON.parse(j) : null; } catch { return null; } }
   function save() { S.t = Date.now(); try { localStorage.setItem(LS, JSON.stringify(S)); } catch {} if (!db || !uid) return; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 1500); }
@@ -1227,8 +1227,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
   const lockText = i => `${ZONES[i].name} opens when you catch every Glumi in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
   const bossReady = i => !S.zones[i].cleared && (zoneAll(i) || S.zones[i].steps >= BOSS_STEPS);
-  const multOpen = M => S.xlvl >= M.lvl;
-  const curM = () => MULTS.find(x => x.m === S.mult) || MULTS[0];
+  const multOpen = M => S.glow >= M.m;  // a multiplier is there when you have the glow for one step with it
+  const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return multOpen(want) ? want : [...MULTS].reverse().find(x => x.m <= want.m && multOpen(x)) || MULTS[0]; };
   function glowNextText() { if (S.glow >= glowCap()) return "Full"; const left = Math.max(1, Math.ceil((GLOW_EVERY - (Date.now() - S.glowT)) / 1000)); return `+1 in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
   function regen() { const now = Date.now(); if (S.glow >= glowCap()) { S.glowT = now; return; } const n = Math.floor((now - S.glowT) / GLOW_EVERY); if (n > 0) { S.glow = Math.min(glowCap(), S.glow + n); S.glowT = S.glow >= glowCap() ? now : S.glowT + n * GLOW_EVERY; } }
   function newMon(sp, lvl, q, evo = 0) { const m = { uid: 0, sp, lvl, q, evo, hp: 0 }; m.hp = maxHp(m); return m; }
@@ -2662,9 +2662,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "travel") travelTo(n);
     else if (a === "zone") { if (zoneOpen(n)) { S.zone = n; showMap = false; view = "explore"; save(); render(); initProps(); } }
     else if (a === "step") step();
-    else if (a === "mult") { const open = MULTS.filter(multOpen), i = open.findIndex(x => x.m === +S.mult), nextLock = MULTS.find(x => !multOpen(x));
+    else if (a === "mult") { const open = MULTS.filter(multOpen), i = open.findIndex(x => x.m === curM().m), nextLock = MULTS.find(x => !multOpen(x));
       S.mult = open[(i + 1) % open.length].m; save(); renderActions();
-      toast(open.length < 2 ? `x${nextLock.m} opens at explorer level ${nextLock.lvl}` : `x${S.mult}: ${S.mult} glow a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} at level ${nextLock.lvl}` : ""}`); }
+      toast(open.length < 2 ? `x${nextLock.m} needs ${nextLock.m} glow` : `x${S.mult}: ${S.mult} glow a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${nextLock.m} glow` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
     else if (a === "backtocatch") { view = "explore"; if (E) E.t0 = performance.now(); render(); window.scrollTo(0, 0); }
@@ -2751,7 +2751,7 @@ if (p === undefined) return;
 
   // ================= BOOT =================
   const local = migrate(readLocal()); if (local) S = local;
-  S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult && multOpen(x))) S.mult = 1;
+  S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult)) S.mult = 1;
   RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM);
   S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
   render(); if (S.started) initProps();
