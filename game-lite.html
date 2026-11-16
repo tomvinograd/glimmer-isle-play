@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794862017;</script>
+<script>window.GAME_BUILD = 1794862637;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1073,6 +1073,29 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   @keyframes revburst { from { transform: scale(.4); opacity: 1; } to { transform: scale(3.2); opacity: 0; } }
   .pin .silh { background: #3f2d22; }
   .revhint { margin: 0; text-align: center; font: 900 15px var(--display); color: #d9822b; }
+  /* grade cards from pictures */
+  .cards .gcard.q1, .cards .tile.q1 { background: var(--card-q1) center/cover no-repeat; }
+  .cards .gcard.q2, .cards .tile.q2 { background: var(--card-q2) center/cover no-repeat; }
+  .cards .gcard.q3, .cards .tile.q3 { background: var(--card-q3) center/cover no-repeat; }
+  .cards .gcard.q4 { background: var(--card-q4) center/cover no-repeat; }
+  .cards .tile.q4 { background: var(--card-q4) center/cover no-repeat padding-box, linear-gradient(var(--ra, 0deg), #ff8a8a, #ffd36b, #8ae68a, #7fd4ff, #c79bff, #ff8a8a) border-box; }
+  /* islander with a speech bubble */
+  .islander { display: flex; align-items: end; gap: 8px; }
+  .islander img { width: 64px; height: auto; flex: none; filter: drop-shadow(0 3px 4px rgba(60,40,20,.25)); }
+  .islander p { position: relative; margin: 0 0 18px; padding: 9px 12px; border-radius: 12px; background: #fff; color: var(--brown); font-weight: 700; font-size: 13.5px; line-height: 1.3; box-shadow: 0 2px 8px rgba(91,70,54,.15); }
+  .islander p::before { content: ""; position: absolute; left: -7px; bottom: 12px; border: 7px solid transparent; border-right-color: #fff; border-left: 0; }
+  /* world map */
+  .wmap { position: relative; width: 100%; max-width: 440px; margin: 0 auto; aspect-ratio: 768 / 1376; border-radius: 12px; background: var(--wmap) center/cover; box-shadow: 0 4px 14px rgba(60,40,20,.2); }
+  .wpt { position: absolute; transform: translate(-50%, -50%); border: 0; border-radius: 9px; padding: 4px 9px 5px; background: rgba(255,255,255,.93); color: var(--brown); display: grid; justify-items: center; box-shadow: 0 2px 6px rgba(60,40,20,.3); }
+  .wpt b { font: 800 12.5px/1.1 var(--display); display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+  .wpt b svg { width: 12px; height: 12px; }
+  .wpt small { font-size: 10.5px; font-weight: 700; color: #8a6d55; }
+  .wpt.locked { background: rgba(70,52,40,.82); color: #fff; }
+  .wpt.locked small { color: #e8d8c6; }
+  .wpt.here { outline: 3px solid #f5b23c; }
+  .wpt .wbal { position: absolute; top: -26px; width: 26px; height: 26px; }
+  .wpt .wbal svg { width: 26px; height: 26px; }
+  .splogo { width: min(82vw, 340px); height: auto; filter: drop-shadow(0 3px 6px rgba(60,40,20,.35)); }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1291,6 +1314,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const ART = (window.GLIMMER_ART || {});
   // pictures for icons (art/ui-*.webp): wrapped in the drawn icon's 24x24 SVG shape so sizes and tweaks still apply
   const artIcon = k => `<svg viewBox="0 0 24 24"><image href="${ART[k]}" x="0" y="0" width="24" height="24" preserveAspectRatio="xMidYMid meet"/></svg>`;
+  // grade cards as CSS variables; the logo on the loading screen
+  { const C = { 1: "card-blue", 2: "card-purple", 3: "card-gold", 4: "card-rainbow" }; let n = 0;
+    for (const q in C) if (ART[C[q]]) { document.documentElement.style.setProperty("--card-q" + q, `url(${ART[C[q]]})`); n++; }
+    if (n === 4) document.body.classList.add("cards");
+    if (ART["map-world"]) document.documentElement.style.setProperty("--wmap", `url(${ART["map-world"]})`);
+    const t = document.querySelector("#splash .sp-title h1"); if (t && ART.logo) t.innerHTML = `<img class="splogo" src="${ART.logo}" alt="Glimmer Isle">`; }
   const ICON_ART = { glow: "ui-energy", coin: "ui-coin", leaf: "ui-leaf", fruit: "ui-moonfruit", treat: "ui-treat", keepsake: "ui-keepsake", core: "ui-star-core",
     lock: "ui-lock", crown: "ui-crown", gear: "ui-settings", map: "ui-map", lantern: "ui-lantern", sword: "ui-sword", flag: "ui-flag", auto: "ui-auto", fast: "ui-speed", home: "ui-home", chest: "item-chest" };
   Object.assign(ICON_ART, { tasks: "ui-tasks", bag: "ui-backpack", clock: "ui-clock", book: "ui-book" });
@@ -2340,6 +2369,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     sfx("claim"); save(); render(); toast(`Offered ${picked.length}: +${Object.values(G.keeps).reduce((a, b) => a + b, 0)} keepsakes${G.shards ? `, +${G.shards} star shard${G.shards > 1 ? "s" : ""}` : ""}`);
   }
   // ================= SKY ENTRANCE =================
+  const nightImg = ART["bg-night"] ? Object.assign(new Image(), { src: ART["bg-night"] }) : null;  // the night-sky painting for the falling-stars entrance, loaded at start
   const GRADE_TRAIL = ["#6fd38a", "#5aa8ff", "#a67cff", "#ffc94a", "#ff9ad1"];  // Green, Blue, Purple, Gold, Rainbow
   function skyIntro(list) {
     return new Promise(done => {
@@ -2379,6 +2409,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
           ctx.save(); ctx.translate(bx, by); ctx.scale(zoom, zoom); ctx.translate(-bx, -by);
           const sky = ctx.createRadialGradient(W * .7, H * .5, 0, W * .6, H * .5, Math.max(W, H)); sky.addColorStop(0, "#43246f"); sky.addColorStop(.55, "#24113f"); sky.addColorStop(1, "#160a2a");
           ctx.fillStyle = sky; ctx.fillRect(-W, -H, W * 3, H * 3);
+          if (nightImg && nightImg.complete && nightImg.naturalWidth) { const sc = Math.max(W / nightImg.naturalWidth, H / nightImg.naturalHeight), iw = nightImg.naturalWidth * sc, ih = nightImg.naturalHeight * sc; ctx.drawImage(nightImg, (W - iw) / 2, (H - ih) / 2, iw, ih); }
           for (const st of stars) { ctx.globalAlpha = .35 + .55 * (.5 + .5 * Math.sin(st.ph + t / 1000 * st.sp)); ctx.fillStyle = "#dfe6ff"; ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 6.28); ctx.fill(); }
           ctx.globalAlpha = 1;
           // comets
@@ -2471,7 +2502,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     keepMon(m); const B = bestQ(); B[m.sp] = Math.max(B[m.sp] || 0, m.q); save();
     const ov = document.createElement("div"); ov.className = "hatch"; ov.style.setProperty("--c", EGG_COL[t][1]);
     const crack = `<svg class="cracks" viewBox="0 0 100 120"><path class="k1" d="M50 40 46 52 54 58 48 70"/><path class="k2" d="M48 70 36 76 30 70M54 58 66 62 72 56"/><path class="k3" d="M48 70 52 84 44 94M66 62 70 78 80 82"/></svg>`;
-    ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${eggBig(t, "h1")}</div><div class="half bot">${eggBig(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">Tap to hatch faster</p>`;
+    ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${eggBig(t, "h1")}</div><div class="half bot">${eggBig(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">Tap to hatch faster</p>`; if (ART["bg-hatch"]) ov.style.background = `url(${ART["bg-hatch"]}) center/cover`;
     document.body.appendChild(ov);
     let shown = false; const timers = [];
     const card = () => { if (shown) return; shown = true; timers.forEach(clearTimeout); sfx("claim");
@@ -2542,7 +2573,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${art(m.sp, m.evo, 78)}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
   }
   function monTile(m) {
-    return `<button class="tile" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${art(m.sp, m.evo, 66)}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
+    return `<button class="tile q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${art(m.sp, m.evo, 66)}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
   }
   function pageTeam() {
     const inTeam = m => S.team.includes(m.uid) ? 1 : 0;
@@ -2682,6 +2713,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const reqMatches = r => S.mons.filter(m => m.sp === r.sp && m.q >= r.minQ && m.lvl >= r.minLvl && !S.team.includes(m.uid));
   const reqWant = r => [r.minQ > 1 ? `${GRADES[r.minQ].name} or better` : "Any grade", r.minLvl > 1 ? `level ${r.minLvl}+` : "any level"].join(" · ");
   const reqReward = r => r.reward.k === "fruit" ? `${IC.fruit}<b>${r.reward.n}</b>` : `${IC.glow}<b>${r.reward.n}</b>`;
+  const islander = say => ART["tr-islander"] ? `<div class="islander"><img src="${ART["tr-islander"]}" alt=""><p>${say}</p></div>` : `<p class="hint" style="margin:0">${say}</p>`;
   function pageRequests(tabs) {
     fillRequests();
     const head = `<div class="head"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
@@ -2690,6 +2722,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (r && !r.done) {
       const got = reqMatches(r);
       return `${head}<div class="sheethead"><button class="mb" data-act="reqpick:" aria-label="Back">‹ Back</button><h3>Request</h3><span></span></div>
+        ${islander(`I wish for a ${SP[r.sp].name}! Will you give me one?`)}
         <div class="minihero"><div class="hero" style="--gc:${GRADES[r.minQ].c}">${art(r.sp, 0, 74)}</div><div><div class="nmrow">${SP[r.sp].name}</div>
           <small class="reqtxt">Wanted: ${reqWant(r)}</small><span class="reward">Reward ${reqReward(r)}</span></div></div>
         ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Glumis in your team are not shown.</p>
@@ -2700,7 +2733,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const rows = S.requests.map((q, i) => q.done
       ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>New request soon</b><small>In ${Math.max(1, Math.ceil((q.readyAt - Date.now()) / 60000))} min</small></span><span></span></div>`
       : `<button class="srow req" data-act="reqpick:${i}"><span class="ic">${art(q.sp, 0, 32)}</span><span class="txt"><b>${SP[q.sp].name}</b><small>${reqWant(q)}${reqMatches(q).length ? " · you have one" : ""}</small></span><span class="reward">${reqReward(q)}</span></button>`).join("");
-    return `${head}<p class="hint" style="margin:0">Islanders ask for Glumis and pay in moonfruit or energy.</p>
+    return `${head}${islander("Can you help us? We pay in moonfruit or energy for the Glumis we wish for.")}
       <div class="slist">${rows}</div>`;
   }
   // ================= HOME ISLAND: Glumis work and make resources =================
@@ -3043,7 +3076,16 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <path d="M8 105 Q20 70 45 66 T70 40 Q80 22 105 12" stroke="${mix(Z.sky[0], -.05)}" stroke-width="6" fill="none" opacity=".75"/>
       ${[[10, 12], [88, 10], [6, 48], [94, 44], [36, 86], [62, 90], [90, 84], [12, 92]].map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="${4 + (i % 3)}" fill="${mix(Z.far, -.1)}" opacity=".85"/><circle cx="${x + 3}" cy="${y - 2}" r="${3 + (i % 2)}" fill="${Z.far}"/>`).join("")}</svg>`;
   }
+  // world map islands (percent of the painting), zone order
+  const WORLD_PTS = [[27, 12], [70, 22], [30, 33], [73, 43], [33, 54], [72, 63], [29, 73], [61, 86]];
+  function pageWorld() {
+    const pts = ZONES.map((Z, i) => { const p = WORLD_PTS[i] || [50, 50], open = zoneOpen(i);
+      return `<button class="wpt${open ? "" : " locked"}${i === S.zone ? " here" : ""}" data-act="atlaszone:${i}" style="left:${p[0]}%;top:${p[1]}%">${i === S.zone ? `<span class="wbal">${IC.balloon}</span>` : ""}<b>${open ? "" : IC.lock}${Z.name}</b><small>${caughtIn(i)}/${Z.sp.length} caught</small></button>`; }).join("");
+    return `<div class="atlas"><div class="head"><h2>Atlas</h2><button class="round" data-act="map" aria-label="Back to the path" style="font-size:16px">Back</button></div>
+      <p class="hint" style="margin:0">Tap an island to see its Glumis</p><div class="wmap">${pts}</div></div>`;
+  }
   function pageAtlas() {
+    if (atlasZone === null && ART["map-world"]) return pageWorld();
     const z = atlasZone ?? S.zone, Z = ZONES[z], st = S.zones[z], open = zoneOpen(z), got = caughtIn(z);
     const cards = ZONES.map((ZZ, i) => `<button class="zcard${i === z ? " sel" : ""}" data-act="atlaszone:${i}"><span class="zpic" style="--sky:${ZZ.sky[0]};--gr:${ZZ.ground}${ART["bg-" + i] ? `;background:url(${ART["bg-" + i]}) center 55%/cover` : ""}">
       ${i === S.zone ? `<span class="here">${IC.balloon}</span>` : ""}
@@ -3065,7 +3107,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <span class="stats"><span>${status}</span></span>${s0.evo ? `<div class="forms"><span>${has0 ? "✓" : "○"} ${known ? s0.name : "???"}</span><span>→</span><span>${has1 ? "✓ " + s0.evo : "○ Evolved form"}</span></div>` : ""}</div></div>`;
     }
     return `<div class="atlas">
-      <div class="head"><h2>Atlas</h2><button class="round" data-act="map" aria-label="Back to the path" style="font-size:16px">Back</button></div>
+      <div class="head"><h2>Atlas</h2><span style="display:flex;gap:6px">${ART["map-world"] ? `<button class="round" data-act="atlasworld" style="font-size:16px">World</button>` : ""}<button class="round" data-act="map" aria-label="Back to the path" style="font-size:16px">Back</button></span></div>
       <div class="zcards">${cards}</div>
       <div class="head" style="align-items:baseline"><h3 style="margin:0;color:#5b3f2a">${Z.name}</h3><span class="stats"><span>Wild Lv ${Z.lv[0]}-${Z.lv[1]}</span><span>${got}/${Z.sp.length} caught</span></span></div>
       ${open ? `<div class="mtrack">${track}</div>${gradeBlock(z)}` : ""}
@@ -3129,7 +3171,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     $("arena").hidden = !BT; if (BT) renderArena();
     const onStage = S.started && view === "explore" && !showMap && !showAuto;
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
-    if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
+    if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${view === "shrine" && ART["bg-star"] ? ART["bg-star"] : ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
     else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
@@ -3305,7 +3347,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (arg !== "shrine") shrineSure = false;
       view = arg; settingsPage = null; bagPick = null; showMap = false; showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
     else if (a === "map") { if (!E && !BT && !busy) { showMap = false; view = view === "atlas" ? "explore" : "atlas"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); } }
-    else if (a === "atlaszone") { atlasZone = n; atlasPin = null; render(); }
+    else if (a === "atlaszone") { atlasZone = n; atlasPin = null; render(); window.scrollTo(0, 0); }
+    else if (a === "atlasworld") { atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); }
     else if (a === "atlaspin") { if (S.reveal && S.reveal.includes(n)) { revealPin(n); return; } atlasPin = atlasPin === n ? null : n; render(); }
     else if (a === "revealback") { revealTrip = false; view = "explore"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); }
     else if (a === "claim") {
