@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794861257;</script>
+<script>window.GAME_BUILD = 1794861890;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1059,6 +1059,19 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .ltiers small { font: 800 9.5px var(--display); color: var(--brown); }
   .ltiers .next { opacity: .38; filter: grayscale(.6); }
   .ltiers .cur small { color: #d9822b; }
+  /* map silhouettes and the reveal of a newly caught Glumi */
+  .pin.unknown > span, .pin.reveal > span { background: #3f2d22; }
+  .pin.unknown > span svg, .pin.unknown > span img, .pin.reveal > span svg, .pin.reveal > span img, .pin .silh svg, .pin .silh img { filter: brightness(0) opacity(.45); }
+  .pin.reveal { background: #6b4a33; z-index: 3; animation: revpulse 1s ease-in-out infinite; }
+  @keyframes revpulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,.95), 0 5px 8px rgba(40,25,10,.35); } 60% { box-shadow: 0 0 0 14px rgba(255,255,255,0), 0 5px 8px rgba(40,25,10,.35); } }
+  .tapme { position: absolute; z-index: 4; transform: translate(-50%, -64px); padding: 3px 9px; border-radius: 8px; background: #fff; color: #d9822b; font: 900 13px var(--display); box-shadow: 0 2px 6px rgba(40,25,10,.3); pointer-events: none; animation: tapbob .8s ease-in-out infinite alternate; }
+  @keyframes tapbob { to { transform: translate(-50%, -72px); } }
+  .pin.pop { animation: pinpop .75s cubic-bezier(.3,1.6,.5,1); z-index: 3; }
+  @keyframes pinpop { 0% { transform: rotate(-45deg) scale(.55); filter: brightness(2.6); } 55% { transform: rotate(-45deg) scale(1.28); filter: brightness(1.4); } 100% { transform: rotate(-45deg) scale(1); filter: none; } }
+  .revburst { position: absolute; z-index: 2; width: 70px; height: 70px; margin: -35px 0 0 -35px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,214,90,.8) 40%, rgba(255,214,90,0) 70%); animation: revburst .8s ease-out forwards; }
+  @keyframes revburst { from { transform: scale(.4); opacity: 1; } to { transform: scale(3.2); opacity: 0; } }
+  .pin .silh { background: #3f2d22; }
+  .revhint { margin: 0; text-align: center; font: 900 15px var(--display); color: #d9822b; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1414,9 +1427,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function regen() { const now = Date.now(); if (S.glow >= glowCap()) { S.glowT = now; return; } const n = Math.floor((now - S.glowT) / GLOW_EVERY); if (n > 0) { S.glow = Math.min(glowCap(), S.glow + n); S.glowT = S.glow >= glowCap() ? now : S.glowT + n * GLOW_EVERY; } }
   function newMon(sp, lvl, q, evo = 0) { const m = { uid: 0, sp, lvl, q, evo, hp: 0 }; m.hp = maxHp(m); return m; }
   function keepMon(m) {
+    const fromWild = m.wild;
     m.lvl = 1; m.asc = 0;  // every Glumi you get starts at level 1
     delete m.wild; m.uid = S.nextUid++; m.hp = maxHp(m); S.mons.push(m); S.caught[key(m.sp, m.evo)] = 1; S.seen[key(m.sp, m.evo)] = 1;
-    ZONES.forEach((z, i) => { if (!z.sp.includes(m.sp)) return; const was = zoneAll(i); S.zones[i].caught[m.sp] = 1;
+    ZONES.forEach((z, i) => { if (!z.sp.includes(m.sp)) return; const was = zoneAll(i);
+      if (fromWild && !S.zones[i].caught[m.sp]) { S.reveal = S.reveal || []; if (!S.reveal.includes(m.sp)) S.reveal.push(m.sp); }
+      S.zones[i].caught[m.sp] = 1;
       if (!was && zoneAll(i) && ZONES[i + 1] && !S.zones[i + 1].steps) banners.push(`${ZONES[i + 1].name} open!`); });
     if (S.team.length < slots()) { S.team.push(m.uid); return "team"; } return "den";
   }
@@ -3000,7 +3016,21 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <p class="hint">When the chosen jar runs out, Auto uses a cheaper one. It never spends energy or coins on stalls, and it pauses at zone guardians and when energy or jars run out.</p>`;
   }
   // ================= ATLAS =================
-  let atlasZone = null, atlasPin = null;
+  let atlasZone = null, atlasPin = null, revealAnim = null, revealTrip = false;
+  // a newly caught kind: take the player to its zone map to tap its silhouette
+  setInterval(() => {
+    if (!S.started || !S.reveal || !S.reveal.length || view !== "explore" || showMap || showAuto || E || BT || busy) return;
+    if (document.querySelector(".shade, #skyfx, .banner, .sheet")) return;
+    const z = ZONES.findIndex(Z => Z.sp.includes(S.reveal[0])); if (z < 0) { S.reveal.shift(); return; }
+    view = "atlas"; atlasZone = z; atlasPin = null; revealTrip = true; render(); window.scrollTo(0, 0);
+    setTimeout(() => { const m = document.querySelector(".zmap"); if (m) m.scrollIntoView({ block: "center" }); }, 60);
+  }, 500);
+  function revealPin(sp) {
+    S.reveal = S.reveal.filter(x => x !== sp); revealAnim = sp; atlasPin = sp; save(); sfx("claim"); render();
+    toast(`${SP[sp].name} is on your map!`); setTimeout(() => { if (revealAnim === sp) revealAnim = null; }, 900);
+    const z = ZONES.findIndex(Z => Z.sp.includes(sp));
+    if (S.auto && !ZONES[z].sp.some(x => S.reveal.includes(x))) setTimeout(() => { if (revealTrip && view === "atlas") { revealTrip = false; view = "explore"; atlasZone = null; atlasPin = null; render(); } }, 1800);
+  }
   const PIN_POS = [[26, 30], [72, 24], [48, 50], [22, 70], [76, 62]];
   const REWARD = { coins: z => [`${15 * (z + 1)} coins`, IC.coin], plain: () => ["3 plain jars", IC.jar(JARS[0].c)], glow: () => ["20 energy", IC.glow], bright: () => ["1 bright jar", IC.jar(JARS[1].c)], fruit: () => ["1 moonfruit", IC.fruit] };
   const milestones = z => { const n = ZONES[z].sp.length; return [...Array.from({ length: n }, (_, k) => ({ need: k + 1, kind: ["coins", "plain", "glow", "bright"][k % 4] })), { need: "boss", kind: "fruit" }]; };
@@ -3020,10 +3050,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const ms = milestones(z), claimed = st.claimed || 0;
     const track = ms.map((m, k) => { const done = k < claimed, can = !done && k === claimed && reached(z, m), [label, icon] = REWARD[m.kind](z);
       return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="claim:${z}" ${can ? "" : "disabled"} aria-label="${label}">${done ? IC.star : icon}<small>${m.need === "boss" ? "Guardian" : m.need + " caught"}</small></button>`; }).join("");
-    const pin = (sp, [x, y]) => { const c = st.caught[sp] || S.caught[key(sp, 0)], seen = S.seen[key(sp, 0)], cls = c ? "caught" : seen ? "seen" : "unknown";
-      return `<button class="pin ${cls}${atlasPin === sp ? " sel" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${seen || c ? SP[sp].name : "Unknown Glumi"}"><span>${seen || c ? art(sp, 0, 50) : "?"}</span></button>`; };
+    const waiting = sp => S.reveal && S.reveal.includes(sp);
+    const pin = (sp, [x, y]) => { const c = (st.caught[sp] || S.caught[key(sp, 0)]) && !waiting(sp), seen = S.seen[key(sp, 0)], cls = waiting(sp) ? "reveal" : c ? "caught" : seen ? "seen" : "unknown";
+      return `<button class="pin ${cls}${atlasPin === sp ? " sel" : ""}${revealAnim === sp ? " pop" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${c ? SP[sp].name : waiting(sp) ? "New Glumi: tap to reveal" : "Not caught yet"}"><span>${art(sp, 0, 50)}</span></button>${waiting(sp) ? `<span class="tapme" style="left:${x}%;top:${y}%">Tap!</span>` : ""}${revealAnim === sp ? `<span class="revburst" style="left:${x}%;top:${y}%"></span>` : ""}`; };
     const bossSeen = S.seen[key(Z.boss, 0)], bossCls = st.cleared ? "boss caught" : bossReady(z) ? "boss" : "boss locked";
-    const bossPin = `<button class="pin ${bossCls}${atlasPin === Z.boss ? " sel" : ""}" data-act="atlaspin:${Z.boss}" style="left:50%;top:84%" aria-label="Guardian"><span>${bossSeen || st.cleared ? art(Z.boss, 0, 62) : IC.crown}</span></button>`;
+    const bossPin = `<button class="pin ${bossCls}${atlasPin === Z.boss ? " sel" : ""}" data-act="atlaspin:${Z.boss}" style="left:50%;top:84%" aria-label="Guardian"><span class="${st.cleared ? "" : "silh"}">${art(Z.boss, 0, 62)}</span></button>`;
     let info = "";
     if (atlasPin !== null) {
       const sp = atlasPin, s0 = SP[sp], boss = s0.tier === 3, has0 = S.caught[key(sp, 0)], has1 = s0.evo && S.caught[key(sp, 1)], known = has0 || S.seen[key(sp, 0)];
@@ -3037,6 +3068,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <div class="zcards">${cards}</div>
       <div class="head" style="align-items:baseline"><h3 style="margin:0;color:#5b3f2a">${Z.name}</h3><span class="stats"><span>Wild Lv ${Z.lv[0]}-${Z.lv[1]}</span><span>${got}/${Z.sp.length} caught</span></span></div>
       ${open ? `<div class="mtrack">${track}</div>${gradeBlock(z)}` : ""}
+      ${Z.sp.some(sp => S.reveal && S.reveal.includes(sp)) ? `<p class="revhint">New Glumi caught! Tap its silhouette on the map</p>`
+        : revealTrip ? `<button class="big2 gold" data-act="revealback">${IC.run}Back to the path<small>Keep exploring ${ZONES[S.zone].name}</small></button>` : ""}
       <div class="zmap">${zoneMapSVG(Z)}${Z.sp.map((sp, k) => pin(sp, PIN_POS[k])).join("")}${bossPin}</div>
       ${info || `<p class="hint" style="margin:0">Tap a pin to see a Glumi. Gold pins are caught.</p>`}
       ${open ? (z === S.zone ? `<button class="big2" disabled>${IC.balloon}You are here<small>Walk the path to find these Glumis</small></button>`
@@ -3272,7 +3305,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       view = arg; settingsPage = null; bagPick = null; showMap = false; showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
     else if (a === "map") { if (!E && !BT && !busy) { showMap = false; view = view === "atlas" ? "explore" : "atlas"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); } }
     else if (a === "atlaszone") { atlasZone = n; atlasPin = null; render(); }
-    else if (a === "atlaspin") { atlasPin = atlasPin === n ? null : n; render(); }
+    else if (a === "atlaspin") { if (S.reveal && S.reveal.includes(n)) { revealPin(n); return; } atlasPin = atlasPin === n ? null : n; render(); }
+    else if (a === "revealback") { revealTrip = false; view = "explore"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); }
     else if (a === "claim") {
       const z = n, ms = milestones(z), k = S.zones[z].claimed || 0, m = ms[k];
       if (m && reached(z, m)) { S.zones[z].claimed = k + 1; const g = { coins: () => S.coins += 15 * (z + 1), plain: () => S.jars.plain += 3, glow: () => S.glow += 20, bright: () => S.jars.bright += 1, fruit: () => S.fruit += 1 }; g[m.kind](); save(); toast("Got " + REWARD[m.kind](z)[0]); render(); }
