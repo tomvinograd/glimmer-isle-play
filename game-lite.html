@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794868693;</script>
+<script>window.GAME_BUILD = 1794868765;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2252,7 +2252,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   let arenaSub = "hub", gymZ = 0, gymD = 0, prep = null;
   function openPrep(p) { prep = p; arenaSub = "prep"; render(); window.scrollTo(0, 0); }
-  function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward, T.energy], quick: gymBeat(z, d, i), back: "gym" }); }
+  function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward, T.energy], quick: true, back: "gym" }); }
   function prepDuel() { const D = duelState(); if (D.left <= 0) { toast("No duels left today"); return; } openPrep({ mode: "duel", title: "Daily Duel", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "duels" }); }
   function prepTower() { const f = (S.tower || 0) + 1; openPrep({ mode: "tower", f, title: `Cloud Climb · Floor ${f}`, name: `Floor ${f} climber`, color: "#9fd6ff", foes: towerFoes(f), rewards: climbRewards(f), quick: true, back: "tower" }); }
   function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
