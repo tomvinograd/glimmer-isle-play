@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794848642;</script>
+<script>window.GAME_BUILD = 1794849217;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1031,6 +1031,15 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .hart > * { filter: drop-shadow(0 8px 10px rgba(40,30,20,.25)); }
 .binfo .mb { margin-left: auto; }
 .btile svg[viewBox="0 0 100 120"] { width: 34px; height: 40px; }
+/* pictures from the asset sheets */
+.hegg .half img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.gbadge { width: 36px; height: 36px; padding: 0; overflow: hidden; } .gbadge img { width: 100%; height: 100%; object-fit: contain; }
+.gbadge:not(.done) img { filter: grayscale(1) opacity(.45); } .gbadge.done { background: #fff6d8; }
+.drank.pic { background: none; } .drank.pic svg { width: 54px; height: 54px; }
+.trimg { display: block; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; }
+.trainer .trimg { height: auto; }
+.trainer.me { width: 96px; } .trainer.foe { width: 72px; }
+.ibld svg image, .placepic svg image { image-rendering: auto; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1255,6 +1264,14 @@ nav .navwide .bang { top: 4px; right: 6px; }
   for (const k in ICON_ART) if (ART[ICON_ART[k]]) IC[k] = artIcon(ICON_ART[k]);
   if (ART["ui-book"]) TABI.book = artIcon("ui-book");
   if (ART["ui-map"]) TABI.atlas = artIcon("ui-map");
+  Object.assign(ICON_ART, { run: "ui-walk", shield: "ui-shield", arena: "ui-arena", gift: "ui-gift", sound: "ui-sound", menu: "ui-menu" });
+  for (const k of ["run", "shield", "arena", "gift", "sound", "menu", "auto", "fast", "flag", "sword", "lantern", "home"]) if (ART[ICON_ART[k]]) IC[k] = artIcon(ICON_ART[k]);
+  if (ART["ui-shop"]) TABI.shop = artIcon("ui-shop");
+  if (ART["ui-home"]) TABI.home = artIcon("ui-home");
+  if (ART["ui-glumis"]) TABI.team = artIcon("ui-glumis");
+  { const JAR_ART = { [JARS[0].c]: "item-jar-plain", [JARS[1].c]: "item-jar-bright", [JARS[2].c]: "item-jar-star" }, drawnJar = IC.jar;
+    IC.jar = c => ART[JAR_ART[c]] ? artIcon(JAR_ART[c]) : drawnJar(c); }
+  const EGG_ART = { 1: "egg-blue", 2: "egg-purple", 3: "egg-gold" };
   const DRAGON_SLOTS = [2, 14, 20];  // the dragon families keep their drawn dragons until their art exists
   function art(sp, evo, size = 76) {
     const k = String(sp).padStart(2, "0") + "-" + (evo ? 1 : 0);
@@ -1651,6 +1668,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     pouch: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="90" rx="38" ry="7" fill="#6b4a2a" opacity=".3"/><path d="M38 40c-16 14-20 44 22 48 42-4 38-34 22-48z" fill="#c9935f" stroke="#7a5638" stroke-width="3" stroke-linejoin="round"/><path d="M44 30c6 6 26 6 32 0l-6 12H50z" fill="#b07a48" stroke="#7a5638" stroke-width="3" stroke-linejoin="round"/><path d="M42 42h36" stroke="#7a5638" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="64" r="11" fill="#ffd13b" stroke="#c4901a" stroke-width="3"/><path d="M60 58v12" stroke="#c4901a" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="86" r="7" fill="#ffd13b" stroke="#c4901a" stroke-width="2"/><circle cx="88" cy="84" r="6" fill="#ffd13b" stroke="#c4901a" stroke-width="2"/></svg>',
     crystal: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="88" rx="40" ry="8" fill="#3d8fb0" opacity=".3"/><path d="M58 86l-6-50 10-24 10 24-6 50z" fill="#7fe7ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M40 86l-12-34 6-14 12 14 4 34z" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M76 86l4-30 12-12 6 16-10 26z" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M62 18l-3 50" stroke="#e8fbff" stroke-width="3" stroke-linecap="round"/></svg>',
   };
+  for (const [k, a] of [["bush", "item-bush"], ["herb", "item-herb"], ["ore", "item-ore"], ["crystal", "item-crystal"], ["pouch", "item-pouch"]]) if (ART[a]) GATHER_SVG[k] = artIcon(a);
   async function gatherNode() {
     if (!E || E.type !== "gather" || busy) return; busy = true;
     const el = document.querySelector("#gatherActor .spr"); const [x, y] = el ? stageXY(el) : [180, 300];
@@ -1821,7 +1839,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
         ${tough(w) && !E.fought ? "" : `<div class="target"></div><div class="ring" id="ring"></div>`}<div class="shadow"></div>
         <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>`;
     }
-    if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? " glowchest" : ""}" style="width:130px">${IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
+    if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? " glowchest" : ""}" style="width:130px">${E.glow && ART["item-chest-glow"] ? artIcon("item-chest-glow") : IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
     if (E.type === "rival") return `<div class="actor" style="left:50%;top:72%"><div class="spr pop"><div class="row" style="flex-wrap:nowrap;align-items:flex-end"><div style="width:74px">${trainerSVG(E.color || "#ff8a8a", false)}</div>${E.foes.map(f => art(f.sp, f.evo, 76)).join("")}</div></div><div class="shadow"></div><div class="tag">${IC.sword.replace("<svg", '<svg width="16" height="16"')} ${E.name}</div></div>`;
     if (E.type === "luck") return `<div class="actor" id="luckActor" style="left:50%;top:72%"><div class="spr pop"><div class="idle" style="width:90px">${IC.lantern}</div></div><div class="shadow"></div><div class="tag">x1 - x2 ${IC.glow.replace("<svg", '<svg width="16" height="16"')} or ${IC.coin.replace("<svg", '<svg width="16" height="16"')}</div></div>`;
     return "";
@@ -2070,9 +2088,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
     if (arenaSub === "gym") {
       const z = gymZ, d = gymD, Z = ZONES[z], open = ZONES.map((_, i) => i).filter(zoneOpen);
       const idx = open.indexOf(z), prev = open[idx - 1], next = open[idx + 1];
-      const badges = ZONES.map((ZZ, i) => `<button class="gbadge${gymDone(i, 0) ? " done" : ""}${i === z ? " cur" : ""}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"} aria-label="${ZZ.name} Gym">${zoneOpen(i) ? (gymDone(i, 0) ? "\u2713" : i + 1) : IC.lock}</button>`).join("");
+      const badges = ZONES.map((ZZ, i) => `<button class="gbadge${gymDone(i, 0) ? " done" : ""}${i === z ? " cur" : ""}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"} aria-label="${ZZ.name} Gym">${zoneOpen(i) ? (ART["badge-zone-" + i] ? `<img src="${ART["badge-zone-" + i]}" alt="">` : gymDone(i, 0) ? "\u2713" : i + 1) : IC.lock}</button>`).join("");
       const tcard = i => { const T = gymTrainer(z, d, i), beat = gymBeat(z, d, i);
-        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false)}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward, T.energy])}</span></button>`; };
+        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false, i === 2 && ART["tr-leader-" + z] ? "tr-leader-" + z : "")}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward, T.energy])}</span></button>`; };
       return `${back("gyms")}<h3>${Z.name} Gym</h3><span></span></div>
         <div class="gbadges">${badges}</div>
         <div class="seg">${DIFF.map((n, k) => `<button class="${d === k ? "on" : ""}" data-act="gymd:${k}" ${gymDiffOpen(z, k) ? "" : "disabled"}>${gymDiffOpen(z, k) ? "" : IC.lock.replace(/#fff/g, "#8a6d55")}${n}</button>`).join("")}</div>
@@ -2098,7 +2116,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
         return `<button class="lnode${got ? " done" : can ? " claim" : ""}" data-act="ladclaim" ${can ? "" : "disabled"} aria-label="${need} wins">${got ? "\u2713" : RW[LADDER_REW[k].k][0]}<small>${need}</small></button>`; }).join("");
       return `${back("hub")}<h3>Ladder</h3><span></span></div>
         <div class="ltrack"><span class="lwins"><b>${L.wins}</b><small>wins</small></span><div class="lline"><i style="width:${Math.min(100, L.wins / 150 * 100)}%"></i></div><div class="lnodes">${nodes}</div></div>
-        <div class="lrank"><span class="drank">${IC.crown}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
+        <div class="lrank"><span class="drank${ART["rank-" + duelRank(L.pts).toLowerCase()] ? " pic" : ""}">${ART["rank-" + duelRank(L.pts).toLowerCase()] ? artIcon("rank-" + duelRank(L.pts).toLowerCase()) : IC.crown}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
         <p class="hint" style="margin:0">Opponents are teams near your level. A win gives 12 rank points, a loss takes 5. Wins count for the week's rewards.</p>
         <button class="mb gold pbig" data-act="laddergo" ${S.glow >= LADDER_COST ? "" : "disabled"}>Match ${IC.glow}${LADDER_COST}</button>`;
@@ -2284,7 +2302,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
       <circle cx="50" cy="72" r="4" fill="#fff6d8"/><circle cx="31" cy="55" r="2.6" fill="#ffd76a"/><circle cx="69" cy="55" r="2.6" fill="#ffd76a"/><circle cx="50" cy="104" r="2.4" fill="#ffd76a"/>
       <ellipse cx="33" cy="30" rx="9" ry="15" fill="rgba(255,255,255,.55)" transform="rotate(25 33 30)"/></svg>`;
   }
-  const EGG_ICON = t => EGG_SVG(t, "i" + t + Math.random().toString(36).slice(2, 6));
+  const EGG_ICON = t => ART[EGG_ART[t]] ? artIcon(EGG_ART[t]) : EGG_SVG(t, "i" + t + Math.random().toString(36).slice(2, 6));
+  const eggBig = (t, id) => ART[EGG_ART[t]] ? `<img src="${ART[EGG_ART[t]]}" alt="">` : EGG_SVG(t, id);
   Object.assign(RW, { egg1: [EGG_ICON(1), "blue egg"], egg2: [EGG_ICON(2), "purple egg"], egg3: [EGG_ICON(3), "gold egg"] });
   function hatchEgg(t) {
     if (!((S["egg" + t] || 0) > 0)) return;
@@ -2293,7 +2312,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     keepMon(m); const B = bestQ(); B[m.sp] = Math.max(B[m.sp] || 0, m.q); save();
     const ov = document.createElement("div"); ov.className = "hatch"; ov.style.setProperty("--c", EGG_COL[t][1]);
     const crack = `<svg class="cracks" viewBox="0 0 100 120"><path class="k1" d="M50 40 46 52 54 58 48 70"/><path class="k2" d="M48 70 36 76 30 70M54 58 66 62 72 56"/><path class="k3" d="M48 70 52 84 44 94M66 62 70 78 80 82"/></svg>`;
-    ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${EGG_SVG(t, "h1")}</div><div class="half bot">${EGG_SVG(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">Tap to hatch faster</p>`;
+    ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${eggBig(t, "h1")}</div><div class="half bot">${eggBig(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">Tap to hatch faster</p>`;
     document.body.appendChild(ov);
     let shown = false; const timers = [];
     const card = () => { if (shown) return; shown = true; timers.forEach(clearTimeout); sfx("claim");
@@ -2325,7 +2344,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""}>${icon}${label}</button>`;
     const wide = view === "home" && !showMap && !showAuto ? `<button class="navwide z${S.zone}" data-act="close"><span>Explore</span></button>`
       : `<button class="navwide homecard" data-act="view:home" ${lock("home") ? "disabled" : ""}><span>Home</span>${homeAlert() ? '<em class="bang">!</em>' : ""}</button>`;
-    $("tabs").innerHTML = tab("menu", NAVI.menu, "Menu") + tab("team", TABI.team, "Glumis") + tab("shop", TABI.shop, "Shop") + tab("arena", IC.sword.replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
+    $("tabs").innerHTML = tab("menu", ART["ui-menu"] ? IC.menu : NAVI.menu, "Menu") + tab("team", TABI.team, "Glumis") + tab("shop", TABI.shop, "Shop") + tab("arena", (IC.arena || IC.sword).replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
   }
   function pageMenu() {
     if (settingsPage) return pageSettings();
@@ -2335,7 +2354,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       <button class="mcard wide z${z}" data-act="map"><span><b>Atlas</b><small>${openN} of ${ZONES.length} zones open</small></span></button>
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
-      <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
+      <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
       <div class="mtiles"><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
   function pageStart() {
@@ -2536,6 +2555,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     spring: '<svg viewBox="0 0 48 48"><ellipse cx="24" cy="36" rx="18" ry="7" fill="#7fe7ff" stroke="#2f8fb3" stroke-width="2"/><path d="M14 30l3-14 4 6 3-12 3 12 4-6 3 14" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="2" stroke-linejoin="round"/><circle cx="24" cy="35" r="3" fill="#e8fbff"/></svg>',
     mine: '<svg viewBox="0 0 48 48"><path d="M6 40l8-20 10-8 10 8 8 20z" fill="#a39a92" stroke="#5f554d" stroke-width="2" stroke-linejoin="round"/><path d="M18 40v-8a6 6 0 0112 0v8z" fill="#4a3f38"/><path d="M14 30l3-2 2 3-3 2zM31 26l3-1 1 3-3 1z" fill="#ffd13b" stroke="#c4901a" stroke-width="1"/></svg>',
   };
+  for (const [k, a] of [["orchard", "bld-orchard"], ["spring", "bld-energy-spring"], ["mine", "bld-gold-mine"]]) if (ART[a]) PLACE_SVG[k] = artIcon(a);
   const HOME_ISLAND_SVG = `<svg class="iland" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><linearGradient id="isea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fdcf0"/><stop offset="1" stop-color="#4fb6d8"/></linearGradient>
       <linearGradient id="igrass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6e08a"/><stop offset="1" stop-color="#7cc566"/></linearGradient></defs>
@@ -2559,6 +2579,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     spring: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="92" rx="50" ry="7" fill="#2f8fb3" opacity=".25"/><ellipse cx="60" cy="78" rx="48" ry="14" fill="#c9b79a" stroke="#8a7a60" stroke-width="3"/><ellipse cx="60" cy="76" rx="40" ry="10" fill="#7fe7ff"/><ellipse cx="52" cy="74" rx="14" ry="3" fill="#e8fbff" opacity=".8"/><g class="icrys"><path d="M60 72l-8-36 8-22 8 22z" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M46 74l-10-26 4-12 10 12 2 26z" fill="#c9f6ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M74 74l2-24 10-10 4 14-8 20z" fill="#c9f6ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M61 20l-2 44" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g></svg>',
     mine: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="92" rx="54" ry="7" fill="#5f554d" opacity=".25"/><path d="M8 90l18-46 26-26 30 8 22 28 8 36z" fill="#a39a92" stroke="#5f554d" stroke-width="3" stroke-linejoin="round"/><path d="M40 90V66a16 16 0 0132 0v24z" fill="#3e342e"/><path d="M38 66a18 18 0 0136 0" stroke="#8a5a36" stroke-width="6" fill="none"/><path d="M36 64v26M76 64v26" stroke="#8a5a36" stroke-width="6"/><g fill="#ffd13b" stroke="#c4901a" stroke-width="2"><path d="M24 58l7-4 4 7-7 4z"/><path d="M84 46l7-2 2 8-7 2z"/><path d="M92 70l6-2 2 7-6 2z"/></g><rect x="78" y="78" width="26" height="12" rx="2" fill="#8a5a36"/><circle cx="84" cy="92" r="4" fill="#5f554d"/><circle cx="98" cy="92" r="4" fill="#5f554d"/><path d="M80 78l4-6h18l2 6" fill="#ffd13b" stroke="#c4901a" stroke-width="2"/></svg>',
   };
+  for (const [k, a] of [["orchard", "bld-orchard"], ["spring", "bld-energy-spring"], ["mine", "bld-gold-mine"]]) if (ART[a]) HOME_BLD_SVG[k] = artIcon(a);
   let homePlace = null, homePick = false;
   setInterval(() => { if (view !== "home" || homePlace || !document.querySelector(".iscene")) return; homeTick();
     for (const k in PLACES) { const el = $("bub-" + k); if (!el) continue; const n = Math.floor(homeState()[k].store); el.hidden = !n; el.querySelector("b").textContent = n; } }, 3000);
@@ -2620,6 +2641,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   const DISHES = [{ k: "wrap", name: "Leaf Wrap", icon: () => IC.leaf, cost: { leaves: 5 }, serves: 10, price: 3 },
                   { k: "tart", name: "Berry Tart", icon: () => IC.treat, cost: { treats: 1 }, serves: 8, price: 8 },
                   { k: "soup", name: "Energy Soup", icon: () => IC.glow, cost: { glow: 10 }, serves: 10, price: 4 }];
+  DISHES.forEach(d => { const a = { wrap: "dish-leaf-wrap", tart: "dish-berry-tart", soup: "dish-energy-soup" }[d.k]; if (ART[a]) d.icon = () => artIcon(a); });
   function standState() { if (!S.stand) S.stand = { lvl: 1, menu: [], coins: 0, t: Date.now() }; return S.stand; }
   const standSlots = () => 3 + standState().lvl, standRate = () => 15 * (1 + .25 * (standState().lvl - 1));  // servings an hour
   function standTick() {
@@ -2712,8 +2734,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
       <div class="iscene">${HOME_ISLAND_SVG}${blds}</div>
       <p class="hint" style="margin:0">Tap a building to choose its workers. Tap a bubble to collect.</p>
       <div class="slist">${(() => { standTick(); const T = standState(), X = S.exps || [], now = Date.now(), backN = X.filter(x => now >= x.until).length;
-        return `<button class="hrow" data-act="homeplace:stand"><span class="ic">${IC.coin}</span><span class="txt"><b>Snack Stand</b><small>${T.menu.length ? `${T.menu.reduce((a, d) => a + d.left, 0)} servings left · ${Math.floor(T.coins)} coins ready` : Math.floor(T.coins) ? `${Math.floor(T.coins)} coins ready` : "Cook dishes to sell"}</small></span>${Math.floor(T.coins) ? '<em class="bang">!</em>' : ""}<i>›</i></button>
-          <button class="hrow" data-act="homeplace:exp"><span class="ic">${IC.balloon}</span><span class="txt"><b>Expeditions</b><small>${X.length ? `${X.length} away${backN ? ` · ${backN} back home` : ""}` : "Send Glumis on trips"}</small></span>${backN ? '<em class="bang">!</em>' : ""}<i>›</i></button>`; })()}</div>`;
+        return `<button class="hrow" data-act="homeplace:stand"><span class="ic">${ART["bld-snack-stand"] ? artIcon("bld-snack-stand") : IC.coin}</span><span class="txt"><b>Snack Stand</b><small>${T.menu.length ? `${T.menu.reduce((a, d) => a + d.left, 0)} servings left · ${Math.floor(T.coins)} coins ready` : Math.floor(T.coins) ? `${Math.floor(T.coins)} coins ready` : "Cook dishes to sell"}</small></span>${Math.floor(T.coins) ? '<em class="bang">!</em>' : ""}<i>›</i></button>
+          <button class="hrow" data-act="homeplace:exp"><span class="ic">${ART["bld-balloon-dock"] ? artIcon("bld-balloon-dock") : IC.balloon}</span><span class="txt"><b>Expeditions</b><small>${X.length ? `${X.length} away${backN ? ` · ${backN} back home` : ""}` : "Send Glumis on trips"}</small></span>${backN ? '<em class="bang">!</em>' : ""}<i>›</i></button>`; })()}</div>`;
   }
   let teamTab = "team";
   const teamSeg = () => `<div class="seg">${[["team", "My team"], ["book", "Book"]].map(([k, n]) => `<button class="${teamTab === k ? "on" : ""}" data-act="teamtab:${k}">${n}</button>`).join("")}</div>`;
@@ -2825,7 +2847,14 @@ nav .navwide .bang { top: 4px; right: 6px; }
              : `<button class="big2" disabled>${IC.lock.replace(/#fff/g, "#7a5638")}Locked<small>${z > 0 ? `Catch every Glumi in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})` : ""}</small></button>`}
     </div>`;
   }
-  function trainerSVG(color, back) {
+  function trainerSVG(color, back, who) {  // a trainer picture when there is one, else the drawing
+    let k = who || (back ? "tr-player-back" : color === "#5aa8ff" ? "tr-player-front" : "");
+    if (!k) { const i = typeof TCOLORS !== "undefined" ? TCOLORS.indexOf(color) : -1; k = i >= 0 ? "tr-" + (i + 1) : ""; }
+    if (!ART[k] && !(back || color === "#5aa8ff")) { const have = [1, 2, 3, 4, 5, 6, 7, 8].filter(n => ART["tr-" + n]); if (have.length) { let h = 0; for (const ch of String(color)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; k = "tr-" + have[h % have.length]; } }
+    if (ART[k]) return `<img class="trimg" src="${ART[k]}" alt="">`;
+    return trainerDrawn(color, back);
+  }
+  function trainerDrawn(color, back) {
     return `<svg viewBox="0 0 60 100" aria-hidden="true"><ellipse cx="30" cy="96" rx="18" ry="4" fill="rgba(0,0,0,.2)"/><rect x="18" y="58" width="9" height="36" rx="4" fill="#4a3f66"/><rect x="33" y="58" width="9" height="36" rx="4" fill="#4a3f66"/>
       <path d="M13 36 Q30 27 47 36 L45 66 Q30 72 15 66Z" fill="${color}"/>${back ? `<rect x="18" y="38" width="24" height="24" rx="6" fill="#a8754a"/><rect x="22" y="42" width="16" height="8" rx="3" fill="#c9935f"/>` : `<path d="M30 36 V66" stroke="rgba(0,0,0,.15)" stroke-width="2"/>`}
       <circle cx="30" cy="23" r="11" fill="#f2c9a0"/>${back ? `<path d="M19 22 Q30 32 41 22 L41 26 Q30 36 19 26Z" fill="#6b4a33"/>` : `<circle cx="26" cy="24" r="1.6" fill="#3b3557"/><circle cx="34" cy="24" r="1.6" fill="#3b3557"/><path d="M27 28 Q30 30 33 28" stroke="#3b3557" stroke-width="1.3" fill="none"/>`}
