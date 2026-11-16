@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794873161;</script>
+<script>window.GAME_BUILD = 1794873359;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1216,6 +1216,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .bqrow button { flex: 1; border: 0; border-radius: 10px; padding: 7px 0; background: #fff; color: var(--brown); font: 800 14px var(--display); box-shadow: 0 2px 6px rgba(91,70,54,.15); }
   .bqrow button.on { background: #f5b23c; color: #fff; }
   .price .bq { font-style: normal; font-size: 11px; margin-right: 3px; opacity: .9; }
+  .gsb.warn { background: #e5603b; color: #fff; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2856,6 +2857,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
             ${!inTeam ? `<button class="gsb" data-act="addteam:${m.uid}" aria-label="Add to team">+</button>` : !lead ? `<button class="gsb" data-act="lead:${m.uid}" aria-label="Make leader">${IC.star}</button>` : ""}
             ${inTeam && S.team.length > 1 ? `<button class="gsb" data-act="den:${m.uid}" aria-label="Remove from team">\u2212</button>` : ""}
             ${!inTeam ? `<button class="gsb" data-act="spage:bye" aria-label="Sell or release">${IC.coin}</button>` : ""}
+            ${m.lvl > 1 ? `<button class="gsb${resetSure === m.uid ? " warn" : ""}" data-act="lvlreset:${m.uid}" aria-label="Reset levels"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>` : ""}
           </div></div>
         ${tabBody}
         <div class="gtabs">${[["stats", "Stats"], ["skill", "Skill"], ["info", "Info"]].map(([k, n]) => `<button class="${sheetTab === k ? "on" : ""}" data-act="sheettab:${k}">${n}</button>`).join("")}</div>`;
@@ -3648,7 +3650,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "retreat") { if (BT) { clearInterval(tickId); BT = null; for (const m of team()) m.hp = maxHp(m); if (E && E.type === "rival") E = null; save(); render(); } }
     else if (a === "starup") { const m = mon(n); if (m) { const st = m.stars || 0, need = st + 1, have = S.starCores[m.sp] || 0; if (st < MAX_STARS && have >= need) { S.starCores[m.sp] = have - need; m.stars = st + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} reached ${m.stars} star${m.stars > 1 ? "s" : ""}!`); } } }
     else if (a === "lvlreset") { const m = mon(n); if (!m || m.lvl <= 1) return;
-      if (resetSure !== n) { resetSure = n; render(); setTimeout(() => { if (resetSure === n) { resetSure = null; render(); } }, 3000); return; }
+      if (resetSure !== n) { const g0 = resetGain(m); resetSure = n; render(); toast(`Tap again to reset to level 1: +${g0.leaves} leaves${g0.keeps ? `, +${g0.keeps} keepsakes` : ""}`); setTimeout(() => { if (resetSure === n) { resetSure = null; render(); } }, 3000); return; }
       const g = resetGain(m); resetSure = null; S.leaves += g.leaves; if (g.keeps) S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + g.keeps;
       m.lvl = 1; m.asc = 0; m.hp = maxHp(m); sfx("claim"); save(); render(); toast(`${fname(m.sp, m.evo)} is level 1 again: +${g.leaves} leaves${g.keeps ? `, +${g.keeps} keepsakes` : ""}`); }
     else if (a === "lvl") { const m = mon(n), cost = 5 + m.lvl * 3; if (m && S.leaves >= cost && m.lvl < lvlCap() && m.lvl < ascTop(m)) { S.leaves -= cost; m.lvl++; m.hp = maxHp(m); track("lvl"); sfx("up"); save(); render(); } }
