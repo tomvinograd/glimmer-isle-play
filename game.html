@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794847122;</script>
+<script>window.GAME_BUILD = 1794847256;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2830,8 +2830,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
       let got = 0, icon = null, unit = "";
       if (arg && PLACES[arg]) { homeTick(); got = collectPlace(arg); icon = resIcon(arg); unit = PLACES[arg].unit; }
       else if (arg === "stand") { standTick(); const T = standState(); got = Math.floor(T.coins); if (got) { T.coins -= got; S.coins += got; } icon = IC.coin; unit = "coins"; }
-      if (got) { const r = b.getBoundingClientRect(); flyIcons(icon, 6, r.left + r.width / 2, r.top + r.height / 2, null); sfx("coin"); toast(`+${got} ${unit}`); save(); }
-      homePlace = arg || null; homePick = false; expPick = null; render(); window.scrollTo(0, 0); }
+      if (got) { const r = b.getBoundingClientRect(); flyIcons(icon, 6, r.left + r.width / 2, r.top + r.height / 2, null); sfx("coin"); toast(`+${got} ${unit}`); save(); render(); return; }  // something to collect: collect only
+      homePlace = arg || null; homePick = false; expPick = null; render(); window.scrollTo(0, 0); }  // nothing to collect: open the page
     else if (a === "homepick") { homePick = arg === "1"; render(); window.scrollTo(0, 0); }
     else if (a === "hire") { homeTick(); const p = homeState()[homePlace]; if (p && p.w.length < HOME_SLOTS() && !workingAt(n) && !S.team.includes(n)) { p.w.push(n); homePick = false; save(); render(); toast(`${fname(mon(n).sp, mon(n).evo)} started working`); } }
     else if (a === "fire") { homeTick(); const p = homeState()[homePlace]; if (p) { p.w = p.w.filter(u => u !== n); save(); render(); } }
