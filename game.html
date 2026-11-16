@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>window.GAME_BUILD = 1794819281;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -497,7 +498,7 @@
   .card { background: #fff; border: 0; border-radius: 10px; box-shadow: 0 3px 12px rgba(91,70,54,.12); }
   .stats { color: var(--brown-2); } .nmrow { color: var(--brown); }
 
-  /* gloomer cards: a soft glow of their grade color, names on one line */
+  /* Glumi cards: a soft glow of their grade color, names on one line */
   .slot, .tile { border: 0; margin: 0; border-radius: 10px; box-shadow: 0 3px 12px rgba(91,70,54,.14), inset 0 0 0 2px color-mix(in srgb, var(--gc, #ead8b8) 70%, #fff);
     background: radial-gradient(90% 70% at 50% 35%, #fff, color-mix(in srgb, var(--gc, #fff) 26%, #fff8ec) 80%); }
   .slot .nm, .tile .nm { color: var(--brown); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; overflow-wrap: normal; padding: 0 2px; }
@@ -645,6 +646,18 @@
   @keyframes ibub { 50% { transform: translate(-50%, -112%); } }
   .seg button { font-size: 13.5px; }
   .srow small .grade { font-size: 10px; padding: 0 5px; margin-right: 3px; }
+  .mprices { display: grid; gap: 5px; justify-items: stretch; }
+  .mprices .price { justify-content: center; font-size: 12px; padding: 4px 8px; }
+  .price.ppurple { background: linear-gradient(#c7a6ff, #8d63e6); text-shadow: 0 1px 2px rgba(60,20,120,.4); }
+  .price.pgold { background: linear-gradient(#ffe08a, #f5a623); }
+  .mrow.focus { animation: mfocus 1.2s ease-in-out 3; }
+  @keyframes mfocus { 50% { background: #fff3c4; } }
+  .popwrap { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; }
+  .popbg { position: absolute; inset: 0; border: 0; background: rgba(43,38,69,.45); }
+  .popup { position: relative; max-width: 320px; background: var(--cream, #fff8ec); border-radius: 12px; padding: 18px 16px 14px; display: grid; justify-items: center; gap: 8px; text-align: center; box-shadow: 0 10px 30px rgba(40,30,20,.3); }
+  .popup h3 { margin: 0; font-size: 19px; } .popup p { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--brown, #5b4636); }
+  .popbtns { display: flex; gap: 8px; margin-top: 4px; }
+  .sp-ver { grid-row: 5; align-self: end; font-family: var(--body); font-size: 11px; font-weight: 700; color: #8a6d55; opacity: .8; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -674,6 +687,8 @@
   <div class="sp-load">
     <div class="sp-bar"><i id="spFill"></i><b id="spDrop"></b></div>
     <p class="sp-tip" id="spTip">Tip: tap the compass to walk the path</p>
+  </div>
+  <div class="sp-ver" id="spVer">
   </div>
 </div>
 <div class="app">
@@ -722,10 +737,10 @@
   const MULTS = [{ m: 1, lvl: 1, grades: [75, 25, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [68, 28, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [55, 30, 12, 3, 0], count: 1 }, { m: 10, lvl: 6, grades: [45, 32, 15, 8, 0], count: 1 }, { m: 20, lvl: 9, grades: [40, 32, 17, 11, 0], count: 2 }, { m: 50, lvl: 12, grades: [35, 32, 19, 14, 0], count: 5 }, { m: 100, lvl: 15, grades: [30, 32, 21, 17, 0], count: 10 }];
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }];
   const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, PITY = 800;
-  const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild gloomers is Rainbow, by Power (x1 .. x20)
+  const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 3, MAX_STARS = 5, STAR_BONUS = .1;
   const ASC_EVERY = 10, MAX_ASC = 5, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20];  // ascension: top level, +30% stats each, keepsakes needed
-  const KEEPSAKES_BY_GRADE = [1, 1, 2, 3, 5], SELL_BASE = [8, 15, 30, 60, 200];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
+  const KEEPSAKES_BY_GRADE = [1, 1, 5, 8, 12], SELL_BASE = [8, 15, 30, 60, 200];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
   const RIVALS = ["Nia", "Oren", "Tali", "Bex", "Ido", "Maya", "Ravi", "Lena", "Yoni", "Kai"];
   const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -864,7 +879,7 @@
     if (DRAGON_SLOTS.includes(sp)) return dragonArt(sp, evo, size);
     return blobArt(sp, evo, size);
   }
-  // Placeholder for gloomers whose art is not made yet: a soft round critter in the element's colors.
+  // Placeholder for Glumis whose art is not made yet: a soft round critter in the element's colors.
   function blobArt(sp, evo, size) {
     const s = SP[sp], col = EL[s.el].color, dark = mix(col, -0.38), light = mix(col, 0.45), rar = Math.min(2, s.tier);
     const base = { round: [27, 25, 60], tall: [21, 30, 58], wide: [33, 21, 64] }[s.shape];
@@ -970,7 +985,7 @@
   const glowCap = () => 50 + S.xlvl * 10, lvlCap = () => 10 + S.xlvl * 2, xNeed = () => 60 + S.xlvl * 40;  /* ECONOMY_SLOWER */
   const ZONE_LVL = [0, 3, 5, 7, 9, 12, 15, 18];
   const zoneOpen = i => i === 0 || zoneAll(i - 1) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING */
-  const lockText = i => `${ZONES[i].name} opens when you catch every gloomer in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
+  const lockText = i => `${ZONES[i].name} opens when you catch every Glumi in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
   const bossReady = i => !S.zones[i].cleared && (zoneAll(i) || S.zones[i].steps >= BOSS_STEPS);
   const multOpen = M => S.xlvl >= M.lvl;
@@ -1065,7 +1080,7 @@
       E = { type: "wild", list: [b], i: 0, treat: false, fought: false, hpFrac: 1, boss: true, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300);
       busy = false; save(); render(); shakeStage(); await banner("Guardian!");
     } else {
-      // a gloomer about 1 step in 5; after 8 steps without one, the next step brings one
+      // a Glumi about 1 step in 5; after 8 steps without one, the next step brings one
       let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 8) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;
       if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (list.some(w => w.q >= 3)) { busy = false; save(); render(); await banner(GRADES[Math.max(...list.map(w => w.q))].name + "!"); } }
       else if (r === 1) E = { type: "chest", coins: rnd(4, 9) * M.m, glow: Math.random() < 1 / 12 ? rnd(15, 25) * M.m : 0 };  // coins; a rare glowing chest also gives glow
@@ -1174,7 +1189,7 @@
   }
 
   // ---------- groups, waves, star entrance, gathering ----------
-  // seconds until gloomer k pops in; negative once its pop-in has already played (a redraw then shows it at once)
+  // seconds until Glumi k pops in; negative once its pop-in has already played (a redraw then shows it at once)
   const introD = k => (.55 + k * .14 - (performance.now() - (E && E.introT || 0)) / 1000).toFixed(2);
   function starEntrance() {
     [...document.querySelectorAll("#actors .actor.intro")].forEach((a, k) => {
@@ -1358,7 +1373,7 @@
     const z = S.zone, Z = ZONES[z], st = S.zones[z];
     return `<div class="hud"><span class="xbadge" style="--p:${Math.round(S.xxp / xNeed() * 100)}" aria-label="Explorer level"><span>${S.xlvl}</span></span><span class="pill res" id="hudCoins">${IC.coin}${S.coins}</span><span class="pill res" id="hudLeaves">${IC.leaf}${S.leaves}</span><span class="grow"></span><span class="pill res glowpill" id="hudGlow">${IC.glow}<span id="glowNum">${S.glow}</span><span class="gbar"><i id="glowBar" style="width:${Math.min(100, S.glow / glowCap() * 100)}%"></i></span><small class="gnext" id="glowNext">${glowNextText()}</small></span></div>
       <div class="zonebar"><div class="zrow">${zArrow(-1)}<button class="ztitle" data-act="map" aria-label="Open the Atlas">${Z.name}</button>${zArrow(1)}</div>
-      <span class="zchips" aria-label="Zone gloomers">${Z.sp.map(sp => `<span class="mini ${st.caught[sp] ? "" : "no"}">${art(sp, 0, 22)}</span>`).join("")}<span class="crown ${st.cleared ? "done" : bossReady(z) ? "ready" : ""}">${IC.crown}</span></span></span></div>`;
+      <span class="zchips" aria-label="Zone Glumis">${Z.sp.map(sp => `<span class="mini ${st.caught[sp] ? "" : "no"}">${art(sp, 0, 22)}</span>`).join("")}<span class="crown ${st.cleared ? "done" : bossReady(z) ? "ready" : ""}">${IC.crown}</span></span></span></div>`;
   }
   function actorsHTML() {
     if (BT) return "";
@@ -1455,9 +1470,9 @@
     const pick = swapIn ? mon(swapIn) : null;
     return `<div class="head"><h2>My team</h2><span class="pill">${IC.leaf}${S.leaves}</span><span class="pill">${IC.fruit}${S.fruit}</span></div>
       ${pick ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a spot for <b>${fname(pick.sp, pick.evo)}</b></span><button class="mb" data-act="cancelswap">Cancel</button></div>`
-             : `<p class="hint" style="text-align:left;margin:0">Up to 3 gloomers walk with you. The leader fights first. Tap a gloomer to see it, level it up or add it to your team.</p>`}
+             : `<p class="hint" style="text-align:left;margin:0">Up to 3 Glumis walk with you. The leader fights first. Tap a Glumi to see it, level it up or add it to your team.</p>`}
       <div class="slots">${[0, 1, 2].map(teamSlot).join("")}</div>
-      <h3>My gloomers · ${S.mons.length}</h3>
+      <h3>My Glumis · ${S.mons.length}</h3>
       <div class="tiles">${sorted.map(monTile).join("")}</div>
       ${sheetUid && mon(sheetUid) ? creatureSheet(mon(sheetUid)) : ""}`;
   }
@@ -1466,7 +1481,7 @@
     const L = [], ST = [], T = [], G = [];
     L.push(`<button class="big2 gold" data-act="lvl:${m.uid}" ${!capped && S.leaves >= cost ? "" : "disabled"}>${IC.up}Level up<small>${capped ? (atAsc ? (ascOf(m) >= MAX_ASC ? "Highest level reached" : `Level ${m.lvl} is the top: ascend to keep leveling`) : `Highest level for now: raise your Explorer level (now ${S.xlvl})`) : `Costs ${cost} leaves · you have ${S.leaves}`}</small></button>`);
     { const a = ascOf(m), need = ASC_COST[a], have = S.keepsakes[m.sp] || 0;
-      if (a < MAX_ASC) L.push(`<button class="big2 ascend${atAsc && have >= need ? " ready" : ""}" data-act="ascend:${m.uid}" ${atAsc && have >= need ? "" : "disabled"}>${IC.up}Ascend${a ? ` again (${a + 1} of ${MAX_ASC})` : ""}<small>${atAsc ? `Costs ${need} ${s.name} keepsakes · you have ${have}` : `At level ${ascTop(m)} · needs ${need} ${s.name} keepsakes (you have ${have})`}. +${Math.round(ASC_BONUS * 100)}% stats, levels up to ${ascTop(m) + ASC_EVERY}</small></button>`); }
+      if (a < MAX_ASC) L.push(`<button class="big2 ascend${atAsc && have >= need ? " ready" : ""}" data-act="ascend:${m.uid}" ${atAsc ? "" : "disabled"}>${IC.up}Ascend${a ? ` again (${a + 1} of ${MAX_ASC})` : ""}<small>${atAsc ? `Costs ${need} ${s.name} keepsakes · you have ${have}` : `At level ${ascTop(m)} · needs ${need} ${s.name} keepsakes (you have ${have})`}. +${Math.round(ASC_BONUS * 100)}% stats, levels up to ${ascTop(m) + ASC_EVERY}</small></button>`); }
     if (s.evo && !m.evo) L.push(`<button class="big2" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= 1 && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}Evolve into ${s.evo}<small>${m.lvl < EVOLVE_AT ? `Reach level ${EVOLVE_AT} first` : `Costs 1 moonfruit and 60 coins · you have ${S.fruit} and ${S.coins}`}</small></button>`);
     { const st = m.stars || 0, have = S.starCores[m.sp] || 0, need = st + 1;
       ST.push(`<button class="big2 starup" data-act="starup:${m.uid}" ${st < MAX_STARS && have >= need ? "" : "disabled"}>${IC.star}${st >= MAX_STARS ? "All stars reached" : `Star up to ${st + 1} of ${MAX_STARS}`}<small>${st >= MAX_STARS ? `+${Math.round(MAX_STARS * STAR_BONUS * 100)}% HP, Attack and Defense` : `Costs ${need} ${s.name} star core${need > 1 ? "s" : ""} · you have ${have}. Release a Rainbow ${s.name} to get ${RAINBOW_STAR_CORES}`}</small></button>`); }
@@ -1486,7 +1501,7 @@
     const stats = `<div class="stats2">${statBar("HP", maxHp(m), 260, "#43c59e")}${statBar("Attack", atk(m), 70, "#ff8a4c")}${statBar("Defense", def(m), 60, "#5aa8ff")}</div>`;
     let body;
     if (sheetPage === "level") body = `${back("Level up")}${mini}${stats}
-      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a gloomer must ascend to keep growing. Ascending costs ${s.name} keepsakes (you have ${keeps}).</p>
+      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a Glumi must ascend to keep growing. Ascending costs ${s.name} keepsakes (you have ${keeps}).</p>
       <div class="btns">${L.join("")}</div>`;
     else if (sheetPage === "stars") {
       const next = st < MAX_STARS ? Object.assign({}, m, { stars: st + 1 }) : null;
@@ -1522,7 +1537,7 @@
   }
   let shopTab = "jars";
   function pageShop() {
-    const tabs = [["jars", "Jars"], ["supplies", "Supplies"], ["market", "Gloomers"], ["requests", "Requests"]];
+    const tabs = [["jars", "Jars"], ["supplies", "Supplies"], ["market", "Glumis"], ["requests", "Requests"]];
     if (shopTab === "requests") return pageRequests(tabs);
     if (shopTab === "market") return pageMarket(tabs);
     const row = (k, icon, name, about, price, ok = true) => `<div class="srow"><span class="ic">${icon}</span><span class="txt"><b>${name}</b><small>${about}</small></span>
@@ -1531,7 +1546,7 @@
       jars: [row("plain", IC.jar(JARS[0].c), "Plain jar", `A simple jar · you have ${S.jars.plain}`, 15),
              row("bright", IC.jar(JARS[1].c), "Bright jar", `Catches more easily · you have ${S.jars.bright}`, 45),
              row("star", IC.jar(JARS[2].c), "Star jar", `The best catch chance · you have ${S.jars.star}`, 120)],
-      supplies: [row("treat", IC.treat, "Treat", `Calms a gloomer before you throw · you have ${S.treats}`, 25),
+      supplies: [row("treat", IC.treat, "Treat", `Calms a Glumi before you throw · you have ${S.treats}`, 25),
                  row("leaves", IC.leaf, "10 leaves", `For leveling up · you have ${S.leaves}`, 20)],
     };
     const waiting = E && E.type === "wild" ? E.list[E.i] : null;
@@ -1539,9 +1554,9 @@
       ${waiting ? `<button class="door" data-act="backtocatch">${art(waiting.sp, waiting.evo, 36)}<span><b>Back to ${fname(waiting.sp, waiting.evo)}</b><small>It is still waiting on the path</small></span><i>›</i></button>` : ""}
       <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
       <div class="slist">${items[shopTab].join("")}</div>
-      <p class="saved">${saveNote || "Saved on this device"}</p>`;
+      <p class="saved">${saveNote || "Saved on this device"}<br>${versionText()}</p>`;
   }
-  // ================= REQUESTS: give gloomers, get moonfruit or glow =================
+  // ================= REQUESTS: give Glumis, get moonfruit or glow =================
   const REQUEST_SLOTS = 3, REQUEST_WAIT_MIN = 10;
   let reqPick = null, confirmGive = null;
   function newRequest() {
@@ -1567,7 +1582,7 @@
       return `${head}<div class="sheethead"><button class="mb" data-act="reqpick:" aria-label="Back">‹ Back</button><h3>Request</h3><span></span></div>
         <div class="minihero"><div class="hero" style="--gc:${GRADES[r.minQ].c}">${art(r.sp, 0, 74)}</div><div><div class="nmrow">${SP[r.sp].name}</div>
           <small class="reqtxt">Wanted: ${reqWant(r)}</small><span class="reward">Reward ${reqReward(r)}</span></div></div>
-        ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Gloomers in your team are not shown.</p>
+        ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Glumis in your team are not shown.</p>
           <div class="slist">${got.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl}${m.stars ? ` · ${m.stars} star${m.stars > 1 ? "s" : ""}` : ""}</small></span>
             <button class="price give" data-act="give:${m.uid}">${confirmGive === m.uid ? "Sure?" : "Give"}</button></div>`).join("")}</div>`
           : `<p class="hint" style="margin:0">You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.</p>`}`;
@@ -1575,10 +1590,10 @@
     const rows = S.requests.map((q, i) => q.done
       ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>New request soon</b><small>In ${Math.max(1, Math.ceil((q.readyAt - Date.now()) / 60000))} min</small></span><span></span></div>`
       : `<button class="srow req" data-act="reqpick:${i}"><span class="ic">${art(q.sp, 0, 32)}</span><span class="txt"><b>${SP[q.sp].name}</b><small>${reqWant(q)}${reqMatches(q).length ? " · you have one" : ""}</small></span><span class="reward">${reqReward(q)}</span></button>`).join("");
-    return `${head}<p class="hint" style="margin:0">Islanders ask for gloomers and pay in moonfruit or glow.</p>
+    return `${head}<p class="hint" style="margin:0">Islanders ask for Glumis and pay in moonfruit or glow.</p>
       <div class="slist">${rows}</div>`;
   }
-  // ================= HOME ISLAND: gloomers work and make resources =================
+  // ================= HOME ISLAND: Glumis work and make resources =================
   const PLACES = {
     orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 4, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
     spring: { name: "Glow Spring", res: "glow", unit: "glow", base: 1, els: ["Water", "Spirit"], about: "Collects glow for walking" },
@@ -1647,15 +1662,15 @@
       const P = PLACES[homePlace];
       const free = S.mons.filter(m => !S.team.includes(m.uid) && !workingAt(m.uid)).sort((a, b) => workerRate(b, homePlace) - workerRate(a, homePlace));
       return `<div class="sheethead"><button class="mb" data-act="homepick:0" aria-label="Back">‹ Back</button><h3>Choose a worker</h3><span></span></div>
-        <p class="hint" style="margin:0">${P.els.join(" and ")} gloomers work best here. Gloomers in your team can't work.</p>
+        <p class="hint" style="margin:0">${P.els.join(" and ")} Glumis work best here. Glumis in your team can't work.</p>
         ${free.length ? `<div class="slist">${free.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl} · ${perHour(workerRate(m, homePlace))} ${P.unit} an hour</small></span>
           <button class="price give" data-act="hire:${m.uid}">Assign</button></div>`).join("")}</div>`
-          : `<p class="hint" style="margin:0">No free gloomers. Catch more, or take one out of your team.</p>`}`;
+          : `<p class="hint" style="margin:0">No free Glumis. Catch more, or take one out of your team.</p>`}`;
     }
     if (homePlace) {
       const k = homePlace, P = PLACES[k], p = H[k], ws = placeWorkers(k), slots = HOME_SLOTS(), n = Math.floor(p.store);
       return `<div class="sheethead"><button class="mb" data-act="homeplace:" aria-label="Back">‹ Back</button><h3>${P.name}</h3><span></span></div>
-        <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} gloomers.</small>
+        <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} Glumis.</small>
           <span class="reward">${resIcon(k)}<b>${perHour(placeRate(k))}</b>&nbsp;an hour</span></div></div>
         <div class="slist"><div class="srow"><span class="ic">${resIcon(k)}</span><span class="txt"><b>${n} ${P.unit} ready</b><small>Holds up to ${placeCap(k)} (${HOME_CAP_HOURS} hours of work)</small></span>
           <button class="price" data-act="collect:${k}" ${n >= 1 ? "" : "disabled"}>Collect</button></div></div>
@@ -1683,40 +1698,46 @@
   }
   let teamTab = "team";
   const teamSeg = () => `<div class="seg">${[["team", "My team"], ["book", "Book"]].map(([k, n]) => `<button class="${teamTab === k ? "on" : ""}" data-act="teamtab:${k}">${n}</button>`).join("")}</div>`;
-  // ================= CREATURE MARKET: Purple and Gold gloomers for coins =================
+  // ================= CREATURE MARKET: Purple and Gold Glumis for coins =================
   const MARKET_HOURS = 6, MARKET_SLOTS = 4;
   let confirmBuy = null;
   const marketPrice = (q, lvl) => q >= 3 ? 700 + lvl * 25 : 250 + lvl * 10;
-  function fillMarket() {
-    const now = Date.now();
-    if (S.market && S.market.next > now && S.market.items) return;
-    const open = ZONES.map((_, i) => i).filter(zoneOpen);
-    const items = Array.from({ length: MARKET_SLOTS }, () => {
-      const z = open[rnd(0, open.length - 1)], Z = ZONES[z], sp = Z.sp[rnd(0, Z.sp.length - 1)], q = Math.random() < .3 ? 3 : 2, lvl = Z.lv[0];
-      return { sp, q, lvl, z, price: marketPrice(q, lvl), sold: false };
-    });
-    S.market = { next: now + MARKET_HOURS * 3600000, items }; save();
+  function closePopup() { const p = document.querySelector(".popwrap"); if (p) p.remove(); }
+  function keepsakePopup(m, missing) {
+    closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2], buys = Math.ceil(missing / per);
+    const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<button class="popbg" data-act="closepop" aria-label="Close"></button><div class="popup" role="dialog">${art(m.sp, 0, 70)}
+      <h3>Not enough keepsakes</h3><p>${fname(m.sp, m.evo)} needs ${missing} more ${name} keepsake${missing > 1 ? "s" : ""} to ascend.
+      Buy ${buys > 1 ? `${buys} Purple ${name}s` : `a Purple ${name}`} in the shop and release ${buys > 1 ? "them" : "it"} for ${per} keepsakes each.</p>
+      <div class="popbtns"><button class="mb" data-act="closepop">Not now</button><button class="mb gold" data-act="gotoshop:${m.sp}">Go to the shop</button></div></div>`;
+    document.body.appendChild(d);
+  }
+  let marketFocus = null;  // a Glumi kind to scroll to and highlight (from the Ascend pop-up)
+  function marketKinds() {
+    const seen = new Set(), out = [];
+    const owned = new Set(S.mons.map(m => m.sp));  // kinds you own are always for sale (for keepsakes), even from zones not open yet
+    ZONES.forEach((Z, z) => { Z.sp.forEach(sp => { if ((zoneOpen(z) || owned.has(sp)) && !seen.has(sp)) { seen.add(sp); out.push({ sp, z, lvl: Z.lv[0] }); } }); });
+    return out;
   }
   function pageMarket(tabs) {
-    fillMarket();
-    const mins = Math.max(1, Math.ceil((S.market.next - Date.now()) / 60000)), h = Math.floor(mins / 60), m = mins % 60;
-    const rows = S.market.items.map((it, i) => it.sold
-      ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>Sold</b><small>A new gloomer comes with the next delivery</small></span><span></span></div>`
-      : `<div class="srow"><span class="ic">${art(it.sp, 0, 36)}</span><span class="txt"><b>${SP[it.sp].name}</b><small><span class="grade q${it.q}">${GRADES[it.q].name}</span> level ${it.lvl} · from ${ZONES[it.z].name}</small></span>
-          <button class="price" data-act="buymon:${i}" ${S.coins >= it.price ? "" : "disabled"}>${confirmBuy === i ? "Sure?" : `${IC.coin}${it.price}`}</button></div>`).join("");
+    const kinds = marketKinds();
+    const chip = (k, q) => { const id = `${k.sp}-${q}`, p = marketPrice(q, k.lvl);
+      return `<button class="price ${q >= 3 ? "pgold" : "ppurple"}" data-act="buymon:${id}" ${S.coins >= p ? "" : "disabled"}>${confirmBuy === id ? "Sure?" : `${GRADES[q].name} ${IC.coin}${p}`}</button>`; };
+    const rows = kinds.map(k => `<div class="srow mrow${marketFocus === k.sp ? " focus" : ""}" id="mk-${k.sp}"><span class="ic">${art(k.sp, 0, 36)}</span><span class="txt"><b>${SP[k.sp].name}</b><small>Level ${k.lvl} · ${ZONES[k.z].name}${S.keepsakes[k.sp] ? ` · ${S.keepsakes[k.sp]} keepsake${S.keepsakes[k.sp] > 1 ? "s" : ""}` : ""}</small></span>
+        <span class="mprices">${chip(k, 2)}${chip(k, 3)}</span></div>`).join("");
     return `<div class="head"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
       <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
-      <p class="hint" style="margin:0">Purple and Gold gloomers. New ones arrive in ${h ? `${h} h ` : ""}${m} min.</p>
+      <p class="hint" style="margin:0">Every Glumi of the zones you have opened. Release a Purple one for ${KEEPSAKES_BY_GRADE[2]} keepsakes.</p>
       <div class="slist">${rows}</div>`;
   }
   let autoPick = null;  // the rule whose choices are open, or null for the list
   const AUTO_RULES = [
-    { k: "catch", name: "Auto catch", about: "What Auto does when a gloomer appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
+    { k: "catch", name: "Auto catch", about: "What Auto does when a Glumi appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
     { k: "low", name: "Jar for Green and Blue", about: "Which jar Auto throws at common grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "mid", name: "Jar for Purple", about: "Which jar Auto throws at Purple gloomers", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "mid", name: "Jar for Purple", about: "Which jar Auto throws at Purple Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
     { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto throws at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
-    { k: "only", name: "Catch", about: "Which gloomers Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
+    { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
@@ -1751,7 +1772,7 @@
     const track = ms.map((m, k) => { const done = k < claimed, can = !done && k === claimed && reached(z, m), [label, icon] = REWARD[m.kind](z);
       return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="claim:${z}" ${can ? "" : "disabled"} aria-label="${label}">${done ? IC.star : icon}<small>${m.need === "boss" ? "Guardian" : m.need + " caught"}</small></button>`; }).join("");
     const pin = (sp, [x, y]) => { const c = st.caught[sp] || S.caught[key(sp, 0)], seen = S.seen[key(sp, 0)], cls = c ? "caught" : seen ? "seen" : "unknown";
-      return `<button class="pin ${cls}${atlasPin === sp ? " sel" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${seen || c ? SP[sp].name : "Unknown gloomer"}"><span>${seen || c ? art(sp, 0, 50) : "?"}</span></button>`; };
+      return `<button class="pin ${cls}${atlasPin === sp ? " sel" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${seen || c ? SP[sp].name : "Unknown Glumi"}"><span>${seen || c ? art(sp, 0, 50) : "?"}</span></button>`; };
     const bossSeen = S.seen[key(Z.boss, 0)], bossCls = st.cleared ? "boss caught" : bossReady(z) ? "boss" : "boss locked";
     const bossPin = `<button class="pin ${bossCls}${atlasPin === Z.boss ? " sel" : ""}" data-act="atlaspin:${Z.boss}" style="left:50%;top:84%" aria-label="Guardian"><span>${bossSeen || st.cleared ? art(Z.boss, 0, 62) : IC.crown}</span></button>`;
     let info = "";
@@ -1768,10 +1789,10 @@
       <div class="head" style="align-items:baseline"><h3 style="margin:0;color:#5b3f2a">${Z.name}</h3><span class="stats"><span>Wild Lv ${Z.lv[0]}-${Z.lv[1]}</span><span>${got}/${Z.sp.length} caught</span></span></div>
       ${open ? `<div class="mtrack">${track}</div>` : ""}
       <div class="zmap">${zoneMapSVG(Z)}${Z.sp.map((sp, k) => pin(sp, PIN_POS[k])).join("")}${bossPin}</div>
-      ${info || `<p class="hint" style="margin:0">Tap a pin to see a gloomer. Gold pins are caught.</p>`}
-      ${open ? (z === S.zone ? `<button class="big2" disabled>${IC.balloon}You are here<small>Walk the path to find these gloomers</small></button>`
+      ${info || `<p class="hint" style="margin:0">Tap a pin to see a Glumi. Gold pins are caught.</p>`}
+      ${open ? (z === S.zone ? `<button class="big2" disabled>${IC.balloon}You are here<small>Walk the path to find these Glumis</small></button>`
                               : `<button class="big2 gold" data-act="travel:${z}">${IC.balloon}Travel here<small>Fly by balloon to ${Z.name}</small></button>`)
-             : `<button class="big2" disabled>${IC.lock.replace(/#fff/g, "#7a5638")}Locked<small>${z > 0 ? `Catch every gloomer in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})` : ""}</small></button>`}
+             : `<button class="big2" disabled>${IC.lock.replace(/#fff/g, "#7a5638")}Locked<small>${z > 0 ? `Catch every Glumi in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})` : ""}</small></button>`}
     </div>`;
   }
   function trainerSVG(color, back) {
@@ -1910,9 +1931,12 @@
     else if (a === "fire") { homeTick(); const p = homeState()[homePlace]; if (p) { p.w = p.w.filter(u => u !== n); save(); render(); } }
     else if (a === "collect") { homeTick(); const got = collectPlace(arg); if (got) { save(); render(); toast(`+${got} ${PLACES[arg].unit}`); } }
     else if (a === "collectall") { homeTick(); const got = Object.keys(PLACES).map(k => [k, collectPlace(k)]).filter(x => x[1]); if (got.length) { save(); render(); toast(got.map(([k, v]) => `+${v} ${PLACES[k].unit}`).join(", ")); } }
-    else if (a === "buymon") { fillMarket(); const it = S.market.items[n]; if (!it || it.sold || S.coins < it.price) return;
-      if (confirmBuy !== n) { confirmBuy = n; render(); return; }
-      S.coins -= it.price; it.sold = true; confirmBuy = null; const m = newMon(it.sp, it.lvl, it.q); keepMon(m); save(); render(); reveal(m, "Welcome!"); }
+    else if (a === "buymon") { const [sp, q] = arg.split("-").map(Number), k = marketKinds().find(x => x.sp === sp); if (!k) return; const p = marketPrice(q, k.lvl); if (S.coins < p) return;
+      if (confirmBuy !== arg) { confirmBuy = arg; render(); return; }
+      S.coins -= p; confirmBuy = null; const m = newMon(sp, k.lvl, q); keepMon(m); save(); render(); reveal(m, "Welcome!"); }
+    else if (a === "gotoshop") { closePopup(); sheetUid = null; view = "shop"; shopTab = "market"; marketFocus = n; showMap = false; render();
+      setTimeout(() => { const r = $("mk-" + n); if (r) r.scrollIntoView({ block: "center", behavior: "smooth" }); }, 60); setTimeout(() => { marketFocus = null; }, 4000); }
+    else if (a === "closepop") closePopup();
     else if (a === "shoptab") { shopTab = arg; confirmBuy = null; reqPick = null; confirmGive = null; render(); }
     else if (a === "reqpick") { reqPick = arg === "" ? null : +arg; confirmGive = null; render(); window.scrollTo(0, 0); }
     else if (a === "give") { const r = reqPick !== null ? S.requests[reqPick] : null, m = mon(n); if (!r || r.done || !m || !reqMatches(r).includes(m)) return;
@@ -1951,7 +1975,7 @@
     else if (a === "spage") { sheetPage = arg; confirmRelease = null; render(); const sh = document.querySelector(".sheet"); if (sh) sh.scrollTop = 0; }
     else if (a === "closesheet") { sheetUid = null; sheetPage = "main"; render(); }
     else if (a === "addteam") { sheetUid = null; if (S.team.length < slots()) { S.team.push(n); save(); toast("Added to your team"); } else { swapIn = n; } render(); window.scrollTo(0, 0); }
-    else if (a === "pickslot") { if (swapIn) { S.team.push(swapIn); swapIn = null; save(); toast("Added to your team"); render(); } else toast("Tap a gloomer below, then Add to team"); }
+    else if (a === "pickslot") { if (swapIn) { S.team.push(swapIn); swapIn = null; save(); toast("Added to your team"); render(); } else toast("Tap a Glumi below, then Add to team"); }
     else if (a === "swapto") { if (swapIn) { S.team[n] = swapIn; swapIn = null; save(); toast("Team updated"); render(); } }
     else if (a === "cancelswap") { swapIn = null; render(); }
     else if (a === "lead") { S.team = [n, ...S.team.filter(u => u !== n)]; save(); render(); }
@@ -1964,6 +1988,7 @@
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const p = sellPrice(m); S.coins += p; S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], have = S.keepsakes[m.sp] || 0;
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { keepsakePopup(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { S.keepsakes[m.sp] = have - need; m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, treat: 25, leaves: 20 }, p = prices[arg]; if (S.coins < p) return;
@@ -1984,12 +2009,19 @@ if (p === undefined) return;
     st.addEventListener("touchend", e => { if (x0 === null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0; x0 = null;
       if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5 && performance.now() - t0 < 600) zoneStep(dx < 0 ? 1 : -1); }, { passive: true });
   })();
+  function versionText() {
+    const app = (navigator.userAgent.match(/GlimmerIsleApp\/([\w.]+)/) || [])[1], b = window.GAME_BUILD;
+    const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const d = b ? new Date(b * 1000) : null, when = d ? `${d.getDate()} ${M[d.getMonth()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : "";
+    return [app ? `Version ${app}` : "", when ? `game of ${when}` : ""].filter(Boolean).join(" · ") || "Development copy";
+  }
   // ================= LOADING SCREEN =================
   (function splash() {
     const SPLASH_MIN_MS = 2400, t0 = performance.now(), sp = $("splash"); if (!sp) return;
     $("spMons").innerHTML = [[3, 0, 74], [0, 0, 92], [6, 0, 74]].map(([k, e, z]) => `<span>${art(k, e, z)}</span>`).join("");
-    const tips = ["Tip: tap the compass to walk the path", "Tip: throw a jar when the ring is small", "Tip: glow refills by itself over time", "Tip: the Atlas shows every zone's gloomers", "Tip: a glowing chest gives extra glow"];
+    const tips = ["Tip: tap the compass to walk the path", "Tip: throw a jar when the ring is small", "Tip: glow refills by itself over time", "Tip: the Atlas shows every zone's Glumis", "Tip: a glowing chest gives extra glow"];
     $("spTip").textContent = tips[rnd(0, tips.length - 1)];
+    $("spVer").textContent = versionText();
     let p = 0, ready = false;
     const show = v => { $("spFill").style.width = `calc(${v}% - 6px)`; $("spDrop").style.left = v + "%"; };
     const iv = setInterval(() => { p = Math.min(ready ? 100 : 88, p + (ready ? 9 : 3 + Math.random() * 5)); show(p);
