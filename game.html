@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794835502;</script>
+<script>window.GAME_BUILD = 1794836504;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -598,7 +598,8 @@
   .reqtxt { display: block; font-size: 12px; font-weight: 700; color: var(--brown-2, #8a6d55); }
   .price.give { background: linear-gradient(#9be27a, #4cb648); text-shadow: 0 1px 2px rgba(30,90,30,.4); }
   body.menubg { background: linear-gradient(rgba(255,248,236,.15), rgba(255,248,236,.35)), var(--menubg) center / cover fixed; }
-  body.menubg .page { background: rgba(255,248,236,.9); backdrop-filter: blur(6px); }
+  body.menubg .page { background: rgba(255,248,236,.9); position: relative; }
+body.menubg .page::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); pointer-events: none; }
   .shootstar { position: absolute; width: 46px; height: 46px; margin: -23px 0 0 -23px; z-index: 8; pointer-events: none; animation: shoot .55s cubic-bezier(.25,.1,.55,1) both; }
   .shootstar::before { content: ""; position: absolute; left: 23px; top: 18px; width: 190px; height: 10px; border-radius: 5px; transform-origin: 0 50%; transform: rotate(-69deg);
     background: linear-gradient(90deg, #fff, #ffd36b 30%, rgba(255,180,60,.55) 60%, rgba(255,180,60,0)); filter: drop-shadow(0 0 6px #ffb627); }
