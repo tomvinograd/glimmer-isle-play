@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794872669;</script>
+<script>window.GAME_BUILD = 1794872854;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1212,6 +1212,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .lz .zcard.sel { box-shadow: 0 0 0 3px var(--gc), 0 3px 8px rgba(0,0,0,.3); }
   .lzx { justify-self: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255,255,255,.9); color: #6b4a33; font: 900 24px var(--display); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
   .amode.lrace { margin-top: 10px; }
+  .bqrow { display: flex; align-items: center; gap: 6px; }
+  .bqrow span { font: 800 14px var(--display); color: var(--brown); margin-right: 2px; }
+  .bqrow button { flex: 1; border: 0; border-radius: 10px; padding: 7px 0; background: #fff; color: var(--brown); font: 800 14px var(--display); box-shadow: 0 2px 6px rgba(91,70,54,.15); }
+  .bqrow button.on { background: #f5b23c; color: #fff; }
+  .price .bq { font-style: normal; font-size: 11px; margin-right: 3px; opacity: .9; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2866,13 +2871,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return `<div class="head"><h2>Book</h2><span class="pill">${got}/${total}</span></div>` + ZONES.map((Z, i) => `<h3>${zoneOpen(i) ? Z.name : "???"}</h3><div class="book">${Z.sp.flatMap(sp => [cell(sp, 0), cell(sp, 1)]).join("")}${cell(Z.boss, 0)}</div>`).join("");
   }
   let shopTab = "jars";
+  const BUY_QS = [1, 5, 10, 50], buyQ = () => BUY_QS.includes(S.buyQ) ? S.buyQ : 1;
   function pageShop() {
     const tabs = [["jars", "Jars"], ["market", "Glumis"], ["requests", "Requests"]];
     if (shopTab === "supplies") shopTab = "jars";
     if (shopTab === "requests") return pageRequests(tabs);
     if (shopTab === "market") return pageMarket(tabs);
     const row = (k, icon, name, about, price, ok = true) => `<div class="scard"><span class="sci">${icon}</span><b>${name}</b><small>${about.replace(/ · you have (\d+)/, "")}</small><small class="have">${(about.match(/you have (\d+)/) || [])[1] !== undefined ? "You have " + about.match(/you have (\d+)/)[1] : ""}</small>
-      <button class="price" data-act="buy:${k}" ${S.coins >= price && ok ? "" : "disabled"}>${IC.coin}${price}</button></div>`;
+      <button class="price" data-act="buy:${k}" ${S.coins >= price * buyQ() && ok ? "" : "disabled"}>${buyQ() > 1 ? `<em class="bq">×${buyQ()}</em>` : ""}${IC.coin}${(price * buyQ()).toLocaleString("en")}</button></div>`;
     const items = {
       jars: [row("plain", IC.jar(JARS[0].c), "Plain jar", `A simple jar · you have ${S.jars.plain}`, 15),
              row("bright", IC.jar(JARS[1].c), "Bright jar", `Catches more easily · you have ${S.jars.bright}`, 45),
@@ -2885,6 +2891,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return `<div class="shophead"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
       ${waiting ? `<button class="door" data-act="backtocatch">${art(waiting.sp, waiting.evo, 36)}<span><b>Back to ${fname(waiting.sp, waiting.evo)}</b><small>It is still waiting on the path</small></span><i>›</i></button>` : ""}
       <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
+      ${shopTab === "jars" ? `<div class="bqrow"><span>Buy</span>${BUY_QS.map(q => `<button class="${buyQ() === q ? "on" : ""}" data-act="buyq:${q}">×${q}</button>`).join("")}</div>` : ""}
       <div class="sgrid">${items[shopTab].join("")}</div>`;
   }
   // ================= REQUESTS: give Glumis, get moonfruit or glow =================
@@ -3664,11 +3671,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
+    else if (a === "buyq") { S.buyQ = n; save(); render(); }
     else if (a === "buy") {
-      const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, p = prices[arg]; if (S.coins < p) return;
-if (p === undefined) return;
-      if (S.jars[arg] !== undefined) S.jars[arg]++; else if (arg === "treat") S.treats++; else if (arg === "leaves") S.leaves += 10; else if (arg === "glow") S.glow += 20; else if (arg === "fruit") S.fruit++;
-      S.coins -= p; sfx("coin"); save(); render();
+      const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, q = S.jars[arg] !== undefined ? buyQ() : 1, p = prices[arg] * q;
+      if (prices[arg] === undefined || S.coins < p) return;
+      if (S.jars[arg] !== undefined) S.jars[arg] += q; else if (arg === "treat") S.treats++; else if (arg === "leaves") S.leaves += 10; else if (arg === "glow") S.glow += 20; else if (arg === "fruit") S.fruit++;
+      S.coins -= p; sfx("coin"); save(); render(); if (q > 1) toast(`Bought ${q} ${JAR_NAME[arg] || arg} jars`);
     }
   });
 
