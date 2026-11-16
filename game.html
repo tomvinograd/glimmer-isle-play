@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794841891;</script>
+<script>window.GAME_BUILD = 1794842697;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1517,7 +1517,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       const jar = autoThrow ? JAR_DOWN[w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low].find(j => S.jars[j] > 0) : (S.jars[E.jar] > 0 ? E.jar : null);
       if (!jar) return; S.jars[jar]--; plan.push({ w, k, jar });
     });
-    if (!plan.length) { if (autoThrow) { E = null; save(); render(); } else toast("No jars of that kind"); return; }
+    if (!plan.length) { if (autoThrow) { toast(C.only === "new" ? "Walked past: you have all of these (Auto rule: only new ones)" : "Walked past: no jars left"); E = null; save(); render(); } else toast("No jars of that kind"); return; }
     busy = true; renderActions();
     const st = $("stage"), sx = st.clientWidth * .55, sy = st.clientHeight + 30;
     await Promise.all(plan.map(async (p, idx) => {
@@ -2717,7 +2717,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   function autoPicksUp() { return S.auto && E && (E.type === "chest" || E.type === "gather"); }  // Auto opens chests and gathers even with catching off
   function autoCatchOn() { return S.auto && S.autoCfg && S.autoCfg.catch; }
   function autoPause() { if (!autoCatchOn()) autoOff(true); }
-  const JAR_DOWN = { star: ["star", "bright", "plain"], bright: ["bright", "plain"], plain: ["plain"] };  // the chosen jar, then cheaper ones
+  const JAR_DOWN = { star: ["star", "bright", "plain"], bright: ["bright", "plain", "star"], plain: ["plain", "bright", "star"] };  // the chosen jar, then cheaper ones, then better ones (never walk past for want of the cheap jar)
   async function autoAct() {
     if (autoLock) return; autoLock = true;
     try {
@@ -2730,14 +2730,14 @@ nav .navwide .bang { top: 4px; right: 6px; }
       if (E.type !== "wild") { E = null; save(); render(); return; }
       if (E.boss) { autoOff(); return; }
       const w = E.list[E.i];
-      if (C.only === "new" && S.caught[key(w.sp, w.evo)]) return nextWild();
+      if (C.only === "new" && S.caught[key(w.sp, w.evo)]) { toast(`Walked past ${fname(w.sp, w.evo)}: you have it (Auto rule: only new ones)`); return nextWild(); }
       if (tough(w) && !E.fought) {
-        if (E.autoLost || !front()) return nextWild();
+        if (E.autoLost || !front()) { toast(`Walked past ${fname(w.sp, w.evo)}: too tough for now`); return nextWild(); }
         return void await startBattle([w], "wild");
       }
       if (!S.jars.plain && !S.jars.bright && !S.jars.star) { autoOff(true); toast("Auto stopped: out of jars"); return; }
       const rule = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, jar = JAR_DOWN[rule].find(k => S.jars[k] > 0);
-      if (!jar) return nextWild();  // none of the allowed jars left for this one: walk on
+      if (!jar) { toast("Walked past: no jars left"); return nextWild(); }
       if (w.q >= C.treat && S.treats > 0 && !E.treat) { S.treats--; E.treat = true; }
       E.jar = jar; render();
       await throwJar(true);
