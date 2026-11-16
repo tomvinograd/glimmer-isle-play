@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794866952;</script>
+<script>window.GAME_BUILD = 1794867190;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2239,7 +2239,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const rbPityText = () => `A Rainbow for sure after ${Math.max(0, RB_PITY - (S.rbPity || 0))} more catches at x${RB_PITY_MULT} or higher`;
   function gradeBlock(z) {
     const Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(), have = Z.sp.filter(sp => (B[sp] || 0) >= g).length, cl = (st.gq && st.gq[g]) || 0;
-    const nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && k === cl && have >= need, r = k === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g];
+    const nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && have >= need, r = k === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g];
       return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="gclaim:${z}" ${can ? "" : "disabled"}>${done ? IC.star : RW[r.k][0]}<small>${need}</small></button>`; }).join("");
     return `<div class="gcol${g === 4 ? " rb" : ""}" style="--gc:${GRADES[g].c}"><div class="gcsw"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>
       <div class="gcmini">${Z.sp.map(sp => `<span class="${(B[sp] || 0) >= g ? "" : "no"}">${art(sp, 0, 30)}</span>`).join("")}</div>
@@ -3102,7 +3102,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       ${i === S.zone ? `<span class="here">${IC.balloon}</span>` : ""}
       ${zoneOpen(i) ? "" : `<span class="zl">${IC.lock}${caughtIn(i - 1)}/${ZONES[i - 1].sp.length}</span>`}</span><span class="zn">${ZZ.name}<small>${caughtIn(i)} of ${ZZ.sp.length} caught</small></span></button>`).join("");
     const ms = milestones(z), claimed = st.claimed || 0;
-    const track = ms.map((m, k) => { const done = k < claimed, can = !done && k === claimed && reached(z, m), [label, icon] = REWARD[m.kind](z);
+    let upTo = claimed; while (upTo < ms.length && reached(z, ms[upTo])) upTo++;  // rewards ready to collect: claimed .. upTo-1
+    const track = ms.map((m, k) => { const done = k < claimed, can = !done && k < upTo, [label, icon] = REWARD[m.kind](z);
       return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="claim:${z}" ${can ? "" : "disabled"} aria-label="${label}">${done ? IC.star : icon}<small>${m.need === "boss" ? "Guardian" : m.need + " caught"}</small></button>`; }).join("");
     const waiting = sp => S.reveal && S.reveal.includes(sp);
     const pin = (sp, [x, y]) => { const c = (st.caught[sp] || S.caught[key(sp, 0)]) && !waiting(sp), seen = S.seen[key(sp, 0)], cls = waiting(sp) ? "reveal" : c ? "caught" : seen ? "seen" : "unknown";
@@ -3338,7 +3339,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "pickmon") { if (BT && BT.pick > 0) { const cur = front(), i = S.team.indexOf(n), ci = cur ? S.team.indexOf(cur.uid) : -1; if (i > -1 && ci > -1 && i !== ci) [S.team[ci], S.team[i]] = [S.team[i], S.team[ci]]; BT.pick = 0; BT.me.t = 0; render(); } }
     else if (a === "agrade") { atlasGrade = Math.min(4, Math.max(1, atlasGrade + n)); render(); }
     else if (a === "gclaim") { const z = n, Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(); if (!st.gq) st.gq = {}; const cl = st.gq[g] || 0, have = Z.sp.filter(sp => (B[sp] || 0) >= g).length;
-      if (cl < Z.sp.length && have >= cl + 1) { const r = cl === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g]; st.gq[g] = cl + 1; giveReward(r); sfx("claim"); save(); toast(`Got ${r.n} ${RW[r.k][1]}`); render(); } }
+      const sum = {};
+      for (let j = cl; j < Z.sp.length && have >= j + 1; j++) { const r = j === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g]; giveReward(r); sum[r.k] = (sum[r.k] || 0) + r.n; st.gq[g] = j + 1; }
+      if (Object.keys(sum).length) { sfx("claim"); save(); toast("Got " + Object.entries(sum).map(([k, n]) => `${n} ${RW[k][1]}${n > 1 && !RW[k][1].endsWith("s") && k !== "glow" ? "s" : ""}`).join(", ")); render(); } }
     else if (a === "sheettab") { sheetTab = arg; render(); }
     else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
     else if (a === "sheetnav") { const L = teamOrder(), i = L.findIndex(x => x.uid === sheetUid); if (L.length) { sheetUid = L[(i + n + L.length) % L.length].uid; sheetPage = "main"; render(); } }
@@ -3364,7 +3367,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "revealback") { revealTrip = false; view = "explore"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); }
     else if (a === "claim") {
       const z = n, ms = milestones(z), k = S.zones[z].claimed || 0, m = ms[k];
-      if (m && reached(z, m)) { S.zones[z].claimed = k + 1; const g = { coins: () => S.coins += 15 * (z + 1), plain: () => S.jars.plain += 3, glow: () => S.glow += 20, bright: () => S.jars.bright += 1, fruit: () => S.fruit += 1 }; g[m.kind](); save(); toast("Got " + REWARD[m.kind](z)[0]); render(); }
+      const g = { coins: () => S.coins += 15 * (z + 1), plain: () => S.jars.plain += 3, glow: () => S.glow += 20, bright: () => S.jars.bright += 1, fruit: () => S.fruit += 1 }, got = [];
+      for (let j = k; ms[j] && reached(z, ms[j]); j++) { g[ms[j].kind](); got.push(REWARD[ms[j].kind](z)[0]); S.zones[z].claimed = j + 1; }
+      if (got.length) { sfx("claim"); save(); toast("Got " + got.join(", ")); render(); }
     }
     else if (a === "zstep") zoneStep(n);
     else if (a === "travel") travelTo(n);
