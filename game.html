@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794867866;</script>
+<script>window.GAME_BUILD = 1794868409;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1111,6 +1111,48 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .cards .hcard.q4 { background: var(--card-q4) center/cover no-repeat padding-box, linear-gradient(135deg, #ff8a8a, #ffd36b, #8ae68a, #7fd4ff, #c79bff) border-box; }
   .hpow.q4 { background: linear-gradient(90deg, #ff8a8a, #ffc94d, #6fd38a, #5aa8ff, #a77bff); text-shadow: 0 1px 2px rgba(60,40,20,.35); }
   .autochip b.aspd { background: #fff; color: #d9822b; box-shadow: inset 0 0 0 2px #f5b23c; padding: 3px 8px; }
+  /* fight: Lumi-like skill cards and segmented energy */
+  .bmain { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+  .tswrow { display: flex; gap: 5px; }
+  .tsw { position: relative; width: 52px; border: 0; border-radius: 14px; background: #fff7ea; padding: 4px 3px 5px; display: grid; justify-items: center; gap: 2px; overflow: hidden; box-shadow: 0 2px 0 #c9a77c; }
+  .tsw.cur { background: linear-gradient(#ffe9a8, #f5b23c); }
+  .tsw svg, .tsw img { width: 40px !important; height: auto; }
+  .tsw .bar { height: 5px; width: 100%; }
+  .tsw .tagcur { display: none; }
+  .tsw .cd { position: absolute; inset: 0; background: rgba(59,53,87,.55); color: #fff; display: grid; place-items: center; font-family: var(--display); font-weight: 800; }
+  .skcol { display: grid; gap: 8px; }
+  .skcard { position: relative; width: 156px; height: 70px; border: 0; padding: 0; border-radius: 16px; overflow: hidden; display: block; text-align: left;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--elc) 45%, #fff), var(--elc)); box-shadow: 0 3px 0 rgba(60,40,20,.35), inset 0 0 0 3px rgba(255,255,255,.65); }
+  .skcard.sig { background: radial-gradient(circle at 30% 30%, #8e6fd1, #3b2a5c 75%); box-shadow: 0 3px 0 rgba(40,20,60,.5), inset 0 0 0 3px #f5c13c; }
+  .skcard .skart { position: absolute; left: 22px; top: 2px; width: 66px; height: 66px; display: grid; place-items: center; }
+  .skcard .skart svg, .skcard .skart img { width: 58px !important; height: auto; filter: drop-shadow(0 2px 3px rgba(40,20,10,.35)); }
+  .skcard .sknm { position: absolute; left: 84px; right: 5px; top: 7px; font: 800 10.5px/1.1 var(--display); overflow-wrap: anywhere; color: #fff; text-shadow: 0 1px 2px rgba(40,20,10,.6); }
+  .skcard .skgem { position: absolute; left: 3px; top: 3px; width: 26px; height: 26px; display: grid; place-items: center; background: linear-gradient(#fff3b0, #f0a52a); color: #5b3f2a; font: 900 14px var(--display); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+  .skcard .skel { position: absolute; left: 6px; bottom: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--elc); display: grid; place-items: center; box-shadow: 0 0 0 2px #fff; }
+  .skcard .skpow { position: absolute; right: 8px; bottom: 3px; font: 900 22px var(--display); color: #fff; text-shadow: 0 2px 3px rgba(40,20,10,.6); }
+  .skcard::after { content: ""; position: absolute; inset: 0; background: rgba(40,30,55,.58); clip-path: inset(0 0 0 var(--p)); transition: clip-path .15s; pointer-events: none; }
+  .skcard.ready::after { display: none; }
+  .skcard.ready { animation: skglow 1.2s ease-in-out infinite; }
+  .skcard:disabled { opacity: 1; }
+  @keyframes skglow { 50% { box-shadow: 0 3px 0 rgba(60,40,20,.35), 0 0 16px 3px #ffe27a, inset 0 0 0 3px #fff; } }
+  .ebrow { display: flex; align-items: center; gap: 8px; }
+  .egem { flex: none; width: 40px; height: 40px; display: grid; place-items: center; background: linear-gradient(#fff3c4, #f5b23c); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+  .egem b { font: 900 17px var(--display); color: #6b4a1e; }
+  .esegs { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; padding: 4px; border-radius: 10px; background: #6b4a33; box-shadow: inset 0 2px 3px rgba(0,0,0,.35); }
+  .esegs i { height: 16px; border-radius: 4px; background: #8e6a4e; overflow: hidden; display: block; }
+  .esegs i b { display: block; height: 100%; background: linear-gradient(#fff3a0, #f5c13c); }
+  .esegs i.f b { background: linear-gradient(#fff8c4, #ffcf3a); }
+  .esegs.mini { padding: 2px; gap: 2px; border-radius: 6px; margin-top: 3px; } .esegs.mini i { height: 6px; border-radius: 2px; }
+  .shieldb { flex: none; position: relative; width: 50px; height: 50px; border: 0; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff6d8, #f5b23c); display: grid; place-items: center; box-shadow: 0 3px 0 #b07a1c; }
+  .shieldb svg, .shieldb img { width: 28px !important; height: 28px; }
+  .shieldb > b { position: absolute; right: -3px; bottom: -3px; width: 20px; height: 20px; border-radius: 50%; background: #6b4a33; color: #fff; font: 900 12px/20px var(--display); text-align: center; }
+  .shieldb:disabled { filter: grayscale(.85) brightness(.92); }
+  /* Glumi card skill tab */
+  .skilltab .skh { margin: 6px 0 2px; font: 800 13px var(--display); color: var(--brown); }
+  .skilltab .skc { font-style: normal; font-size: 11px; font-weight: 800; color: #d9822b; margin-left: 4px; }
+  .skilltab .skrow { align-items: center; }
+  .skuse { margin-left: auto; flex: none; border: 0; border-radius: 8px; padding: 5px 10px; background: #f5b23c; color: #fff; font: 800 12px var(--display); }
+  .skuse.on { background: #e6f8ea; color: #3e9e57; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1780,23 +1822,20 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1))); dfn.hp = Math.max(0, dfn.hp - dmg); if (basic) sideA.e = Math.min(100, sideA.e + 20); sideD.e = Math.min(100, sideD.e + 6); return dmg; }
   function doSkill(mine) {
     const me = front(), foe = BT.foes[BT.fi], a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me;
-    const m = mult(SP[a.sp].el, SP[d.sp].el); sa.e = 0; const dmg = hit(a, d, 3.2 * m, sa, sd, false);
-    BT.fx.push({ who: mine ? "me" : "foe", dmg, skill: true, eff: m }); skillBanner(SKILLS[SP[a.sp].el], mine, EL[SP[a.sp].el].color);
+    return castSkill(mine, "x");
   }
-  function useShield(mine) { const side = mine ? BT.me : BT.foe; if (side.e < 40 || side.sh > 0) return; side.e -= 40; side.sh = 4; BT.fx.push({ who: mine ? "me" : "foe", shield: true }); }
+  function useShield(mine) { const side = mine ? BT.me : BT.foe; if (side.e < SHIELD_COST * 10 || side.sh > 0) return; side.e -= SHIELD_COST * 10; side.sh = 4; BT.fx.push({ who: mine ? "me" : "foe", shield: true }); }
   function tick(dt) {
     if (!BT || BT.over) return;
     if (BT.pick > 0) { BT.pick -= dt; const pt = $("pickT"); if (pt) pt.textContent = Math.max(0, Math.ceil(BT.pick)); if (BT.pick <= 0) { BT.pick = 0; BT.me.t = 0; render(); } return; }
     dt *= BT.speed; BT.swapCd = Math.max(0, BT.swapCd - dt); BT.me.sh = Math.max(0, (BT.me.sh || 0) - dt); BT.foe.sh = Math.max(0, (BT.foe.sh || 0) - dt);
     const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return;
-    BT.me.t += dt; BT.foe.t += dt;
+    BT.me.t += dt; BT.foe.t += dt; BT.me.e = Math.min(100, BT.me.e + 4 * dt); BT.foe.e = Math.min(100, BT.foe.e + 4 * dt);
     if (BT.me.t >= interval(me)) { BT.me.t -= interval(me); BT.fx.push({ who: "me", dmg: hit(me, foe, interval(me) * .9, BT.me, BT.foe, true) }); }
-    if (BT.auto && BT.me.e >= 100) doSkill(true);
-    else if (BT.auto && BT.me.e >= 40 && !(BT.me.sh > 0) && me.hp < maxHp(me) * .4) useShield(true);
+    if (BT.auto) skillAI(true);
     if (foe.hp > 0) {
       if (BT.foe.t >= interval(foe)) { BT.foe.t -= interval(foe); BT.fx.push({ who: "foe", dmg: hit(foe, me, interval(foe) * .9, BT.foe, BT.me, true) }); }
-      if (BT.foe.e >= 100 && Math.random() < .2 * BT.speed) doSkill(false);
-      else if (BT.foe.e >= 40 && !(BT.foe.sh > 0) && foe.hp < maxHp(foe) * .5 && Math.random() < .05 * BT.speed) useShield(false);
+      if (Math.random() < .25 * BT.speed) skillAI(false);
     }
     playFx();
     if (foe.hp <= 0) {
@@ -1811,6 +1850,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (const f of BT.fx.splice(0)) {
       const att = f.who === "me" ? meEl : foeEl, tgt = f.who === "me" ? foeEl : meEl; if (!att || !tgt) continue;
       if (f.shield) { const [sx, sy] = stageXY(att); floatText(sx, sy - 60, "Shield!", true); continue; }
+      if (f.heal) { const [hx, hy] = stageXY(att); floatText(hx, hy - 60, "+" + f.heal, true); continue; }
       const [ax, ay] = stageXY(att), [tx, ty] = stageXY(tgt);
       if (!RM) att.animate([{ transform: "translate(0,0)" }, { transform: `translate(${(tx - ax) * .25}px,${(ty - ay) * .25}px) scale(1.08)` }, { transform: "translate(0,0)" }], { duration: f.skill ? 380 : 240, easing: "ease-out" });
       if (!RM) tgt.animate([{ filter: "brightness(1)" }, { filter: "brightness(2.6)" }, { filter: "brightness(1)" }], { duration: 200, delay: 110 });
@@ -2071,6 +2111,63 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   // ================= ARENA: gyms, daily duels, sky tower =================
   const SKILLS = { ember: "Cinder Pop", tide: "Bubble Splash", leaf: "Leaf Whirl", spark: "Static Zap", stone: "Pebble Crash", shade: "Moon Hush" };
+  // ================= SKILLS: a signature skill per kind + one shared element skill (pick 1 of 3) =================
+  const EXCL = ["Marshmallow Toss", "Chili Peck", "Ember Roar", "Gill Bubble", "Snorkel Spray", "Paper Sail Ram", "Mochi Bounce", "Fern Tail Swipe", "Moss Chomp",
+    "Plug Charge", "Kite Dive", "Coil Shell", "Roll Out", "Crystal Horn", "Geode Breath", "Spooky Puff", "Starfin Flash", "Lullaby",
+    "Lighthouse Beam", "Treehouse Slam", "Flame Crown", "Sandcastle Quake", "Moon Veil",
+    "Jelly Wobble", "Lantern Glare", "Hot Tea Pinch", "Spore Squeak", "Glow Trail", "Puff Burrow", "Drizzle Pounce", "Chime Song", "Balloon Bump",
+    "Coral Crown", "Fungal Fist", "Thunder Wing"];
+  const SHARED = {  // [name, energy cost, hit power, heal share]
+    ember: [["Cinder Pop", 3, 1.4, 0], ["Flare Blast", 6, 2.6, 0], ["Warm Glow", 4, 0, .25]],
+    tide: [["Bubble Splash", 3, 1.4, 0], ["Tidal Crash", 6, 2.6, 0], ["Rain Soothe", 4, 0, .25]],
+    leaf: [["Leaf Whirl", 3, 1.4, 0], ["Thorn Storm", 6, 2.6, 0], ["Sap Mend", 4, 0, .25]],
+    spark: [["Static Zap", 3, 1.4, 0], ["Thunder Clap", 6, 2.6, 0], ["Spark Tonic", 4, 0, .25]],
+    stone: [["Pebble Crash", 3, 1.4, 0], ["Boulder Drop", 6, 2.6, 0], ["Stone Rest", 4, 0, .25]],
+    shade: [["Moon Hush", 3, 1.4, 0], ["Star Fall", 6, 2.6, 0], ["Moonlit Rest", 4, 0, .25]],
+  };
+  const EL_GLYPH = { ember: "M12 2c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 0-3 0-5 1-7z", tide: "M12 2C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-13z",
+    leaf: "M5 19C5 9 11 4 20 4c0 9-5 15-15 15zm0 0 8-8", spark: "M13 2 4 14h7l-1 8 9-12h-7z", stone: "M4 17l3-8 6-4 6 5 1 7-6 3H8z", shade: "M15 3a9 9 0 1 0 6 13A7 7 0 0 1 15 3z" };
+  const elGlyph = (el, sz) => `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" aria-hidden="true"><path d="${EL_GLYPH[el]}" fill="#fff" stroke="rgba(60,40,20,.45)" stroke-width="1.3" stroke-linejoin="round"/></svg>`;
+  const SHIELD_COST = 4;
+  function skillOf(m, k) {
+    const s = SP[m.sp];
+    if (k === "x") return { k, name: EXCL[m.sp] || "Signature", cost: 8, power: s.shape === "tall" ? 4.4 : 3.8, heal: s.shape === "round" ? .15 : 0, shield: s.shape === "wide" ? 3 : 0, el: s.el, sig: true };
+    const [name, cost, power, heal] = SHARED[s.el][m.wild ? m.sp % 3 : Math.min(2, m.sk || 0)]; return { k, name, cost, power, heal, shield: 0, el: s.el };
+  }
+  const skillText = sk => [sk.power ? `a ${sk.power}x hit` : "", sk.heal ? `heals ${Math.round(sk.heal * 100)}% HP` : "", sk.shield ? `a ${sk.shield} s shield` : ""].filter(Boolean).join(" + ");
+  const skillEst = (a, d, sk) => sk.power ? Math.max(1, Math.round(atk(a) * sk.power * mult(sk.el, SP[d.sp].el) * 60 / (60 + def(d)))) : Math.round(maxHp(a) * sk.heal);
+  function castSkill(mine, k) {
+    if (!BT) return false; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return false;
+    const a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me, sk = skillOf(a, k);
+    if (sa.e < sk.cost * 10) return false;
+    sa.e -= sk.cost * 10;
+    if (sk.power) { const m = mult(sk.el, SP[d.sp].el); BT.fx.push({ who: mine ? "me" : "foe", dmg: hit(a, d, sk.power * m, sa, sd, false), skill: true, eff: m }); }
+    if (sk.heal) { const h = Math.round(maxHp(a) * sk.heal); a.hp = Math.min(maxHp(a), a.hp + h); BT.fx.push({ who: mine ? "me" : "foe", heal: h }); }
+    if (sk.shield) sa.sh = Math.max(sa.sh || 0, sk.shield);
+    skillBanner(sk.name, mine, EL[sk.el].color); return true;
+  }
+  function skillAI(mine) {  // Auto and foes: heal when low, signature when affordable, otherwise spend a nearly full bar
+    const a = mine ? front() : BT.foes[BT.fi], side = mine ? BT.me : BT.foe; if (!a) return;
+    const x = skillOf(a, "x"), sh = skillOf(a, "s");
+    if (sh.heal && a.hp < maxHp(a) * .45 && side.e >= sh.cost * 10) return castSkill(mine, "s");
+    if (side.e >= x.cost * 10) return castSkill(mine, "x");
+    if (!sh.heal && side.e >= 90 && side.e >= sh.cost * 10) return castSkill(mine, "s");
+    if (side.e >= SHIELD_COST * 10 && !(side.sh > 0) && a.hp < maxHp(a) * (mine ? .4 : .5)) useShield(mine);
+  }
+  const segs = e => Array.from({ length: 10 }, (_, i) => { const p = Math.max(0, Math.min(1, (e - i * 10) / 10)); return `<i class="${p >= 1 ? "f" : ""}"><b style="width:${p * 100}%"></b></i>`; }).join("");
+  function skCard(m, foe, k) {
+    const sk = skillOf(m, k), ok = BT.me.e >= sk.cost * 10, est = skillEst(m, foe, sk);
+    return `<button class="skcard${sk.sig ? " sig" : ""}${ok ? " ready" : ""}" id="sk_${k}" data-act="cast:${k}" data-cost="${sk.cost}" style="--elc:${EL[sk.el].color};--p:${Math.min(100, BT.me.e / (sk.cost * 10) * 100)}%" ${ok ? "" : "disabled"} aria-label="${sk.name}, ${sk.cost} energy">`
+      + `<span class="skart">${sk.sig ? art(m.sp, m.evo, 58) : elGlyph(sk.el, 40)}</span><span class="sknm">${sk.name}</span><span class="skgem">${sk.cost}</span><span class="skel">${elGlyph(sk.el, 13)}</span><span class="skpow">${sk.power ? est : "+" + est}</span></button>`;
+  }
+  function skillTab(m) {
+    const x = skillOf(m, "x"), cur = Math.min(2, m.sk || 0), s = SP[m.sp];
+    const row = (sk, extra) => `<div class="skrow"><span class="skic" style="background:${EL[sk.el].color}">${sk.sig ? IC.star : elGlyph(sk.el, 18)}</span><div><b>${sk.name} <em class="skc">${sk.cost} energy</em></b><small>${skillText(sk)}</small></div>${extra || ""}</div>`;
+    return `<p class="skh">Signature skill: only ${s.name}</p>${row(x)}
+      <p class="skh">${EL[s.el].name} skill: pick one</p>${SHARED[s.el].map((_, i) => row(skillOf({ ...m, wild: 0, sk: i }, "s"), i === cur ? `<span class="skuse on">In use</span>` : `<button class="skuse" data-act="setsk:${i}">Use</button>`)).join("")}
+      <div class="skrow"><span class="skic" style="background:#5aa8ff">${IC.flag}</span><div><b>Shield <em class="skc">${SHIELD_COST} energy</em></b><small>Halves the damage taken for 4 seconds</small></div></div>
+      <p class="hint" style="margin:0">In a fight energy fills a 10-point bar. Tap a skill when it lights up; the fight's Auto button uses them for you.</p>`;
+  }
   function skillBanner(name, mine, color) {
     const d = document.createElement("div"); d.className = "skillban" + (mine ? "" : " foe"); d.style.setProperty("--c", color); d.innerHTML = `<span>${name}</span>`;
     $("arena").appendChild(d); setTimeout(() => d.remove(), RM ? 500 : 1100);
@@ -2142,11 +2239,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const A = mine.map(m => ({ m, hp: maxHp(m), t: 0 })), B = foes.map(m => ({ m, hp: maxHp(m), t: 0 })), ea = { e: 0 }, eb = { e: 0 };
     let i = 0, j = 0;
     const hitS = (x, y, p, sx, sy, basic) => { y.hp -= Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m)))); if (basic) sx.e = Math.min(100, sx.e + 20); sy.e = Math.min(100, sy.e + 6); };
+    const simSkill = (x, y, sx, sy) => { const X = skillOf(x.m, "x"), Sk = skillOf(x.m, "s"), use = sk => { sx.e -= sk.cost * 10; if (sk.power) hitS(x, y, sk.power * mult(sk.el, SP[y.m.sp].el), sx, sy, false); if (sk.heal) x.hp = Math.min(maxHp(x.m), x.hp + maxHp(x.m) * sk.heal); };
+      if (Sk.heal && x.hp < maxHp(x.m) * .45 && sx.e >= Sk.cost * 10) use(Sk); else if (sx.e >= X.cost * 10) use(X); else if (!Sk.heal && sx.e >= 90 && sx.e >= Sk.cost * 10) use(Sk); };
     for (let t = 0; t < 900 && i < A.length && j < B.length; t += .1) {
-      const a = A[i], b = B[j]; a.t += .1; b.t += .1;
+      const a = A[i], b = B[j]; a.t += .1; b.t += .1; ea.e = Math.min(100, ea.e + .4); eb.e = Math.min(100, eb.e + .4);
       if (a.t >= interval(a.m)) { a.t -= interval(a.m); hitS(a, b, interval(a.m) * .9, ea, eb, true); }
-      if (ea.e >= 100) { ea.e = 0; hitS(a, b, 3.2 * mult(SP[a.m.sp].el, SP[b.m.sp].el), ea, eb, false); }
-      if (b.hp > 0) { if (b.t >= interval(b.m)) { b.t -= interval(b.m); hitS(b, a, interval(b.m) * .9, eb, ea, true); } if (eb.e >= 100) { eb.e = 0; hitS(b, a, 3.2 * mult(SP[b.m.sp].el, SP[a.m.sp].el), eb, ea, false); } }
+      simSkill(a, b, ea, eb);
+      if (b.hp > 0) { if (b.t >= interval(b.m)) { b.t -= interval(b.m); hitS(b, a, interval(b.m) * .9, eb, ea, true); } simSkill(b, a, eb, ea); }
       if (b.hp <= 0) { j++; eb.e = 0; } if (a.hp <= 0) i++;
     }
     return j >= B.length;
@@ -2662,9 +2761,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         ? `<button class="gbig asc" data-act="ascend:${m.uid}"><b>Ascend</b><small>${IC.heart || ""}${keeps}/${aNeed} ${s.name} keepsakes</small></button>`
         : `<button class="gbig" data-act="${multi ? "lvlmax" : "lvl"}:${m.uid}" ${lvlReady ? "" : "disabled"}><b>${capped ? "Top level" : multi ? `Level up x${lvlN}` : "Level up"}</b><small>${IC.leaf}${S.leaves}/${multi ? levelsCost(m, lvlN) : cost}</small></button>`;
       const tabBody = sheetTab === "skill"
-        ? `<div class="skilltab"><div class="skrow"><span class="skic" style="background:${EL[s.el].color}">${IC.star}</span><div><b>${SKILLS[s.el]}</b><small>When the energy bar is full: a strong ${EL[s.el].name} hit, about 3 times a normal attack. Extra strong against ${EL[BEATS[s.el]].name}, weak against ${EL[weakTo(s.el)].name}.</small></div></div>
-           <div class="skrow"><span class="skic" style="background:#5aa8ff">${IC.flag}</span><div><b>Shield</b><small>Costs 40 energy. Halves the damage it takes for 4 seconds.</small></div></div>
-           <div class="skrow"><span class="skic" style="background:#f5a623">${IC.fast}</span><div><b>Attack speed</b><small>${{ round: "Normal: one hit a second", tall: "Quick: a hit every 0.8 seconds", wide: "Slow but sturdy: a hit every 1.25 seconds" }[s.shape]}</small></div></div></div>`
+        ? `<div class="skilltab">${skillTab(m)}</div>`
         : sheetTab === "info"
         ? `<div class="infotab">${[["Kind", `${TIER[s.tier].name} ${EL[s.el].name} Glumi`], ["Found in", ZONES.filter(Z => Z.sp.includes(m.sp) || Z.boss === m.sp).map(Z => Z.name).join(", ") || "Unknown"],
              ["Forms", s.evo ? `${s.name}${S.caught[key(m.sp, 0)] ? " \u2713" : ""} \u2192 ${s.evo}${S.caught[key(m.sp, 1)] ? " \u2713" : ""}` : `${s.name} (no evolution)`],
@@ -3172,24 +3269,21 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function renderArena() {
     const me = front(), foe = BT.foes[BT.fi], t = team(); if (!me || !foe) return;
     const dots = (list, isMe) => list.map((m, i) => `<span class="tdot${(isMe ? m.hp <= 0 : i < BT.fi) ? " out" : ""}${(isMe ? m === me : i === BT.fi) ? " cur" : ""}">${art(m.sp, m.evo, 30)}</span>`).join("");
-    const sw = t.map(m => `<button class="sw${m === me ? " cur" : ""}" data-act="swap:${m.uid}" ${m === me || m.hp <= 0 || BT.swapCd > 0 ? "disabled" : ""} aria-label="Switch to ${fname(m.sp, m.evo)}">${m === me ? `<span class="tagcur">Fighting</span>` : ""}${art(m.sp, m.evo, 46)}${bar(m.hp, maxHp(m))}<span class="cd" ${BT.swapCd > 0 && m !== me && m.hp > 0 ? "" : "hidden"}>${Math.ceil(BT.swapCd)}</span></button>`).join("");
+    const sw = t.map(m => `<button class="tsw${m === me ? " cur" : ""}" data-act="swap:${m.uid}" ${m === me || m.hp <= 0 || BT.swapCd > 0 ? "disabled" : ""} aria-label="Switch to ${fname(m.sp, m.evo)}">${m === me ? `<span class="tagcur">Fighting</span>` : ""}${art(m.sp, m.evo, 46)}${bar(m.hp, maxHp(m))}<span class="cd" ${BT.swapCd > 0 && m !== me && m.hp > 0 ? "" : "hidden"}>${Math.ceil(BT.swapCd)}</span></button>`).join("");
     const capb = (btn, label) => `<div class="capw">${btn}<span class="cap">${label}</span></div>`;
     const picker = BT.pick > 0 ? `<div class="picker"><p>Choose your next Glumi</p><div class="prow">${t.filter(m => m.hp > 0).map(m => `<button class="pk" data-act="pickmon:${m.uid}">${art(m.sp, m.evo, 56)}${bar(m.hp, maxHp(m))}</button>`).join("")}</div><b id="pickT">${Math.ceil(BT.pick)}</b></div>` : "";
     $("aview").innerHTML = `${picker}${autoChip()}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(t, true)}</div></div><div class="aside r"><span class="aname">${BT.name || "Trainer"}</span><div class="tdots">${dots(BT.foes, false)}</div></div></div>
       <div class="afield">${arenaSVG()}
-        <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div id="meEn">${bar(BT.me.e, 100, true)}</div></div>
-        <div class="hpcard foe"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn">${bar(BT.foe.e, 100, true)}</div></div>
+        <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div></div>
+        <div class="hpcard foe"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(BT.foe.e)}</div></div>
         <div class="trainer foe${BT.enter ? " enter" : ""}">${trainerSVG(BT.color || "#ff8a8a", false)}</div>
         <div class="actor" id="foeActor" style="left:66%;top:68%"><div class="shieldfx" id="foeShield" hidden></div><div class="spr pop">${art(foe.sp, foe.evo, 130)}</div><div class="shadow"></div></div>
         <div class="trainer me${BT.enter ? " enter" : ""}">${trainerSVG("#5aa8ff", true)}</div>
         <div class="actor" id="meActor" style="left:38%;top:92%"><div class="shieldfx" id="meShield" hidden></div><div class="spr pop"><div style="transform:scaleX(-1)">${art(me.sp, me.evo, 170)}</div></div><div class="shadow"></div></div>
       </div>
       <div class="actrl">
-        <div class="skills">
-          <button class="skill${BT.me.e >= 100 ? " ready" : ""}" id="skillBtn" data-act="skill" style="--e:${BT.me.e};--elc:${EL[SP[me.sp].el].color}" ${BT.me.e >= 100 ? "" : "disabled"}><span>${EL[SP[me.sp].el].name}<br>Burst</span></button>
-          <button class="skill2" id="shieldBtn" data-act="shield" style="--e:${Math.min(100, BT.me.e / 40 * 100)}" ${BT.me.e >= 40 && !(BT.me.sh > 0) ? "" : "disabled"}><span>Shield<small>40 energy</small></span></button>
-        </div>
-        <div class="switchrow">${sw}</div>
+        <div class="bmain"><div class="tswrow">${sw}</div><div class="skcol">${skCard(me, foe, "x")}${skCard(me, foe, "s")}</div></div>
+        <div class="ebrow"><span class="egem"><b id="eNum">${Math.floor(BT.me.e / 10)}</b></span><div class="esegs" id="meSegs">${segs(BT.me.e)}</div><button class="shieldb" id="shieldBtn" data-act="shield" ${BT.me.e >= SHIELD_COST * 10 && !(BT.me.sh > 0) ? "" : "disabled"} aria-label="Shield, ${SHIELD_COST} energy">${IC.shield || IC.flag}<b>${SHIELD_COST}</b></button></div>
         <div class="arow">${capb(`<button class="round${BT.auto ? " on" : ""}" data-act="autoskill" aria-label="Auto skills">${IC.auto}</button>`, "Auto")}${capb(`<button class="round${BT.speed > 1 ? " on" : ""}" data-act="speed" aria-label="Speed">${IC.fast}</button>`, "Speed")}${capb(`<button class="round" data-act="retreat" aria-label="Give up">${IC.flag}</button>`, "Give up")}</div>
       </div>`;
   }
@@ -3205,11 +3299,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
-    $("meHp").innerHTML = bar(me.hp, maxHp(me)); $("foeHp").innerHTML = bar(foe.hp, maxHp(foe)); $("foeEn").innerHTML = bar(BT.foe.e, 100, true); $("meEn").innerHTML = bar(BT.me.e, 100, true);
+    $("meHp").innerHTML = bar(me.hp, maxHp(me)); $("foeHp").innerHTML = bar(foe.hp, maxHp(foe)); $("foeEn").innerHTML = segs(BT.foe.e); $("meSegs").innerHTML = segs(BT.me.e); $("eNum").textContent = Math.floor(BT.me.e / 10);
     $("meShield").hidden = !(BT.me.sh > 0); $("foeShield").hidden = !(BT.foe.sh > 0);
-    const sh = $("shieldBtn"); if (sh) { sh.style.setProperty("--e", Math.min(100, BT.me.e / 40 * 100)); sh.disabled = BT.me.e < 40 || BT.me.sh > 0; }
-    document.querySelectorAll(".sw").forEach(b => { const cur = b.classList.contains("cur"), c = b.querySelector(".cd"); const u = +b.dataset.act.split(":")[1], m = mon(u); b.disabled = cur || !m || m.hp <= 0 || BT.swapCd > 0; c.hidden = !(BT.swapCd > 0 && !cur && m && m.hp > 0); c.textContent = Math.ceil(BT.swapCd); const i = b.querySelector(".bar i"); if (i && m) i.style.width = Math.max(0, m.hp / maxHp(m) * 100) + "%"; });
-    const sb = $("skillBtn"); if (sb) { sb.style.setProperty("--e", BT.me.e); sb.disabled = BT.me.e < 100; sb.classList.toggle("ready", BT.me.e >= 100); }
+    const sh = $("shieldBtn"); if (sh) sh.disabled = BT.me.e < SHIELD_COST * 10 || BT.me.sh > 0;
+    document.querySelectorAll(".tsw").forEach(b => { const cur = b.classList.contains("cur"), c = b.querySelector(".cd"); const u = +b.dataset.act.split(":")[1], m = mon(u); b.disabled = cur || !m || m.hp <= 0 || BT.swapCd > 0; c.hidden = !(BT.swapCd > 0 && !cur && m && m.hp > 0); c.textContent = Math.ceil(BT.swapCd); const i = b.querySelector(".bar i"); if (i && m) i.style.width = Math.max(0, m.hp / maxHp(m) * 100) + "%"; });
+    document.querySelectorAll(".skcard").forEach(c => { const need = +c.dataset.cost * 10, ok = BT.me.e >= need; c.disabled = !ok; c.classList.toggle("ready", ok); c.style.setProperty("--p", Math.min(100, BT.me.e / need * 100) + "%"); });
     document.querySelectorAll(".swap").forEach(b => { b.disabled = BT.swapCd > 0; const c = b.querySelector(".cd"); c.hidden = BT.swapCd <= 0; c.textContent = Math.ceil(BT.swapCd); });
   }
   let toastT; function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 1800); }
@@ -3450,7 +3544,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "rivalgo") startBattle(E.foes, "rival");
     else if (a === "leave") { if (busy) return; E = null; save(); render(); }
     else if (a === "luckgo") luckPlay(arg || "glow");
-    else if (a === "skill") { if (BT && BT.me.e >= 100) { doSkill(true); playFx(); paintBattle(); } }
+    else if (a === "skill" || a === "cast") { if (BT && castSkill(true, a === "cast" ? arg : "x")) { playFx(); paintBattle(); } }
+    else if (a === "setsk") { const m = mon(sheetUid); if (m) { m.sk = n; save(); render(); toast(`${fname(m.sp, m.evo)} will use ${skillOf(m, "s").name}`); } }
     else if (a === "shield") { if (BT) { useShield(true); playFx(); paintBattle(); } }
     else if (a === "autoskill") { BT.auto = !BT.auto; S.autoSkill = BT.auto; render(); }
     else if (a === "speed") { BT.speed = BT.speed > 1 ? 1 : 2; S.speed = BT.speed; render(); }
