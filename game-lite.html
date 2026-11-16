@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794862637;</script>
+<script>window.GAME_BUILD = 1794865032;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2523,7 +2523,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function paintCss() {  // zone paintings as backgrounds for the zone card, the Atlas card and the wide bottom tile (set once)
     if (zoneCss) return; zoneCss = true;
     const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
-      + (ART["bg-arena"] ? `.a-gym{background-image:url(${ART["bg-arena"]})}` : "") + (ART["bg-2"] ? `.a-duel{background-image:url(${ART["bg-2"]})}` : "") + (ART["bg-7"] ? `.a-tower{background-image:url(${ART["bg-7"]})}` : "") + (ART["bg-5"] ? `.a-race{background-image:url(${ART["bg-5"]})}` : "");
+      + [["a-gym", "banner-gyms", "bg-arena", "center"], ["a-duel", "banner-ladder", "bg-2", "center"], ["a-tower", "banner-cloud-climb", "bg-7", "center"], ["a-race", "banner-island-race", "bg-5", "78% 45%"]]
+        .map(([c, b, z, pos]) => ART[b] ? `.${c}{background-image:url(${ART[b]});background-position:${pos}}` : ART[z] ? `.${c}{background-image:url(${ART[z]})}` : "").join("");
     const el = document.createElement("style"); el.textContent = r; document.head.appendChild(el);
   }
   function renderTabs() {
