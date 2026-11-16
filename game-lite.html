@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794871876;</script>
+<script>window.GAME_BUILD = 1794872146;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1211,6 +1211,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .lz .zcards { padding: 2px; }
   .lz .zcard.sel { box-shadow: 0 0 0 3px var(--gc), 0 3px 8px rgba(0,0,0,.3); }
   .lzx { justify-self: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255,255,255,.9); color: #6b4a33; font: 900 24px var(--display); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+  .amode.lrace { margin-top: 10px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2372,8 +2373,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const timer = ms => `<span class="atimer">${CLOCK}${mmss(ms)}</span>`;
     if (arenaSub === "race") {
       const R = raceState(), over = Date.now() >= R.end, board = raceBoard(), myRank = board.findIndex(r => r.me);
-      return `${back("hub")}<h3>Island Race</h3><span></span></div>
-        <div class="racehead">${over ? `<span class="atimer">Finished</span>` : timer(R.end - Date.now())}<b>Win fights to earn race points</b><small>Every battle point counts in the race. Top places get the best rewards.</small></div>
+      return `${back("ladder")}<h3>Island Race</h3><span></span></div>
+        <div class="racehead">${over ? `<span class="atimer">Finished</span>` : timer(R.end - Date.now())}<b>Win fights to earn race points</b><small>Every fight you win counts: path trainers 20, gyms 40, Ladder and Cloud Climb 30. Top places get the best rewards.</small></div>
         <div class="race">${board.map((r, i) => `<div class="rrow${r.me ? " me" : ""} p${i + 1}"><span class="rpos">${i + 1}</span><span class="rav">${r.me ? (team()[0] ? art(team()[0].sp, team()[0].evo, 40) : "") : art(r.sp, 0, 40)}</span><span class="rname"><b>${r.name}</b><small>${r.pts.toLocaleString("en")} points</small></span><span class="rchips">${rchips(RACE_REW[i])}</span></div>`).join("")}</div>
         ${over ? `<button class="mb gold pbig" data-act="raceclaim">Claim place ${myRank + 1} reward and start a new race</button>` : `<button class="mb gold pbig" data-act="arenasub:ladder">Go win fights</button>`}`;
     }
@@ -2384,6 +2385,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       return `${back("hub")}<h3>Ladder</h3><span></span></div>
         <div class="ltrack"><span class="lwins"><b>${L.lp}</b><small>points</small></span><div class="lline"><i style="width:${ladderFill(L.lp)}%"></i></div><div class="lnodes">${nodes}</div></div>
         <div class="lrank"><span class="drank pic">${tierBadge(ladderTier(L.pts), 54)}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
+        ${(() => { const R = raceState(), place = raceBoard().findIndex(r => r.me) + 1; return `<button class="amode lrace" data-act="arenasub:race"><span class="aimg a-race"><b>Island Race</b><span class="achips"><span>Place ${place}</span><span>${Date.now() >= R.end ? "Finished" : mmss(R.end - Date.now()) + " left"}</span></span></span><span class="ago">${IC.flag}<b>View</b></span></button>`; })()}
         <div class="ltiers">${DRANKS.map((r, i) => `<span class="${i < ladderTier(L.pts) ? "past" : i === ladderTier(L.pts) ? "cur" : "next"}">${tierBadge(i, i === ladderTier(L.pts) ? 34 : 26)}<small>${r[1]}</small></span>`).join("")}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
         <p class="hint" style="margin:0">Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, a loss ${LADDER_LOSS}. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but fewer rank points.</p>
@@ -2403,7 +2405,6 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const gymsDone = ZONES.filter((_, i) => gymDone(i, 0)).length, R = raceState(), L = ladderState(), place = raceBoard().findIndex(r => r.me) + 1;
     const mode = (k, title, chips, bg) => `<button class="amode" data-act="arenasub:${k}"><span class="aimg ${bg}"><b>${title}</b><span class="achips">${chips}</span></span><span class="ago">${IC.sword}<b>Go</b></span></button>`;
     return `<div class="head"><h2>Arena</h2></div>
-      ${mode("race", "Island Race", `<span>Place ${place}</span><span>${Date.now() >= R.end ? "Finished" : mmss(R.end - Date.now()) + " left"}</span>`, "a-race")}
       ${mode("ladder", "Ladder", `<span>${duelRank(L.pts)}</span><span>${L.lp} ladder points this week</span>`, "a-duel")}
       ${mode("tower", "Cloud Climb", `<span>Best floor ${S.tower || 0}</span>`, "a-tower")}
       ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}`;
