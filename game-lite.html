@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794840164;</script>
+<script>window.GAME_BUILD = 1794840427;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -895,6 +895,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .irow { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 8px; background: #fff; font-size: 13.5px; color: var(--brown-2, #8a6d55); } .irow b { color: var(--brown); text-align: right; }
 .tile .lockmini { position: absolute; left: 6px; bottom: 6px; width: 16px; height: 16px; }
 .sheet.still { animation: none !important; }
+.copyline { display: block; margin-top: 4px; font-size: 11px !important; opacity: .8; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2266,7 +2267,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">‹ Back</button><h3>Settings</h3><span></span></div>
       <h3 class="grouph">Sound and motion</h3>
       <div class="slist">${sw("sound", S.opt.sound !== false, "Sound effects", "Little sounds for steps, catches and rewards")}${sw("calm", !!S.opt.calm, "Calm animations", "Fewer moving effects")}</div>
-      ${appBridge() ? `<h3 class="grouph">Updates</h3><div class="slist"><div class="srow"><span class="ic">${IC.balloon}</span><span class="txt"><b>Updates</b><small id="updStatus">${appStatus()}</small></span>
+      ${appBridge() ? `<h3 class="grouph">Updates</h3><div class="slist"><div class="srow"><span class="ic">${IC.balloon}</span><span class="txt"><b>Updates</b><small id="updStatus">${appStatus()}</small>${(() => { try { const g = appBridge(); return g && g.copy ? `<small class="copyline">${g.copy()}</small>` : ""; } catch { return ""; } })()}</span>
         <span class="row" style="gap:6px"><button class="price" data-act="updcheck">Check now</button>${/^New version ready/.test(appStatus()) ? `<button class="price" data-act="updrestart">Restart</button>` : ""}</span></div></div>` : ""}
       <h3 class="grouph">Game</h3>
       <div class="slist"><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
