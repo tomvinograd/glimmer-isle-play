@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794838031;</script>
+<script>window.GAME_BUILD = 1794838816;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2255,10 +2255,15 @@ nav .navwide .bang { top: 4px; right: 6px; }
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">‹ Back</button><h3>Settings</h3><span></span></div>
       <h3 class="grouph">Sound and motion</h3>
       <div class="slist">${sw("sound", S.opt.sound !== false, "Sound effects", "Little sounds for steps, catches and rewards")}${sw("calm", !!S.opt.calm, "Calm animations", "Fewer moving effects")}</div>
+      ${appBridge() ? `<h3 class="grouph">Updates</h3><div class="slist"><div class="srow"><span class="ic">${IC.balloon}</span><span class="txt"><b>Updates</b><small id="updStatus">${appStatus()}</small></span>
+        <span class="row" style="gap:6px"><button class="price" data-act="updcheck">Check now</button>${/^New version ready/.test(appStatus()) ? `<button class="price" data-act="updrestart">Restart</button>` : ""}</span></div></div>` : ""}
       <h3 class="grouph">Game</h3>
       <div class="slist"><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
       <p class="saved">${saveNote || "Saved on this device"}<br>${versionText()}</p>`;
   }
+  const appBridge = () => { try { return window.GlimmerApp && typeof window.GlimmerApp.status === "function" ? window.GlimmerApp : null; } catch { return null; } };
+  const appStatus = () => { try { const a = appBridge(); return a ? String(a.status()) : ""; } catch { return ""; } };
+  setInterval(() => { const el = $("updStatus"); if (!el) return; const t = appStatus(); if (el.textContent !== t) { const ready = /^New version ready/.test(t) !== /^New version ready/.test(el.textContent); el.textContent = t; if (ready) render(); } }, 1000);
   function wipeData() {
     try { localStorage.removeItem(LS); } catch {}
     S = fresh(); E = null; BT = null; busy = false; autoSeenE = null; autoSession = false; autoStat = { caught: 0 };
@@ -2631,6 +2636,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "bagtab") { bagTab = arg; bagPick = null; render(); }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
     else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound") S.opt.sound = S.opt.sound === false; else S.opt[arg] = !S.opt[arg]; RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
+    else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
+    else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
     else if (a === "view") { if (arg === "arena" && view !== "team" && arenaSub === "prep") { arenaSub = "hub"; prep = null; } view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; expPick = null; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
     else if (a === "map") { if (!E && !BT && !busy) { showMap = false; view = view === "atlas" ? "explore" : "atlas"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); } }
