@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794865513;</script>
+<script>window.GAME_BUILD = 1794866110;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1178,6 +1178,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, PITY = 800;
   const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 3, MAX_STARS = 5, STAR_BONUS = .1;
+  const FLEE_AFTER = [5, 6, 8, 10, 14];  // missed jars before a wild Glumi runs away, by grade Green..Rainbow
   const ASC_EVERY = 10, MAX_ASC = 9, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20, 26, 33, 40, 50];  // top level 100  // ascension: top level, +30% stats each, keepsakes needed
   const KEEPSAKES_BY_GRADE = [1, 1, 5, 8, 12], SELL_BASE = [8, 15, 30, 60, 200];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
   const RIVALS = ["Nia", "Oren", "Tali", "Bex", "Ido", "Maya", "Ravi", "Lena", "Yoni", "Kai"];
@@ -1641,9 +1642,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     } else {
       jar.animate([{ transform: jar.style.transform, opacity: 1 }, { transform: jar.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => jar.remove(), 260);
       if (spr) spr.animate([{ transform: "scale(.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: RM ? 60 : 350, easing: "cubic-bezier(.3,1.6,.5,1)", fill: "forwards" });
-      const flee = E.boss ? 0 : w.q >= 3 ? .35 : .2; await wait(450);
-      if (Math.random() < flee) { if (spr) await anim(spr, [{ transform: "translateX(0)" }, { transform: "translateX(260px)", opacity: 0 }], { duration: RM ? 60 : 450, fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
-      else { busy = false; E.t0 = performance.now(); render(); floatText(cx, cy - 60, "Broke free!"); }
+      w.miss = (w.miss || 0) + 1; const left = E.boss ? 99 : FLEE_AFTER[w.q] - w.miss; await wait(450);
+      if (left <= 0) { if (spr) await anim(spr, [{ transform: "translateX(0)" }, { transform: "translateX(260px)", opacity: 0 }], { duration: RM ? 60 : 450, fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
+      else { busy = false; E.t0 = performance.now(); render(); floatText(cx, cy - 60, left <= 3 ? `Broke free! ${left} ${left === 1 ? "try" : "tries"} left` : "Broke free!"); }
     }
     save();
   }
@@ -1713,7 +1714,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       else {
         p.el.animate([{ opacity: 1 }, { transform: p.el.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => p.el.remove(), 260);
         if (p.spr) p.spr.animate([{ transform: "scale(.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: RM ? 60 : 350, easing: "cubic-bezier(.3,1.6,.5,1)", fill: "forwards" });
-        if (Math.random() < (p.w.q >= 3 ? .35 : .2)) fled.push(p.w);
+        p.w.miss = (p.w.miss || 0) + 1; if (p.w.miss >= FLEE_AFTER[p.w.q]) fled.push(p.w);
       }
     }
     await wait(500);
