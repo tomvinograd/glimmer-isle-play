@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794837886;</script>
+<script>window.GAME_BUILD = 1794838031;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1384,7 +1384,12 @@ nav .navwide .bang { top: 4px; right: 6px; }
     const w = E && E.type === "wild" ? E.list[E.i] : null; if (!w || busy) return;
     if (tough(w) && !E.fought) { toast("Battle it first"); return; }
     if (!S.jars[E.jar]) { toast("No jars of that kind"); return; }
-    busy = true; const sc = ringScale(), d = Math.abs(sc - .78), timing = autoThrow ? 1 : d < .1 ? 1.5 : d < .28 ? 1.15 : .8;
+    if (autoThrow) {  // Auto aims: wait for the ring to reach the Perfect size (at most one full ring cycle)
+      const enc = E, t0 = performance.now();
+      while (E === enc && !busy && !enc.manual && Math.abs(ringScale() - .78) >= .05 && performance.now() - t0 < 2800) await wait(15);
+      if (E !== enc || busy || enc.manual) return;
+    }
+    busy = true; const sc = ringScale(), d = Math.abs(sc - .78), timing = d < .1 ? 1.5 : d < .28 ? 1.15 : .8;
     S.jars[E.jar]--; renderActions();
     const spr = document.querySelector("#wildActor .spr"), ring = document.querySelector(".ring"); if (ring) ring.style.display = "none";
     const [cx, cy] = spr ? stageXY(spr) : [180, 280]; const st = $("stage");
