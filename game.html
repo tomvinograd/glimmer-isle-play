@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794819656;</script>
+<script>window.GAME_BUILD = 1794819880;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1701,7 +1701,7 @@
   // ================= CREATURE MARKET: Purple and Gold Glumis for coins =================
   const MARKET_HOURS = 6, MARKET_SLOTS = 4;
   let confirmBuy = null;
-  const marketPrice = (q, lvl) => q >= 3 ? 700 + lvl * 25 : 250 + lvl * 10;
+  const marketPrice = (q, lvl) => q >= 3 ? 150 + lvl * 10 : 50 + lvl * 5;  // 16 Nov: much cheaper (Purple 55, Gold 160 at level 1)
   function closePopup() { const p = document.querySelector(".popwrap"); if (p) p.remove(); }
   function keepsakePopup(m, missing) {
     closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2], buys = Math.ceil(missing / per);
