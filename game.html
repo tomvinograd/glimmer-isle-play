@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794836759;</script>
+<script>window.GAME_BUILD = 1794837471;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -892,6 +892,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .skrow b { display: block; font: 800 15px var(--display); color: var(--brown); } .skrow small { font-size: 12.5px; line-height: 1.35; color: var(--brown-2, #8a6d55); }
 .irow { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 8px; background: #fff; font-size: 13.5px; color: var(--brown-2, #8a6d55); } .irow b { color: var(--brown); text-align: right; }
 .tile .lockmini { position: absolute; left: 6px; bottom: 6px; width: 16px; height: 16px; }
+.sheet.still { animation: none !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1999,7 +2000,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     if (!inTeam) b.push(`<button class="mb" data-act="release:${m.uid}">${confirmRelease === m.uid ? "Sure?" : "Release"} ${IC.glow}${5 * (m.q + 1)}</button>`);
     return `<div class="card mon${inTeam && i === 0 ? " lead" : ""}">${art(m.sp, m.evo, 76)}<div class="info"><div class="nmrow">${fname(m.sp, m.evo)}${gChip(m.q)}<span class="el" style="background:${EL[s.el].color}"></span></div><div class="stats"><span>Lv ${m.lvl}</span><span>HP ${maxHp(m)}</span><span>ATK ${atk(m)}</span><span>DEF ${def(m)}</span></div><div class="mini-btns">${b.join("")}</div></div></div>`;
   }
-  let sheetTab = "stats", sheetMulti = false;
+  let sheetTab = "stats", sheetMulti = false, sheetShown = null;  // sheetShown: the Glumi whose page is already on screen
   function levelsAffordable(m) { let n = 0, lv = m.lvl, leaves = S.leaves; const top = Math.min(lvlCap(), ascTop(m)); while (lv < top && leaves >= 5 + lv * 3 && n < 99) { leaves -= 5 + lv * 3; lv++; n++; } return n; }
   function levelsCost(m, n) { let c = 0; for (let k = 0; k < n; k++) c += 5 + (m.lvl + k) * 3; return c; }
   const teamOrder = () => [...S.mons].sort((x, y) => S.team.includes(y.uid) - S.team.includes(x.uid) || y.q - x.q || y.lvl - x.lvl);
@@ -2106,7 +2107,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
         <div class="gtabs">${[["stats", "Stats"], ["skill", "Skill"], ["info", "Info"]].map(([k, n]) => `<button class="${sheetTab === k ? "on" : ""}" data-act="sheettab:${k}">${n}</button>`).join("")}</div>`;
     }
     const mainPg = !["level", "stars", "bye"].includes(sheetPage) || (sheetPage === "bye" && inTeam);
-    return `<button class="sheetbg" data-act="closesheet" aria-label="Close"></button><div class="sheet${mainPg ? " cardpage" : ""}" role="dialog" aria-label="${fname(m.sp, m.evo)}">
+    return `<button class="sheetbg" data-act="closesheet" aria-label="Close"></button><div class="sheet${mainPg ? " cardpage" : ""}${sheetShown === m.uid ? " still" : ""}" role="dialog" aria-label="${fname(m.sp, m.evo)}">
       ${body}
       ${mainPg ? `<button class="gclose" data-act="closesheet" aria-label="Close">✕</button>` : `<button class="mb" data-act="closesheet" style="justify-self:center;min-width:120px">Close</button>`}</div>`;
   }
@@ -2497,6 +2498,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   }
   function render() {
     renderTabs();
+    setTimeout(() => { sheetShown = document.querySelector('.sheet') ? sheetUid : null; }, 0);
     $("arena").hidden = !BT; if (BT) renderArena();
     const onStage = S.started && view === "explore" && !showMap && !showAuto;
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
@@ -2636,7 +2638,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "travel") travelTo(n);
     else if (a === "zone") { if (zoneOpen(n)) { S.zone = n; showMap = false; view = "explore"; save(); render(); initProps(); } }
     else if (a === "step") step();
-    else if (a === "mult") { const open = MULTS.filter(multOpen), i = open.findIndex(x => x.m === S.mult); S.mult = open[(i + 1) % open.length].m; save(); renderActions(); }
+    else if (a === "mult") { const open = MULTS.filter(multOpen), i = open.findIndex(x => x.m === S.mult), nextLock = MULTS.find(x => !multOpen(x));
+      S.mult = open[(i + 1) % open.length].m; save(); renderActions();
+      toast(open.length < 2 ? `x${nextLock.m} opens at explorer level ${nextLock.lvl}` : `x${S.mult}: ${S.mult} glow a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} at level ${nextLock.lvl}` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
     else if (a === "backtocatch") { view = "explore"; if (E) E.t0 = performance.now(); render(); window.scrollTo(0, 0); }
