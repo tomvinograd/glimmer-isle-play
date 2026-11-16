@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794867765;</script>
+<script>window.GAME_BUILD = 1794867866;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1819,7 +1819,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         const el = f.who === "me" ? EL[SP[front().sp].el].color : EL[SP[BT.foes[BT.fi].sp].el].color, orb = document.createElement("div");
         orb.className = "fly"; orb.style.width = orb.style.height = "44px"; orb.style.margin = "-22px 0 0 -22px"; orb.style.borderRadius = "50%"; orb.style.background = `radial-gradient(circle, #fff, ${el} 60%, transparent 70%)`; orb.style.left = ax + "px"; orb.style.top = ay + "px"; fxLayer().appendChild(orb);
         orb.animate([{ transform: "translate(0,0) scale(.5)" }, { transform: `translate(${tx - ax}px,${ty - ay}px) scale(2.2)`, opacity: .2 }], { duration: RM ? 80 : 420, easing: "ease-in" }).onfinish = () => orb.remove();
-        shakeStage(); setTimeout(() => floatText(tx, ty - 50, f.dmg + (f.eff > 1 ? "!" : ""), true), RM ? 0 : 380);
+        setTimeout(() => floatText(tx, ty - 50, f.dmg + (f.eff > 1 ? "!" : ""), true), RM ? 0 : 380);
       } else floatText(tx + rnd(-14, 14), ty - 40, f.dmg);
     }
   }
