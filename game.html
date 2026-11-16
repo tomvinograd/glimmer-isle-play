@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794834866;</script>
+<script>window.GAME_BUILD = 1794835259;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -759,6 +759,73 @@ nav .navwide:disabled { opacity: .6; }
 .scard .price { margin-top: 4px; width: 100%; justify-content: center; }
 .mtile { position: relative; } .mtile .bang { top: -5px; right: -5px; }
 body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+/* ===== phase 3: arena ===== */
+nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
+.amode { display: grid; grid-template-columns: 1fr 74px; width: 100%; border: 0; padding: 0; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 3px 12px rgba(91,70,54,.15); text-align: left; }
+.aimg { position: relative; height: 104px; padding: 10px 12px; display: grid; align-content: space-between; background: #cfe8f5 center/cover; }
+.aimg b { font: 800 21px var(--display); color: #fff; text-shadow: 0 2px 5px rgba(40,30,20,.7); }
+.achips { display: flex; gap: 6px; flex-wrap: wrap; } .achips span { font: 800 12px var(--display); color: #fff; background: rgba(60,45,35,.7); border-radius: 5px; padding: 2px 7px; }
+.ago { display: grid; place-items: center; align-content: center; gap: 2px; background: #fff6e2; color: var(--brown); border-left: 2px dashed #e6d4b8; }
+.ago svg { width: 30px; height: 30px; } .ago b { font: 800 16px var(--display); }
+.sheethead h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prep { display: grid; gap: 8px; }
+.pside { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(91,70,54,.12); }
+.pside.foe { background: #fff1ec; } .pside.me { background: #eef6ff; }
+.pside b { font: 800 16px var(--display); color: var(--brown); }
+.ptr { width: 44px; height: 70px; flex: none; } .ptr svg { width: 100%; height: 100%; }
+.pmons { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.pmon { display: grid; justify-items: center; gap: 2px; width: 70px; padding: 4px 0; border-radius: 8px; background: rgba(255,255,255,.75); }
+.pmon .lv { display: flex; align-items: center; gap: 3px; font: 800 11.5px var(--display); color: var(--brown); } .pmon .el { width: 8px; height: 8px; }
+.pvs { justify-self: center; font: 900 22px var(--display); color: #e8483b; margin: -4px 0; }
+.prew { display: flex; align-items: center; gap: 8px; font: 800 14px var(--display); color: var(--brown); }
+.rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
+.rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
+.pbtns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.pbig { height: 44px; padding: 0 28px; font-size: 17px; justify-self: center; }
+.gbadges { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
+.seg button svg { width: 13px; height: 13px; margin-right: 4px; vertical-align: -1px; }
+.seg button:disabled { opacity: .55; }
+.gbadge { width: 30px; height: 30px; border-radius: 50%; border: 0; display: grid; place-items: center; font: 800 14px var(--display); color: var(--brown-2, #8a6d55); background: #ece4d8; }
+.gbadge svg { width: 14px; height: 14px; } .gbadge.done { background: linear-gradient(#ffe08a, #f5a623); color: #fff; } .gbadge.cur { box-shadow: 0 0 0 3px #5b4636; }
+.gbook { position: relative; padding: 12px 10px 14px; border-radius: 12px; background: #cfe8f5 center/cover; display: grid; gap: 8px; }
+.gbook::before { content: ""; position: absolute; inset: 0; border-radius: 12px; background: rgba(255,250,240,.35); }
+.gbook > * { position: relative; }
+.gnav { position: absolute; left: 4px; right: 4px; top: 45%; display: flex; justify-content: space-between; z-index: 2; pointer-events: none; }
+.garrow { pointer-events: auto; width: 34px; height: 44px; border: 0; border-radius: 8px; background: rgba(255,250,240,.92); font: 900 26px var(--display); color: #f5a623; box-shadow: 0 2px 8px rgba(40,30,20,.2); }
+.gtop { display: flex; justify-content: center; } .gbot { display: flex; justify-content: center; gap: 10px; }
+.gtr { width: 118px; border: 0; border-radius: 10px; padding: 6px 6px 8px; display: grid; justify-items: center; gap: 2px; background: rgba(255,250,240,.95); box-shadow: 0 3px 10px rgba(40,30,20,.2); color: var(--brown); }
+.gtr.lead { width: 136px; } .gimg { width: 46px; height: 76px; } .gimg svg { width: 100%; height: 100%; }
+.gtr b { font: 800 14px var(--display); } .gtr small { font-size: 11px; color: var(--brown-2, #8a6d55); }
+.gtr.beat { background: rgba(236,248,238,.95); }
+.gclear { justify-self: center; font: 800 14px var(--display); color: #fff; background: rgba(60,45,35,.75); border-radius: 6px; padding: 4px 14px; }
+.garow { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; width: 100%; border: 0; border-radius: 10px; padding: 8px 14px 8px 8px; background: #fff; text-align: left; color: var(--brown); box-shadow: 0 2px 10px rgba(91,70,54,.1); }
+.garow .gpic { width: 64px; height: 46px; border-radius: 7px; background: #cfe8f5 center/cover; } .garow b { display: block; font: 800 16px var(--display); } .garow small { font-size: 12px; color: var(--brown-2, #8a6d55); white-space: pre; }
+.garow i { font-style: normal; font-size: 22px; color: #c47f0a; } .garow i svg { width: 16px; } .garow:disabled { opacity: .55; }
+.dhero { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(91,70,54,.12); }
+.dhero > div { flex: 1; display: grid; gap: 4px; } .dhero b { font: 800 18px var(--display); } .dhero small { font-size: 12.5px; color: var(--brown-2, #8a6d55); }
+.drank { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(#ffe08a, #f5a623); } .drank svg { width: 30px; height: 30px; }
+.tower { display: grid; gap: 6px; justify-items: center; }
+.tfloor { width: 70%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-radius: 8px; background: #fff; color: var(--brown); box-shadow: 0 2px 8px rgba(91,70,54,.1); }
+.tfloor b { font: 800 15px var(--display); } .tfloor.cur { width: 82%; background: linear-gradient(#ffe08a, #f5b23c); } .tfloor.done { opacity: .55; }
+.skillban { position: absolute; left: -10%; right: -10%; top: 38%; z-index: 30; padding: 10px 0; background: linear-gradient(90deg, transparent, var(--c) 20%, var(--c) 80%, transparent); transform: rotate(-8deg); text-align: center; animation: sban 1.1s ease-out forwards; pointer-events: none; }
+.skillban.foe { top: 22%; transform: rotate(8deg); }
+.skillban span { font: 900 26px var(--display); color: #fff; text-shadow: 0 2px 4px rgba(40,30,20,.5); letter-spacing: .5px; }
+@keyframes sban { 0% { opacity: 0; clip-path: inset(0 100% 0 0); } 20% { opacity: 1; clip-path: inset(0 0 0 0); } 80% { opacity: 1; } 100% { opacity: 0; } }
+.picker { position: absolute; left: 12px; right: 12px; bottom: 150px; z-index: 31; padding: 12px; border-radius: 12px; background: rgba(255,248,236,.97); display: grid; justify-items: center; gap: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+.picker p { margin: 0; font: 800 15px var(--display); color: var(--brown); }
+.prow { display: flex; gap: 10px; } .pk { width: 82px; border: 0; border-radius: 10px; padding: 6px; background: #fff; display: grid; justify-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(91,70,54,.2); }
+.picker #pickT { font: 900 18px var(--display); color: #fff; background: #5b4636; border-radius: 6px; padding: 0 12px; }
+.result { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; align-content: center; gap: 14px; background: radial-gradient(circle at 50% 40%, rgba(255,236,170,.92), rgba(240,170,60,.9)); }
+.result.lose { background: radial-gradient(circle at 50% 40%, rgba(210,220,235,.94), rgba(110,125,150,.94)); }
+.result h1 { margin: 0; font: 900 52px var(--display); color: #fff; text-shadow: 0 3px 0 rgba(150,80,0,.5), 0 6px 14px rgba(0,0,0,.25); animation: rpop .5s ease-out; }
+.result.lose h1 { text-shadow: 0 3px 0 rgba(60,70,90,.5), 0 6px 14px rgba(0,0,0,.25); }
+@keyframes rpop { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.rrew { display: flex; gap: 10px; } .rrew span { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; background: #fff; font: 800 17px var(--display); color: var(--brown); } .rrew svg { width: 26px; height: 26px; }
+.rtip { margin: 0; font: 700 14px var(--body); color: #fff; } .rtap { margin: 24px 0 0; font: 800 14px var(--display); color: rgba(255,255,255,.9); }
+.gcol { display: grid; gap: 8px; padding: 10px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 2px var(--gc); }
+.gcsw { display: flex; align-items: center; justify-content: center; gap: 10px; } .gcsw b { min-width: 90px; text-align: center; font: 800 16px var(--display); color: #fff; background: var(--gc); border-radius: 6px; padding: 3px 0; }
+.gcsw button { width: 32px; height: 30px; border: 0; border-radius: 6px; background: #f4ece0; font: 900 20px var(--display); color: var(--brown); }
+.gcmini { display: flex; justify-content: center; gap: 6px; } .gcmini span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--gc) 25%, #fff); } .gcmini span.no { filter: grayscale(1) opacity(.45); }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1379,9 +1446,9 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
   // ---------- battles ----------
   let tickId = null;
   const front = () => team().find(m => m.hp > 0);
-  async function startBattle(foes, kind) {
+  async function startBattle(foes, kind, opt = {}) {
     if (busy) return; for (const m of team()) m.hp = maxHp(m);
-    BT = { foes, fi: 0, kind, name: E && E.name, color: E && E.color, me: { e: 0, t: 0, sh: 0 }, foe: { e: 0, t: 0, sh: 0 }, swapCd: 0, auto: !!S.autoSkill || (autoCatchOn() && !(E && E.manual)), byAuto: autoCatchOn() && !(E && E.manual), speed: S.speed || 1, over: false, fx: [], enter: true };
+    BT = { mode: opt.mode, prep: opt.prep, foes, fi: 0, kind, name: opt.name || (E && E.name), color: opt.color || (E && E.color), me: { e: 0, t: 0, sh: 0 }, foe: { e: 0, t: 0, sh: 0 }, swapCd: 0, auto: !!S.autoSkill || (!opt.mode && autoCatchOn() && !(E && E.manual)), byAuto: !opt.mode && autoCatchOn() && !(E && E.manual), speed: S.speed || 1, over: false, fx: [], enter: true };
     render(); BT.enter = false; const vs = document.createElement("div"); vs.className = "vs"; vs.textContent = "VS"; $("arena").appendChild(vs); setTimeout(() => vs.remove(), 950);
     await wait(700);
     clearInterval(tickId); let last = performance.now();
@@ -1391,11 +1458,12 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
   function doSkill(mine) {
     const me = front(), foe = BT.foes[BT.fi], a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me;
     const m = mult(SP[a.sp].el, SP[d.sp].el); sa.e = 0; const dmg = hit(a, d, 3.2 * m, sa, sd, false);
-    BT.fx.push({ who: mine ? "me" : "foe", dmg, skill: true, eff: m });
+    BT.fx.push({ who: mine ? "me" : "foe", dmg, skill: true, eff: m }); skillBanner(SKILLS[SP[a.sp].el], mine, EL[SP[a.sp].el].color);
   }
   function useShield(mine) { const side = mine ? BT.me : BT.foe; if (side.e < 40 || side.sh > 0) return; side.e -= 40; side.sh = 4; BT.fx.push({ who: mine ? "me" : "foe", shield: true }); }
   function tick(dt) {
     if (!BT || BT.over) return;
+    if (BT.pick > 0) { BT.pick -= dt; const pt = $("pickT"); if (pt) pt.textContent = Math.max(0, Math.ceil(BT.pick)); if (BT.pick <= 0) { BT.pick = 0; BT.me.t = 0; render(); } return; }
     dt *= BT.speed; BT.swapCd = Math.max(0, BT.swapCd - dt); BT.me.sh = Math.max(0, (BT.me.sh || 0) - dt); BT.foe.sh = Math.max(0, (BT.foe.sh || 0) - dt);
     const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return;
     BT.me.t += dt; BT.foe.t += dt;
@@ -1412,7 +1480,7 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
       if (BT.fi + 1 < BT.foes.length) { BT.fi++; BT.foe = { e: 0, t: 0 }; render(); return; }
       return endBattle(true);
     }
-    if (me.hp <= 0) { if (front()) { BT.me.t = 0; render(); return; } return endBattle(false); }
+    if (me.hp <= 0) { if (front()) { BT.me.t = 0; if (!BT.auto && team().filter(m => m.hp > 0).length > 1) BT.pick = 5; render(); return; } return endBattle(false); }
     paintBattle();
   }
   function playFx() {
@@ -1434,14 +1502,15 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
   async function endBattle(won) {
     clearInterval(tickId); BT.over = true; const M = curM(), kind = BT.kind, foes = BT.foes;
     for (const m of team()) m.hp = maxHp(m);
-    if (!won) { await banner("Defeated"); BT = null; E = null; render(); save(); toast("The trainer won this time. Level up your team and try again!"); return;
+    if (BT.mode) return finishArena(won);
+    if (!won) { await resultScreen(false, [], BT.byAuto ? 2000 : 0); BT = null; E = null; render(); save(); return;
       // (older path kept below for reference, never reached)
       BT = null; render(); await banner("Retreat"); if (kind === "rival") E = null; render(); save(); return; }
     const foeEl = document.querySelector("#foeActor .spr"); if (foeEl && !RM) await anim(foeEl, [{ opacity: 1 }, { transform: "translateY(20px) scale(.9)", opacity: .3 }], { duration: 400, fill: "forwards" });
     const lv = Math.max(...foes.map(f => f.lvl)), coins = (5 + lv * 2) * M.m;
     S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); sfx("win"); save();
     { const ar = $("arena").getBoundingClientRect(); flyIcons(IC.coin, 8, ar.width / 2, ar.height * .45, null); floatText(ar.width / 2, ar.height * .45, "+" + coins + " coins", true); }
-    await banner("Victory!", 1400);
+    await resultScreen(true, [{ k: "coins", n: coins }], BT.byAuto ? 2000 : 0);
     BT = null; E = null; save(); render(); await flushBanners(); return;
     const leaves = 0;
     if (kind === "rival") { E = null; }
@@ -1624,7 +1693,7 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
   }
   function track(ev, w) {
     const T = tasksState();
-    if (ev === "catch") { T.day.catch++; T.total.catch++; if (w.q >= 2) { T.day.q2++; T.total.q2++; } if (w.q >= 3) T.total.q3++; const k = SP[w.sp].el; T.total.el[k] = (T.total.el[k] || 0) + 1; }
+    if (ev === "catch") { const B = bestQ(); B[w.sp] = Math.max(B[w.sp] || 0, w.q); T.day.catch++; T.total.catch++; if (w.q >= 2) { T.day.q2++; T.total.q2++; } if (w.q >= 3) T.total.q3++; const k = SP[w.sp].el; T.total.el[k] = (T.total.el[k] || 0) + 1; }
     else if (ev === "win") { T.day.win++; T.total.win++; }
     else if (ev === "evolve") T.total.evolve++;
     else if (T.day[ev] !== undefined) T.day[ev]++;
@@ -1674,12 +1743,160 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
     const r = CODES[code]; if (!r) { toast("That code doesn't work"); return; } if (S.codes[code]) { toast("Already used"); return; }
     S.codes[code] = 1; giveReward(r); sfx("claim"); save(); toast(`Got ${r.n} ${RW[r.k][1]}`); render();
   }
+  // ================= ARENA: gyms, daily duels, sky tower =================
+  const SKILLS = { ember: "Cinder Pop", tide: "Bubble Splash", leaf: "Leaf Whirl", spark: "Static Zap", stone: "Pebble Crash", shade: "Moon Hush" };
+  function skillBanner(name, mine, color) {
+    const d = document.createElement("div"); d.className = "skillban" + (mine ? "" : " foe"); d.style.setProperty("--c", color); d.innerHTML = `<span>${name}</span>`;
+    $("arena").appendChild(d); setTimeout(() => d.remove(), RM ? 500 : 1100);
+  }
+  function resultScreen(won, rewards, autoMs) {
+    return new Promise(res => {
+      const d = document.createElement("div"); d.className = "result " + (won ? "win" : "lose");
+      d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${RW[r.k][0]}<b>+${r.n}</b></span>`).join("")}</div>` : won ? "" : `<p class="rtip">Level up your team and try again</p>`}<p class="rtap">Tap to close</p>`;
+      document.body.appendChild(d); sfx(won ? "win" : "tap");
+      let done = false; const close = () => { if (done) return; done = true; d.remove(); res(); };
+      setTimeout(() => d.addEventListener("click", close), 350); if (autoMs) setTimeout(close, autoMs);
+    });
+  }
+  const foeMon = (sp, lvl, q) => { const f = newMon(sp, Math.max(1, lvl), q, SP[sp].evo && lvl >= 15 ? 1 : 0); f.wild = 1; f.hp = maxHp(f); return f; };
+  const pickOf = a => a[rnd(0, a.length - 1)];
+  const TNAMES = ["Pip", "Juno", "Rafi", "Mira", "Oren", "Tali", "Kai", "Noa", "Ezra", "Lia", "Bo", "Sage", "Remy", "Ivy", "Tom", "Wren", "Ash", "Dov", "Yael", "Nico", "Skye", "Ori", "Pia", "Zev"];
+  const TCOLORS = ["#ff8a8a", "#7fc8ff", "#9be38a", "#ffcf6b", "#c49bff", "#ff9ad1", "#6fd3c4", "#f7a76b"];
+  const DIFF = ["Easy", "Normal", "Hard"];
+  // gyms: trainer i of zone z at difficulty d
+  function gymTrainer(z, d, i) {
+    const Z = ZONES[z], lead = i === 2, lvl = Z.lv[1] + 1 + i * 2 + d * 10, q = Math.min(3, d + 1 + (lead ? 1 : 0) - (d === 0 && !lead ? 0 : 0));
+    const n = i + 1, foes = Array.from({ length: n }, (_, k) => foeMon(Z.sp[(z + i + k) % Z.sp.length], lvl - (n - 1 - k), Math.min(3, Math.max(1, q - (k < n - 1 ? 1 : 0)))));
+    if (lead) foes[foes.length - 1] = foeMon(Z.boss, lvl + 1, Math.min(3, q));
+    const reward = i === 0 ? { k: "coins", n: 30 * (z + 1) * (d + 1) } : i === 1 ? { k: "bright", n: d + 1 } : { k: "star", n: d + 1 };
+    return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, lvl };
+  }
+  const gymKey = (z, d, i) => `${z}-${d}-${i}`;
+  const gymBeat = (z, d, i) => !!(S.gyms && S.gyms[gymKey(z, d, i)]);
+  const gymDone = (z, d) => [0, 1, 2].every(i => gymBeat(z, d, i));
+  const gymDiffOpen = (z, d) => d === 0 || gymDone(z, d - 1);
+  // daily duels
+  const DRANKS = [[0, "Sprout"], [60, "Pebble"], [150, "Breeze"], [300, "Comet"], [500, "Star"], [800, "Glimmer"]];
+  function duelState() { if (!S.duel) S.duel = { date: "", left: 5, pts: 0, wins: 0 }; if (S.duel.date !== today()) { S.duel.date = today(); S.duel.left = 5; } return S.duel; }
+  const duelRank = p => DRANKS.filter(r => p >= r[0]).pop()[1];
+  const avgLvl = () => { const t = team(); return t.length ? Math.round(t.reduce((a, m) => a + m.lvl, 0) / t.length) : 1; };
+  function duelFoes() {
+    const pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []), L = avgLvl();
+    return Array.from({ length: 3 }, () => foeMon(pickOf(pool), L + rnd(-1, 2), 1 + wpick([60, 30, 10])));
+  }
+  // sky tower
+  function towerFoes(f) {
+    const Z = ZONES[Math.min(ZONES.length - 1, Math.floor((f - 1) / 4))], n = Math.min(3, 1 + Math.floor((f - 1) / 3));
+    return Array.from({ length: n }, () => foeMon(pickOf(Z.sp), 2 + f * 2, f < 5 ? 1 : f < 12 ? 1 + wpick([60, 40]) : 1 + wpick([30, 50, 20])));
+  }
+  // quick battle: the same fight worked out without showing it
+  function simulate(mine, foes) {
+    const A = mine.map(m => ({ m, hp: maxHp(m), t: 0 })), B = foes.map(m => ({ m, hp: maxHp(m), t: 0 })), ea = { e: 0 }, eb = { e: 0 };
+    let i = 0, j = 0;
+    const hitS = (x, y, p, sx, sy, basic) => { y.hp -= Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m)))); if (basic) sx.e = Math.min(100, sx.e + 20); sy.e = Math.min(100, sy.e + 6); };
+    for (let t = 0; t < 900 && i < A.length && j < B.length; t += .1) {
+      const a = A[i], b = B[j]; a.t += .1; b.t += .1;
+      if (a.t >= interval(a.m)) { a.t -= interval(a.m); hitS(a, b, interval(a.m) * .9, ea, eb, true); }
+      if (ea.e >= 100) { ea.e = 0; hitS(a, b, 3.2 * mult(SP[a.m.sp].el, SP[b.m.sp].el), ea, eb, false); }
+      if (b.hp > 0) { if (b.t >= interval(b.m)) { b.t -= interval(b.m); hitS(b, a, interval(b.m) * .9, eb, ea, true); } if (eb.e >= 100) { eb.e = 0; hitS(b, a, 3.2 * mult(SP[b.m.sp].el, SP[a.m.sp].el), eb, ea, false); } }
+      if (b.hp <= 0) { j++; eb.e = 0; } if (a.hp <= 0) i++;
+    }
+    return j >= B.length;
+  }
+  let arenaSub = "hub", gymZ = 0, gymD = 0, prep = null;
+  function openPrep(p) { prep = p; arenaSub = "prep"; render(); window.scrollTo(0, 0); }
+  function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward], quick: gymBeat(z, d, i), back: "gym" }); }
+  function prepDuel() { const D = duelState(); if (D.left <= 0) { toast("No duels left today"); return; } openPrep({ mode: "duel", title: "Daily Duel", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "duels" }); }
+  function prepTower() { const f = (S.tower || 0) + 1; openPrep({ mode: "tower", f, title: `Sky Tower · Floor ${f}`, name: `Floor ${f} keeper`, color: "#9fd6ff", foes: towerFoes(f), rewards: [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }] : [])], quick: false, back: "tower" }); }
+  function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
+    if (P.mode === "gym") { if (!S.gyms) S.gyms = {}; S.gyms[gymKey(P.z, P.d, P.i)] = 1; }
+    if (P.mode === "duel") { const D = duelState(); D.pts += 12; D.wins++; }
+    if (P.mode === "tower") S.tower = Math.max(S.tower || 0, P.f);
+    for (const r of P.rewards) giveReward(r);
+    track("win"); return P.rewards;
+  }
+  async function finishArena(won) {
+    const P = BT.prep; let given = [];
+    if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); }
+    save(); await resultScreen(won, given, 0);
+    BT = null; prep = null; arenaSub = P.back; render(); save();
+  }
+  async function startPrep(quick) {
+    const P = prep; if (!P || !team().length) return;
+    if (P.mode === "duel") duelState().left--;
+    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
+    startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
+  }
+  const rchips = rs => rs.map(r => `<span class="rchip">${RW[r.k][0]}${r.n}</span>`).join("");
+  function pageArena() {
+    const back = to => `<div class="sheethead"><button class="mb" data-act="arenasub:${to}" aria-label="Back">‹ Back</button>`;
+    if (arenaSub === "prep" && prep) {
+      const P = prep, mine = team(), mon2 = (m, mine) => `<div class="pmon">${art(m.sp, m.evo, 58)}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span>${gChip(m.q)}</div>`;
+      return `${back(P.back)}<h3>${P.title}</h3><span></span></div>
+        <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
+          <div class="pvs">VS</div>
+          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div><b>Your team</b><div class="pmons">${mine.map(m => mon2(m, true)).join("")}</div></div></div></div>
+        ${P.rewards.length ? `<div class="prew"><span>Reward</span>${rchips(P.rewards)}</div>` : `<p class="hint" style="margin:0">Already beaten: no reward this time.</p>`}
+        <div class="pbtns"><button class="mb" data-act="view:team">Change team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick battle</button>` : ""}</div>`;
+    }
+    if (arenaSub === "gym") {
+      const z = gymZ, d = gymD, Z = ZONES[z], open = ZONES.map((_, i) => i).filter(zoneOpen);
+      const idx = open.indexOf(z), prev = open[idx - 1], next = open[idx + 1];
+      const badges = ZONES.map((ZZ, i) => `<button class="gbadge${gymDone(i, 0) ? " done" : ""}${i === z ? " cur" : ""}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"} aria-label="${ZZ.name} Gym">${zoneOpen(i) ? (gymDone(i, 0) ? "\u2713" : i + 1) : IC.lock}</button>`).join("");
+      const tcard = i => { const T = gymTrainer(z, d, i), beat = gymBeat(z, d, i);
+        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false)}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward])}</span></button>`; };
+      return `${back("gyms")}<h3>${Z.name} Gym</h3><span></span></div>
+        <div class="gbadges">${badges}</div>
+        <div class="seg">${DIFF.map((n, k) => `<button class="${d === k ? "on" : ""}" data-act="gymd:${k}" ${gymDiffOpen(z, k) ? "" : "disabled"}>${gymDiffOpen(z, k) ? "" : IC.lock.replace(/#fff/g, "#8a6d55")}${n}</button>`).join("")}</div>
+        <div class="gbook z${z}"><div class="gnav">${prev !== undefined ? `<button class="garrow" data-act="gymz:${prev}" aria-label="Previous gym">\u2039</button>` : "<span></span>"}${next !== undefined ? `<button class="garrow" data-act="gymz:${next}" aria-label="Next gym">\u203A</button>` : "<span></span>"}</div>
+          <div class="gtop">${tcard(2)}</div><div class="gbot">${tcard(0)}${tcard(1)}</div>
+          ${gymDone(z, d) ? `<div class="gclear">${DIFF[d]} cleared</div>` : ""}</div>`;
+    }
+    if (arenaSub === "gyms") {
+      return `${back("hub")}<h3>Gyms</h3><span></span></div>
+        <div class="slist">${ZONES.map((Z, i) => `<button class="garow z${i}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"}><span class="gpic"></span><span class="gtx"><b>${Z.name} Gym</b><small>${zoneOpen(i) ? DIFF.map((n, k) => `${gymDone(i, k) ? "\u2713" : "\u25CB"} ${n}`).join("  ") : "Opens with the zone"}</small></span><i>${zoneOpen(i) ? "\u203A" : IC.lock}</i></button>`).join("")}</div>`;
+    }
+    if (arenaSub === "duels") {
+      const D = duelState(), nextR = DRANKS.find(r => r[0] > D.pts);
+      return `${back("hub")}<h3>Daily Duels</h3><span></span></div>
+        <div class="dhero"><span class="drank">${IC.crown}</span><div><b>${duelRank(D.pts)} rank</b><small>${D.pts} duel points${nextR ? ` · ${nextR[0] - D.pts} to ${nextR[1]}` : ""}</small><span class="tbar"><i style="width:${nextR ? Math.round((D.pts - DRANKS.filter(r => r[0] <= D.pts).pop()[0]) / (nextR[0] - DRANKS.filter(r => r[0] <= D.pts).pop()[0]) * 100) : 100}%"></i></span></div></div>
+        <p class="hint" style="margin:0">Teams near your level. A win gives 12 points and coins, a loss takes 5 points. ${D.left} of 5 duels left today.</p>
+        <button class="mb gold pbig" data-act="duelgo" ${D.left > 0 ? "" : "disabled"}>${D.left > 0 ? "Find an opponent" : "Come back tomorrow"}</button>`;
+    }
+    if (arenaSub === "tower") {
+      const f = (S.tower || 0) + 1;
+      const floors = [f + 2, f + 1, f, f - 1, f - 2].filter(x => x >= 1).map(x => `<div class="tfloor${x === f ? " cur" : x < f ? " done" : ""}"><b>Floor ${x}</b><span>${x < f ? "\u2713" : x === f ? "Next" : ""}</span>${x % 5 === 0 ? `<span class="rchip">${IC.jar(JARS[2].c)}1</span>` : ""}</div>`).join("");
+      return `${back("hub")}<h3>Sky Tower</h3><span></span></div>
+        <p class="hint" style="margin:0">Each floor is a little harder. Every 5th floor gives a star jar. Best: floor ${S.tower || 0}.</p>
+        <div class="tower">${floors}</div>
+        <button class="mb gold pbig" data-act="towergo">Climb to floor ${f}</button>`;
+    }
+    const D = duelState(), gymsDone = ZONES.filter((_, i) => gymDone(i, 0)).length;
+    const mode = (k, title, chips, bg) => `<button class="amode" data-act="arenasub:${k}"><span class="aimg ${bg}"><b>${title}</b><span class="achips">${chips}</span></span><span class="ago">${IC.sword}<b>Go</b></span></button>`;
+    return `<div class="head"><h2>Arena</h2></div>
+      ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}
+      ${mode("duels", "Daily Duels", `<span>${duelRank(D.pts)}</span><span>${D.left} left today</span>`, "a-duel")}
+      ${mode("tower", "Sky Tower", `<span>Best floor ${S.tower || 0}</span>`, "a-tower")}`;
+  }
+  // ================= GRADE COLLECTION per zone (Atlas) =================
+  const GC_REW = { 1: { k: "plain", n: 2 }, 2: { k: "bright", n: 1 }, 3: { k: "star", n: 1 } };
+  function bestQ() { if (!S.bestQ) { S.bestQ = {}; for (const m of S.mons) S.bestQ[m.sp] = Math.max(S.bestQ[m.sp] || 0, m.q); } return S.bestQ; }
+  let atlasGrade = 1;
+  function gradeBlock(z) {
+    const Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(), have = Z.sp.filter(sp => (B[sp] || 0) >= g).length, cl = (st.gq && st.gq[g]) || 0;
+    const nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && k === cl && have >= need, r = k === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g];
+      return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="gclaim:${z}" ${can ? "" : "disabled"}>${done ? IC.star : RW[r.k][0]}<small>${need}</small></button>`; }).join("");
+    return `<div class="gcol" style="--gc:${GRADES[g].c}"><div class="gcsw"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>
+      <div class="gcmini">${Z.sp.map(sp => `<span class="${(B[sp] || 0) >= g ? "" : "no"}">${art(sp, 0, 30)}</span>`).join("")}</div>
+      <div class="mtrack">${nodes}</div><p class="hint" style="margin:0">${have} of ${Z.sp.length} kinds caught as ${GRADES[g].name} or better · Rainbow for sure within ${Math.max(1, PITY - (S.pity || 0))} wild Glumis</p></div>`;
+  }
   const NAVI = { menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
                  close: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
   let zoneCss = false;
   function paintCss() {  // zone paintings as backgrounds for the zone card, the Atlas card and the wide bottom tile (set once)
     if (zoneCss) return; zoneCss = true;
-    const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "");
+    const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
+      + (ART["bg-arena"] ? `.a-gym{background-image:url(${ART["bg-arena"]})}` : "") + (ART["bg-2"] ? `.a-duel{background-image:url(${ART["bg-2"]})}` : "") + (ART["bg-7"] ? `.a-tower{background-image:url(${ART["bg-7"]})}` : "");
     const el = document.createElement("style"); el.textContent = r; document.head.appendChild(el);
   }
   function renderTabs() {
@@ -1690,7 +1907,7 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
       : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""}>${icon}${label}</button>`;
     const wide = view === "home" && !showMap && !showAuto ? `<button class="navwide z${S.zone}" data-act="close"><span>Explore</span></button>`
       : `<button class="navwide homecard" data-act="view:home" ${lock("home") ? "disabled" : ""}><span>Home</span></button>`;
-    $("tabs").innerHTML = tab("menu", NAVI.menu, "Menu") + tab("team", TABI.team, "Glumis") + tab("shop", TABI.shop, "Shop") + wide;
+    $("tabs").innerHTML = tab("menu", NAVI.menu, "Menu") + tab("team", TABI.team, "Glumis") + tab("shop", TABI.shop, "Shop") + tab("arena", IC.sword.replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
   }
   function pageMenu() {
     if (settingsPage) return pageSettings();
@@ -2073,7 +2290,7 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
       <div class="head"><h2>Atlas</h2><button class="round" data-act="map" aria-label="Back to the path" style="font-size:16px">Back</button></div>
       <div class="zcards">${cards}</div>
       <div class="head" style="align-items:baseline"><h3 style="margin:0;color:#5b3f2a">${Z.name}</h3><span class="stats"><span>Wild Lv ${Z.lv[0]}-${Z.lv[1]}</span><span>${got}/${Z.sp.length} caught</span></span></div>
-      ${open ? `<div class="mtrack">${track}</div>` : ""}
+      ${open ? `<div class="mtrack">${track}</div>${gradeBlock(z)}` : ""}
       <div class="zmap">${zoneMapSVG(Z)}${Z.sp.map((sp, k) => pin(sp, PIN_POS[k])).join("")}${bossPin}</div>
       ${info || `<p class="hint" style="margin:0">Tap a pin to see a Glumi. Gold pins are caught.</p>`}
       ${open ? (z === S.zone ? `<button class="big2" disabled>${IC.balloon}You are here<small>Walk the path to find these Glumis</small></button>`
@@ -2100,7 +2317,8 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
     const dots = (list, isMe) => list.map((m, i) => `<span class="tdot${(isMe ? m.hp <= 0 : i < BT.fi) ? " out" : ""}${(isMe ? m === me : i === BT.fi) ? " cur" : ""}">${art(m.sp, m.evo, 30)}</span>`).join("");
     const sw = t.map(m => `<button class="sw${m === me ? " cur" : ""}" data-act="swap:${m.uid}" ${m === me || m.hp <= 0 || BT.swapCd > 0 ? "disabled" : ""} aria-label="Switch to ${fname(m.sp, m.evo)}">${m === me ? `<span class="tagcur">Fighting</span>` : ""}${art(m.sp, m.evo, 46)}${bar(m.hp, maxHp(m))}<span class="cd" ${BT.swapCd > 0 && m !== me && m.hp > 0 ? "" : "hidden"}>${Math.ceil(BT.swapCd)}</span></button>`).join("");
     const capb = (btn, label) => `<div class="capw">${btn}<span class="cap">${label}</span></div>`;
-    $("aview").innerHTML = `${autoChip()}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(t, true)}</div></div><div class="aside r"><span class="aname">${BT.name || "Trainer"}</span><div class="tdots">${dots(BT.foes, false)}</div></div></div>
+    const picker = BT.pick > 0 ? `<div class="picker"><p>Choose your next Glumi</p><div class="prow">${t.filter(m => m.hp > 0).map(m => `<button class="pk" data-act="pickmon:${m.uid}">${art(m.sp, m.evo, 56)}${bar(m.hp, maxHp(m))}</button>`).join("")}</div><b id="pickT">${Math.ceil(BT.pick)}</b></div>` : "";
+    $("aview").innerHTML = `${picker}${autoChip()}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(t, true)}</div></div><div class="aside r"><span class="aname">${BT.name || "Trainer"}</span><div class="tdots">${dots(BT.foes, false)}</div></div></div>
       <div class="afield">${arenaSVG()}
         <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div id="meEn">${bar(BT.me.e, 100, true)}</div></div>
         <div class="hpcard foe"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn">${bar(BT.foe.e, 100, true)}</div></div>
@@ -2125,7 +2343,7 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
-    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
@@ -2222,13 +2440,24 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
     else if (a === "goreq") { if (!E && !BT && !busy) { view = "shop"; shopTab = "requests"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); } }
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
+    else if (a === "arenasub") { arenaSub = arg; if (arg !== "prep") prep = null; render(); window.scrollTo(0, 0); }
+    else if (a === "gymz") { if (zoneOpen(n)) { gymZ = n; if (!gymDiffOpen(n, gymD)) gymD = 0; arenaSub = "gym"; render(); window.scrollTo(0, 0); } }
+    else if (a === "gymd") { if (gymDiffOpen(gymZ, n)) { gymD = n; render(); } }
+    else if (a === "gymgo") prepGym(gymZ, gymD, n);
+    else if (a === "duelgo") prepDuel();
+    else if (a === "towergo") prepTower();
+    else if (a === "prepgo") startPrep(n === 1);
+    else if (a === "pickmon") { if (BT && BT.pick > 0) { const cur = front(), i = S.team.indexOf(n), ci = cur ? S.team.indexOf(cur.uid) : -1; if (i > -1 && ci > -1 && i !== ci) [S.team[ci], S.team[i]] = [S.team[i], S.team[ci]]; BT.pick = 0; BT.me.t = 0; render(); } }
+    else if (a === "agrade") { atlasGrade = Math.min(3, Math.max(1, atlasGrade + n)); render(); }
+    else if (a === "gclaim") { const z = n, Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(); if (!st.gq) st.gq = {}; const cl = st.gq[g] || 0, have = Z.sp.filter(sp => (B[sp] || 0) >= g).length;
+      if (cl < Z.sp.length && have >= cl + 1) { const r = cl === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g]; st.gq[g] = cl + 1; giveReward(r); sfx("claim"); save(); toast(`Got ${r.n} ${RW[r.k][1]}`); render(); } }
     else if (a === "taskstab") { tasksTab = arg; render(); }
     else if (a === "taskclaim") { const [tab, id] = b.dataset.act.split(":").slice(1), t = TASKS[tab].find(x => x.id === id); if (t && taskReady(tab, t)) { tasksState().done[tab + ":" + id] = 1; giveReward(t.r); sfx("claim"); save(); toast(`Got ${t.r.n} ${RW[t.r.k][1]}`); render(); } }
     else if (a === "bagtab") { bagTab = arg; bagPick = null; render(); }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
     else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound") S.opt.sound = S.opt.sound === false; else S.opt[arg] = !S.opt[arg]; RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
-    else if (a === "view") { view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
+    else if (a === "view") { if (arg === "arena" && view !== "team" && arenaSub === "prep") { arenaSub = "hub"; prep = null; } view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
     else if (a === "map") { if (!E && !BT && !busy) { showMap = false; view = view === "atlas" ? "explore" : "atlas"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); } }
     else if (a === "atlaszone") { atlasZone = n; atlasPin = null; render(); }
     else if (a === "atlaspin") { atlasPin = atlasPin === n ? null : n; render(); }
