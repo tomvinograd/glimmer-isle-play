@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794857568;</script>
+<script>window.GAME_BUILD = 1794859551;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1505,7 +1505,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(3, 5) * M.m : kind === 1 ? rnd(4, 8) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
       else { E = { type: "gather", kind: "pouch", n: 2 * M.m }; }  // a little coin pouch on the path
     }
-    if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
+    if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list.concat(...(E.waves || []))); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
     busy = false; save(); render();
     if (E && E.type === "wild" && E.intro) starEntrance();
     await flushBanners();
@@ -2277,7 +2277,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     sfx("claim"); save(); render(); toast(`Offered ${picked.length}: +${Object.values(G.keeps).reduce((a, b) => a + b, 0)} keepsakes${G.shards ? `, +${G.shards} star shard${G.shards > 1 ? "s" : ""}` : ""}`);
   }
   // ================= SKY ENTRANCE =================
-  const GRADE_TRAIL = ["#7f9bff", "#6f8cff", "#a67cff", "#ffc94a", "#ff9ad1"];
+  const GRADE_TRAIL = ["#6fd38a", "#5aa8ff", "#a67cff", "#ffc94a", "#ff9ad1"];  // Green, Blue, Purple, Gold, Rainbow
   function skyIntro(list) {
     return new Promise(done => {
       const SPEED = S.auto ? 1.5 : 1, END = 1950, W = innerWidth, H = innerHeight, dpr = Math.min(2, devicePixelRatio || 1);
@@ -2286,15 +2286,16 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       let seed = 1234567; const rr = () => (seed = seed * 16807 % 2147483647) / 2147483647;
       const clamp = x => Math.max(0, Math.min(1, x)), ease = x => 1 - Math.pow(1 - clamp(x), 3), easeIn = x => clamp(x) * clamp(x);
       const stars = Array.from({ length: 110 }, () => ({ x: rr() * W, y: rr() * H, r: .5 + rr() * 1.3, ph: rr() * 6.28, sp: 2 + rr() * 4 }));
-      const qs = list.slice(0, 9).map(w => w.q); while (qs.length < 7) qs.push(rr() < .3 ? 2 : 1);
+      const qs = list.map(w => w.q), top = qs.splice(qs.indexOf(Math.max(...qs)), 1)[0];
+      qs.splice(Math.floor(qs.length / 2), 0, top);  // one star per Glumi; the rarest is the central one
       const ANG = 20 * Math.PI / 180, dx = Math.cos(ANG), dy = Math.sin(ANG);
-      const best = qs.indexOf(Math.max(...list.map(w => w.q)));
+      const best = Math.floor((qs.length - 1) / 2), gap = Math.min(60, 420 / qs.length);
       const comets = qs.map((q, i) => {
         const yT = H * (.1 + .8 * (i + .5) / qs.length) + (rr() - .5) * 26, xT = W * (.55 + rr() * .3);
-        return { q, xT, yT, t0: i * 60 + rr() * 40, dur: 520 + rr() * 160, len: W * (.55 + rr() * .25) * (q >= 3 ? 1.15 : 1), wid: q >= 3 ? 15 : q === 2 ? 11 : 8 };
+        return { q, xT, yT, t0: (i === best ? Math.min(i * gap, 200) : i * gap) + rr() * 40, dur: 520 + rr() * 160, len: W * (.55 + rr() * .25) * (q >= 3 ? 1.15 : 1), wid: q >= 3 ? 15 : q === 2 ? 11 : 8 };
       });
       if (best >= 0) { comets[best].xT = W * .7; comets[best].yT = H * .5; }
-      const bx = best >= 0 ? comets[best].xT : W * .7, by = best >= 0 ? comets[best].yT : H * .5, bc = GRADE_TRAIL[Math.max(1, qs[best] || 1)];
+      const bx = best >= 0 ? comets[best].xT : W * .7, by = best >= 0 ? comets[best].yT : H * .5, bc = GRADE_TRAIL[qs[best] || 0];
       const sparks = Array.from({ length: 26 }, () => ({ a: rr() * 6.28, v: 120 + rr() * 260, r: 1.5 + rr() * 2.5 }));
       const streaks = Array.from({ length: 70 }, () => ({ a: rr() * 6.28, d: .05 + rr() * .5, w: .6 + rr() * 1.6 }));
       const puffs = Array.from({ length: 26 }, (_, i) => ({ a: i / 26 * 6.28 + rr() * .2, s: .8 + rr() * .5 }));
