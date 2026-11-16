@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794847632;</script>
+<script>window.GAME_BUILD = 1794847955;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -971,6 +971,66 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .shbtns { display: flex; justify-content: center; gap: 10px; align-items: center; }
 .pbig.sure { background: linear-gradient(#ff9a8a, #e8574a); }
 .shrinecard { width: 100%; } .shrinecard .mic svg { width: 28px; height: 28px; }
+/* ===== sky entrance + eggs (Tom 16 Nov) ===== */
+#skyfx { position: fixed; inset: 0; z-index: 92; overflow: hidden; background: radial-gradient(circle at 72% 55%, #3b2066, #1b0d31 70%); transition: opacity .4s; }
+#skyfx.fade { opacity: 0; pointer-events: none; }
+.skystar { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #d6deff; animation: twk 1.2s ease-in-out infinite alternate; }
+@keyframes twk { to { transform: scale(1.8); opacity: .2; } }
+.comet { position: absolute; border-radius: 40% 50% 50% 40% / 50%; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--c) 70%, transparent) 55%, var(--c) 85%, #fff); transform-origin: 100% 50%; opacity: 0;
+  filter: drop-shadow(0 0 6px var(--c)); animation: cometIn var(--dur) cubic-bezier(.15,.85,.3,1) var(--d) forwards; }
+.comet.rainbow { background: linear-gradient(90deg, transparent, #9be38a 40%, #7fc8ff 55%, #c49bff 70%, #ff9ad1 85%, #fff); }
+.comet b { position: absolute; right: -14px; top: 50%; width: 28px; height: 28px; margin-top: -14px; background: #fff; clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%); }
+@keyframes cometIn { from { transform: translate(-75vw, -28vh) rotate(18deg); opacity: 0; } 15% { opacity: 1; } to { transform: rotate(18deg); opacity: 1; } }
+.skyburst { position: absolute; width: 190px; height: 190px; margin: -95px 0 0 -95px; border-radius: 50%; transform: scale(0);
+  background: radial-gradient(circle, #fff 0 10%, color-mix(in srgb, var(--c) 60%, #fff) 22%, color-mix(in srgb, var(--c) 45%, transparent) 50%, transparent 70%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 50%, transparent), 0 0 70px var(--c); animation: burstIn .5s cubic-bezier(.2,1.4,.4,1) var(--d) forwards; }
+.skyburst.rainbow { box-shadow: 0 0 0 3px #fff, 0 0 40px #ff9ad1, 0 0 80px #7fc8ff; }
+@keyframes burstIn { to { transform: scale(1); } }
+.skyspeed { position: absolute; inset: -30%; opacity: 0; background: repeating-linear-gradient(115deg, var(--a) 0 18px, color-mix(in srgb, var(--a) 50%, var(--b)) 30px, var(--b) 52px, color-mix(in srgb, var(--b) 60%, var(--p)) 70px, var(--p) 82px, var(--a) 120px); filter: blur(7px) saturate(.8); }
+#skyfx.speed .skyspeed { opacity: 1; animation: rush .35s linear infinite; }
+#skyfx.speed .comet, #skyfx.speed .skyburst, #skyfx.speed .skystar { opacity: 0 !important; transition: opacity .15s; }
+@keyframes rush { to { transform: translate(-120px, 260px); } }
+.skyclouds { position: absolute; inset: 0; }
+.skyclouds i { position: absolute; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff 55%, #e6ecf6); transform: translate(-50%, -50%) scale(0); }
+#skyfx.puff .skyclouds i { animation: puffUp .35s ease-out forwards; }
+@keyframes puffUp { to { transform: translate(-50%, -50%) scale(2.2); } }
+.hatch { position: fixed; inset: 0; z-index: 93; display: grid; place-items: center; overflow: hidden;
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--c) 35%, #fff), color-mix(in srgb, var(--c) 55%, #2b2645)); }
+.hatch::before { content: ""; position: absolute; inset: 0; opacity: .12; background: radial-gradient(circle, #fff 2px, transparent 3px) 0 0/42px 42px, radial-gradient(circle, #fff 1.5px, transparent 2.5px) 21px 21px/42px 42px; }
+.hblob { position: absolute; width: 330px; height: 300px; background: color-mix(in srgb, var(--c) 40%, #fff); opacity: .55; border-radius: 42% 58% 55% 45% / 50% 40% 60% 50%; animation: blob 3s ease-in-out infinite alternate; }
+@keyframes blob { to { border-radius: 58% 42% 40% 60% / 40% 60% 45% 55%; transform: rotate(12deg) scale(1.05); } }
+.hrays { position: absolute; width: 700px; height: 700px; opacity: 0; background: repeating-conic-gradient(rgba(255,255,255,.35) 0 8deg, transparent 8deg 22deg); border-radius: 50%; animation: spin 14s linear infinite; }
+.hatch.w3 .hrays, .hatch.burst .hrays, .hrays.on { opacity: 1; transition: opacity .4s; }
+.hegg { position: relative; width: 190px; height: 228px; animation: eggDrop .5s cubic-bezier(.3,1.5,.5,1) both; }
+@keyframes eggDrop { from { transform: translateY(-80vh) scale(.6); } }
+.hegg .half { position: absolute; inset: 0; } .hegg .half svg { width: 100%; height: 100%; display: block; }
+.half.top { clip-path: polygon(0 0, 100% 0, 100% 52%, 86% 47%, 72% 56%, 58% 46%, 44% 57%, 30% 47%, 16% 56%, 0 50%); }
+.half.bot { clip-path: polygon(0 50%, 16% 56%, 30% 47%, 44% 57%, 58% 46%, 72% 56%, 86% 47%, 100% 52%, 100% 100%, 0 100%); }
+.cracks { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px #bff3ff); }
+.cracks path { opacity: 0; transition: opacity .15s; }
+.hatch.w1 .k1, .hatch.w2 .k1, .hatch.w2 .k2, .hatch.w3 path { opacity: 1; }
+.hatch.w1 .hegg, .hatch.w2 .hegg, .hatch.w3 .hegg { animation: wob .45s ease-in-out; }
+.hatch.w2 .hegg { animation-name: wob2; } .hatch.w3 .hegg { animation-name: wob3; filter: drop-shadow(0 0 22px #fff); }
+@keyframes wob { 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+@keyframes wob2 { 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
+@keyframes wob3 { 20% { transform: rotate(-12deg) scale(1.04); } 60% { transform: rotate(12deg) scale(1.06); } }
+.hatch.burst .half.top { animation: flyUp .6s ease-out forwards; } .hatch.burst .half.bot { animation: flyDown .6s ease-out forwards; } .hatch.burst .cracks { opacity: 0; }
+@keyframes flyUp { to { transform: translate(-60px, -140px) rotate(-35deg); opacity: 0; } }
+@keyframes flyDown { to { transform: translate(60px, 120px) rotate(30deg); opacity: 0; } }
+.hflash { position: absolute; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(#fff 40%, transparent 70%); transform: scale(0); }
+.hatch.burst .hflash { animation: flash2 .7s ease-out forwards; }
+@keyframes flash2 { 40% { transform: scale(4); opacity: 1; } to { transform: scale(9); opacity: 0; } }
+.hring { position: absolute; width: 160px; height: 200px; border-radius: 50%; border: 10px solid color-mix(in srgb, var(--c) 40%, #fff); opacity: 0; }
+.hatch.burst .hring { animation: ring2 .8s ease-out forwards; } .hatch.burst .hring.r2 { animation-delay: .15s; }
+@keyframes ring2 { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
+.htap { position: absolute; bottom: calc(40px + env(safe-area-inset-bottom, 0px)); margin: 0; font: 800 14px var(--display); color: #fff; text-shadow: 0 1px 3px rgba(40,30,20,.5); }
+.hcard { position: relative; width: 250px; padding: 14px 12px 16px; border-radius: 16px; display: grid; justify-items: center; gap: 6px; animation: rpop .45s cubic-bezier(.3,1.5,.5,1);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--gc) 30%, #fff), color-mix(in srgb, var(--gc) 65%, #fff)); box-shadow: 0 0 0 5px #fff, 0 0 0 8px var(--gc), 0 14px 40px rgba(40,30,20,.35); }
+.hcard b { font: 800 22px var(--display); color: var(--brown); } .hmeta { display: flex; align-items: center; gap: 5px; font: 800 13px var(--display); color: var(--brown); } .hmeta .el { width: 10px; height: 10px; }
+.hpow { justify-self: start; padding: 2px 10px; border-radius: 6px; background: var(--gc); color: #fff; font: 800 13px var(--display); }
+.hart > * { filter: drop-shadow(0 8px 10px rgba(40,30,20,.25)); }
+.binfo .mb { margin-left: auto; }
+.btile svg[viewBox="0 0 100 120"] { width: 34px; height: 40px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1406,6 +1466,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(3, 5) * M.m : kind === 1 ? rnd(4, 8) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
       else { E = { type: "gather", kind: "pouch", n: 2 * M.m }; }  // a little coin pouch on the path
     }
+    if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
     busy = false; save(); render();
     if (E && E.type === "wild" && E.intro) starEntrance();
     await flushBanners();
@@ -1878,9 +1939,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
       const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
         ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
-        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
+        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glumi: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glumi or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glumi, sometimes Rainbow."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
       tiles = items.filter(i => i[3] > 0).map(([k, ic, nm, n, q]) => `<button class="btile${bagPick === k ? " on" : ""}" data-act="bagpick:${k}" style="--gc:${GRADES[q].c}">${ic}<b>${n >= 10000 ? (n / 1000).toFixed(1) + "K" : n}</b></button>`);
-      const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span></div>`;
+      const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span>${/^egg/.test(p[0]) && p[3] > 0 ? `<button class="mb gold" data-act="openegg:${p[0].slice(3)}">Open</button>` : ""}</div>`;
     } else {
       const src = bagTab === "keep" ? (S.keepsakes || {}) : (S.starCores || {});
       tiles = Object.keys(src).filter(sp => src[sp] > 0).map(sp => `<button class="btile${bagPick === "s" + sp ? " on" : ""}" data-act="bagpick:s${sp}" style="--gc:${bagTab === "keep" ? GRADES[2].c : GRADES[4].c}">${art(+sp, 0, 40)}<b>${src[sp]}</b></button>`);
@@ -2091,9 +2152,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
   const CATCH_PTS = [5, 10, 30, 80, 300];  // by grade
   const EVBARS = {
     catch: { name: "Catch points", how: "Catch Glumis: Blue 10, Purple 30, Gold 80, Rainbow 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
-             rew: [{ k: "glow", n: 30 }, { k: "plain", n: 3 }, { k: "coins", n: 150 }, { k: "bright", n: 2 }, { k: "glow", n: 80 }, { k: "star", n: 1 }, { k: "coins", n: 500 }] },
+             rew: [{ k: "glow", n: 30 }, { k: "plain", n: 3 }, { k: "egg1", n: 1 }, { k: "bright", n: 2 }, { k: "glow", n: 80 }, { k: "egg2", n: 1 }, { k: "star", n: 1 }] },
     fight: { name: "Battle points", how: "Win fights: path trainers 20, gyms 40, ladder and climb 30", icon: () => IC.sword, steps: [60, 150, 300, 500, 800, 1200, 1800],
-             rew: [{ k: "coins", n: 100 }, { k: "glow", n: 40 }, { k: "bright", n: 1 }, { k: "coins", n: 300 }, { k: "glow", n: 100 }, { k: "star", n: 1 }, { k: "glow", n: 200 }] },
+             rew: [{ k: "coins", n: 100 }, { k: "glow", n: 40 }, { k: "egg1", n: 1 }, { k: "coins", n: 300 }, { k: "glow", n: 100 }, { k: "egg2", n: 1 }, { k: "egg3", n: 1 }] },
   };
   const nextMidnight = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); };
   function evState() { if (!S.ev || S.ev.day !== today()) S.ev = { day: today(), catch: { pts: 0, tier: 0 }, fight: { pts: 0, tier: 0 } }; return S.ev; }
@@ -2105,7 +2166,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     return `<button class="evbar ${k}${ok ? " ready" : ""}" data-act="evclaim:${k}" aria-label="${EVBARS[k].name}: ${E2.pts} of ${t}"><span class="evi">${EVBARS[k].icon()}</span><span class="evtrack"><i style="width:${Math.min(100, E2.pts / t * 100)}%"></i><b>${E2.pts.toLocaleString("en")}/${t.toLocaleString("en")}</b></span><span class="evr">${RW[r.k][0]}<small>${r.n}</small>${ok ? '<em class="bang">!</em>' : ""}</span></button>`;
   }
   // ================= ISLAND RACE: a day-long race against four islanders =================
-  const RACE_REW = [[{ k: "star", n: 2 }, { k: "glow", n: 200 }], [{ k: "star", n: 1 }, { k: "glow", n: 150 }], [{ k: "bright", n: 2 }, { k: "glow", n: 100 }], [{ k: "plain", n: 5 }, { k: "glow", n: 50 }], [{ k: "coins", n: 100 }]];
+  const RACE_REW = [[{ k: "egg3", n: 1 }, { k: "star", n: 2 }, { k: "glow", n: 200 }], [{ k: "egg2", n: 1 }, { k: "star", n: 1 }, { k: "glow", n: 150 }], [{ k: "egg1", n: 1 }, { k: "bright", n: 2 }, { k: "glow", n: 100 }], [{ k: "plain", n: 5 }, { k: "glow", n: 50 }], [{ k: "coins", n: 100 }]];
   function newRace() {
     const names = [...TNAMES].sort(() => Math.random() - .5).slice(0, 4), pool = Object.keys(SP).map(Number).filter(k => SP[k].tier < 3);
     return { start: Date.now(), end: Date.now() + 24 * 3600000, me: 0, done: false, bots: names.map((n, i) => ({ name: n, sp: pool[rnd(0, pool.length - 1)], total: Math.round([620, 470, 340, 210][i] * (.8 + Math.random() * .4)) })) };
@@ -2119,13 +2180,13 @@ nav .navwide .bang { top: 4px; right: 6px; }
   }
   // ================= LADDER: weekly wins and rank =================
   const LADDER_COST = 5, LADDER_MS = [10, 20, 40, 60, 100, 150];
-  const LADDER_REW = [{ k: "coins", n: 200 }, { k: "glow", n: 50 }, { k: "bright", n: 2 }, { k: "glow", n: 100 }, { k: "star", n: 1 }, { k: "star", n: 2 }];
+  const LADDER_REW = [{ k: "coins", n: 200 }, { k: "egg1", n: 1 }, { k: "bright", n: 2 }, { k: "egg2", n: 1 }, { k: "star", n: 1 }, { k: "egg3", n: 1 }];
   const weekId = () => Math.floor((Date.now() - 4 * 86400000) / (7 * 86400000));  // weeks start on Monday
   function ladderState() { if (!S.ladder || S.ladder.week !== weekId()) S.ladder = { week: weekId(), pts: S.ladder ? Math.round(S.ladder.pts / 2) : 0, wins: 0, claimed: 0 }; return S.ladder; }
   function prepLadder() { if (S.glow < LADDER_COST) { toast(`A match costs ${LADDER_COST} energy`); return; }
     openPrep({ mode: "ladder", title: "Ladder match", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "ladder" }); }
   // ================= CLOUD CLIMB =================
-  const climbRewards = f => [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : [])];
+  const climbRewards = f => [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }] : [])];
   let climbing = false;
   async function autoClimb() {
     if (climbing || !team().length) return; climbing = true; render();
@@ -2176,6 +2237,69 @@ nav .navwide .bang { top: 4px; right: 6px; }
     S.mons = S.mons.filter(m => !shrinePick.includes(m.uid)); shrinePick = []; shrineSure = false;
     sfx("claim"); save(); render(); toast(`Offered ${picked.length}: +${Object.values(G.keeps).reduce((a, b) => a + b, 0)} keepsakes${G.shards ? `, +${G.shards} star shard${G.shards > 1 ? "s" : ""}` : ""}`);
   }
+  // ================= SKY ENTRANCE =================
+  const GRADE_TRAIL = ["#7f9bff", "#6f8cff", "#a67cff", "#ffc94a", "#ff9ad1"];
+  function skyIntro(list) {
+    return new Promise(done => {
+      const f = S.auto ? .65 : 1, T = ms => Math.round(ms * f), W = innerWidth, H = innerHeight, Z = ZONES[S.zone];
+      const best = list.reduce((a, w) => Math.max(a, w.q), 1);
+      const fx = document.createElement("div"); fx.id = "skyfx";
+      let html = "";
+      for (let i = 0; i < 70; i++) html += `<i class="skystar" style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:-${(Math.random() * 1.2).toFixed(2)}s;opacity:${(.3 + Math.random() * .6).toFixed(2)}"></i>`;
+      const comets = list.slice(0, 10).map(w => w.q).concat([1, 1, 2, 1].slice(0, Math.max(0, 6 - list.length)));
+      comets.forEach((q, i) => {
+        const y = H * (.12 + .76 * (i + .5) / comets.length) + (Math.random() - .5) * 30, x = W * (.42 + Math.random() * .38), w = 180 + Math.random() * 160, h = q >= 3 ? 20 : q === 2 ? 15 : 11;
+        const c = q === 4 ? "url(#none)" : GRADE_TRAIL[q];
+        html += `<span class="comet${q === 4 ? " rainbow" : ""}" style="left:${x - w}px;top:${y - h / 2}px;width:${w}px;height:${h}px;--c:${GRADE_TRAIL[q]};--d:${T(i * 55)}ms;--dur:${T(620)}ms"><b></b></span>`;
+      });
+      html += `<span class="skyburst${best === 4 ? " rainbow" : ""}" style="left:${W * .78}px;top:${H * .55}px;--c:${GRADE_TRAIL[best]};--d:${T(620)}ms"></span>`;
+      html += `<div class="skyspeed" style="--a:${Z.far};--b:${Z.ground};--p:${Z.path}"></div><div class="skyclouds">${[[10, 55, 160], [40, 40, 220], [72, 58, 180], [25, 78, 200], [62, 82, 230], [88, 35, 150], [50, 62, 260]].map(([x, y, r], i) => `<i style="left:${x}%;top:${y}%;width:${r}px;height:${r}px;animation-delay:${i * 30}ms"></i>`).join("")}</div>`;
+      fx.innerHTML = html; document.body.appendChild(fx);
+      let ended = false;
+      const end = () => { if (ended) return; ended = true; fx.classList.add("fade"); done(); setTimeout(() => fx.remove(), 450); };
+      fx.addEventListener("click", end);
+      setTimeout(() => !ended && fx.classList.add("speed"), T(1250));
+      setTimeout(() => !ended && fx.classList.add("puff"), T(1600));
+      setTimeout(end, T(1950));
+    });
+  }
+  // ================= EGGS =================
+  const EGG_COL = { 1: ["#bcd6ff", "#5a8df0"], 2: ["#e3d0ff", "#9a6ff0"], 3: ["#ffeaa6", "#f0a52a"] };
+  const EGG_ODDS = { 1: [[1, 2, 3], [75, 22, 3]], 2: [[2, 3, 4], [75, 22, 3]], 3: [[3, 4], [92, 8]] };
+  const eggCount = () => (S.egg1 || 0) + (S.egg2 || 0) + (S.egg3 || 0);
+  function EGG_SVG(t, id) {
+    const [a, b] = EGG_COL[t];
+    return `<svg viewBox="0 0 100 120" aria-hidden="true"><defs><radialGradient id="eg${id}" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient></defs>
+      <path d="M50 4C76 4 93 44 93 72C93 99 73 116 50 116C27 116 7 99 7 72C7 44 24 4 50 4Z" fill="url(#eg${id})" stroke="#5b4636" stroke-width="3"/>
+      <circle cx="50" cy="72" r="24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="3 5"/>
+      <path d="M50 50 55 66 71 72 55 78 50 94 45 78 29 72 45 66Z" fill="#ffd76a" stroke="#c48a1c" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="50" cy="72" r="4" fill="#fff6d8"/><circle cx="31" cy="55" r="2.6" fill="#ffd76a"/><circle cx="69" cy="55" r="2.6" fill="#ffd76a"/><circle cx="50" cy="104" r="2.4" fill="#ffd76a"/>
+      <ellipse cx="33" cy="30" rx="9" ry="15" fill="rgba(255,255,255,.55)" transform="rotate(25 33 30)"/></svg>`;
+  }
+  const EGG_ICON = t => EGG_SVG(t, "i" + t + Math.random().toString(36).slice(2, 6));
+  Object.assign(RW, { egg1: [EGG_ICON(1), "blue egg"], egg2: [EGG_ICON(2), "purple egg"], egg3: [EGG_ICON(3), "gold egg"] });
+  function hatchEgg(t) {
+    if (!((S["egg" + t] || 0) > 0)) return;
+    const pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []); if (!pool.length) return;
+    S["egg" + t]--; const [qs, ws] = EGG_ODDS[t], q = qs[wpick(ws)], m = newMon(pool[rnd(0, pool.length - 1)], 1, q);
+    keepMon(m); const B = bestQ(); B[m.sp] = Math.max(B[m.sp] || 0, m.q); save();
+    const ov = document.createElement("div"); ov.className = "hatch"; ov.style.setProperty("--c", EGG_COL[t][1]);
+    const crack = `<svg class="cracks" viewBox="0 0 100 120"><path class="k1" d="M50 40 46 52 54 58 48 70"/><path class="k2" d="M48 70 36 76 30 70M54 58 66 62 72 56"/><path class="k3" d="M48 70 52 84 44 94M66 62 70 78 80 82"/></svg>`;
+    ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${EGG_SVG(t, "h1")}</div><div class="half bot">${EGG_SVG(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">Tap to hatch faster</p>`;
+    document.body.appendChild(ov);
+    let shown = false; const timers = [];
+    const card = () => { if (shown) return; shown = true; timers.forEach(clearTimeout); sfx("claim");
+      ov.classList.add("done");
+      ov.innerHTML = `<div class="hrays on"></div><div class="hcard" style="--gc:${GRADES[m.q].c}"><span class="hpow">${GRADES[m.q].name}</span><div class="hart">${art(m.sp, m.evo, 190)}</div><b>${fname(m.sp, m.evo)}</b><span class="hmeta"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>${EL[SP[m.sp].el].name} · Lv 1</span></div><p class="htap">Tap to close</p>`;
+      setTimeout(() => ov.addEventListener("click", () => { ov.remove(); render(); }, { once: true }), 400); };
+    ov.addEventListener("click", () => { if (!shown) card(); });
+    const at = (ms, fn) => timers.push(setTimeout(fn, RM ? Math.min(ms, 300) : ms));
+    at(500, () => { ov.classList.add("w1"); sfx("tap"); });
+    at(1000, () => { ov.classList.add("w2"); sfx("tap"); });
+    at(1500, () => { ov.classList.add("w3"); sfx("tap"); });
+    at(2000, () => { ov.classList.add("burst"); sfx("win"); });
+    at(2700, card);
+  }
   const NAVI = { menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
                  close: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
   let zoneCss = false;
@@ -2204,7 +2328,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
       <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
-      <div class="mtiles"><button class="mtile" data-act="view:tasks">${IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.chest}<span>Backpack</span></button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
+      <div class="mtiles"><button class="mtile" data-act="view:tasks">${IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
   function pageStart() {
     return `<div class="head"><h2>Choose a buddy</h2></div><div class="starters">${[0, 3, 6].map(sp => `<button class="card starter" data-act="start:${sp}">${art(sp, 0, 84)}<span class="nmrow" style="font-size:16px">${SP[sp].name}</span><span class="el" style="background:${EL[SP[sp].el].color}"></span></button>`).join("")}</div>`;
@@ -2841,6 +2965,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
     else if (a === "rivalquick") quickRival(false);
+    else if (a === "openegg") { bagPick = null; hatchEgg(n); render(); }
     else if (a === "shrinepick") { shrineSure = false; const i = shrinePick.indexOf(n); if (i > -1) shrinePick.splice(i, 1); else if (shrinePick.length < 5 && mon(n) && shrineFree(mon(n))) shrinePick.push(n); else if (shrinePick.length >= 5) toast("All 5 slots are full"); render(); }
     else if (a === "shrinequick") { shrineSure = false; const pool = S.mons.filter(m => shrineFree(m) && !shrinePick.includes(m.uid)).sort((a, b) => a.q - b.q || a.lvl - b.lvl); while (shrinePick.length < 5 && pool.length) shrinePick.push(pool.shift().uid); render(); }
     else if (a === "shrinesort") { shrineSort = arg; render(); }
