@@ -497,7 +497,7 @@
   .card { background: #fff; border: 0; border-radius: 10px; box-shadow: 0 3px 12px rgba(91,70,54,.12); }
   .stats { color: var(--brown-2); } .nmrow { color: var(--brown); }
 
-  /* creature cards: a soft glow of their grade color, names on one line */
+  /* gloomer cards: a soft glow of their grade color, names on one line */
   .slot, .tile { border: 0; margin: 0; border-radius: 10px; box-shadow: 0 3px 12px rgba(91,70,54,.14), inset 0 0 0 2px color-mix(in srgb, var(--gc, #ead8b8) 70%, #fff);
     background: radial-gradient(90% 70% at 50% 35%, #fff, color-mix(in srgb, var(--gc, #fff) 26%, #fff8ec) 80%); }
   .slot .nm, .tile .nm { color: var(--brown); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; overflow-wrap: normal; padding: 0 2px; }
@@ -643,6 +643,8 @@
   .ibub svg { width: 18px; height: 18px; }
   .ibub::after { content: ""; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: #fff; }
   @keyframes ibub { 50% { transform: translate(-50%, -112%); } }
+  .seg button { font-size: 13.5px; }
+  .srow small .grade { font-size: 10px; padding: 0 5px; margin-right: 3px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -720,7 +722,7 @@
   const MULTS = [{ m: 1, lvl: 1, grades: [75, 25, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [68, 28, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [55, 30, 12, 3, 0], count: 1 }, { m: 10, lvl: 6, grades: [45, 32, 15, 8, 0], count: 1 }, { m: 20, lvl: 9, grades: [40, 32, 17, 11, 0], count: 2 }, { m: 50, lvl: 12, grades: [35, 32, 19, 14, 0], count: 5 }, { m: 100, lvl: 15, grades: [30, 32, 21, 17, 0], count: 10 }];
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }];
   const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, PITY = 800;
-  const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild creatures is Rainbow, by Power (x1 .. x20)
+  const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild gloomers is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 3, MAX_STARS = 5, STAR_BONUS = .1;
   const ASC_EVERY = 10, MAX_ASC = 5, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20];  // ascension: top level, +30% stats each, keepsakes needed
   const KEEPSAKES_BY_GRADE = [1, 1, 2, 3, 5], SELL_BASE = [8, 15, 30, 60, 200];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
@@ -862,7 +864,7 @@
     if (DRAGON_SLOTS.includes(sp)) return dragonArt(sp, evo, size);
     return blobArt(sp, evo, size);
   }
-  // Placeholder for creatures whose art is not made yet: a soft round critter in the element's colors.
+  // Placeholder for gloomers whose art is not made yet: a soft round critter in the element's colors.
   function blobArt(sp, evo, size) {
     const s = SP[sp], col = EL[s.el].color, dark = mix(col, -0.38), light = mix(col, 0.45), rar = Math.min(2, s.tier);
     const base = { round: [27, 25, 60], tall: [21, 30, 58], wide: [33, 21, 64] }[s.shape];
@@ -968,7 +970,7 @@
   const glowCap = () => 50 + S.xlvl * 10, lvlCap = () => 10 + S.xlvl * 2, xNeed = () => 60 + S.xlvl * 40;  /* ECONOMY_SLOWER */
   const ZONE_LVL = [0, 3, 5, 7, 9, 12, 15, 18];
   const zoneOpen = i => i === 0 || zoneAll(i - 1) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING */
-  const lockText = i => `${ZONES[i].name} opens when you catch every creature in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
+  const lockText = i => `${ZONES[i].name} opens when you catch every gloomer in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
   const bossReady = i => !S.zones[i].cleared && (zoneAll(i) || S.zones[i].steps >= BOSS_STEPS);
   const multOpen = M => S.xlvl >= M.lvl;
@@ -1063,7 +1065,7 @@
       E = { type: "wild", list: [b], i: 0, treat: false, fought: false, hpFrac: 1, boss: true, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300);
       busy = false; save(); render(); shakeStage(); await banner("Guardian!");
     } else {
-      // a creature about 1 step in 5; after 8 steps without one, the next step brings one
+      // a gloomer about 1 step in 5; after 8 steps without one, the next step brings one
       let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 8) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;
       if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (list.some(w => w.q >= 3)) { busy = false; save(); render(); await banner(GRADES[Math.max(...list.map(w => w.q))].name + "!"); } }
       else if (r === 1) E = { type: "chest", coins: rnd(4, 9) * M.m, glow: Math.random() < 1 / 12 ? rnd(15, 25) * M.m : 0 };  // coins; a rare glowing chest also gives glow
@@ -1172,7 +1174,7 @@
   }
 
   // ---------- groups, waves, star entrance, gathering ----------
-  // seconds until creature k pops in; negative once its pop-in has already played (a redraw then shows it at once)
+  // seconds until gloomer k pops in; negative once its pop-in has already played (a redraw then shows it at once)
   const introD = k => (.55 + k * .14 - (performance.now() - (E && E.introT || 0)) / 1000).toFixed(2);
   function starEntrance() {
     [...document.querySelectorAll("#actors .actor.intro")].forEach((a, k) => {
@@ -1356,7 +1358,7 @@
     const z = S.zone, Z = ZONES[z], st = S.zones[z];
     return `<div class="hud"><span class="xbadge" style="--p:${Math.round(S.xxp / xNeed() * 100)}" aria-label="Explorer level"><span>${S.xlvl}</span></span><span class="pill res" id="hudCoins">${IC.coin}${S.coins}</span><span class="pill res" id="hudLeaves">${IC.leaf}${S.leaves}</span><span class="grow"></span><span class="pill res glowpill" id="hudGlow">${IC.glow}<span id="glowNum">${S.glow}</span><span class="gbar"><i id="glowBar" style="width:${Math.min(100, S.glow / glowCap() * 100)}%"></i></span><small class="gnext" id="glowNext">${glowNextText()}</small></span></div>
       <div class="zonebar"><div class="zrow">${zArrow(-1)}<button class="ztitle" data-act="map" aria-label="Open the Atlas">${Z.name}</button>${zArrow(1)}</div>
-      <span class="zchips" aria-label="Zone creatures">${Z.sp.map(sp => `<span class="mini ${st.caught[sp] ? "" : "no"}">${art(sp, 0, 22)}</span>`).join("")}<span class="crown ${st.cleared ? "done" : bossReady(z) ? "ready" : ""}">${IC.crown}</span></span></span></div>`;
+      <span class="zchips" aria-label="Zone gloomers">${Z.sp.map(sp => `<span class="mini ${st.caught[sp] ? "" : "no"}">${art(sp, 0, 22)}</span>`).join("")}<span class="crown ${st.cleared ? "done" : bossReady(z) ? "ready" : ""}">${IC.crown}</span></span></span></div>`;
   }
   function actorsHTML() {
     if (BT) return "";
@@ -1453,9 +1455,9 @@
     const pick = swapIn ? mon(swapIn) : null;
     return `<div class="head"><h2>My team</h2><span class="pill">${IC.leaf}${S.leaves}</span><span class="pill">${IC.fruit}${S.fruit}</span></div>
       ${pick ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a spot for <b>${fname(pick.sp, pick.evo)}</b></span><button class="mb" data-act="cancelswap">Cancel</button></div>`
-             : `<p class="hint" style="text-align:left;margin:0">Up to 3 creatures walk with you. The leader fights first. Tap a creature to see it, level it up or add it to your team.</p>`}
+             : `<p class="hint" style="text-align:left;margin:0">Up to 3 gloomers walk with you. The leader fights first. Tap a gloomer to see it, level it up or add it to your team.</p>`}
       <div class="slots">${[0, 1, 2].map(teamSlot).join("")}</div>
-      <h3>My creatures · ${S.mons.length}</h3>
+      <h3>My gloomers · ${S.mons.length}</h3>
       <div class="tiles">${sorted.map(monTile).join("")}</div>
       ${sheetUid && mon(sheetUid) ? creatureSheet(mon(sheetUid)) : ""}`;
   }
@@ -1484,7 +1486,7 @@
     const stats = `<div class="stats2">${statBar("HP", maxHp(m), 260, "#43c59e")}${statBar("Attack", atk(m), 70, "#ff8a4c")}${statBar("Defense", def(m), 60, "#5aa8ff")}</div>`;
     let body;
     if (sheetPage === "level") body = `${back("Level up")}${mini}${stats}
-      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a creature must ascend to keep growing. Ascending costs ${s.name} keepsakes (you have ${keeps}).</p>
+      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a gloomer must ascend to keep growing. Ascending costs ${s.name} keepsakes (you have ${keeps}).</p>
       <div class="btns">${L.join("")}</div>`;
     else if (sheetPage === "stars") {
       const next = st < MAX_STARS ? Object.assign({}, m, { stars: st + 1 }) : null;
@@ -1520,15 +1522,16 @@
   }
   let shopTab = "jars";
   function pageShop() {
-    const tabs = [["jars", "Jars"], ["supplies", "Supplies"], ["requests", "Requests"]];
+    const tabs = [["jars", "Jars"], ["supplies", "Supplies"], ["market", "Gloomers"], ["requests", "Requests"]];
     if (shopTab === "requests") return pageRequests(tabs);
+    if (shopTab === "market") return pageMarket(tabs);
     const row = (k, icon, name, about, price, ok = true) => `<div class="srow"><span class="ic">${icon}</span><span class="txt"><b>${name}</b><small>${about}</small></span>
       <button class="price" data-act="buy:${k}" ${S.coins >= price && ok ? "" : "disabled"}>${IC.coin}${price}</button></div>`;
     const items = {
       jars: [row("plain", IC.jar(JARS[0].c), "Plain jar", `A simple jar · you have ${S.jars.plain}`, 15),
              row("bright", IC.jar(JARS[1].c), "Bright jar", `Catches more easily · you have ${S.jars.bright}`, 45),
              row("star", IC.jar(JARS[2].c), "Star jar", `The best catch chance · you have ${S.jars.star}`, 120)],
-      supplies: [row("treat", IC.treat, "Treat", `Calms a creature before you throw · you have ${S.treats}`, 25),
+      supplies: [row("treat", IC.treat, "Treat", `Calms a gloomer before you throw · you have ${S.treats}`, 25),
                  row("leaves", IC.leaf, "10 leaves", `For leveling up · you have ${S.leaves}`, 20)],
     };
     const waiting = E && E.type === "wild" ? E.list[E.i] : null;
@@ -1538,7 +1541,7 @@
       <div class="slist">${items[shopTab].join("")}</div>
       <p class="saved">${saveNote || "Saved on this device"}</p>`;
   }
-  // ================= REQUESTS: give creatures, get moonfruit or glow =================
+  // ================= REQUESTS: give gloomers, get moonfruit or glow =================
   const REQUEST_SLOTS = 3, REQUEST_WAIT_MIN = 10;
   let reqPick = null, confirmGive = null;
   function newRequest() {
@@ -1564,7 +1567,7 @@
       return `${head}<div class="sheethead"><button class="mb" data-act="reqpick:" aria-label="Back">‹ Back</button><h3>Request</h3><span></span></div>
         <div class="minihero"><div class="hero" style="--gc:${GRADES[r.minQ].c}">${art(r.sp, 0, 74)}</div><div><div class="nmrow">${SP[r.sp].name}</div>
           <small class="reqtxt">Wanted: ${reqWant(r)}</small><span class="reward">Reward ${reqReward(r)}</span></div></div>
-        ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Creatures in your team are not shown.</p>
+        ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Gloomers in your team are not shown.</p>
           <div class="slist">${got.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl}${m.stars ? ` · ${m.stars} star${m.stars > 1 ? "s" : ""}` : ""}</small></span>
             <button class="price give" data-act="give:${m.uid}">${confirmGive === m.uid ? "Sure?" : "Give"}</button></div>`).join("")}</div>`
           : `<p class="hint" style="margin:0">You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.</p>`}`;
@@ -1572,10 +1575,10 @@
     const rows = S.requests.map((q, i) => q.done
       ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>New request soon</b><small>In ${Math.max(1, Math.ceil((q.readyAt - Date.now()) / 60000))} min</small></span><span></span></div>`
       : `<button class="srow req" data-act="reqpick:${i}"><span class="ic">${art(q.sp, 0, 32)}</span><span class="txt"><b>${SP[q.sp].name}</b><small>${reqWant(q)}${reqMatches(q).length ? " · you have one" : ""}</small></span><span class="reward">${reqReward(q)}</span></button>`).join("");
-    return `${head}<p class="hint" style="margin:0">Islanders ask for creatures and pay in moonfruit or glow.</p>
+    return `${head}<p class="hint" style="margin:0">Islanders ask for gloomers and pay in moonfruit or glow.</p>
       <div class="slist">${rows}</div>`;
   }
-  // ================= HOME ISLAND: creatures work and make resources =================
+  // ================= HOME ISLAND: gloomers work and make resources =================
   const PLACES = {
     orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 4, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
     spring: { name: "Glow Spring", res: "glow", unit: "glow", base: 1, els: ["Water", "Spirit"], about: "Collects glow for walking" },
@@ -1644,15 +1647,15 @@
       const P = PLACES[homePlace];
       const free = S.mons.filter(m => !S.team.includes(m.uid) && !workingAt(m.uid)).sort((a, b) => workerRate(b, homePlace) - workerRate(a, homePlace));
       return `<div class="sheethead"><button class="mb" data-act="homepick:0" aria-label="Back">‹ Back</button><h3>Choose a worker</h3><span></span></div>
-        <p class="hint" style="margin:0">${P.els.join(" and ")} creatures work best here. Creatures in your team can't work.</p>
+        <p class="hint" style="margin:0">${P.els.join(" and ")} gloomers work best here. Gloomers in your team can't work.</p>
         ${free.length ? `<div class="slist">${free.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl} · ${perHour(workerRate(m, homePlace))} ${P.unit} an hour</small></span>
           <button class="price give" data-act="hire:${m.uid}">Assign</button></div>`).join("")}</div>`
-          : `<p class="hint" style="margin:0">No free creatures. Catch more, or take one out of your team.</p>`}`;
+          : `<p class="hint" style="margin:0">No free gloomers. Catch more, or take one out of your team.</p>`}`;
     }
     if (homePlace) {
       const k = homePlace, P = PLACES[k], p = H[k], ws = placeWorkers(k), slots = HOME_SLOTS(), n = Math.floor(p.store);
       return `<div class="sheethead"><button class="mb" data-act="homeplace:" aria-label="Back">‹ Back</button><h3>${P.name}</h3><span></span></div>
-        <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} creatures.</small>
+        <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} gloomers.</small>
           <span class="reward">${resIcon(k)}<b>${perHour(placeRate(k))}</b>&nbsp;an hour</span></div></div>
         <div class="slist"><div class="srow"><span class="ic">${resIcon(k)}</span><span class="txt"><b>${n} ${P.unit} ready</b><small>Holds up to ${placeCap(k)} (${HOME_CAP_HOURS} hours of work)</small></span>
           <button class="price" data-act="collect:${k}" ${n >= 1 ? "" : "disabled"}>Collect</button></div></div>
@@ -1680,14 +1683,40 @@
   }
   let teamTab = "team";
   const teamSeg = () => `<div class="seg">${[["team", "My team"], ["book", "Book"]].map(([k, n]) => `<button class="${teamTab === k ? "on" : ""}" data-act="teamtab:${k}">${n}</button>`).join("")}</div>`;
+  // ================= CREATURE MARKET: Purple and Gold gloomers for coins =================
+  const MARKET_HOURS = 6, MARKET_SLOTS = 4;
+  let confirmBuy = null;
+  const marketPrice = (q, lvl) => q >= 3 ? 700 + lvl * 25 : 250 + lvl * 10;
+  function fillMarket() {
+    const now = Date.now();
+    if (S.market && S.market.next > now && S.market.items) return;
+    const open = ZONES.map((_, i) => i).filter(zoneOpen);
+    const items = Array.from({ length: MARKET_SLOTS }, () => {
+      const z = open[rnd(0, open.length - 1)], Z = ZONES[z], sp = Z.sp[rnd(0, Z.sp.length - 1)], q = Math.random() < .3 ? 3 : 2, lvl = Z.lv[0];
+      return { sp, q, lvl, z, price: marketPrice(q, lvl), sold: false };
+    });
+    S.market = { next: now + MARKET_HOURS * 3600000, items }; save();
+  }
+  function pageMarket(tabs) {
+    fillMarket();
+    const mins = Math.max(1, Math.ceil((S.market.next - Date.now()) / 60000)), h = Math.floor(mins / 60), m = mins % 60;
+    const rows = S.market.items.map((it, i) => it.sold
+      ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>Sold</b><small>A new gloomer comes with the next delivery</small></span><span></span></div>`
+      : `<div class="srow"><span class="ic">${art(it.sp, 0, 36)}</span><span class="txt"><b>${SP[it.sp].name}</b><small><span class="grade q${it.q}">${GRADES[it.q].name}</span> level ${it.lvl} · from ${ZONES[it.z].name}</small></span>
+          <button class="price" data-act="buymon:${i}" ${S.coins >= it.price ? "" : "disabled"}>${confirmBuy === i ? "Sure?" : `${IC.coin}${it.price}`}</button></div>`).join("");
+    return `<div class="head"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
+      <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
+      <p class="hint" style="margin:0">Purple and Gold gloomers. New ones arrive in ${h ? `${h} h ` : ""}${m} min.</p>
+      <div class="slist">${rows}</div>`;
+  }
   let autoPick = null;  // the rule whose choices are open, or null for the list
   const AUTO_RULES = [
-    { k: "catch", name: "Auto catch", about: "What Auto does when a creature appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
+    { k: "catch", name: "Auto catch", about: "What Auto does when a gloomer appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
     { k: "low", name: "Jar for Green and Blue", about: "Which jar Auto throws at common grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "mid", name: "Jar for Purple", about: "Which jar Auto throws at Purple creatures", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "mid", name: "Jar for Purple", about: "Which jar Auto throws at Purple gloomers", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
     { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto throws at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
-    { k: "only", name: "Catch", about: "Which creatures Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
+    { k: "only", name: "Catch", about: "Which gloomers Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
@@ -1722,7 +1751,7 @@
     const track = ms.map((m, k) => { const done = k < claimed, can = !done && k === claimed && reached(z, m), [label, icon] = REWARD[m.kind](z);
       return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="claim:${z}" ${can ? "" : "disabled"} aria-label="${label}">${done ? IC.star : icon}<small>${m.need === "boss" ? "Guardian" : m.need + " caught"}</small></button>`; }).join("");
     const pin = (sp, [x, y]) => { const c = st.caught[sp] || S.caught[key(sp, 0)], seen = S.seen[key(sp, 0)], cls = c ? "caught" : seen ? "seen" : "unknown";
-      return `<button class="pin ${cls}${atlasPin === sp ? " sel" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${seen || c ? SP[sp].name : "Unknown creature"}"><span>${seen || c ? art(sp, 0, 50) : "?"}</span></button>`; };
+      return `<button class="pin ${cls}${atlasPin === sp ? " sel" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${seen || c ? SP[sp].name : "Unknown gloomer"}"><span>${seen || c ? art(sp, 0, 50) : "?"}</span></button>`; };
     const bossSeen = S.seen[key(Z.boss, 0)], bossCls = st.cleared ? "boss caught" : bossReady(z) ? "boss" : "boss locked";
     const bossPin = `<button class="pin ${bossCls}${atlasPin === Z.boss ? " sel" : ""}" data-act="atlaspin:${Z.boss}" style="left:50%;top:84%" aria-label="Guardian"><span>${bossSeen || st.cleared ? art(Z.boss, 0, 62) : IC.crown}</span></button>`;
     let info = "";
@@ -1739,10 +1768,10 @@
       <div class="head" style="align-items:baseline"><h3 style="margin:0;color:#5b3f2a">${Z.name}</h3><span class="stats"><span>Wild Lv ${Z.lv[0]}-${Z.lv[1]}</span><span>${got}/${Z.sp.length} caught</span></span></div>
       ${open ? `<div class="mtrack">${track}</div>` : ""}
       <div class="zmap">${zoneMapSVG(Z)}${Z.sp.map((sp, k) => pin(sp, PIN_POS[k])).join("")}${bossPin}</div>
-      ${info || `<p class="hint" style="margin:0">Tap a pin to see a creature. Gold pins are caught.</p>`}
-      ${open ? (z === S.zone ? `<button class="big2" disabled>${IC.balloon}You are here<small>Walk the path to find these creatures</small></button>`
+      ${info || `<p class="hint" style="margin:0">Tap a pin to see a gloomer. Gold pins are caught.</p>`}
+      ${open ? (z === S.zone ? `<button class="big2" disabled>${IC.balloon}You are here<small>Walk the path to find these gloomers</small></button>`
                               : `<button class="big2 gold" data-act="travel:${z}">${IC.balloon}Travel here<small>Fly by balloon to ${Z.name}</small></button>`)
-             : `<button class="big2" disabled>${IC.lock.replace(/#fff/g, "#7a5638")}Locked<small>${z > 0 ? `Catch every creature in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})` : ""}</small></button>`}
+             : `<button class="big2" disabled>${IC.lock.replace(/#fff/g, "#7a5638")}Locked<small>${z > 0 ? `Catch every gloomer in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})` : ""}</small></button>`}
     </div>`;
   }
   function trainerSVG(color, back) {
@@ -1881,7 +1910,10 @@
     else if (a === "fire") { homeTick(); const p = homeState()[homePlace]; if (p) { p.w = p.w.filter(u => u !== n); save(); render(); } }
     else if (a === "collect") { homeTick(); const got = collectPlace(arg); if (got) { save(); render(); toast(`+${got} ${PLACES[arg].unit}`); } }
     else if (a === "collectall") { homeTick(); const got = Object.keys(PLACES).map(k => [k, collectPlace(k)]).filter(x => x[1]); if (got.length) { save(); render(); toast(got.map(([k, v]) => `+${v} ${PLACES[k].unit}`).join(", ")); } }
-    else if (a === "shoptab") { shopTab = arg; reqPick = null; confirmGive = null; render(); }
+    else if (a === "buymon") { fillMarket(); const it = S.market.items[n]; if (!it || it.sold || S.coins < it.price) return;
+      if (confirmBuy !== n) { confirmBuy = n; render(); return; }
+      S.coins -= it.price; it.sold = true; confirmBuy = null; const m = newMon(it.sp, it.lvl, it.q); keepMon(m); save(); render(); reveal(m, "Welcome!"); }
+    else if (a === "shoptab") { shopTab = arg; confirmBuy = null; reqPick = null; confirmGive = null; render(); }
     else if (a === "reqpick") { reqPick = arg === "" ? null : +arg; confirmGive = null; render(); window.scrollTo(0, 0); }
     else if (a === "give") { const r = reqPick !== null ? S.requests[reqPick] : null, m = mon(n); if (!r || r.done || !m || !reqMatches(r).includes(m)) return;
       if (confirmGive !== n) { confirmGive = n; render(); return; }
@@ -1919,7 +1951,7 @@
     else if (a === "spage") { sheetPage = arg; confirmRelease = null; render(); const sh = document.querySelector(".sheet"); if (sh) sh.scrollTop = 0; }
     else if (a === "closesheet") { sheetUid = null; sheetPage = "main"; render(); }
     else if (a === "addteam") { sheetUid = null; if (S.team.length < slots()) { S.team.push(n); save(); toast("Added to your team"); } else { swapIn = n; } render(); window.scrollTo(0, 0); }
-    else if (a === "pickslot") { if (swapIn) { S.team.push(swapIn); swapIn = null; save(); toast("Added to your team"); render(); } else toast("Tap a creature below, then Add to team"); }
+    else if (a === "pickslot") { if (swapIn) { S.team.push(swapIn); swapIn = null; save(); toast("Added to your team"); render(); } else toast("Tap a gloomer below, then Add to team"); }
     else if (a === "swapto") { if (swapIn) { S.team[n] = swapIn; swapIn = null; save(); toast("Team updated"); render(); } }
     else if (a === "cancelswap") { swapIn = null; render(); }
     else if (a === "lead") { S.team = [n, ...S.team.filter(u => u !== n)]; save(); render(); }
@@ -1956,7 +1988,7 @@ if (p === undefined) return;
   (function splash() {
     const SPLASH_MIN_MS = 2400, t0 = performance.now(), sp = $("splash"); if (!sp) return;
     $("spMons").innerHTML = [[3, 0, 74], [0, 0, 92], [6, 0, 74]].map(([k, e, z]) => `<span>${art(k, e, z)}</span>`).join("");
-    const tips = ["Tip: tap the compass to walk the path", "Tip: throw a jar when the ring is small", "Tip: glow refills by itself over time", "Tip: the Atlas shows every zone's creatures", "Tip: a glowing chest gives extra glow"];
+    const tips = ["Tip: tap the compass to walk the path", "Tip: throw a jar when the ring is small", "Tip: glow refills by itself over time", "Tip: the Atlas shows every zone's gloomers", "Tip: a glowing chest gives extra glow"];
     $("spTip").textContent = tips[rnd(0, tips.length - 1)];
     let p = 0, ready = false;
     const show = v => { $("spFill").style.width = `calc(${v}% - 6px)`; $("spDrop").style.left = v + "%"; };
