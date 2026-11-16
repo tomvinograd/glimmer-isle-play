@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794869268;</script>
+<script>window.GAME_BUILD = 1794869328;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1476,7 +1476,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   let autoStat = { caught: 0 }, showAuto = false, autoLock = false, autoSession = false, autoNext = 0, autoSeenE = null;
   const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // at Auto speed x2 (the pace Auto always had)
   const CATCH_LEAVES = 3;  // leaves per Glumi caught on the path, x multiplier
-  const AUTO_GAP_MS = 2500; let autoGapUntil = 0;  // wait after an encounter (at x2)
+  const AUTO_GAP_MS = 1500; let autoGapUntil = 0;  // wait after an encounter (at x2)
   const AUTO_SPEEDS = [1, 2, 3], autoSpd = () => AUTO_SPEEDS.includes(S.autoSpd) ? S.autoSpd : 2, autoPace = () => 2 / autoSpd();  // ms x autoPace  // Auto's pace: time between steps, and time to look at what appeared
   let S = fresh(), view = "explore", E = null, BT = null, busy = false, db = null, uid = null, saveTimer = null, saving = false, pendingSave = false, saveNote = "", confirmRelease = null, showMap = false;
   function readLocal() { try { const j = localStorage.getItem(LS); return j ? JSON.parse(j) : null; } catch { return null; } }
