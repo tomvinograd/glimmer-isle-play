@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794867513;</script>
+<script>window.GAME_BUILD = 1794867765;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1111,6 +1111,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     background: linear-gradient(160deg, #ffe0e0, #fff3c4 25%, #d9f7d4 50%, #d4efff 75%, #eadcff) padding-box, linear-gradient(135deg, #ff8a8a, #ffd36b, #8ae68a, #7fd4ff, #c79bff) border-box; }
   .cards .hcard.q4 { background: var(--card-q4) center/cover no-repeat padding-box, linear-gradient(135deg, #ff8a8a, #ffd36b, #8ae68a, #7fd4ff, #c79bff) border-box; }
   .hpow.q4 { background: linear-gradient(90deg, #ff8a8a, #ffc94d, #6fd38a, #5aa8ff, #a77bff); text-shadow: 0 1px 2px rgba(60,40,20,.35); }
+  .autochip b.aspd { background: #fff; color: #d9822b; box-shadow: inset 0 0 0 2px #f5b23c; padding: 3px 8px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1429,7 +1430,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return null;
   }
   let autoStat = { caught: 0 }, showAuto = false, autoLock = false, autoSession = false, autoNext = 0, autoSeenE = null;
-  const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // Auto's pace: time between steps, and time to look at what appeared
+  const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // at Auto speed x2 (the pace Auto always had)
+  const AUTO_SPEEDS = [1, 2, 3], autoSpd = () => AUTO_SPEEDS.includes(S.autoSpd) ? S.autoSpd : 2, autoPace = () => 2 / autoSpd();  // ms x autoPace  // Auto's pace: time between steps, and time to look at what appeared
   let S = fresh(), view = "explore", E = null, BT = null, busy = false, db = null, uid = null, saveTimer = null, saving = false, pendingSave = false, saveNote = "", confirmRelease = null, showMap = false;
   function readLocal() { try { const j = localStorage.getItem(LS); return j ? JSON.parse(j) : null; } catch { return null; } }
   function save() { S.t = Date.now(); try { localStorage.setItem(LS, JSON.stringify(S)); } catch {} if (!db || !uid) return; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 1500); }
@@ -1825,14 +1827,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     clearInterval(tickId); BT.over = true; const M = curM(), kind = BT.kind, foes = BT.foes;
     for (const m of team()) m.hp = maxHp(m);
     if (BT.mode) return finishArena(won);
-    if (!won) { await resultScreen(false, [], BT.byAuto ? 2000 : 0); BT = null; E = null; render(); save(); return;
+    if (!won) { await resultScreen(false, [], BT.byAuto ? 2000 * autoPace() : 0); BT = null; E = null; render(); save(); return;
       // (older path kept below for reference, never reached)
       BT = null; render(); await banner("Retreat"); if (kind === "rival") E = null; render(); save(); return; }
     const foeEl = document.querySelector("#foeActor .spr"); if (foeEl && !RM) await anim(foeEl, [{ opacity: 1 }, { transform: "translateY(20px) scale(.9)", opacity: .3 }], { duration: 400, fill: "forwards" });
     const lv = Math.max(...foes.map(f => f.lvl)), coins = (5 + lv * 2) * M.m;
     S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); sfx("win"); save();
     { const ar = $("arena").getBoundingClientRect(); flyIcons(IC.coin, 8, ar.width / 2, ar.height * .45, null); floatText(ar.width / 2, ar.height * .45, "+" + coins + " coins", true); }
-    await resultScreen(true, [{ k: "coins", n: coins }], BT.byAuto ? 2000 : 0);
+    await resultScreen(true, [{ k: "coins", n: coins }], BT.byAuto ? 2000 * autoPace() : 0);
     BT = null; E = null; save(); render(); await flushBanners(); return;
     const leaves = 0;
     if (kind === "rival") { E = null; }
@@ -2264,7 +2266,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     busy = true; const foes = E.foes, won = simulate(team(), foes), M = curM(); let rew = [];
     if (won) { const lv = Math.max(...foes.map(f => f.lvl)), coins = (5 + lv * 2) * M.m; S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); rew = [{ k: "coins", n: coins }]; }
     E = null; save();
-    await resultScreen(won, rew, byAuto ? 2000 : 0);
+    await resultScreen(won, rew, byAuto ? 2000 * autoPace() : 0);
     busy = false; render(); await flushBanners();
   }
   // the lucky lantern: bet glow or coins, get 1x to 2x back (in the same kind)
@@ -2396,7 +2398,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const GRADE_TRAIL = ["#6fd38a", "#5aa8ff", "#a67cff", "#ffc94a", "#ff9ad1"];  // Green, Blue, Purple, Gold, Rainbow
   function skyIntro(list) {
     return new Promise(done => {
-      const SPEED = S.auto ? 1.5 : 1, END = 1950, W = innerWidth, H = innerHeight, dpr = Math.min(2, devicePixelRatio || 1);
+      const SPEED = S.auto ? 1.5 * autoSpd() / 2 : 1, END = 1950, W = innerWidth, H = innerHeight, dpr = Math.min(2, devicePixelRatio || 1);
       const cv = document.createElement("canvas"); cv.id = "skyfx"; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr); document.body.appendChild(cv);
       let seed = 1234567; const rr = () => (seed = seed * 16807 % 2147483647) / 2147483647;
@@ -3221,10 +3223,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function autoTick() {
     if (!S.auto || !S.started || view !== "explore" || showMap || showAuto || BT || busy || document.querySelector(".shade")) return;
     const now = performance.now();
-    if (E !== autoSeenE) { const wasMine = autoSeenE && autoSeenE.manual; autoSeenE = E; if (E) { autoNext = now + AUTO_LOOK_MS; return; } if (wasMine) { autoNext = now + 800; return; } }
+    if (E !== autoSeenE) { const wasMine = autoSeenE && autoSeenE.manual; autoSeenE = E; if (E) { autoNext = now + AUTO_LOOK_MS * autoPace(); return; } if (wasMine) { autoNext = now + 800; return; } }
     if (E && E.manual) return;  // the player took this one over
     if (now < autoNext) return;
-    if (!E) { autoNext = now + AUTO_STEP_MS; step(); } else if (autoCatchOn() || autoPicksUp()) { autoNext = now + AUTO_STEP_MS; autoAct(); }
+    if (!E) { autoNext = now + AUTO_STEP_MS * autoPace(); step(); } else if (autoCatchOn() || autoPicksUp()) { autoNext = now + AUTO_STEP_MS * autoPace(); autoAct(); }
   }
   // the bar above the buttons fills during Auto's wait on an encounter; full = Auto acts
   let autoBarFor = 0;
@@ -3247,8 +3249,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   setInterval(() => { autoTick(); autoBar(); }, 200);
   function autoChip() {
     if (!autoSession) return "";
-    return S.auto ? `<button class="autochip on" data-act="autopause" aria-label="Pause Auto">${IC.auto}<span>Auto on</span><b>Pause</b></button>`
-                  : `<button class="autochip" data-act="autopause" aria-label="Continue Auto">${IC.auto}<span>Auto paused</span><b>Continue</b></button>`;
+    return S.auto ? `<button class="autochip on" data-act="autopause" aria-label="Pause Auto">${IC.auto}<span>Auto on</span><b class="aspd" data-act="autospd" aria-label="Auto speed">×${autoSpd()}</b><b>Pause</b></button>`
+                  : `<button class="autochip" data-act="autopause" aria-label="Continue Auto">${IC.auto}<span>Auto paused</span><b class="aspd" data-act="autospd" aria-label="Auto speed">×${autoSpd()}</b><b>Continue</b></button>`;
   }
   const TAKE_OVER = new Set(["throw", "jar", "treat", "leave", "chest", "gather", "rivalgo", "rivalquick", "luckgo"]);  // an encounter's own buttons
   function autoPicksUp() { return S.auto && E && (E.type === "chest" || E.type === "gather"); }  // Auto opens chests and gathers even with catching off
@@ -3394,6 +3396,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       S.mult = open[(i + 1) % open.length].m; save(); renderActions();
       toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} energy` : `x${S.mult}: ${S.mult} energy a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} energy` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
+    else if (a === "autospd") { S.autoSpd = AUTO_SPEEDS[(AUTO_SPEEDS.indexOf(autoSpd()) + 1) % AUTO_SPEEDS.length]; save(); toast(`Auto speed ×${autoSpd()}`); render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
     else if (a === "backtocatch") { view = "explore"; if (E) E.t0 = performance.now(); render(); window.scrollTo(0, 0); }
     else if (a === "teamtab") { teamTab = arg; sheetUid = null; render(); window.scrollTo(0, 0); }
