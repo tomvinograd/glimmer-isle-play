@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794866860;</script>
+<script>window.GAME_BUILD = 1794866952;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1181,7 +1181,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }];
   const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, RB_PITY = 100, RB_PITY_MULT = 10;  // a Rainbow for sure after 100 catches made at x10 or higher
   const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
-  const RAINBOW_STAR_CORES = 3, MAX_STARS = 5, STAR_BONUS = .1;
+  const RAINBOW_STAR_CORES = 1, MAX_STARS = 5, STAR_BONUS = .1;
   const FLEE_AFTER = [5, 6, 8, 10, 14];  // missed jars before a wild Glumi runs away, by grade Green..Rainbow
   const ASC_EVERY = 10, MAX_ASC = 9, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20, 26, 33, 40, 50];  // top level 100  // ascension: top level, +30% stats each, keepsakes needed
   const KEEPSAKES_BY_GRADE = [1, 1, 5, 8, 12], SELL_BASE = [8, 15, 30, 60, 200];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
@@ -2362,7 +2362,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <div class="shtop"><div class="shbar"><span>Glumis to offer</span><span>Average grade: <b>${picked.length ? GRADES[Math.round(avg)].name : "-"}</b></span></div>
         <div class="shslots">${[0, 1, 2, 3, 4].map(slot).join("")}</div></div>
       <div class="shex"><h4>Star shard exchange</h4>${SHRINE_DEALS.map(deal).join("")}
-        <p class="shnote">${picked.length ? `You get: ${kinds.map(sp => `${G.keeps[sp]} ${SP[sp].name} keepsake${G.keeps[sp] > 1 ? "s" : ""}`).join(", ")}${G.cores ? `, ${G.cores} star cores` : ""}${G.shards ? `, <b>${G.shards} star shard${G.shards > 1 ? "s" : ""}</b>` : ""}` : "Star shards count as keepsakes of any kind when you ascend a Glumi."}</p></div>
+        <p class="shnote">${picked.length ? `You get: ${kinds.map(sp => `${G.keeps[sp]} ${SP[sp].name} keepsake${G.keeps[sp] > 1 ? "s" : ""}`).join(", ")}${G.cores ? `, ${G.cores} star core${G.cores > 1 ? "s" : ""}` : ""}${G.shards ? `, <b>${G.shards} star shard${G.shards > 1 ? "s" : ""}</b>` : ""}` : "Star shards count as keepsakes of any kind when you ascend a Glumi."}</p></div>
       <div class="shpool"><div class="shtools"><span class="seg mini">${[["grade", "Grade"], ["level", "Level"]].map(([k, nm]) => `<button class="${shrineSort === k ? "on" : ""}" data-act="shrinesort:${k}">${nm}</button>`).join("")}</span><button class="mb" data-act="shrineflip" aria-label="Flip order">${shrineUp ? "\u2191" : "\u2193"}</button></div>
         ${pool.length ? `<div class="shgrid">${pool.map(m => `<button class="shtile${shrinePick.includes(m.uid) ? " on" : ""}" data-act="shrinepick:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 48)}<span class="lv">Lv ${m.lvl}</span>${shrinePick.includes(m.uid) ? '<i class="shck">\u2713</i>' : ""}</button>`).join("")}</div>`
           : `<p class="hint">No spare Glumis. Glumis in your team, at work, away or locked can't be offered.</p>`}</div>
@@ -2612,7 +2612,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (inTeam && S.team.length > 1) T.push(`<button class="big2" data-act="den:${m.uid}">${IC.home}Remove from team<small>It stays in your collection</small></button>`);
     if (!inTeam) {
       G.push(`<button class="big2 sell" data-act="sell:${m.uid}">${IC.coin}${confirmRelease === "sell" + m.uid ? "Tap again to sell" : `Sell for ${sellPrice(m)} coins`}<small>It leaves your collection</small></button>`);
-      G.push(`<button class="big2 danger" data-act="release:${m.uid}">${IC.glow}${confirmRelease === m.uid ? "Tap again to release" : "Release for keepsakes"}<small>+${KEEPSAKES_BY_GRADE[m.q]} ${s.name} keepsake${KEEPSAKES_BY_GRADE[m.q] > 1 ? "s" : ""}${m.q === 4 ? ` and ${RAINBOW_STAR_CORES} ${s.name} star cores` : ""} · you have ${S.keepsakes[m.sp] || 0}</small></button>`);
+      G.push(`<button class="big2 danger" data-act="release:${m.uid}">${IC.glow}${confirmRelease === m.uid ? "Tap again to release" : "Release for keepsakes"}<small>+${KEEPSAKES_BY_GRADE[m.q]} ${s.name} keepsake${KEEPSAKES_BY_GRADE[m.q] > 1 ? "s" : ""}${m.q === 4 ? ` and ${RAINBOW_STAR_CORES} ${s.name} star core${RAINBOW_STAR_CORES > 1 ? "s" : ""}` : ""} · you have ${S.keepsakes[m.sp] || 0}</small></button>`);
     }
     const st = m.stars || 0, cores = S.starCores[m.sp] || 0, aNeed = ASC_COST[ascOf(m)] || 0, keeps = (S.keepsakes[m.sp] || 0) + (S.shards || 0);
     const ascReady = atAsc && ascOf(m) < MAX_ASC && keeps >= aNeed, lvlReady = !capped && S.leaves >= cost, starReady = st < MAX_STARS && cores >= st + 1;
@@ -2989,7 +2989,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <div class="reltop"><span class="relsel">Selected: ${picked.length}</span><span class="seg mini">${[["grade", "Grade"], ["level", "Level"]].map(([k, nm]) => `<button class="${R.sort === k ? "on" : ""}" data-act="relsort:${k}">${nm}</button>`).join("")}</span><button class="mb" data-act="relflip" aria-label="Flip order">${R.up ? "\u2191" : "\u2193"}</button></div>
       ${pool.length ? `<div class="shgrid relgrid">${pool.map(x => `<button class="shtile${R.sel.includes(x.uid) ? " on" : ""}" data-act="relpick:${x.uid}" style="--gc:${GRADES[x.q].c}">${art(x.sp, x.evo, 48)}<span class="lv">Lv ${x.lvl}</span>${R.sel.includes(x.uid) ? '<i class="shck">\u2713</i>' : ""}</button>`).join("")}</div>`
         : `<p class="hint">No spare ${name}s. Glumis in your team, locked, working or away can't be released here.</p>`}
-      <div class="relget"><b>You get:</b><span class="rchips">${keeps ? `<span class="rchip">${IC.keepsake || ""}${keeps} ${name} keepsake${keeps > 1 ? "s" : ""}</span>` : `<span class="relnone">nothing selected</span>`}${cores ? `<span class="rchip">${IC.core || IC.star}${cores} star cores</span>` : ""}</span></div>
+      <div class="relget"><b>You get:</b><span class="rchips">${keeps ? `<span class="rchip">${IC.keepsake || ""}${keeps} ${name} keepsake${keeps > 1 ? "s" : ""}</span>` : `<span class="relnone">nothing selected</span>`}${cores ? `<span class="rchip">${IC.core || IC.star}${cores} star core${cores > 1 ? "s" : ""}</span>` : ""}</span></div>
       <div class="relgrades"><span>Select by grade:</span>${[1, 2, 3, 4].map(gradeBtn).join("")}</div>
       <button class="mb gold pbig${R.sure ? " sure" : ""}" data-act="relgo" ${picked.length ? "" : "disabled"} style="justify-self:center">${R.sure ? `Tap again to release ${picked.length}` : `Release ${picked.length || ""}`}</button>`;
   }
@@ -2999,7 +2999,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     let k = 0, c = 0; for (const x of pool) { k += KEEPSAKES_BY_GRADE[x.q]; if (x.q === 4) c += RAINBOW_STAR_CORES; }
     S.keepsakes[R.sp] = (S.keepsakes[R.sp] || 0) + k; if (c) S.starCores[R.sp] = (S.starCores[R.sp] || 0) + c;
     S.mons = S.mons.filter(x => !R.sel.includes(x.uid)); R.sel = []; R.sure = false;
-    sfx("claim"); save(); toast(`Released ${pool.length}: +${k} ${SP[R.sp].name} keepsake${k > 1 ? "s" : ""}${c ? `, +${c} star cores` : ""}`);
+    sfx("claim"); save(); toast(`Released ${pool.length}: +${k} ${SP[R.sp].name} keepsake${k > 1 ? "s" : ""}${c ? `, +${c} star core${c > 1 ? "s" : ""}` : ""}`);
     if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
   // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
@@ -3450,7 +3450,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "release") { if (confirmRelease !== n) { confirmRelease = n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const k = KEEPSAKES_BY_GRADE[m.q]; S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + k; if (m.q === 4) S.starCores[m.sp] = (S.starCores[m.sp] || 0) + RAINBOW_STAR_CORES;
       S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render();
-      toast(`+${k} ${SP[m.sp].name} keepsake${k > 1 ? "s" : ""}${m.q === 4 ? ` and +${RAINBOW_STAR_CORES} star cores` : ""}`); } }
+      toast(`+${k} ${SP[m.sp].name} keepsake${k > 1 ? "s" : ""}${m.q === 4 ? ` and +${RAINBOW_STAR_CORES} star core${RAINBOW_STAR_CORES > 1 ? "s" : ""}` : ""}`); } }
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const p = sellPrice(m); S.coins += p; S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
