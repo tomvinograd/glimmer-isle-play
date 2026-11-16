@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794857376;</script>
+<script>window.GAME_BUILD = 1794857562;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2084,7 +2084,6 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   async function startPrep(quick) {
     const P = prep; if (!P || !team().length) return;
     if (P.mode === "duel") duelState().left--;
-    if (P.mode === "ladder") { if (S.glow < LADDER_COST) { toast(`A match costs ${LADDER_COST} energy`); return; } S.glow -= LADDER_COST; }
     if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { const L = ladderState(); L.pts = Math.max(0, L.pts - 5); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
   }
@@ -2134,7 +2133,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <div class="lrank"><span class="drank${ART["rank-" + duelRank(L.pts).toLowerCase()] ? " pic" : ""}">${ART["rank-" + duelRank(L.pts).toLowerCase()] ? artIcon("rank-" + duelRank(L.pts).toLowerCase()) : IC.crown}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
         <p class="hint" style="margin:0">Opponents are teams near your level. A win gives 12 rank points, a loss takes 5. Wins count for the week's rewards.</p>
-        <button class="mb gold pbig" data-act="laddergo" ${S.glow >= LADDER_COST ? "" : "disabled"}>Match ${IC.glow}${LADDER_COST}</button>`;
+        <button class="mb gold pbig" data-act="laddergo">Match</button>`;
     }
     if (arenaSub === "tower") {
       const f = (S.tower || 0) + 1, side = x => x % 2 ? "l" : "r";
@@ -2220,11 +2219,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return rows.sort((a, b) => b.pts - a.pts || (a.me ? -1 : 1));
   }
   // ================= LADDER: weekly wins and rank =================
-  const LADDER_COST = 5, LADDER_MS = [10, 20, 40, 60, 100, 150];
+  const LADDER_MS = [10, 20, 40, 60, 100, 150];
   const LADDER_REW = [{ k: "coins", n: 200 }, { k: "egg1", n: 1 }, { k: "bright", n: 2 }, { k: "egg2", n: 1 }, { k: "star", n: 1 }, { k: "egg3", n: 1 }];
   const weekId = () => Math.floor((Date.now() - 4 * 86400000) / (7 * 86400000));  // weeks start on Monday
   function ladderState() { if (!S.ladder || S.ladder.week !== weekId()) S.ladder = { week: weekId(), pts: S.ladder ? Math.round(S.ladder.pts / 2) : 0, wins: 0, claimed: 0 }; return S.ladder; }
-  function prepLadder() { if (S.glow < LADDER_COST) { toast(`A match costs ${LADDER_COST} energy`); return; }
+  function prepLadder() {
     openPrep({ mode: "ladder", title: "Ladder match", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "ladder" }); }
   // ================= CLOUD CLIMB =================
   const climbRewards = f => [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }] : [])];
