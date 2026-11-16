@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794835259;</script>
+<script>window.GAME_BUILD = 1794835502;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -826,6 +826,29 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .gcsw { display: flex; align-items: center; justify-content: center; gap: 10px; } .gcsw b { min-width: 90px; text-align: center; font: 800 16px var(--display); color: #fff; background: var(--gc); border-radius: 6px; padding: 3px 0; }
 .gcsw button { width: 32px; height: 30px; border: 0; border-radius: 6px; background: #f4ece0; font: 900 20px var(--display); color: var(--brown); }
 .gcmini { display: flex; justify-content: center; gap: 6px; } .gcmini span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--gc) 25%, #fff); } .gcmini span.no { filter: grayscale(1) opacity(.45); }
+/* ===== phase 4: painted loading screen ===== */
+#splash.painted { background-size: cover; background-position: center; }
+#splash.painted .sp-sky, #splash.painted .sp-island svg { display: none; }
+#splash.painted .sp-island { margin-top: 0; height: 120px; animation: none; }
+#splash.painted .sp-mons { top: auto; bottom: 0; }
+#splash.painted .sp-mons > span { filter: drop-shadow(0 6px 6px rgba(40,30,20,.25)); }
+#splash.painted .sp-title { align-self: start; margin-top: 8vh; }
+#splash.painted .sp-title p { color: #fff; opacity: 1; text-shadow: 0 1px 4px rgba(40,30,20,.6); }
+.sp-pct { font: 800 15px var(--display); color: #5b4636; margin-top: -4px; }
+/* ===== phase 5: home ===== */
+.hrow { position: relative; display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 12px; width: 100%; border: 0; border-radius: 10px; padding: 10px 14px; background: #fff; text-align: left; color: var(--brown); box-shadow: 0 3px 12px rgba(91,70,54,.12); }
+.hrow .ic svg { width: 30px; height: 30px; } .hrow b { display: block; font: 800 16px var(--display); } .hrow small { font-size: 12px; color: var(--brown-2, #8a6d55); }
+.hrow i { font-style: normal; font-size: 22px; color: #c47f0a; } .hrow .bang { top: 6px; right: 30px; }
+.pile { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; background: linear-gradient(#fff3c9, #ffe39a); box-shadow: 0 3px 12px rgba(150,90,20,.18); }
+.pile .pic { width: 52px; height: 52px; border-radius: 50%; background: #fff; display: grid; place-items: center; } .pile .pic svg { width: 34px; height: 34px; }
+.pile > div { flex: 1; } .pile b { display: block; font: 800 20px var(--display); color: var(--brown); } .pile small { font-size: 12px; color: #8a6d55; }
+.dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dish { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.1); }
+.dic { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; background: #fff3d6; } .dic svg { width: 24px; height: 24px; }
+.dish b { display: block; font: 800 13.5px var(--display); color: var(--brown); } .dish small { font-size: 11px; color: var(--brown-2, #8a6d55); }
+.rchips { display: flex; gap: 4px; } .rchips .rchip { padding: 2px 5px; font-size: 11.5px; } .rchips .rchip svg { width: 15px; height: 15px; }
+.srow:has(.rchips) { grid-template-columns: 44px 1fr auto auto; }
+nav .navwide .bang { top: 4px; right: 6px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -854,6 +877,7 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
   </div>
   <div class="sp-load">
     <div class="sp-bar"><i id="spFill"></i><b id="spDrop"></b></div>
+    <b class="sp-pct" id="spPct">0%</b>
     <p class="sp-tip" id="spTip">Tip: tap the compass to walk the path</p>
   </div>
   <div class="sp-ver" id="spVer">
@@ -1906,7 +1930,7 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
     const tab = (k, icon, label) => open(k) ? `<button class="navx" data-act="close" aria-label="Close ${label}">${NAVI.close}${label}</button>`
       : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""}>${icon}${label}</button>`;
     const wide = view === "home" && !showMap && !showAuto ? `<button class="navwide z${S.zone}" data-act="close"><span>Explore</span></button>`
-      : `<button class="navwide homecard" data-act="view:home" ${lock("home") ? "disabled" : ""}><span>Home</span></button>`;
+      : `<button class="navwide homecard" data-act="view:home" ${lock("home") ? "disabled" : ""}><span>Home</span>${homeAlert() ? '<em class="bang">!</em>' : ""}</button>`;
     $("tabs").innerHTML = tab("menu", NAVI.menu, "Menu") + tab("team", TABI.team, "Glumis") + tab("shop", TABI.shop, "Shop") + tab("arena", IC.sword.replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
   }
   function pageMenu() {
@@ -2116,7 +2140,8 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
   }
   const workerRate = (m, k) => { const P = PLACES[k]; return P.base * (1 + (m.lvl - 1) * .06) * GRADES[m.q].mul * (P.els.includes(EL[SP[m.sp].el].name) ? 1.5 : 1) * (1 + (m.stars || 0) * .1); };
   const placeWorkers = k => homeState()[k].w.map(mon).filter(m => m && !S.team.includes(m.uid));
-  const placeRate = k => placeWorkers(k).reduce((a, m) => a + workerRate(m, k), 0);
+  const placeLvl = k => homeState()[k].lvl || 1, PLACE_MAX = 5, upCost = k => 150 * placeLvl(k) * placeLvl(k);
+  const placeRate = k => placeWorkers(k).reduce((a, m) => a + workerRate(m, k), 0) * (1 + .25 * (placeLvl(k) - 1));
   const placeCap = k => Math.max(1, Math.round(placeRate(k) * HOME_CAP_HOURS));
   const workingAt = uid => Object.keys(PLACES).find(k => homeState()[k].w.includes(uid));
   function homeTick() {
@@ -2157,8 +2182,60 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
     if (db && uid) flush();  // the web version also keeps a copy in the account: overwrite it with the empty start
     render(); window.scrollTo(0, 0); toast("Your data was deleted");
   }
+  // ================= SNACK STAND =================
+  const DISHES = [{ k: "wrap", name: "Leaf Wrap", icon: () => IC.leaf, cost: { leaves: 5 }, serves: 10, price: 3 },
+                  { k: "tart", name: "Berry Tart", icon: () => IC.treat, cost: { treats: 1 }, serves: 8, price: 8 },
+                  { k: "soup", name: "Glow Soup", icon: () => IC.glow, cost: { glow: 10 }, serves: 10, price: 4 }];
+  function standState() { if (!S.stand) S.stand = { lvl: 1, menu: [], coins: 0, t: Date.now() }; return S.stand; }
+  const standSlots = () => 3 + standState().lvl, standRate = () => 15 * (1 + .25 * (standState().lvl - 1));  // servings an hour
+  function standTick() {
+    const T = standState(), now = Date.now(); let n = (now - T.t) / 3600000 * standRate(); T.t = now; T.part = (T.part || 0) + n;
+    while (T.part >= 1 && T.menu.length) { const d = T.menu[0], D = DISHES.find(x => x.k === d.k); T.coins += D.price; d.left--; T.part--; if (d.left <= 0) T.menu.shift(); }
+    if (!T.menu.length) T.part = 0;
+  }
+  const costText = c => Object.entries(c).map(([k, v]) => `${RW[k] ? RW[k][0] : ""}${v}`).join(" ");
+  const canPay = c => Object.entries(c).every(([k, v]) => (S[k] || 0) >= v);
+  function pageStand() {
+    standTick(); const T = standState(), coins = Math.floor(T.coins);
+    return `<div class="sheethead"><button class="mb" data-act="homeplace:" aria-label="Back">‹ Back</button><h3>Snack Stand · Lv ${T.lvl}</h3><span></span></div>
+      <div class="pile"><span class="pic">${IC.coin}</span><div><b>${coins} coins</b><small>${T.menu.length ? `Selling about ${Math.round(standRate())} servings an hour` : "Cook something to start selling"}</small></div><button class="mb gold" data-act="standcollect" ${coins ? "" : "disabled"}>Collect</button></div>
+      <h3 class="grouph">On the counter · ${T.menu.length} of ${standSlots()}</h3>
+      ${T.menu.length ? `<div class="dgrid">${T.menu.map(d => { const D = DISHES.find(x => x.k === d.k); return `<div class="dish"><span class="dic">${D.icon()}</span><span><b>${D.name}</b><small>${d.left} left · ${D.price} coins each</small></span></div>`; }).join("")}</div>` : `<p class="hint" style="margin:0">The counter is empty.</p>`}
+      <h3 class="grouph">Cook</h3>
+      <div class="slist">${DISHES.map(D => `<div class="srow"><span class="ic">${D.icon()}</span><span class="txt"><b>${D.name}</b><small>${D.serves} servings · ${D.serves * D.price} coins in all</small></span><button class="price" data-act="cook:${D.k}" ${canPay(D.cost) && T.menu.length < standSlots() ? "" : "disabled"}>${costText(D.cost)}</button></div>`).join("")}
+        ${T.lvl < 5 ? `<div class="srow"><span class="ic">${IC.up}</span><span class="txt"><b>Upgrade the stand</b><small>Sells 25% faster, one more dish on the counter</small></span><button class="price" data-act="upstand" ${S.coins >= 200 * T.lvl ? "" : "disabled"}>${IC.coin}${200 * T.lvl}</button></div>` : ""}</div>`;
+  }
+  // ================= EXPEDITIONS =================
+  const TRIPS = [{ h: 1, name: "Short trip" }, { h: 4, name: "Day trip" }, { h: 8, name: "Long journey" }];
+  const expSlots = () => S.xlvl >= 10 ? 3 : 2;
+  const isAway = uid => (S.exps || []).some(x => x.uid === uid);
+  function tripLoot(m, h) { const r = [{ k: "coins", n: Math.round((10 + m.lvl * 2) * h * GRADES[m.q].mul) }, { k: "leaves", n: 3 * h }]; if (h >= 4) r.push({ k: "plain", n: h / 4 }); if (h >= 8) r.push({ k: "bright", n: 1 }); return r; }
+  let expPick = null;  // null | hours chosen, waiting for a Glumi
+  function pageExp() {
+    const X = S.exps || [], now = Date.now();
+    if (expPick) {
+      const free = S.mons.filter(m => !S.team.includes(m.uid) && !workingAt(m.uid) && !isAway(m.uid)).sort((a, b) => b.lvl - a.lvl);
+      return `<div class="sheethead"><button class="mb" data-act="exppick:0" aria-label="Back">‹ Back</button><h3>Who goes?</h3><span></span></div>
+        <p class="hint" style="margin:0">${TRIPS.find(t => t.h === expPick).name}: ${expPick} hour${expPick > 1 ? "s" : ""}. Higher level and grade bring more back. Glumis in your team or at work can't go.</p>
+        ${free.length ? `<div class="slist">${free.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl}</small></span><span class="rchips">${rchips(tripLoot(m, expPick).slice(0, 2))}</span><button class="price give" data-act="send:${m.uid}">Send</button></div>`).join("")}</div>`
+          : `<p class="hint">No free Glumis. Catch more, or take one out of your team.</p>`}`;
+    }
+    return `<div class="sheethead"><button class="mb" data-act="homeplace:" aria-label="Back">‹ Back</button><h3>Expeditions</h3><span></span></div>
+      <h3 class="grouph">Away · ${X.length} of ${expSlots()}</h3>
+      ${X.length ? `<div class="slist">${X.map((x, i) => { const m = mon(x.uid), back = now >= x.until; return m ? `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${back ? "Back home!" : `Back in ${mmss(x.until - now)}`}</small></span>${back ? `<button class="price" data-act="expback:${i}">Welcome back</button>` : `<span class="rchips">${rchips(tripLoot(m, x.h).slice(0, 2))}</span>`}</div>` : ""; }).join("")}</div>` : `<p class="hint" style="margin:0">Nobody is away.</p>`}
+      <h3 class="grouph">Send someone</h3>
+      <div class="slist">${TRIPS.map(t => `<button class="setrow" data-act="exppick:${t.h}" ${X.length < expSlots() ? "" : "disabled"}><span>${t.name}</span><b>${t.h} h</b><i>›</i></button>`).join("")}</div>
+      ${expSlots() < 3 ? `<p class="hint" style="margin:0">A third expedition spot opens at explorer level 10.</p>` : ""}`;
+  }
+  function homeAlert() {
+    try { homeTick(); standTick(); const H = homeState(), now = Date.now();
+      return Object.keys(PLACES).some(k => Math.floor(H[k].store) >= 1) || standState().coins >= 1 || (S.exps || []).some(x => now >= x.until);
+    } catch { return false; }
+  }
   function pageHome() {
     if (settingsPage) return pageSettings();
+    if (homePlace === "stand") return pageStand();
+    if (homePlace === "exp") return pageExp();
     homeTick();
     const H = homeState();
     if (homePlace && homePick) {
@@ -2176,7 +2253,9 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
         <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} Glumis.</small>
           <span class="reward">${resIcon(k)}<b>${perHour(placeRate(k))}</b>&nbsp;an hour</span></div></div>
         <div class="slist"><div class="srow"><span class="ic">${resIcon(k)}</span><span class="txt"><b>${n} ${P.unit} ready</b><small>Holds up to ${placeCap(k)} (${HOME_CAP_HOURS} hours of work)</small></span>
-          <button class="price" data-act="collect:${k}" ${n >= 1 ? "" : "disabled"}>Collect</button></div></div>
+          <button class="price" data-act="collect:${k}" ${n >= 1 ? "" : "disabled"}>Collect</button></div>
+          <div class="srow"><span class="ic">${IC.up}</span><span class="txt"><b>Level ${placeLvl(k)}${placeLvl(k) >= PLACE_MAX ? " · max" : ""}</b><small>${placeLvl(k) >= PLACE_MAX ? "Works at full speed" : `Next level works 25% faster`}</small></span>
+          ${placeLvl(k) >= PLACE_MAX ? "" : `<button class="price" data-act="upplace:${k}" ${S.coins >= upCost(k) ? "" : "disabled"}>${IC.coin}${upCost(k)}</button>`}</div></div>
         <h3>Workers · ${ws.length} of ${slots}</h3>
         <div class="slist">${ws.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${perHour(workerRate(m, k))} ${P.unit} an hour</small></span>
           <button class="mb" data-act="fire:${m.uid}">Remove</button></div>`).join("")}
@@ -2197,7 +2276,10 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
     }).join("");
     return `<div class="head"><h2>Home island</h2><span class="row" style="gap:6px">${total ? `<button class="mb gold" data-act="collectall">Collect all</button>` : ""}</span></div>
       <div class="iscene">${HOME_ISLAND_SVG}${blds}</div>
-      <p class="hint" style="margin:0">Tap a building to choose its workers. Tap a bubble to collect.</p>`;
+      <p class="hint" style="margin:0">Tap a building to choose its workers. Tap a bubble to collect.</p>
+      <div class="slist">${(() => { standTick(); const T = standState(), X = S.exps || [], now = Date.now(), backN = X.filter(x => now >= x.until).length;
+        return `<button class="hrow" data-act="homeplace:stand"><span class="ic">${IC.coin}</span><span class="txt"><b>Snack Stand</b><small>${T.menu.length ? `${T.menu.reduce((a, d) => a + d.left, 0)} servings left · ${Math.floor(T.coins)} coins ready` : Math.floor(T.coins) ? `${Math.floor(T.coins)} coins ready` : "Cook dishes to sell"}</small></span>${Math.floor(T.coins) ? '<em class="bang">!</em>' : ""}<i>›</i></button>
+          <button class="hrow" data-act="homeplace:exp"><span class="ic">${IC.balloon}</span><span class="txt"><b>Expeditions</b><small>${X.length ? `${X.length} away${backN ? ` · ${backN} back home` : ""}` : "Send Glumis on trips"}</small></span>${backN ? '<em class="bang">!</em>' : ""}<i>›</i></button>`; })()}</div>`;
   }
   let teamTab = "team";
   const teamSeg = () => `<div class="seg">${[["team", "My team"], ["book", "Book"]].map(([k, n]) => `<button class="${teamTab === k ? "on" : ""}" data-act="teamtab:${k}">${n}</button>`).join("")}</div>`;
@@ -2432,6 +2514,8 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
     const [a, arg] = b.dataset.act.split(":"); const n = arg !== undefined ? +arg : null;
+    if (["addteam", "join", "hire", "give", "release", "sell"].includes(a) && isAway(n)) { toast("Away on an expedition"); return; }
+    if (["pickslot", "swapto"].includes(a) && swapIn && isAway(swapIn)) { swapIn = null; toast("Away on an expedition"); render(); return; }
     if (S.auto && E && !BT && (TAKE_OVER.has(a) || (a === "view" && arg === "shop"))) { E.manual = true; autoBar(); }
     if (a !== "release" && a !== "sell") confirmRelease = null;
     if (a === "start") { S = fresh(); S.started = true; keepMon(newMon(n, 5, 1)); save(); render(); initProps(); }
@@ -2457,7 +2541,7 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
     else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound") S.opt.sound = S.opt.sound === false; else S.opt[arg] = !S.opt[arg]; RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
-    else if (a === "view") { if (arg === "arena" && view !== "team" && arenaSub === "prep") { arenaSub = "hub"; prep = null; } view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
+    else if (a === "view") { if (arg === "arena" && view !== "team" && arenaSub === "prep") { arenaSub = "hub"; prep = null; } view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; expPick = null; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
     else if (a === "map") { if (!E && !BT && !busy) { showMap = false; view = view === "atlas" ? "explore" : "atlas"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); } }
     else if (a === "atlaszone") { atlasZone = n; atlasPin = null; render(); }
     else if (a === "atlaspin") { atlasPin = atlasPin === n ? null : n; render(); }
@@ -2474,11 +2558,18 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
     else if (a === "backtocatch") { view = "explore"; if (E) E.t0 = performance.now(); render(); window.scrollTo(0, 0); }
     else if (a === "teamtab") { teamTab = arg; sheetUid = null; render(); window.scrollTo(0, 0); }
-    else if (a === "homeplace") { homePlace = arg || null; homePick = false; render(); window.scrollTo(0, 0); }
+    else if (a === "homeplace") { homePlace = arg || null; homePick = false; expPick = null; render(); window.scrollTo(0, 0); }
     else if (a === "homepick") { homePick = arg === "1"; render(); window.scrollTo(0, 0); }
     else if (a === "hire") { homeTick(); const p = homeState()[homePlace]; if (p && p.w.length < HOME_SLOTS() && !workingAt(n) && !S.team.includes(n)) { p.w.push(n); homePick = false; save(); render(); toast(`${fname(mon(n).sp, mon(n).evo)} started working`); } }
     else if (a === "fire") { homeTick(); const p = homeState()[homePlace]; if (p) { p.w = p.w.filter(u => u !== n); save(); render(); } }
     else if (a === "collect") { homeTick(); const got = collectPlace(arg); if (got) { save(); render(); toast(`+${got} ${PLACES[arg].unit}`); } }
+    else if (a === "upplace") { const k = arg; if (placeLvl(k) < PLACE_MAX && S.coins >= upCost(k)) { homeTick(); S.coins -= upCost(k); homeState()[k].lvl = placeLvl(k) + 1; sfx("up"); save(); render(); toast(`${PLACES[k].name} is now level ${placeLvl(k)}`); } }
+    else if (a === "standcollect") { standTick(); const T = standState(), c = Math.floor(T.coins); if (c) { T.coins -= c; S.coins += c; sfx("coin"); save(); render(); toast(`+${c} coins`); } }
+    else if (a === "cook") { standTick(); const T = standState(), D = DISHES.find(x => x.k === arg); if (D && canPay(D.cost) && T.menu.length < standSlots()) { for (const [k, v] of Object.entries(D.cost)) S[k] -= v; T.menu.push({ k: D.k, left: D.serves }); sfx("tap"); save(); render(); } }
+    else if (a === "upstand") { standTick(); const T = standState(); if (T.lvl < 5 && S.coins >= 200 * T.lvl) { S.coins -= 200 * T.lvl; T.lvl++; sfx("up"); save(); render(); toast(`Snack Stand is now level ${T.lvl}`); } }
+    else if (a === "exppick") { expPick = n || null; render(); window.scrollTo(0, 0); }
+    else if (a === "send") { const m = mon(n); if (!S.exps) S.exps = []; if (m && expPick && S.exps.length < expSlots() && !S.team.includes(n) && !workingAt(n) && !isAway(n)) { S.exps.push({ uid: n, h: expPick, until: Date.now() + expPick * 3600000 }); expPick = null; save(); render(); toast(`${fname(m.sp, m.evo)} set off`); } }
+    else if (a === "expback") { const x = (S.exps || [])[n], m = x && mon(x.uid); if (x && Date.now() >= x.until) { S.exps.splice(n, 1); if (m) { const loot = tripLoot(m, x.h); loot.forEach(giveReward); sfx("claim"); toast("Brought back " + loot.map(r => `${r.n} ${RW[r.k][1]}`).join(", ")); } save(); render(); } }
     else if (a === "collectall") { homeTick(); const got = Object.keys(PLACES).map(k => [k, collectPlace(k)]).filter(x => x[1]); if (got.length) { save(); render(); toast(got.map(([k, v]) => `+${v} ${PLACES[k].unit}`).join(", ")); } }
     else if (a === "buymon") { const [sp, q] = arg.split("-").map(Number), k = marketKinds().find(x => x.sp === sp); if (!k) return; const p = marketPrice(q, k.lvl); if (S.coins < p) return;
       if (confirmBuy !== arg) { confirmBuy = arg; render(); return; }
@@ -2568,12 +2659,16 @@ if (p === undefined) return;
   // ================= LOADING SCREEN =================
   (function splash() {
     const SPLASH_MIN_MS = 2400, t0 = performance.now(), sp = $("splash"); if (!sp) return;
-    $("spMons").innerHTML = [[3, 0, 74], [0, 0, 92], [6, 0, 74]].map(([k, e, z]) => `<span>${art(k, e, z)}</span>`).join("");
+    const painting = ART["bg-menu"] || ART["bg-0"];
+    if (painting) { sp.classList.add("painted"); sp.style.backgroundImage = `linear-gradient(rgba(255,244,226,0) 55%, rgba(255,244,226,.85) 88%), url(${painting})`; }
+    const has = k => ART[String(k).padStart(2, "0") + "-0"], group = [1, 3, 0, 6, 4].filter(has);
+    const crowd = (painting && group.length >= 3 ? group : [3, 0, 6]).map((k, i, a) => [k, 0, i === Math.floor(a.length / 2) ? 100 : 74]);
+    $("spMons").innerHTML = crowd.map(([k, e, z]) => `<span>${art(k, e, z)}</span>`).join("");
     const tips = ["Tip: tap the compass to walk the path", "Tip: throw a jar when the ring is small", "Tip: glow refills by itself over time", "Tip: the Atlas shows every zone's Glumis", "Tip: a glowing chest gives extra glow"];
     $("spTip").textContent = tips[rnd(0, tips.length - 1)];
     $("spVer").textContent = versionText();
     let p = 0, ready = false;
-    const show = v => { $("spFill").style.width = `calc(${v}% - 6px)`; $("spDrop").style.left = v + "%"; };
+    const show = v => { $("spFill").style.width = `calc(${v}% - 6px)`; $("spDrop").style.left = v + "%"; $("spPct").textContent = Math.round(v) + "%"; };
     const iv = setInterval(() => { p = Math.min(ready ? 100 : 88, p + (ready ? 9 : 3 + Math.random() * 5)); show(p);
       if (p >= 100 && performance.now() - t0 >= SPLASH_MIN_MS) { clearInterval(iv); setTimeout(() => { sp.classList.add("done"); setTimeout(() => sp.remove(), 800); }, 250); } }, 90);
     Promise.all([document.fonts ? document.fonts.ready : 0, new Promise(r => document.readyState === "complete" ? r() : addEventListener("load", r, { once: true }))])
