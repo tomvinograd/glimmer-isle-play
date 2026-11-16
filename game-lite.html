@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794859551;</script>
+<script>window.GAME_BUILD = 1794859728;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2197,10 +2197,22 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
              rew: [{ k: "coins", n: 100 }, { k: "glow", n: 40 }, { k: "egg1", n: 1 }, { k: "coins", n: 300 }, { k: "glow", n: 100 }, { k: "egg2", n: 1 }, { k: "egg3", n: 1 }] },
   };
   const nextMidnight = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); };
-  function evState() { if (!S.ev || S.ev.day !== today()) S.ev = { day: today(), catch: { pts: 0, tier: 0 }, fight: { pts: 0, tier: 0 } }; return S.ev; }
-  const evTarget = (k, t) => { const st = EVBARS[k].steps; return t < st.length ? st[t] : st[st.length - 1] + (t - st.length + 1) * 1000; };
+  // EVBARS steps are running totals; a bar holds only the points toward its next reward, so its target is the gap
+  const evTotal = (k, t) => { const st = EVBARS[k].steps; return t < 0 ? 0 : t < st.length ? st[t] : st[st.length - 1] + (t - st.length + 1) * 1000; };
+  const evTarget = (k, t) => evTotal(k, t) - evTotal(k, t - 1);
+  function evState() {
+    if (!S.ev || S.ev.day !== today()) S.ev = { day: today(), v: 2, catch: { pts: 0, tier: 0 }, fight: { pts: 0, tier: 0 } };
+    if (S.ev.v !== 2) { S.ev.v = 2; for (const k of ["catch", "fight"]) { const E2 = S.ev[k]; E2.pts = Math.max(0, E2.pts - evTotal(k, E2.tier - 1)); } setTimeout(() => { evClaimAll("catch"); evClaimAll("fight"); }, 0); }
+    return S.ev;
+  }
+  // a full bar pays out at once and starts again from 0 (extra points carry over)
+  function evClaimAll(k, quiet) {  // quiet: called in the middle of a catch or fight, which redraws by itself
+    const E2 = evState()[k]; let got = 0;
+    while (E2.pts >= evTarget(k, E2.tier)) { E2.pts -= evTarget(k, E2.tier); const r = evReward(k, E2.tier); E2.tier++; giveReward(r); got++; toast(`${EVBARS[k].name}: got ${r.n} ${RW[r.k][1]}`); }
+    if (got) { sfx("claim"); save(); if (!quiet) render(); }
+  }
   const evReward = (k, t) => EVBARS[k].rew[t % EVBARS[k].rew.length];
-  function evAdd(k, n) { evState()[k].pts += n; }
+  function evAdd(k, n) { evState()[k].pts += n; evClaimAll(k, true); }
   function evBar(k) {
     const E2 = evState()[k], t = evTarget(k, E2.tier), ok = E2.pts >= t, r = evReward(k, E2.tier);
     return `<button class="evbar ${k}${ok ? " ready" : ""}" data-act="evclaim:${k}" aria-label="${EVBARS[k].name}: ${E2.pts} of ${t}"><span class="evi">${EVBARS[k].icon()}</span><span class="evtrack"><i style="width:${Math.min(100, E2.pts / t * 100)}%"></i><b>${E2.pts.toLocaleString("en")}/${t.toLocaleString("en")}</b></span><span class="evr">${RW[r.k][0]}<small>${r.n}</small>${ok ? '<em class="bang">!</em>' : ""}</span></button>`;
@@ -3189,7 +3201,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "shrineflip") { shrineUp = !shrineUp; render(); }
     else if (a === "shrineoffer") shrineOffer();
     else if (a === "evclaim") { const k = arg, E2 = evState()[k], t = evTarget(k, E2.tier);
-      if (E2.pts >= t) { const r = evReward(k, E2.tier); E2.tier++; giveReward(r); sfx("claim"); save(); toast(`${EVBARS[k].name}: got ${r.n} ${RW[r.k][1]}`); render(); }
+      if (E2.pts >= t) evClaimAll(k);
       else toast(`${EVBARS[k].how} · ${t - E2.pts} to go`); }
     else if (a === "raceclaim") { const R = raceState(); if (Date.now() >= R.end) { const i = raceBoard().findIndex(r => r.me); (RACE_REW[i] || []).forEach(giveReward); sfx("claim"); toast(`Place ${i + 1}: rewards collected`); S.race = newRace(); save(); render(); } }
     else if (a === "laddergo") prepLadder();
