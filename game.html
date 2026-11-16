@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794866110;</script>
+<script>window.GAME_BUILD = 1794866300;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1095,6 +1095,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .wpt .wbal { position: absolute; top: -26px; width: 26px; height: 26px; }
   .wpt .wbal svg { width: 26px; height: 26px; }
   .splogo { width: min(82vw, 340px); height: auto; filter: drop-shadow(0 3px 6px rgba(60,40,20,.35)); }
+  /* Rainbow grade in the zone collection */
+  .gcol.rb { box-shadow: inset 0 0 0 2px transparent; border: 2px solid transparent; background: linear-gradient(#fff, #fff) padding-box, linear-gradient(90deg, #ff8a8a, #ffd36b, #8ae68a, #7fd4ff, #c79bff, #ff8a8a) border-box; }
+  .gcol.rb .gcsw b { background: linear-gradient(90deg, #ff8a8a, #ffc95a, #6fd68a, #6cc4ff, #b48cff); text-shadow: 0 1px 2px rgba(60,40,20,.35); }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1175,7 +1178,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   ];
   const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 85, 12, 3, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 77, 15, 8, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 72, 17, 11, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 67, 19, 14, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 62, 21, 17, 0], count: 10 }];
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }];
-  const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, PITY = 800;
+  const GLOW_EVERY = 300000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, RB_PITY = 100, RB_PITY_MULT = 10;  // a Rainbow for sure after 100 catches made at x10 or higher
   const RAINBOW_ODDS = [400, 350, 300, 250, 200, 170, 150];  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 3, MAX_STARS = 5, STAR_BONUS = .1;
   const FLEE_AFTER = [5, 6, 8, 10, 14];  // missed jars before a wild Glumi runs away, by grade Green..Rainbow
@@ -1458,6 +1461,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function newMon(sp, lvl, q, evo = 0) { const m = { uid: 0, sp, lvl, q, evo, hp: 0 }; m.hp = maxHp(m); return m; }
   function keepMon(m) {
     const fromWild = m.wild;
+    if (fromWild && (m.pm || 0) >= RB_PITY_MULT && m.q !== 4) S.rbPity = (S.rbPity || 0) + 1;
+    delete m.pm;
     m.lvl = 1; m.asc = 0;  // every Glumi you get starts at level 1
     delete m.wild; m.uid = S.nextUid++; m.hp = maxHp(m); S.mons.push(m); S.caught[key(m.sp, m.evo)] = 1; S.seen[key(m.sp, m.evo)] = 1;
     ZONES.forEach((z, i) => { if (!z.sp.includes(m.sp)) return; const was = zoneAll(i);
@@ -1468,10 +1473,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   const banners = [];
   function gainX(n) { S.xxp += n; while (S.xxp >= xNeed()) { S.xxp -= xNeed(); S.xlvl++; banners.push(`Explorer Lv ${S.xlvl}`); } }
-  function rollGrade(M) { S.pity++; const odds = RAINBOW_ODDS[Math.max(0, MULTS.indexOf(M))] || 400;
-    if (S.pity >= PITY || Math.random() < 1 / odds) { S.pity = 0; return 4; } return wpick(M.grades); }
+  function rollGrade(M) { const odds = RAINBOW_ODDS[Math.max(0, MULTS.indexOf(M))] || 400;
+    if ((M.m >= RB_PITY_MULT && (S.rbPity || 0) >= RB_PITY) || Math.random() < 1 / odds) { S.rbPity = 0; return 4; } return wpick(M.grades); }
   const zoneLevel = z => rnd(ZONES[z].lv[0], ZONES[z].lv[1]);
-  function wildFrom(z, M) { const pool = ZONES[z].sp, sp = pool[wpick(pool.map(s => TIER[SP[s].tier].w))], zl = zoneLevel(z); const w = newMon(sp, 1, rollGrade(M), zl >= 14 && Math.random() < .3 ? 1 : 0); w.wild = 1; w.hp = maxHp(w); S.seen[key(w.sp, w.evo)] = 1; return w; }
+  function wildFrom(z, M) { const pool = ZONES[z].sp, sp = pool[wpick(pool.map(s => TIER[SP[s].tier].w))], zl = zoneLevel(z); const w = newMon(sp, 1, rollGrade(M), zl >= 14 && Math.random() < .3 ? 1 : 0); w.wild = 1; w.pm = M.m; w.hp = maxHp(w); S.seen[key(w.sp, w.evo)] = 1; return w; }
   const bestJar = () => S.jars.plain ? "plain" : S.jars.bright ? "bright" : S.jars.star ? "star" : "plain";
   const WAVE_SIZE = 5;
   const tough = () => false;  // 16 Nov 2026: catching never needs a battle; battles are against trainers only
@@ -2224,16 +2229,17 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}`;
   }
   // ================= GRADE COLLECTION per zone (Atlas) =================
-  const GC_REW = { 1: { k: "plain", n: 2 }, 2: { k: "bright", n: 1 }, 3: { k: "star", n: 1 } };
+  const GC_REW = { 1: { k: "plain", n: 2 }, 2: { k: "bright", n: 1 }, 3: { k: "star", n: 1 }, 4: { k: "star", n: 2 } };
   function bestQ() { if (!S.bestQ) { S.bestQ = {}; for (const m of S.mons) S.bestQ[m.sp] = Math.max(S.bestQ[m.sp] || 0, m.q); } return S.bestQ; }
   let atlasGrade = 1;
+  const rbPityText = () => `A Rainbow for sure after ${Math.max(0, RB_PITY - (S.rbPity || 0))} more catches at x${RB_PITY_MULT} or higher`;
   function gradeBlock(z) {
     const Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(), have = Z.sp.filter(sp => (B[sp] || 0) >= g).length, cl = (st.gq && st.gq[g]) || 0;
     const nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && k === cl && have >= need, r = k === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g];
       return `<button class="mnode${done ? " done" : can ? " claim" : ""}" data-act="gclaim:${z}" ${can ? "" : "disabled"}>${done ? IC.star : RW[r.k][0]}<small>${need}</small></button>`; }).join("");
-    return `<div class="gcol" style="--gc:${GRADES[g].c}"><div class="gcsw"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>
+    return `<div class="gcol${g === 4 ? " rb" : ""}" style="--gc:${GRADES[g].c}"><div class="gcsw"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>
       <div class="gcmini">${Z.sp.map(sp => `<span class="${(B[sp] || 0) >= g ? "" : "no"}">${art(sp, 0, 30)}</span>`).join("")}</div>
-      <div class="mtrack">${nodes}</div><p class="hint" style="margin:0">${have} of ${Z.sp.length} kinds caught as ${GRADES[g].name} or better · Rainbow for sure within ${Math.max(1, PITY - (S.pity || 0))} wild Glumis</p></div>`;
+      <div class="mtrack">${nodes}</div><p class="hint" style="margin:0">${have} of ${Z.sp.length} kinds caught as ${GRADES[g].name} or better · ${rbPityText()}</p></div>`;
   }
   // Quick battle with a trainer met on the path: same fight rules (simulate), same rewards as winning a full fight
   async function quickRival(byAuto) {
@@ -3326,7 +3332,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "towergo") prepTower();
     else if (a === "prepgo") startPrep(n === 1);
     else if (a === "pickmon") { if (BT && BT.pick > 0) { const cur = front(), i = S.team.indexOf(n), ci = cur ? S.team.indexOf(cur.uid) : -1; if (i > -1 && ci > -1 && i !== ci) [S.team[ci], S.team[i]] = [S.team[i], S.team[ci]]; BT.pick = 0; BT.me.t = 0; render(); } }
-    else if (a === "agrade") { atlasGrade = Math.min(3, Math.max(1, atlasGrade + n)); render(); }
+    else if (a === "agrade") { atlasGrade = Math.min(4, Math.max(1, atlasGrade + n)); render(); }
     else if (a === "gclaim") { const z = n, Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(); if (!st.gq) st.gq = {}; const cl = st.gq[g] || 0, have = Z.sp.filter(sp => (B[sp] || 0) >= g).length;
       if (cl < Z.sp.length && have >= cl + 1) { const r = cl === Z.sp.length - 1 ? { k: "fruit", n: 1 } : GC_REW[g]; st.gq[g] = cl + 1; giveReward(r); sfx("claim"); save(); toast(`Got ${r.n} ${RW[r.k][1]}`); render(); } }
     else if (a === "sheettab") { sheetTab = arg; render(); }
