@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794840579;</script>
+<script>window.GAME_BUILD = 1794841069;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1175,7 +1175,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   // ================= STATE + SAVING =================
   const LS = "glimmerIsleSave";
   const freshZones = () => ZONES.map(() => ({ caught: {}, steps: 0, cleared: false }));
-  const fresh = () => ({ v: 2, t: 0, started: false, coins: 60, glow: 60, glowT: Date.now(), jars: { plain: 8, bright: 1, star: 0 }, treats: 2, leaves: 10, fruit: 0, requests: [], starCores: {}, keepsakes: {}, mons: [], team: [], eggs: [], seen: {}, caught: {}, zone: 0, zones: freshZones(), xlvl: 1, xxp: 0, mult: 1, pity: 0, nextUid: 1, wins: 0, autoCfg: { catch: true, low: "plain", mid: "bright", high: "star", treat: 3, only: "all", rivals: "fight" } });
+  const fresh = () => ({ v: 2, t: 0, started: false, coins: 60, glow: 60, glowT: Date.now(), jars: { plain: 8, bright: 1, star: 0 }, treats: 2, leaves: 10, fruit: 0, requests: [], starCores: {}, keepsakes: {}, mons: [], team: [], eggs: [], seen: {}, caught: {}, zone: 0, zones: freshZones(), xlvl: 1, xxp: 0, mult: 1, pity: 0, nextUid: 1, wins: 0, autoCfg: { catch: true, low: "plain", mid: "bright", high: "star", treat: 3, only: "all", rivals: "fight", lantern: "glow" } });
   function migrate(o) {
     if (!o) return null;
     if (o.v === 2) { const s = Object.assign(fresh(), o); s.zones = ZONES.map((_, i) => Object.assign({ caught: {}, steps: 0, cleared: false }, (o.zones || [])[i])); s.mons.forEach(m => { if (m.asc === undefined) m.asc = ascOf(m); if (m.q === 0) m.q = 1; }); /* NO_GREEN */ if (s.eggs && s.eggs.length) { s.coins += 90 * s.eggs.length; s.eggs = []; } /* EGGS_REMOVED */ return s; }
@@ -1677,7 +1677,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     }
     if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? " glowchest" : ""}" style="width:130px">${IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
     if (E.type === "rival") return `<div class="actor" style="left:50%;top:72%"><div class="spr pop"><div class="row" style="flex-wrap:nowrap;align-items:flex-end"><div style="width:74px">${trainerSVG(E.color || "#ff8a8a", false)}</div>${E.foes.map(f => art(f.sp, f.evo, 76)).join("")}</div></div><div class="shadow"></div><div class="tag">${IC.sword.replace("<svg", '<svg width="16" height="16"')} ${E.name}</div></div>`;
-    if (E.type === "luck") return `<div class="actor" id="luckActor" style="left:50%;top:72%"><div class="spr pop"><div class="idle" style="width:90px">${IC.lantern}</div></div><div class="shadow"></div><div class="tag">x1 - x2 ${IC.glow.replace("<svg", '<svg width="16" height="16"')}</div></div>`;
+    if (E.type === "luck") return `<div class="actor" id="luckActor" style="left:50%;top:72%"><div class="spr pop"><div class="idle" style="width:90px">${IC.lantern}</div></div><div class="shadow"></div><div class="tag">x1 - x2 ${IC.glow.replace("<svg", '<svg width="16" height="16"')} or ${IC.coin.replace("<svg", '<svg width="16" height="16"')}</div></div>`;
     return "";
   }
   function renderStage() { $("actors").innerHTML = (BT ? "" : hud().replace(/<\/div>$/, autoChip() + "</div>")) + actorsHTML(); }
@@ -1705,7 +1705,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
     if (E && E.type === "gather") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="gather">${E.kind === "bush" ? "Shake" : E.kind === "pouch" ? "Open" : E.kind === "herb" ? "Pick" : E.kind === "ore" ? "Mine" : "Collect"}</button><button class="round big" data-act="leave">${IC.run}</button></div>`; return; }
     if (E && E.type === "rival") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="rivalgo">${IC.sword.replace("<svg", '<svg width="28" height="28"')} Battle</button><button class="round big" data-act="rivalquick" ${front() ? "" : "disabled"}>${IC.fast.replace("<svg", '<svg width="24" height="24"')} Quick</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div>`; return; }
-    if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo" ${S.glow >= E.stake ? "" : "disabled"}>${IC.glow.replace("<svg", '<svg width="26" height="26"')} ${E.stake}</button><button class="round big" data-act="leave">${IC.run}</button></div>`; return; }
+    if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo:glow" ${S.glow >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} glow">${IC.glow.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big gold" data-act="luckgo:coins" ${S.coins >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} coins">${IC.coin.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div><p class="hint" style="margin:6px 0 0">Bet glow or coins: get 1 to 2 times it back</p>`; return; }
     const M = curM(), next = MULTS.filter(multOpen);
     A.innerHTML = `<div class="dock"><div class="side">${zoneCard()}</div>
       <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Glow per step: ${M.m}">x${M.m}</button><button class="compass" data-act="step" aria-label="Step" ${S.glow >= M.m && !busy ? "" : "disabled"}>${compassSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
@@ -1974,6 +1974,18 @@ nav .navwide .bang { top: 4px; right: 6px; }
     E = null; save();
     await resultScreen(won, rew, byAuto ? 2000 : 0);
     busy = false; render(); await flushBanners();
+  }
+  // the lucky lantern: bet glow or coins, get 1x to 2x back (in the same kind)
+  function luckPlay(kind) {
+    const res = kind === "coins" ? "coins" : "glow";
+    if (!E || E.type !== "luck" || busy || S[res] < E.stake) return Promise.resolve();
+    busy = true; const el = document.querySelector("#luckActor .spr"), r = 1 + rnd(0, 10) / 10, back = Math.round(E.stake * r);
+    S[res] += back - E.stake; renderActions();
+    return (el && !RM ? anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(1080deg)" }], { duration: 900, easing: "cubic-bezier(.2,.8,.3,1)" }) : Promise.resolve()).then(() => new Promise(done => {
+      const [x, y] = el ? stageXY(el) : [180, 300]; floatText(x, y - 60, `x${r.toFixed(1)} · +${back}`, true); sfx("coin");
+      flyIcons(res === "coins" ? IC.coin : IC.glow, 4, x, y, $(res === "coins" ? "hudCoins" : "hudGlow"));
+      setTimeout(() => { E = null; busy = false; save(); render(); done(); }, 900);
+    }));
   }
   const NAVI = { menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
                  close: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
@@ -2424,6 +2436,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
     { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
+    { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet glow"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
     const C = S.autoCfg, label = r => (r.opts.find(o => o[0] === C[r.k]) || r.opts[0])[1];
@@ -2589,7 +2602,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
       if (E.type === "gather") return void await gatherNode();
       if (E.type === "wild" && E.list.length > 1) { if (E.list.some(w => w.q >= C.treat) && S.treats > 0 && !E.treat) { S.treats--; E.treat = true; } return void await throwGroup(true); }
       if (E.type === "rival") { if (C.rivals === "fight" && front()) await startBattle(E.foes, "rival"); else if (C.rivals === "quick" && front()) await quickRival(true); else { E = null; save(); render(); } return; }
-      if (E.type !== "wild") { E = null; save(); render(); return; }  // luck stall: walk on, spend nothing
+      if (E.type === "luck") { const k = C.lantern || "glow", res = k === "coins" ? "coins" : "glow"; if (k !== "skip" && S[res] >= E.stake) return void await luckPlay(k); E = null; save(); render(); return; }
+      if (E.type !== "wild") { E = null; save(); render(); return; }
       if (E.boss) { autoOff(); return; }
       const w = E.list[E.i];
       if (C.only === "new" && S.caught[key(w.sp, w.evo)]) return nextWild();
@@ -2707,8 +2721,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "fight") { if (front()) startBattle([E.list[E.i]], E.boss ? "boss" : "wild"); }
     else if (a === "rivalgo") startBattle(E.foes, "rival");
     else if (a === "leave") { if (busy) return; E = null; save(); render(); }
-    else if (a === "luckgo") { if (S.glow >= E.stake && !busy) { busy = true; const el = document.querySelector("#luckActor .spr"); const r = 1 + rnd(0, 10) / 10, back = Math.round(E.stake * r); S.glow += back - E.stake;
-        (el && !RM ? anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(1080deg)" }], { duration: 900, easing: "cubic-bezier(.2,.8,.3,1)" }) : Promise.resolve()).then(() => { const [x, y] = el ? stageXY(el) : [180, 300]; floatText(x, y - 60, "x" + r.toFixed(1), true); flyIcons(IC.glow, 4, x, y, $("hudGlow")); setTimeout(() => { E = null; busy = false; save(); render(); }, 900); }); } }
+    else if (a === "luckgo") luckPlay(arg || "glow");
     else if (a === "skill") { if (BT && BT.me.e >= 100) { doSkill(true); playFx(); paintBattle(); } }
     else if (a === "shield") { if (BT) { useShield(true); playFx(); paintBattle(); } }
     else if (a === "autoskill") { BT.auto = !BT.auto; S.autoSkill = BT.auto; render(); }
