@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794847256;</script>
+<script>window.GAME_BUILD = 1794847632;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -946,6 +946,31 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .cnode.cur .cnum { background: #e8574a; color: #fff; }
 .cbtns { display: flex; gap: 10px; align-items: center; justify-content: center; }
 .swrow.mini { width: auto; padding: 8px 12px; gap: 8px; }
+/* ===== Star Shrine (Tom 16 Nov) ===== */
+.shcount { display: inline-flex; align-items: center; gap: 4px; justify-self: end; font: 800 15px var(--display); color: var(--brown); } .shcount svg { width: 20px; height: 20px; }
+.shtop { border-radius: 12px; padding: 0 0 14px; overflow: hidden; background: linear-gradient(rgba(70,50,40,.55), rgba(70,50,40,.75)), var(--menubg, #6b5443) center 60%/cover; }
+.shbar { display: flex; justify-content: space-between; padding: 8px 12px; background: #f1e3d0; font: 800 13px var(--display); color: var(--brown); }
+.shslots { display: flex; justify-content: center; gap: 6px; padding: 14px 8px 0; }
+.shslot { width: 52px; height: 52px; border: 0; border-radius: 10px; display: grid; place-items: center; background: rgba(255,250,240,.88); box-shadow: inset 0 0 0 2px rgba(255,255,255,.6); }
+.shslot svg { width: 26px; height: 26px; opacity: .3; filter: grayscale(1); }
+.shslot.full { background: color-mix(in srgb, var(--gc) 30%, #fff); box-shadow: 0 0 0 2px var(--gc); padding: 0; overflow: hidden; }
+.shex { padding: 10px 12px; border-radius: 12px; background: #fff; box-shadow: 0 0 0 2px #e6d4b8; display: grid; gap: 6px; }
+.shex h4 { margin: -10px -12px 2px; padding: 8px 12px; border-radius: 12px 12px 0 0; background: #f8e2b8; text-align: center; font: 800 15px var(--display); color: var(--brown); }
+.shdeal { display: grid; grid-template-columns: 1fr auto 26px; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; background: #f4ece0; font: 700 13px var(--body); color: var(--brown); }
+.shdeal b { display: inline-flex; align-items: center; gap: 3px; font: 800 14px var(--display); } .shdeal b svg { width: 18px; height: 18px; }
+.shdeal i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-style: normal; background: #d9cfc2; color: #fff; font-weight: 900; }
+.shdeal.ok { background: #efe6ff; } .shdeal.ok i { background: #8d63e6; }
+.shnote { margin: 0; font-size: 12.5px; color: var(--brown-2, #8a6d55); line-height: 1.35; }
+.shpool { padding: 10px; border-radius: 12px; background: #f3e7d6; display: grid; gap: 8px; }
+.shtools { display: flex; justify-content: flex-end; gap: 6px; align-items: center; } .shtools .mb { height: 32px; padding: 0 12px; }
+.seg.mini { display: inline-grid; padding: 3px; } .seg.mini button { padding: 5px 12px; font-size: 13px; }
+.shgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.shtile { position: relative; aspect-ratio: 1; border: 0; border-radius: 10px; padding: 2px 0 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--gc) 28%, #fff); box-shadow: inset 0 0 0 2px var(--gc); overflow: hidden; }
+.shtile .lv { position: absolute; left: 0; right: 0; bottom: 0; font: 800 10.5px/14px var(--display); color: #fff; background: #6b5443; }
+.shtile.on { opacity: .55; } .shck { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: #3e9e57; color: #fff; font: 900 11px/18px var(--display); font-style: normal; }
+.shbtns { display: flex; justify-content: center; gap: 10px; align-items: center; }
+.pbig.sure { background: linear-gradient(#ff9a8a, #e8574a); }
+.shrinecard { width: 100%; } .shrinecard .mic svg { width: 28px; height: 28px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1853,7 +1878,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
         ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
-        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."]];
+        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
       tiles = items.filter(i => i[3] > 0).map(([k, ic, nm, n, q]) => `<button class="btile${bagPick === k ? " on" : ""}" data-act="bagpick:${k}" style="--gc:${GRADES[q].c}">${ic}<b>${n >= 10000 ? (n / 1000).toFixed(1) + "K" : n}</b></button>`);
       const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span></div>`;
     } else {
@@ -2112,6 +2137,45 @@ nav .navwide .bang { top: 4px; right: 6px; }
     }
     climbing = false; render();
   }
+  // ================= STAR SHRINE: offer spare Glumis for keepsakes and star shards =================
+  const SHARD = '<svg viewBox="0 0 24 24"><path d="M12 1.8 14.6 9.4 22.2 12 14.6 14.6 12 22.2 9.4 14.6 1.8 12 9.4 9.4z" fill="#b48cff" stroke="#7a52d6" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 6.5 13.2 10.8 17.5 12" fill="none" stroke="#f1e8ff" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  const SHRINE_DEALS = [{ q: 3, n: 3, label: "5 Gold Glumis or better" }, { q: 2, n: 1, label: "5 Purple Glumis or better" }];
+  let shrinePick = [], shrineSort = "grade", shrineUp = true, shrineSure = false;
+  const shrineFree = m => !S.team.includes(m.uid) && !m.lock && !(typeof workingAt === "function" && workingAt(m.uid)) && !(typeof isAway === "function" && isAway(m.uid));
+  function shrineGain(list) {
+    const keeps = {}; let cores = 0, shards = 0;
+    for (const m of list) { keeps[m.sp] = (keeps[m.sp] || 0) + KEEPSAKES_BY_GRADE[m.q]; if (m.q === 4) cores += RAINBOW_STAR_CORES; }
+    if (list.length === 5) { const deal = SHRINE_DEALS.find(d => list.every(m => m.q >= d.q)); if (deal) shards = deal.n; }
+    return { keeps, cores, shards };
+  }
+  function pageShrine() {
+    shrinePick = shrinePick.filter(u => mon(u) && shrineFree(mon(u)));
+    const picked = shrinePick.map(mon), avg = picked.length ? picked.reduce((a, m) => a + m.q, 0) / picked.length : 0, G = shrineGain(picked);
+    const pool = S.mons.filter(shrineFree).sort((a, b) => (shrineUp ? 1 : -1) * (shrineSort === "grade" ? (a.q - b.q || a.lvl - b.lvl) : (a.lvl - b.lvl || a.q - b.q)));
+    const slot = i => { const m = picked[i]; return m ? `<button class="shslot full" data-act="shrinepick:${m.uid}" style="--gc:${GRADES[m.q].c}" aria-label="Take ${fname(m.sp, m.evo)} out">${art(m.sp, m.evo, 50)}</button>` : `<span class="shslot">${SHARD}</span>`; };
+    const deal = d => { const got = picked.filter(m => m.q >= d.q).length, ok = picked.length === 5 && got === 5;
+      return `<div class="shdeal${ok ? " ok" : ""}"><span>${d.label} (${Math.min(got, 5)}/5)</span><b>${SHARD}${d.n}</b><i>${ok ? "\u2713" : ""}</i></div>`; };
+    const kinds = Object.keys(G.keeps);
+    return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Star Shrine</h3><span class="shcount">${SHARD}${S.shards || 0}</span></div>
+      <div class="shtop"><div class="shbar"><span>Glumis to offer</span><span>Average grade: <b>${picked.length ? GRADES[Math.round(avg)].name : "-"}</b></span></div>
+        <div class="shslots">${[0, 1, 2, 3, 4].map(slot).join("")}</div></div>
+      <div class="shex"><h4>Star shard exchange</h4>${SHRINE_DEALS.map(deal).join("")}
+        <p class="shnote">${picked.length ? `You get: ${kinds.map(sp => `${G.keeps[sp]} ${SP[sp].name} keepsake${G.keeps[sp] > 1 ? "s" : ""}`).join(", ")}${G.cores ? `, ${G.cores} star cores` : ""}${G.shards ? `, <b>${G.shards} star shard${G.shards > 1 ? "s" : ""}</b>` : ""}` : "Star shards count as keepsakes of any kind when you ascend a Glumi."}</p></div>
+      <div class="shpool"><div class="shtools"><span class="seg mini">${[["grade", "Grade"], ["level", "Level"]].map(([k, nm]) => `<button class="${shrineSort === k ? "on" : ""}" data-act="shrinesort:${k}">${nm}</button>`).join("")}</span><button class="mb" data-act="shrineflip" aria-label="Flip order">${shrineUp ? "\u2191" : "\u2193"}</button></div>
+        ${pool.length ? `<div class="shgrid">${pool.map(m => `<button class="shtile${shrinePick.includes(m.uid) ? " on" : ""}" data-act="shrinepick:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 48)}<span class="lv">Lv ${m.lvl}</span>${shrinePick.includes(m.uid) ? '<i class="shck">\u2713</i>' : ""}</button>`).join("")}</div>`
+          : `<p class="hint">No spare Glumis. Glumis in your team, at work, away or locked can't be offered.</p>`}</div>
+      <div class="shbtns"><button class="mb" data-act="shrinequick" ${pool.length ? "" : "disabled"}>Quick add</button><button class="mb gold pbig${shrineSure ? " sure" : ""}" data-act="shrineoffer" ${picked.length ? "" : "disabled"}>${shrineSure ? "Tap again to offer" : `Offer ${picked.length || ""}`}</button></div>`;
+  }
+  function shrineOffer() {
+    const picked = shrinePick.map(mon).filter(Boolean); if (!picked.length) return;
+    if (!shrineSure) { shrineSure = true; render(); return; }
+    const G = shrineGain(picked);
+    for (const sp in G.keeps) S.keepsakes[sp] = (S.keepsakes[sp] || 0) + G.keeps[sp];
+    for (const m of picked) if (m.q === 4) S.starCores[m.sp] = (S.starCores[m.sp] || 0) + RAINBOW_STAR_CORES;
+    S.shards = (S.shards || 0) + G.shards;
+    S.mons = S.mons.filter(m => !shrinePick.includes(m.uid)); shrinePick = []; shrineSure = false;
+    sfx("claim"); save(); render(); toast(`Offered ${picked.length}: +${Object.values(G.keeps).reduce((a, b) => a + b, 0)} keepsakes${G.shards ? `, +${G.shards} star shard${G.shards > 1 ? "s" : ""}` : ""}`);
+  }
   const NAVI = { menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
                  close: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
   let zoneCss = false;
@@ -2124,7 +2188,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   function renderTabs() {
     paintCss();
     const lock = k => !S.started || ((E || BT || busy) && !(k === "shop" && E && E.type === "wild" && !BT && !busy));
-    const open = k => (k === "menu" ? ["menu", "tasks", "bag"].includes(view) : view === k) && !showMap && !showAuto;
+    const open = k => (k === "menu" ? ["menu", "tasks", "bag", "shrine"].includes(view) : view === k) && !showMap && !showAuto;
     const tab = (k, icon, label) => open(k) ? `<button class="navx" data-act="close" aria-label="Close ${label}">${NAVI.close}${label}</button>`
       : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""}>${icon}${label}</button>`;
     const wide = view === "home" && !showMap && !showAuto ? `<button class="navwide z${S.zone}" data-act="close"><span>Explore</span></button>`
@@ -2139,6 +2203,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       <button class="mcard wide z${z}" data-act="map"><span><b>Atlas</b><small>${openN} of ${ZONES.length} zones open</small></span></button>
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
+      <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
       <div class="mtiles"><button class="mtile" data-act="view:tasks">${IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.chest}<span>Backpack</span></button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
   function pageStart() {
@@ -2197,7 +2262,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       G.push(`<button class="big2 sell" data-act="sell:${m.uid}">${IC.coin}${confirmRelease === "sell" + m.uid ? "Tap again to sell" : `Sell for ${sellPrice(m)} coins`}<small>It leaves your collection</small></button>`);
       G.push(`<button class="big2 danger" data-act="release:${m.uid}">${IC.glow}${confirmRelease === m.uid ? "Tap again to release" : "Release for keepsakes"}<small>+${KEEPSAKES_BY_GRADE[m.q]} ${s.name} keepsake${KEEPSAKES_BY_GRADE[m.q] > 1 ? "s" : ""}${m.q === 4 ? ` and ${RAINBOW_STAR_CORES} ${s.name} star cores` : ""} · you have ${S.keepsakes[m.sp] || 0}</small></button>`);
     }
-    const st = m.stars || 0, cores = S.starCores[m.sp] || 0, aNeed = ASC_COST[ascOf(m)] || 0, keeps = S.keepsakes[m.sp] || 0;
+    const st = m.stars || 0, cores = S.starCores[m.sp] || 0, aNeed = ASC_COST[ascOf(m)] || 0, keeps = (S.keepsakes[m.sp] || 0) + (S.shards || 0);
     const ascReady = atAsc && ascOf(m) < MAX_ASC && keeps >= aNeed, lvlReady = !capped && S.leaves >= cost, starReady = st < MAX_STARS && cores >= st + 1;
     const door = (pg, icon, title, sub, hot) => `<button class="door${hot ? " hot" : ""}" data-act="spage:${pg}">${icon}<span><b>${title}</b><small>${sub}</small></span><i>\u203A</i></button>`;
     const mini = `<div class="minihero" style="--gc:${GRADES[m.q].c}"><div class="hero">${art(m.sp, m.evo, 74)}</div><div><div class="nmrow">${fname(m.sp, m.evo)}</div>
@@ -2674,7 +2739,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
-    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "shrine" ? pageShrine() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
@@ -2776,6 +2841,11 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
     else if (a === "rivalquick") quickRival(false);
+    else if (a === "shrinepick") { shrineSure = false; const i = shrinePick.indexOf(n); if (i > -1) shrinePick.splice(i, 1); else if (shrinePick.length < 5 && mon(n) && shrineFree(mon(n))) shrinePick.push(n); else if (shrinePick.length >= 5) toast("All 5 slots are full"); render(); }
+    else if (a === "shrinequick") { shrineSure = false; const pool = S.mons.filter(m => shrineFree(m) && !shrinePick.includes(m.uid)).sort((a, b) => a.q - b.q || a.lvl - b.lvl); while (shrinePick.length < 5 && pool.length) shrinePick.push(pool.shift().uid); render(); }
+    else if (a === "shrinesort") { shrineSort = arg; render(); }
+    else if (a === "shrineflip") { shrineUp = !shrineUp; render(); }
+    else if (a === "shrineoffer") shrineOffer();
     else if (a === "evclaim") { const k = arg, E2 = evState()[k], t = evTarget(k, E2.tier);
       if (E2.pts >= t) { const r = evReward(k, E2.tier); E2.tier++; giveReward(r); sfx("claim"); save(); toast(`${EVBARS[k].name}: got ${r.n} ${RW[r.k][1]}`); render(); }
       else toast(`${EVBARS[k].how} · ${t - E2.pts} to go`); }
@@ -2808,7 +2878,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
-    else if (a === "view") { if (arg === "arena" && view !== "team" && arenaSub === "prep") { arenaSub = "hub"; prep = null; } view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; expPick = null; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
+    else if (a === "view") { if (arg !== "shrine") { shrineSure = false; } if (arg === "arena" && view !== "team" && arenaSub === "prep") { arenaSub = "hub"; prep = null; } view = arg; settingsPage = null; bagPick = null; showMap = false; if (arg === "home") { homePlace = null; homePick = false; expPick = null; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
     else if (a === "map") { if (!E && !BT && !busy) { showMap = false; view = view === "atlas" ? "explore" : "atlas"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); } }
     else if (a === "atlaszone") { atlasZone = n; atlasPin = null; render(); }
     else if (a === "atlaspin") { atlasPin = atlasPin === n ? null : n; render(); }
@@ -2903,9 +2973,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
       toast(`+${k} ${SP[m.sp].name} keepsake${k > 1 ? "s" : ""}${m.q === 4 ? ` and +${RAINBOW_STAR_CORES} star cores` : ""}`); } }
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const p = sellPrice(m); S.coins += p; S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
-    else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], have = S.keepsakes[m.sp] || 0;
+    else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { keepsakePopup(m, need - have); return; }
-      if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { S.keepsakes[m.sp] = have - need; m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, treat: 25, leaves: 20 }, p = prices[arg]; if (S.coins < p) return;
 if (p === undefined) return;
