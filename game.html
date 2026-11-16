@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794831925;</script>
+<script>window.GAME_BUILD = 1794833256;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -658,6 +658,8 @@
   .popup h3 { margin: 0; font-size: 19px; } .popup p { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--brown, #5b4636); }
   .popbtns { display: flex; gap: 8px; margin-top: 4px; }
   .sp-ver { grid-row: 5; align-self: end; font-family: var(--body); font-size: 11px; font-weight: 700; color: #8a6d55; opacity: .8; }
+#autobar{position:fixed;z-index:30;width:132px;height:5px;border-radius:3px;background:rgba(255,255,255,.6);box-shadow:0 1px 3px rgba(80,50,20,.25);overflow:hidden;pointer-events:none}
+#autobar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd76a,#f5a524)}
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -696,6 +698,7 @@
     <div id="bg"></div><div id="props"></div><div id="actors"></div><div id="fx"></div>
   </div>
   <div class="actions" id="actions"></div>
+  <div id="autobar" hidden><i></i></div>
   <div class="page" id="page" hidden></div>
 </div>
 <div class="arena" id="arena" hidden><div id="aview"></div><div id="afx"></div></div>
@@ -1092,9 +1095,7 @@
     }
     busy = false; save(); render();
     if (E && E.type === "wild" && E.intro) starEntrance();
-    if (E && E.type === "gather" && S.auto) setTimeout(gatherNode, 500);
     await flushBanners();
-    if (E && E.type === "chest" && S.auto) setTimeout(openChest, 400);
   }
   function compassSVG() {
     const ticks = Array.from({ length: 24 }, (_, i) => { const a = i * 15 * Math.PI / 180, r1 = i % 6 ? 37 : 34, r2 = 40;
@@ -1281,7 +1282,7 @@
   const front = () => team().find(m => m.hp > 0);
   async function startBattle(foes, kind) {
     if (busy) return; for (const m of team()) m.hp = maxHp(m);
-    BT = { foes, fi: 0, kind, name: E && E.name, color: E && E.color, me: { e: 0, t: 0, sh: 0 }, foe: { e: 0, t: 0, sh: 0 }, swapCd: 0, auto: !!S.autoSkill || autoCatchOn(), byAuto: autoCatchOn(), speed: S.speed || 1, over: false, fx: [], enter: true };
+    BT = { foes, fi: 0, kind, name: E && E.name, color: E && E.color, me: { e: 0, t: 0, sh: 0 }, foe: { e: 0, t: 0, sh: 0 }, swapCd: 0, auto: !!S.autoSkill || (autoCatchOn() && !(E && E.manual)), byAuto: autoCatchOn() && !(E && E.manual), speed: S.speed || 1, over: false, fx: [], enter: true };
     render(); BT.enter = false; const vs = document.createElement("div"); vs.className = "vs"; vs.textContent = "VS"; $("arena").appendChild(vs); setTimeout(() => vs.remove(), 950);
     await wait(700);
     clearInterval(tickId); let last = performance.now();
@@ -1857,18 +1858,40 @@
   requestAnimationFrame(frame);
   setInterval(() => { if (!S.started) return; const b = S.glow; regen(); if ($("glowNext")) $("glowNext").textContent = glowNextText(); if (S.glow !== b && $("glowNum")) { $("glowNum").textContent = S.glow; $("glowBar").style.width = Math.min(100, S.glow / glowCap() * 100) + "%"; if (!E && !BT && !busy && view === "explore") renderActions(); } }, 1000);
   function autoOff(quiet) { if (S.auto) { S.auto = false; if (!quiet) toast("Auto paused"); render(); } }
-  setInterval(() => {
+  function autoTick() {
     if (!S.auto || !S.started || view !== "explore" || showMap || showAuto || BT || busy || document.querySelector(".shade")) return;
     const now = performance.now();
-    if (E !== autoSeenE) { autoSeenE = E; if (E) { autoNext = now + AUTO_LOOK_MS; return; } }
+    if (E !== autoSeenE) { const wasMine = autoSeenE && autoSeenE.manual; autoSeenE = E; if (E) { autoNext = now + AUTO_LOOK_MS; return; } if (wasMine) { autoNext = now + 800; return; } }
+    if (E && E.manual) return;  // the player took this one over
     if (now < autoNext) return;
-    if (!E) { autoNext = now + AUTO_STEP_MS; step(); } else if (autoCatchOn()) { autoNext = now + AUTO_STEP_MS; autoAct(); }
-  }, 200);
+    if (!E) { autoNext = now + AUTO_STEP_MS; step(); } else if (autoCatchOn() || autoPicksUp()) { autoNext = now + AUTO_STEP_MS; autoAct(); }
+  }
+  // the bar above the buttons fills during Auto's wait on an encounter; full = Auto acts
+  let autoBarFor = 0;
+  function autoBar() {
+    const bar = $("autobar"); if (!bar) return;
+    const now = performance.now();
+    const waiting = S.auto && S.started && (autoCatchOn() || autoPicksUp()) && E && E === autoSeenE && !E.manual && !BT && !busy && !autoLock && view === "explore"
+      && !showMap && !showAuto && !document.querySelector(".shade") && now < autoNext;
+    if (!waiting) { if (!bar.hidden) bar.hidden = true; autoBarFor = 0; return; }
+    const T = $("tabs").getBoundingClientRect(), top = Math.min(T.top, ...[...$("tabs").children].map(c => c.getBoundingClientRect().top));
+    bar.style.left = (T.left + T.width / 2 - 66) + "px"; bar.style.top = (top - 10) + "px";  // always in the same spot: just above the bottom bar's raised Explore button
+    if (autoBarFor !== autoNext) { autoBarFor = autoNext; autoBarFrom = now; bar.firstChild.style.width = "0%"; bar.hidden = false; requestAnimationFrame(autoBarFill); }
+  }
+  let autoBarFrom = 0;
+  function autoBarFill() {  // fills the bar frame by frame while it is shown
+    const bar = $("autobar"); if (!bar || bar.hidden || !autoBarFor) return;
+    const p = Math.min(1, (performance.now() - autoBarFrom) / Math.max(1, autoBarFor - autoBarFrom));
+    bar.firstChild.style.width = (p * 100).toFixed(1) + "%"; if (p < 1) requestAnimationFrame(autoBarFill);
+  }
+  setInterval(() => { autoTick(); autoBar(); }, 200);
   function autoChip() {
     if (!autoSession) return "";
     return S.auto ? `<button class="autochip on" data-act="autopause" aria-label="Pause Auto">${IC.auto}<span>Auto on</span><b>Pause</b></button>`
                   : `<button class="autochip" data-act="autopause" aria-label="Continue Auto">${IC.auto}<span>Auto paused</span><b>Continue</b></button>`;
   }
+  const TAKE_OVER = new Set(["throw", "jar", "treat", "leave", "chest", "gather", "rivalgo", "luckgo"]);  // an encounter's own buttons
+  function autoPicksUp() { return S.auto && E && (E.type === "chest" || E.type === "gather"); }  // Auto opens chests and gathers even with catching off
   function autoCatchOn() { return S.auto && S.autoCfg && S.autoCfg.catch; }
   function autoPause() { if (!autoCatchOn()) autoOff(true); }
   const JAR_DOWN = { star: ["star", "bright", "plain"], bright: ["bright", "plain"], plain: ["plain"] };  // the chosen jar, then cheaper ones
@@ -1906,6 +1929,7 @@
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
     const [a, arg] = b.dataset.act.split(":"); const n = arg !== undefined ? +arg : null;
+    if (S.auto && E && !BT && (TAKE_OVER.has(a) || (a === "view" && arg === "shop"))) { E.manual = true; autoBar(); }
     if (a !== "release" && a !== "sell") confirmRelease = null;
     if (a === "start") { S = fresh(); S.started = true; keepMon(newMon(n, 5, 1)); save(); render(); initProps(); }
     else if (a === "view") { view = arg; showMap = false; if (arg === "home") { homePlace = null; homePick = false; } if (arg === "atlas") { atlasZone = null; atlasPin = null; } showAuto = false; sheetUid = null; swapIn = null; render(); window.scrollTo(0, 0); }
