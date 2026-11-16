@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794871201;</script>
+<script>window.GAME_BUILD = 1794871747;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1568,7 +1568,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const zoneOpen = i => i === 0 || zoneAll(i - 1) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING */
   const lockText = i => `${ZONES[i].name} opens when you catch every Glumi in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
-  const bossReady = i => !S.zones[i].cleared && (zoneAll(i) || S.zones[i].steps >= BOSS_STEPS);
+  const bossReady = i => !S.zones[i].cleared && zoneAll(i);  // only after every regular Glumi here is caught
   const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500 };  // glow you need to have to use each multiplier (Tom 16 Nov)
   const multNeed = M => MULT_NEED[M.m] ?? M.m, multOpen = M => S.glow >= multNeed(M);
   const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return multOpen(want) ? want : [...MULTS].reverse().find(x => x.m <= want.m && multOpen(x)) || MULTS[0]; };
@@ -3308,7 +3308,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     let info = "";
     if (atlasPin !== null) {
       const sp = atlasPin, s0 = SP[sp], boss = s0.tier === 3, has0 = S.caught[key(sp, 0)], has1 = s0.evo && S.caught[key(sp, 1)], known = has0 || S.seen[key(sp, 0)];
-      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Waiting for you on the path" : "Appears when you catch everything here, or after 60 steps") : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
+      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Waiting for you on the path" : `Appears once every Glumi here is caught (${caughtIn(z)} of ${Z.sp.length})`) : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
       info = `<div class="card pininfo lzinfo" data-act="atlaspin:${sp}"><div class="${known ? "" : "sil"}">${art(sp, 0, 70)}</div><div style="display:grid;gap:4px"><span class="nmrow">${known ? s0.name : "???"}</span>
         <div class="tags" style="justify-content:flex-start"><span class="tag2"><span class="el" style="background:${EL[s0.el].color}"></span>${EL[s0.el].name}</span><span class="tag2">${TIER[s0.tier].name}</span></div>
         <span class="stats"><span>${status}</span></span>${s0.evo ? `<div class="forms"><span>${has0 ? "\u2713" : "\u25cb"} ${known ? s0.name : "???"}</span><span>\u2192</span><span>${has1 ? "\u2713 " + s0.evo : "\u25cb Evolved form"}</span></div>` : ""}</div></div>`;
