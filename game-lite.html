@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794841069;</script>
+<script>window.GAME_BUILD = 1794841484;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1003,7 +1003,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   const IC = {
     coin: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83d"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#e59a12" stroke-width="2"/><path d="M12 8.5v7" stroke="#e59a12" stroke-width="2" stroke-linecap="round"/></svg>',
     leaf: '<svg viewBox="0 0 24 24"><path d="M5 19C5 9 11 4 20 4c0 9-5 15-15 15z" fill="#5fcf6a"/><path d="M6 18L15 9" stroke="#2f9a4a" stroke-width="1.8" stroke-linecap="round"/></svg>',
-    glow: '<svg viewBox="0 0 24 24"><path d="M12 2c3 4 6 6.5 6 11a6 6 0 01-12 0c0-4.5 3-7 6-11z" fill="#49c6e5"/><path d="M12 10c1.5 2 3 3 3 5a3 3 0 01-6 0c0-2 1.5-3 3-5z" fill="#d8f6ff"/></svg>',
+    glow: '<svg viewBox="0 0 24 24"><path d="M14.2 1.8 4.6 13.4h6.1l-1.9 8.8 10.6-12.6h-6.4z" fill="#3fc1e8" stroke="#1e8fb8" stroke-width="1.3" stroke-linejoin="round"/><path d="M13 4.6 7.6 11.6h3.6" fill="none" stroke="#e6fbff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     jar: c => `<svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="3.5" rx="1.2" fill="#b98a5a"/><path d="M6 8c0-1.2 1-2 2-2h8c1 0 2 .8 2 2v10a3.5 3.5 0 01-3.5 3.5h-5A3.5 3.5 0 016 18z" fill="${c || "#9fd6ff"}"/><circle cx="12" cy="14" r="3" fill="#fff" opacity=".8"/></svg>`,
     treat: '<svg viewBox="0 0 24 24"><path d="M12 3c3 4 6 7 6 11a6 6 0 01-12 0c0-4 3-7 6-11z" fill="#ffb627"/><ellipse cx="10" cy="13" rx="1.8" ry="2.6" fill="#fff3c8"/></svg>',
     fruit: '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="#a77bff"/><path d="M15 9a5 5 0 10.01 8 6.5 6.5 0 01-.01-8z" fill="#efe6ff"/><path d="M12 5c0-2 1-3 3-3" stroke="#5fcf6a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
@@ -1311,7 +1311,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   async function step() {
     if (E || BT || busy) return;
     regen(); const M = curM();
-    if (S.glow < M.m) { autoOff(); toast("Out of glow"); return; }
+    if (S.glow < M.m) { autoOff(); toast("Out of energy"); return; }
     busy = true; S.glow -= M.m; const z = S.zone, Z = ZONES[z]; S.zones[z].steps++; gainX(M.m); track("step"); sfx("step");
     renderActions(); spinNeedle();
     await walk();
@@ -1375,7 +1375,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     await wait(380);
     const rays = document.createElement("div"); rays.className = "rays"; rays.style.left = x + "px"; rays.style.top = y + "px"; rays.style.margin = "-260px 0 0 -260px"; $("fx").appendChild(rays);
     const c = E.chestCopy = E; track("chest"); sfx("coin"); S.coins += c.coins; if (c.glow) S.glow += c.glow;
-    flyIcons(IC.coin, 6, x, y, $("hudCoins")); if (c.glow) { flyIcons(IC.glow, 6, x, y, $("hudGlow")); toast("A glowing chest! +" + c.glow + " glow"); }
+    flyIcons(IC.coin, 6, x, y, $("hudCoins")); if (c.glow) { flyIcons(IC.glow, 6, x, y, $("hudGlow")); toast("A glowing chest! +" + c.glow + " energy"); }
     floatText(x, y - 50, "+" + c.coins, true);
     await wait(900); rays.remove(); E = null; busy = false; save(); render();
   }
@@ -1706,10 +1706,10 @@ nav .navwide .bang { top: 4px; right: 6px; }
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
     if (E && E.type === "gather") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="gather">${E.kind === "bush" ? "Shake" : E.kind === "pouch" ? "Open" : E.kind === "herb" ? "Pick" : E.kind === "ore" ? "Mine" : "Collect"}</button><button class="round big" data-act="leave">${IC.run}</button></div>`; return; }
     if (E && E.type === "rival") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="rivalgo">${IC.sword.replace("<svg", '<svg width="28" height="28"')} Battle</button><button class="round big" data-act="rivalquick" ${front() ? "" : "disabled"}>${IC.fast.replace("<svg", '<svg width="24" height="24"')} Quick</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div>`; return; }
-    if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo:glow" ${S.glow >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} glow">${IC.glow.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big gold" data-act="luckgo:coins" ${S.coins >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} coins">${IC.coin.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div><p class="hint" style="margin:6px 0 0">Bet glow or coins: get 1 to 2 times it back</p>`; return; }
+    if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo:glow" ${S.glow >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} energy">${IC.glow.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big gold" data-act="luckgo:coins" ${S.coins >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} coins">${IC.coin.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div><p class="hint" style="margin:6px 0 0">Bet energy or coins: get 1 to 2 times it back</p>`; return; }
     const M = curM(), next = MULTS.filter(multOpen);
     A.innerHTML = `<div class="dock"><div class="side">${zoneCard()}</div>
-      <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Glow per step: ${M.m}">x${M.m}</button><button class="compass" data-act="step" aria-label="Step" ${S.glow >= M.m && !busy ? "" : "disabled"}>${compassSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
+      <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Energy per step: ${M.m}">x${M.m}</button><button class="compass" data-act="step" aria-label="Step" ${S.glow >= M.m && !busy ? "" : "disabled"}>${compassSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
       <div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round ${S.auto ? "on" : ""}" data-act="auto" aria-label="Auto walk">${IC.auto}</button><span class="cap">Auto</span></div><div class="capw"><button class="round jartype" data-act="autocfg" aria-label="Auto rules">${IC.gear}</button><span class="cap">Rules</span></div></div></div>
       ${S.auto && S.autoCfg.catch ? `<p class="hint">Auto catch on${autoStat.caught ? ` · ${autoStat.caught} caught` : ""}</p>` : ""}
       ${S.zones[0].steps === 0 ? `<p class="hint">Tap the compass to walk</p>` : next.length < MULTS.length ? "" : ""}`;
@@ -1731,7 +1731,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   }
   // ================= TASKS: Starter (once), Daily (new every day), Challenge (once) =================
   const ELK = Object.keys(EL);
-  const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "glow"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"],
+  const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "energy"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"],
                treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"] };
   function giveReward(r) { if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
   const TASKS = {
@@ -1797,7 +1797,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     const tabs = [["items", "Items"], ["keep", "Keepsakes"], ["cores", "Star cores"]];
     let tiles = [], info = "";
     if (bagTab === "items") {
-      const items = [["glow", IC.glow, "Glow", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
+      const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
         ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
         ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."]];
@@ -1846,7 +1846,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
     const n = i + 1, foes = Array.from({ length: n }, (_, k) => foeMon(Z.sp[(z + i + k) % Z.sp.length], lvl - (n - 1 - k), Math.min(3, Math.max(1, q - (k < n - 1 ? 1 : 0)))));
     if (lead) foes[foes.length - 1] = foeMon(Z.boss, lvl + 1, Math.min(3, q));
     const reward = i === 0 ? { k: "coins", n: 30 * (z + 1) * (d + 1) } : i === 1 ? { k: "bright", n: d + 1 } : { k: "star", n: d + 1 };
-    return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, lvl };
+    const energy = { k: "glow", n: (lead ? 30 : 15) * (z + 1) * (d + 1) };
+    return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, energy, lvl };
   }
   const gymKey = (z, d, i) => `${z}-${d}-${i}`;
   const gymBeat = (z, d, i) => !!(S.gyms && S.gyms[gymKey(z, d, i)]);
@@ -1882,7 +1883,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   }
   let arenaSub = "hub", gymZ = 0, gymD = 0, prep = null;
   function openPrep(p) { prep = p; arenaSub = "prep"; render(); window.scrollTo(0, 0); }
-  function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward], quick: gymBeat(z, d, i), back: "gym" }); }
+  function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward, T.energy], quick: gymBeat(z, d, i), back: "gym" }); }
   function prepDuel() { const D = duelState(); if (D.left <= 0) { toast("No duels left today"); return; } openPrep({ mode: "duel", title: "Daily Duel", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "duels" }); }
   function prepTower() { const f = (S.tower || 0) + 1; openPrep({ mode: "tower", f, title: `Sky Tower · Floor ${f}`, name: `Floor ${f} keeper`, color: "#9fd6ff", foes: towerFoes(f), rewards: [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }] : [])], quick: false, back: "tower" }); }
   function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
@@ -1921,7 +1922,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       const idx = open.indexOf(z), prev = open[idx - 1], next = open[idx + 1];
       const badges = ZONES.map((ZZ, i) => `<button class="gbadge${gymDone(i, 0) ? " done" : ""}${i === z ? " cur" : ""}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"} aria-label="${ZZ.name} Gym">${zoneOpen(i) ? (gymDone(i, 0) ? "\u2713" : i + 1) : IC.lock}</button>`).join("");
       const tcard = i => { const T = gymTrainer(z, d, i), beat = gymBeat(z, d, i);
-        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false)}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward])}</span></button>`; };
+        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false)}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward, T.energy])}</span></button>`; };
       return `${back("gyms")}<h3>${Z.name} Gym</h3><span></span></div>
         <div class="gbadges">${badges}</div>
         <div class="seg">${DIFF.map((n, k) => `<button class="${d === k ? "on" : ""}" data-act="gymd:${k}" ${gymDiffOpen(z, k) ? "" : "disabled"}>${gymDiffOpen(z, k) ? "" : IC.lock.replace(/#fff/g, "#8a6d55")}${n}</button>`).join("")}</div>
@@ -2200,13 +2201,13 @@ nav .navwide .bang { top: 4px; right: 6px; }
     const rows = S.requests.map((q, i) => q.done
       ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>New request soon</b><small>In ${Math.max(1, Math.ceil((q.readyAt - Date.now()) / 60000))} min</small></span><span></span></div>`
       : `<button class="srow req" data-act="reqpick:${i}"><span class="ic">${art(q.sp, 0, 32)}</span><span class="txt"><b>${SP[q.sp].name}</b><small>${reqWant(q)}${reqMatches(q).length ? " · you have one" : ""}</small></span><span class="reward">${reqReward(q)}</span></button>`).join("");
-    return `${head}<p class="hint" style="margin:0">Islanders ask for Glumis and pay in moonfruit or glow.</p>
+    return `${head}<p class="hint" style="margin:0">Islanders ask for Glumis and pay in moonfruit or energy.</p>
       <div class="slist">${rows}</div>`;
   }
   // ================= HOME ISLAND: Glumis work and make resources =================
   const PLACES = {
     orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 4, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
-    spring: { name: "Glow Spring", res: "glow", unit: "glow", base: 1, els: ["Water", "Spirit"], about: "Collects glow for walking" },
+    spring: { name: "Energy Spring", res: "glow", unit: "energy", base: 1, els: ["Water", "Spirit"], about: "Collects energy for walking" },
     mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 8, els: ["Fire", "Electric"], about: "Digs up coins" },
   };
   const HOME_CAP_HOURS = 8, HOME_SLOTS = () => S.xlvl >= 8 ? 3 : 2;
@@ -2298,7 +2299,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
   // ================= SNACK STAND =================
   const DISHES = [{ k: "wrap", name: "Leaf Wrap", icon: () => IC.leaf, cost: { leaves: 5 }, serves: 10, price: 3 },
                   { k: "tart", name: "Berry Tart", icon: () => IC.treat, cost: { treats: 1 }, serves: 8, price: 8 },
-                  { k: "soup", name: "Glow Soup", icon: () => IC.glow, cost: { glow: 10 }, serves: 10, price: 4 }];
+                  { k: "soup", name: "Energy Soup", icon: () => IC.glow, cost: { glow: 10 }, serves: 10, price: 4 }];
   function standState() { if (!S.stand) S.stand = { lvl: 1, menu: [], coins: 0, t: Date.now() }; return S.stand; }
   const standSlots = () => 3 + standState().lvl, standRate = () => 15 * (1 + .25 * (standState().lvl - 1));  // servings an hour
   function standTick() {
@@ -2437,7 +2438,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
     { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
-    { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet glow"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
+    { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet energy"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
     const C = S.autoCfg, label = r => (r.opts.find(o => o[0] === C[r.k]) || r.opts[0])[1];
@@ -2447,12 +2448,12 @@ nav .navwide .bang { top: 4px; right: 6px; }
       <div class="slist">${R.opts.map(([v, n]) => `<button class="choice${C[R.k] === v ? " on" : ""}" data-act="cfg:${R.k}=${v}"><span>${n}</span><i>${C[R.k] === v ? "✓" : ""}</i></button>`).join("")}</div>`;
     return `<div class="head"><h2>Auto rules</h2><button class="mb gold" data-act="autocfg">Done</button></div>
       <div class="slist">${AUTO_RULES.map(r => `<button class="setrow" data-act="autopick:${r.k}"><span>${r.name}</span><b>${label(r)}</b><i>›</i></button>`).join("")}</div>
-      <p class="hint">When the chosen jar runs out, Auto uses a cheaper one. It never spends glow or coins on stalls, and it pauses at zone guardians and when glow or jars run out.</p>`;
+      <p class="hint">When the chosen jar runs out, Auto uses a cheaper one. It never spends energy or coins on stalls, and it pauses at zone guardians and when energy or jars run out.</p>`;
   }
   // ================= ATLAS =================
   let atlasZone = null, atlasPin = null;
   const PIN_POS = [[26, 30], [72, 24], [48, 50], [22, 70], [76, 62]];
-  const REWARD = { coins: z => [`${15 * (z + 1)} coins`, IC.coin], plain: () => ["3 plain jars", IC.jar(JARS[0].c)], glow: () => ["20 glow", IC.glow], bright: () => ["1 bright jar", IC.jar(JARS[1].c)], fruit: () => ["1 moonfruit", IC.fruit] };
+  const REWARD = { coins: z => [`${15 * (z + 1)} coins`, IC.coin], plain: () => ["3 plain jars", IC.jar(JARS[0].c)], glow: () => ["20 energy", IC.glow], bright: () => ["1 bright jar", IC.jar(JARS[1].c)], fruit: () => ["1 moonfruit", IC.fruit] };
   const milestones = z => { const n = ZONES[z].sp.length; return [...Array.from({ length: n }, (_, k) => ({ need: k + 1, kind: ["coins", "plain", "glow", "bright"][k % 4] })), { need: "boss", kind: "fruit" }]; };
   const caughtIn = z => ZONES[z].sp.filter(sp => S.zones[z].caught[sp]).length;
   const reached = (z, m) => m.need === "boss" ? S.zones[z].cleared : caughtIn(z) >= m.need;
@@ -2680,7 +2681,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "step") step();
     else if (a === "mult") { const open = MULTS.filter(multOpen), i = open.findIndex(x => x.m === curM().m), nextLock = MULTS.find(x => !multOpen(x));
       S.mult = open[(i + 1) % open.length].m; save(); renderActions();
-      toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} glow` : `x${S.mult}: ${S.mult} glow a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} glow` : ""}`); }
+      toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} energy` : `x${S.mult}: ${S.mult} energy a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} energy` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
     else if (a === "backtocatch") { view = "explore"; if (E) E.t0 = performance.now(); render(); window.scrollTo(0, 0); }
@@ -2710,7 +2711,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
       if (confirmGive !== n) { confirmGive = n; render(); return; }
       S.mons = S.mons.filter(x => x.uid !== n); if (r.reward.k === "fruit") S.fruit += r.reward.n; else S.glow += r.reward.n;
       r.done = true; r.readyAt = Date.now() + REQUEST_WAIT_MIN * 60000; reqPick = null; confirmGive = null; save(); render();
-      toast(`Thank you! +${r.reward.n} ${r.reward.k === "fruit" ? "moonfruit" : "glow"}`); }
+      toast(`Thank you! +${r.reward.n} ${r.reward.k === "fruit" ? "moonfruit" : "energy"}`); }
     else if (a === "autopick") { autoPick = arg || null; render(); window.scrollTo(0, 0); }
     else if (a === "autocfg") { showAuto = !showAuto; autoPick = null; render(); window.scrollTo(0, 0); }
     else if (a === "cfg") { const [k, v] = arg.split("="); S.autoCfg[k] = v === "true" ? true : v === "false" ? false : /^\d+$/.test(v) ? +v : v; autoPick = null; save(); render(); }
@@ -2791,7 +2792,7 @@ if (p === undefined) return;
     const has = k => ART[String(k).padStart(2, "0") + "-0"], group = [1, 3, 0, 6, 4].filter(has);
     const crowd = (painting && group.length >= 3 ? group : [3, 0, 6]).map((k, i, a) => [k, 0, i === Math.floor(a.length / 2) ? 100 : 74]);
     $("spMons").innerHTML = crowd.map(([k, e, z]) => `<span>${art(k, e, z)}</span>`).join("");
-    const tips = ["Tip: tap the compass to walk the path", "Tip: throw a jar when the ring is small", "Tip: glow refills by itself over time", "Tip: the Atlas shows every zone's Glumis", "Tip: a glowing chest gives extra glow"];
+    const tips = ["Tip: tap the compass to walk the path", "Tip: throw a jar when the ring is small", "Tip: energy refills by itself over time", "Tip: the Atlas shows every zone's Glumis", "Tip: a glowing chest gives extra energy"];
     $("spTip").textContent = tips[rnd(0, tips.length - 1)];
     $("spVer").textContent = versionText();
     let p = 0, ready = false;
