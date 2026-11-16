@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794841484;</script>
+<script>window.GAME_BUILD = 1794841891;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -896,6 +896,56 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .tile .lockmini { position: absolute; left: 6px; bottom: 6px; width: 16px; height: 16px; }
 .sheet.still { animation: none !important; }
 .copyline { display: block; margin-top: 4px; font-size: 11px !important; opacity: .8; }
+/* ===== arena v2 + points bars (Tom 16 Nov) ===== */
+.evbars { display: grid; gap: 10px; justify-items: center; }
+.evbar { display: flex; align-items: center; border: 0; background: none; padding: 0; }
+.evi, .evr { position: relative; z-index: 1; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(30,40,60,.3); }
+.evi { background: linear-gradient(#ffe08a, #f5a623); } .evi svg { width: 17px; height: 17px; color: #fff; }
+.evbar.fight .evi { background: linear-gradient(#ffb3a7, #e8574a); }
+.evr { background: #fff; } .evr svg { width: 17px; height: 17px; } .evr small { position: absolute; bottom: -7px; font: 800 10px/1 var(--display); color: #fff; background: #5b4636; border-radius: 4px; padding: 1px 3px; }
+.evr .bang { top: -7px; right: -7px; width: 15px; height: 15px; font-size: 10px; line-height: 15px; }
+.evtrack { position: relative; width: 150px; height: 20px; margin: 0 -7px; border-radius: 5px; background: rgba(60,45,35,.6); overflow: hidden; }
+.evtrack i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(#ffe08a, #f5b23c); }
+.evbar.fight .evtrack i { background: linear-gradient(#ffc2a0, #f08a5d); }
+.evtrack b { position: relative; display: block; text-align: center; font: 800 11.5px/20px var(--display); color: #fff; text-shadow: 0 1px 2px rgba(60,40,10,.6); }
+.evbar.ready .evr { animation: zpulse 1.1s ease-in-out infinite; }
+.evtime, .atimer { display: inline-flex; align-items: center; gap: 4px; font: 800 11px var(--display); color: #fff; background: rgba(60,45,35,.6); border-radius: 5px; padding: 1px 7px; }
+.zcard { position: relative; } .zcard .bang { top: 4px; right: 4px; z-index: 2; }
+.racehead { display: grid; gap: 4px; justify-items: center; text-align: center; padding: 12px; border-radius: 10px; background: linear-gradient(#cfe8f5, #fff3d6); }
+.racehead b { font: 800 16px var(--display); color: var(--brown); } .racehead small { font-size: 12px; color: var(--brown-2, #8a6d55); }
+.racehead .atimer, .lrank .atimer { color: #fff; }
+.race { display: grid; gap: 8px; }
+.rrow { display: grid; grid-template-columns: 30px 44px 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: #fff3e2; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
+.rrow.me { background: linear-gradient(90deg, #fff1b8, #e3f6fb); box-shadow: 0 0 0 2px #f5b23c, 0 2px 8px rgba(91,70,54,.12); }
+.rpos { width: 28px; height: 28px; display: grid; place-items: center; font: 900 15px var(--display); color: var(--brown); }
+.rrow.p1 .rpos { background: #ffd76a; border-radius: 50%; } .rrow.p2 .rpos { background: #cfdbe8; border-radius: 50%; } .rrow.p3 .rpos { background: #f0c09a; border-radius: 50%; }
+.rav { width: 44px; height: 44px; border-radius: 50%; background: #fff; display: grid; place-items: center; overflow: hidden; box-shadow: 0 0 0 2px #fff; }
+.rname b { display: block; font: 800 14px var(--display); color: var(--brown); } .rname small { font-size: 12px; color: var(--brown-2, #8a6d55); }
+.ltrack { position: relative; padding: 8px 6px 4px 56px; }
+.lwins { position: absolute; left: 0; top: 8px; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; align-content: center; background: linear-gradient(#ffe08a, #f5a623); color: #fff; }
+.lwins b { font: 900 17px/1 var(--display); } .lwins small { font: 800 9.5px var(--display); }
+.lline { position: absolute; left: 56px; right: 6px; top: 26px; height: 8px; border-radius: 4px; background: #eadbc5; overflow: hidden; } .lline i { display: block; height: 100%; background: #f5b23c; }
+.lnodes { position: relative; display: flex; justify-content: space-between; }
+.lnode { width: 38px; height: 38px; border: 0; border-radius: 9px; background: #fff; display: grid; place-items: center; position: relative; box-shadow: 0 2px 6px rgba(91,70,54,.2); color: #3e9e57; font: 900 18px var(--display); }
+.lnode svg { width: 20px; height: 20px; } .lnode small { position: absolute; bottom: -16px; font: 800 11px var(--display); color: var(--brown); }
+.lnode.done { background: #e6f8ea; } .lnode.claim { background: #ffe08a; animation: zpulse 1.1s ease-in-out infinite; } .lnode:disabled { opacity: 1; }
+.lrank { display: flex; gap: 10px; align-items: center; margin-top: 12px; padding: 12px; border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(91,70,54,.12); }
+.lrank > div { flex: 1; } .lrank b { display: block; font: 800 18px var(--display); color: var(--brown); } .lrank small { font-size: 12px; color: var(--brown-2, #8a6d55); }
+.lteam { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: #f3e7d6; } .lteam > b { font: 800 14px var(--display); color: var(--brown); } .lteam .pmons { flex: 1; margin: 0; }
+.climb { position: relative; display: grid; gap: 6px; padding: 6px 0; }
+.cpath { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cnode { position: relative; display: grid; justify-items: center; gap: 2px; width: 150px; }
+.cnode.l { justify-self: start; margin-left: 6%; } .cnode.r { justify-self: end; margin-right: 6%; }
+.cimg { position: relative; width: 84px; height: 84px; border-radius: 50%; background: radial-gradient(#d9b48f, #a26f4a); display: grid; place-items: end center; overflow: hidden; box-shadow: 0 0 0 3px #fff, 0 3px 10px rgba(40,30,20,.25); }
+.cimg svg { width: 52px; height: 80px; }
+.cnode.cur .cimg { width: 104px; height: 104px; box-shadow: 0 0 0 5px #ffd76a, 0 4px 14px rgba(40,30,20,.3); } .cnode.cur .cimg svg { width: 62px; height: 98px; }
+.cnode.lock .cimg { filter: grayscale(.7) brightness(.8); } .cnode.done .cimg { filter: saturate(.6); }
+.cok, .clock { position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font: 900 30px var(--display); color: #3e9e57; background: rgba(255,255,255,.35); }
+.clock svg { width: 28px; height: 28px; }
+.cnum { margin-top: -12px; position: relative; padding: 2px 16px; border-radius: 8px; background: #fff3e2; font: 900 17px var(--display); color: var(--brown); box-shadow: 0 2px 6px rgba(91,70,54,.2); }
+.cnode.cur .cnum { background: #e8574a; color: #fff; }
+.cbtns { display: flex; gap: 10px; align-items: center; justify-content: center; }
+.swrow.mini { width: auto; padding: 8px 12px; gap: 8px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1635,9 +1685,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
       <span class="rescol"><span class="pill res" id="hudLeaves">${IC.leaf}${S.leaves}</span></span></div>
       ${E ? "" : sideIcons()}
       <div class="zarrows">${zArrow(-1)}${zArrow(1)}</div>
-      <div class="ztop">${prog}</div>`;
+      <div class="ztop"><div class="evbars">${evBar("catch")}${evBar("fight")}<span class="evtime">${CLOCK}${mmss(nextMidnight() - Date.now())}</span></div></div>`;
   }
-  const mmss = ms => { const t = Math.max(1, Math.ceil(ms / 1000)); return t >= 3600 ? `${Math.floor(t / 3600)}h ${Math.floor(t % 3600 / 60)}m` : `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
+  const mmss = ms => { const t = Math.max(1, Math.ceil(ms / 1000)); return t >= 86400 ? `${Math.floor(t / 86400)}d ${Math.floor(t % 86400 / 3600)}h` : t >= 3600 ? `${Math.floor(t / 3600)}h ${Math.floor(t % 3600 / 60)}m` : `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
   function sideIcons() {  // shortcut columns on both sides of the walk screen
     const reqs = Array.isArray(S.requests) ? S.requests : [], nowMs = Date.now();
     const reqCan = reqs.some(r => !r.done && reqMatches(r).length);
@@ -1651,7 +1701,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
   }
   function zoneCard() {  // the zone painting with its name and 3 stars: every Glumi caught, guardian beaten, every reward claimed
     const z = S.zone, Z = ZONES[z], st = S.zones[z], stars = [Z.sp.every(sp => st.caught[sp]), !!st.cleared, (st.claimed || 0) >= milestones(z).length];
-    return `<button class="zcard z${z}" data-act="map" aria-label="${Z.name}, open the Atlas"><span class="zcn">${Z.name}</span><span class="zcs">${stars.map(on => `<i class="${on ? "on" : ""}">\u2605</i>`).join("")}</span></button>`;
+    const ms = milestones(z), mk = st.claimed || 0, zReady = ms[mk] && reached(z, ms[mk]);
+    return `<button class="zcard z${z}" data-act="map" aria-label="${Z.name}, open the Atlas">${zReady ? '<em class="bang">!</em>' : ""}<span class="zcn">${Z.name}</span><span class="zcs">${stars.map(on => `<i class="${on ? "on" : ""}">\u2605</i>`).join("")}</span></button>`;
   }
   function actorsHTML() {
     if (BT) return "";
@@ -1768,8 +1819,10 @@ nav .navwide .bang { top: 4px; right: 6px; }
     if (T.date !== today()) { T.date = today(); T.day = blankDay(); for (const t of TASKS.daily) delete T.done["daily:" + t.id]; }
     return T;
   }
-  function track(ev, w) {
+  function track(ev, w, pts) {
     const T = tasksState();
+    if (ev === "catch") evAdd("catch", CATCH_PTS[w.q] || 10);
+    if (ev === "win") { const p = pts || 20; evAdd("fight", p); raceAdd(p); }
     if (ev === "catch") { const B = bestQ(); B[w.sp] = Math.max(B[w.sp] || 0, w.q); T.day.catch++; T.total.catch++; if (w.q >= 2) { T.day.q2++; T.total.q2++; } if (w.q >= 3) T.total.q3++; const k = SP[w.sp].el; T.total.el[k] = (T.total.el[k] || 0) + 1; }
     else if (ev === "win") { T.day.win++; T.total.win++; }
     else if (ev === "evolve") T.total.evolve++;
@@ -1885,24 +1938,27 @@ nav .navwide .bang { top: 4px; right: 6px; }
   function openPrep(p) { prep = p; arenaSub = "prep"; render(); window.scrollTo(0, 0); }
   function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward, T.energy], quick: gymBeat(z, d, i), back: "gym" }); }
   function prepDuel() { const D = duelState(); if (D.left <= 0) { toast("No duels left today"); return; } openPrep({ mode: "duel", title: "Daily Duel", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "duels" }); }
-  function prepTower() { const f = (S.tower || 0) + 1; openPrep({ mode: "tower", f, title: `Sky Tower · Floor ${f}`, name: `Floor ${f} keeper`, color: "#9fd6ff", foes: towerFoes(f), rewards: [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }] : [])], quick: false, back: "tower" }); }
+  function prepTower() { const f = (S.tower || 0) + 1; openPrep({ mode: "tower", f, title: `Cloud Climb · Floor ${f}`, name: `Floor ${f} climber`, color: "#9fd6ff", foes: towerFoes(f), rewards: climbRewards(f), quick: true, back: "tower" }); }
   function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
     if (P.mode === "gym") { if (!S.gyms) S.gyms = {}; S.gyms[gymKey(P.z, P.d, P.i)] = 1; }
     if (P.mode === "duel") { const D = duelState(); D.pts += 12; D.wins++; }
+    if (P.mode === "ladder") { const L = ladderState(); L.pts += 12; L.wins++; }
     if (P.mode === "tower") S.tower = Math.max(S.tower || 0, P.f);
     for (const r of P.rewards) giveReward(r);
-    track("win"); return P.rewards;
+    track("win", null, { gym: 40, ladder: 30, tower: 30, duel: 30 }[P.mode] || 20); return P.rewards;
   }
   async function finishArena(won) {
     const P = BT.prep; let given = [];
     if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); }
+    if (!won && P.mode === "ladder") { const L = ladderState(); L.pts = Math.max(0, L.pts - 5); }
     save(); await resultScreen(won, given, 0);
     BT = null; prep = null; arenaSub = P.back; render(); save();
   }
   async function startPrep(quick) {
     const P = prep; if (!P || !team().length) return;
     if (P.mode === "duel") duelState().left--;
-    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
+    if (P.mode === "ladder") { if (S.glow < LADDER_COST) { toast(`A match costs ${LADDER_COST} energy`); return; } S.glow -= LADDER_COST; }
+    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { const L = ladderState(); L.pts = Math.max(0, L.pts - 5); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
   }
   const rchips = rs => rs.map(r => `<span class="rchip">${RW[r.k][0]}${r.n}</span>`).join("");
@@ -1934,27 +1990,43 @@ nav .navwide .bang { top: 4px; right: 6px; }
       return `${back("hub")}<h3>Gyms</h3><span></span></div>
         <div class="slist">${ZONES.map((Z, i) => `<button class="garow z${i}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"}><span class="gpic"></span><span class="gtx"><b>${Z.name} Gym</b><small>${zoneOpen(i) ? DIFF.map((n, k) => `${gymDone(i, k) ? "\u2713" : "\u25CB"} ${n}`).join("  ") : "Opens with the zone"}</small></span><i>${zoneOpen(i) ? "\u203A" : IC.lock}</i></button>`).join("")}</div>`;
     }
-    if (arenaSub === "duels") {
-      const D = duelState(), nextR = DRANKS.find(r => r[0] > D.pts);
-      return `${back("hub")}<h3>Daily Duels</h3><span></span></div>
-        <div class="dhero"><span class="drank">${IC.crown}</span><div><b>${duelRank(D.pts)} rank</b><small>${D.pts} duel points${nextR ? ` · ${nextR[0] - D.pts} to ${nextR[1]}` : ""}</small><span class="tbar"><i style="width:${nextR ? Math.round((D.pts - DRANKS.filter(r => r[0] <= D.pts).pop()[0]) / (nextR[0] - DRANKS.filter(r => r[0] <= D.pts).pop()[0]) * 100) : 100}%"></i></span></div></div>
-        <p class="hint" style="margin:0">Teams near your level. A win gives 12 points and coins, a loss takes 5 points. ${D.left} of 5 duels left today.</p>
-        <button class="mb gold pbig" data-act="duelgo" ${D.left > 0 ? "" : "disabled"}>${D.left > 0 ? "Find an opponent" : "Come back tomorrow"}</button>`;
+    const timer = ms => `<span class="atimer">${CLOCK}${mmss(ms)}</span>`;
+    if (arenaSub === "race") {
+      const R = raceState(), over = Date.now() >= R.end, board = raceBoard(), myRank = board.findIndex(r => r.me);
+      return `${back("hub")}<h3>Island Race</h3><span></span></div>
+        <div class="racehead">${over ? `<span class="atimer">Finished</span>` : timer(R.end - Date.now())}<b>Win fights to earn race points</b><small>Every battle point counts in the race. Top places get the best rewards.</small></div>
+        <div class="race">${board.map((r, i) => `<div class="rrow${r.me ? " me" : ""} p${i + 1}"><span class="rpos">${i + 1}</span><span class="rav">${r.me ? (team()[0] ? art(team()[0].sp, team()[0].evo, 40) : "") : art(r.sp, 0, 40)}</span><span class="rname"><b>${r.name}</b><small>${r.pts.toLocaleString("en")} points</small></span><span class="rchips">${rchips(RACE_REW[i])}</span></div>`).join("")}</div>
+        ${over ? `<button class="mb gold pbig" data-act="raceclaim">Claim place ${myRank + 1} reward and start a new race</button>` : `<button class="mb gold pbig" data-act="arenasub:ladder">Go win fights</button>`}`;
+    }
+    if (arenaSub === "ladder") {
+      const L = ladderState(), nextR = DRANKS.find(r => r[0] > L.pts), weekEnd = (weekId() + 1) * 7 * 86400000 + 4 * 86400000;
+      const nodes = LADDER_MS.map((need, k) => { const got = k < L.claimed, can = !got && k === L.claimed && L.wins >= need;
+        return `<button class="lnode${got ? " done" : can ? " claim" : ""}" data-act="ladclaim" ${can ? "" : "disabled"} aria-label="${need} wins">${got ? "\u2713" : RW[LADDER_REW[k].k][0]}<small>${need}</small></button>`; }).join("");
+      return `${back("hub")}<h3>Ladder</h3><span></span></div>
+        <div class="ltrack"><span class="lwins"><b>${L.wins}</b><small>wins</small></span><div class="lline"><i style="width:${Math.min(100, L.wins / 150 * 100)}%"></i></div><div class="lnodes">${nodes}</div></div>
+        <div class="lrank"><span class="drank">${IC.crown}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
+        <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
+        <p class="hint" style="margin:0">Opponents are teams near your level. A win gives 12 rank points, a loss takes 5. Wins count for the week's rewards.</p>
+        <button class="mb gold pbig" data-act="laddergo" ${S.glow >= LADDER_COST ? "" : "disabled"}>Match ${IC.glow}${LADDER_COST}</button>`;
     }
     if (arenaSub === "tower") {
-      const f = (S.tower || 0) + 1;
-      const floors = [f + 2, f + 1, f, f - 1, f - 2].filter(x => x >= 1).map(x => `<div class="tfloor${x === f ? " cur" : x < f ? " done" : ""}"><b>Floor ${x}</b><span>${x < f ? "\u2713" : x === f ? "Next" : ""}</span>${x % 5 === 0 ? `<span class="rchip">${IC.jar(JARS[2].c)}1</span>` : ""}</div>`).join("");
-      return `${back("hub")}<h3>Sky Tower</h3><span></span></div>
-        <p class="hint" style="margin:0">Each floor is a little harder. Every 5th floor gives a star jar. Best: floor ${S.tower || 0}.</p>
-        <div class="tower">${floors}</div>
-        <button class="mb gold pbig" data-act="towergo">Climb to floor ${f}</button>`;
+      const f = (S.tower || 0) + 1, side = x => x % 2 ? "l" : "r";
+      const node = x => { const st = x < f ? "done" : x === f ? "cur" : "lock";
+        return `<div class="cnode ${side(x)} ${st}"><span class="cimg">${trainerSVG(TCOLORS[x % TCOLORS.length], false)}${st === "done" ? '<em class="cok">\u2713</em>' : st === "lock" ? `<em class="clock">${IC.lock}</em>` : ""}</span><span class="cnum">${x}</span><span class="rchips">${rchips(climbRewards(x))}</span></div>`; };
+      return `${back("hub")}<h3>Cloud Climb</h3><span></span></div>
+        <div class="climb"><svg class="cpath" viewBox="0 0 100 400" preserveAspectRatio="none"><path d="M30 0 C 90 60, 90 90, 70 130 S 10 200, 30 260 S 90 340, 70 400" fill="none" stroke="#e8d7bd" stroke-width="3" stroke-dasharray="2 4"/></svg>
+          ${[f + 1, f, f - 1, f - 2].filter(x => x >= 1).map(node).join("")}</div>
+        <div class="cbtns"><button class="mb gold pbig" data-act="${S.climbAuto ? "climbauto" : "towergo"}" ${climbing ? "disabled" : ""}>${climbing ? "Climbing..." : "Challenge"}</button>
+          <button class="swrow mini" data-act="climbswitch" role="switch" aria-checked="${!!S.climbAuto}"><span><b>Auto</b></span><i class="sw${S.climbAuto ? " on" : ""}"><em></em></i></button></div>
+        <p class="hint" style="margin:0">Best: floor ${S.tower || 0}. Every 5th floor gives a star jar and energy. Auto keeps climbing with quick battles until a loss.</p>`;
     }
-    const D = duelState(), gymsDone = ZONES.filter((_, i) => gymDone(i, 0)).length;
+    const gymsDone = ZONES.filter((_, i) => gymDone(i, 0)).length, R = raceState(), L = ladderState(), place = raceBoard().findIndex(r => r.me) + 1;
     const mode = (k, title, chips, bg) => `<button class="amode" data-act="arenasub:${k}"><span class="aimg ${bg}"><b>${title}</b><span class="achips">${chips}</span></span><span class="ago">${IC.sword}<b>Go</b></span></button>`;
     return `<div class="head"><h2>Arena</h2></div>
-      ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}
-      ${mode("duels", "Daily Duels", `<span>${duelRank(D.pts)}</span><span>${D.left} left today</span>`, "a-duel")}
-      ${mode("tower", "Sky Tower", `<span>Best floor ${S.tower || 0}</span>`, "a-tower")}`;
+      ${mode("race", "Island Race", `<span>Place ${place}</span><span>${Date.now() >= R.end ? "Finished" : mmss(R.end - Date.now()) + " left"}</span>`, "a-race")}
+      ${mode("ladder", "Ladder", `<span>${duelRank(L.pts)}</span><span>${L.wins} wins this week</span>`, "a-duel")}
+      ${mode("tower", "Cloud Climb", `<span>Best floor ${S.tower || 0}</span>`, "a-tower")}
+      ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}`;
   }
   // ================= GRADE COLLECTION per zone (Atlas) =================
   const GC_REW = { 1: { k: "plain", n: 2 }, 2: { k: "bright", n: 1 }, 3: { k: "star", n: 1 } };
@@ -1989,13 +2061,64 @@ nav .navwide .bang { top: 4px; right: 6px; }
       setTimeout(() => { E = null; busy = false; save(); render(); done(); }, 900);
     }));
   }
+  // ================= POINTS BARS: catch points and battle points, reward steps, new every day =================
+  const CLOCK = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  const CATCH_PTS = [5, 10, 30, 80, 300];  // by grade
+  const EVBARS = {
+    catch: { name: "Catch points", how: "Catch Glumis: Blue 10, Purple 30, Gold 80, Rainbow 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
+             rew: [{ k: "glow", n: 30 }, { k: "plain", n: 3 }, { k: "coins", n: 150 }, { k: "bright", n: 2 }, { k: "glow", n: 80 }, { k: "star", n: 1 }, { k: "coins", n: 500 }] },
+    fight: { name: "Battle points", how: "Win fights: path trainers 20, gyms 40, ladder and climb 30", icon: () => IC.sword, steps: [60, 150, 300, 500, 800, 1200, 1800],
+             rew: [{ k: "coins", n: 100 }, { k: "glow", n: 40 }, { k: "bright", n: 1 }, { k: "coins", n: 300 }, { k: "glow", n: 100 }, { k: "star", n: 1 }, { k: "glow", n: 200 }] },
+  };
+  const nextMidnight = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); };
+  function evState() { if (!S.ev || S.ev.day !== today()) S.ev = { day: today(), catch: { pts: 0, tier: 0 }, fight: { pts: 0, tier: 0 } }; return S.ev; }
+  const evTarget = (k, t) => { const st = EVBARS[k].steps; return t < st.length ? st[t] : st[st.length - 1] + (t - st.length + 1) * 1000; };
+  const evReward = (k, t) => EVBARS[k].rew[t % EVBARS[k].rew.length];
+  function evAdd(k, n) { evState()[k].pts += n; }
+  function evBar(k) {
+    const E2 = evState()[k], t = evTarget(k, E2.tier), ok = E2.pts >= t, r = evReward(k, E2.tier);
+    return `<button class="evbar ${k}${ok ? " ready" : ""}" data-act="evclaim:${k}" aria-label="${EVBARS[k].name}: ${E2.pts} of ${t}"><span class="evi">${EVBARS[k].icon()}</span><span class="evtrack"><i style="width:${Math.min(100, E2.pts / t * 100)}%"></i><b>${E2.pts.toLocaleString("en")}/${t.toLocaleString("en")}</b></span><span class="evr">${RW[r.k][0]}<small>${r.n}</small>${ok ? '<em class="bang">!</em>' : ""}</span></button>`;
+  }
+  // ================= ISLAND RACE: a day-long race against four islanders =================
+  const RACE_REW = [[{ k: "star", n: 2 }, { k: "glow", n: 200 }], [{ k: "star", n: 1 }, { k: "glow", n: 150 }], [{ k: "bright", n: 2 }, { k: "glow", n: 100 }], [{ k: "plain", n: 5 }, { k: "glow", n: 50 }], [{ k: "coins", n: 100 }]];
+  function newRace() {
+    const names = [...TNAMES].sort(() => Math.random() - .5).slice(0, 4), pool = Object.keys(SP).map(Number).filter(k => SP[k].tier < 3);
+    return { start: Date.now(), end: Date.now() + 24 * 3600000, me: 0, done: false, bots: names.map((n, i) => ({ name: n, sp: pool[rnd(0, pool.length - 1)], total: Math.round([620, 470, 340, 210][i] * (.8 + Math.random() * .4)) })) };
+  }
+  function raceState() { if (!S.race) S.race = newRace(); return S.race; }
+  function raceAdd(p) { const R = raceState(); if (Date.now() < R.end) R.me += p; }
+  function raceBoard() {
+    const R = raceState(), f = Math.min(1, (Date.now() - R.start) / (R.end - R.start));
+    const rows = R.bots.map(b => ({ name: b.name, sp: b.sp, pts: Math.round(b.total * Math.pow(f, .9) / 10) * 10 })).concat([{ name: "You", me: true, pts: R.me }]);
+    return rows.sort((a, b) => b.pts - a.pts || (a.me ? -1 : 1));
+  }
+  // ================= LADDER: weekly wins and rank =================
+  const LADDER_COST = 5, LADDER_MS = [10, 20, 40, 60, 100, 150];
+  const LADDER_REW = [{ k: "coins", n: 200 }, { k: "glow", n: 50 }, { k: "bright", n: 2 }, { k: "glow", n: 100 }, { k: "star", n: 1 }, { k: "star", n: 2 }];
+  const weekId = () => Math.floor((Date.now() - 4 * 86400000) / (7 * 86400000));  // weeks start on Monday
+  function ladderState() { if (!S.ladder || S.ladder.week !== weekId()) S.ladder = { week: weekId(), pts: S.ladder ? Math.round(S.ladder.pts / 2) : 0, wins: 0, claimed: 0 }; return S.ladder; }
+  function prepLadder() { if (S.glow < LADDER_COST) { toast(`A match costs ${LADDER_COST} energy`); return; }
+    openPrep({ mode: "ladder", title: "Ladder match", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 25 + avgLvl() * 3 }], quick: true, back: "ladder" }); }
+  // ================= CLOUD CLIMB =================
+  const climbRewards = f => [{ k: "coins", n: 20 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : [])];
+  let climbing = false;
+  async function autoClimb() {
+    if (climbing || !team().length) return; climbing = true; render();
+    for (let n = 0; n < 30 && climbing; n++) {
+      const f = (S.tower || 0) + 1, won = simulate(team(), towerFoes(f)); let given = [];
+      if (won) given = arenaWin({ mode: "tower", f, rewards: climbRewards(f) });
+      save(); await resultScreen(won, given, 1100); render();
+      if (!won) break;
+    }
+    climbing = false; render();
+  }
   const NAVI = { menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
                  close: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
   let zoneCss = false;
   function paintCss() {  // zone paintings as backgrounds for the zone card, the Atlas card and the wide bottom tile (set once)
     if (zoneCss) return; zoneCss = true;
     const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
-      + (ART["bg-arena"] ? `.a-gym{background-image:url(${ART["bg-arena"]})}` : "") + (ART["bg-2"] ? `.a-duel{background-image:url(${ART["bg-2"]})}` : "") + (ART["bg-7"] ? `.a-tower{background-image:url(${ART["bg-7"]})}` : "");
+      + (ART["bg-arena"] ? `.a-gym{background-image:url(${ART["bg-arena"]})}` : "") + (ART["bg-2"] ? `.a-duel{background-image:url(${ART["bg-2"]})}` : "") + (ART["bg-7"] ? `.a-tower{background-image:url(${ART["bg-7"]})}` : "") + (ART["bg-5"] ? `.a-race{background-image:url(${ART["bg-5"]})}` : "");
     const el = document.createElement("style"); el.textContent = r; document.head.appendChild(el);
   }
   function renderTabs() {
@@ -2643,6 +2766,14 @@ nav .navwide .bang { top: 4px; right: 6px; }
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
     else if (a === "rivalquick") quickRival(false);
+    else if (a === "evclaim") { const k = arg, E2 = evState()[k], t = evTarget(k, E2.tier);
+      if (E2.pts >= t) { const r = evReward(k, E2.tier); E2.tier++; giveReward(r); sfx("claim"); save(); toast(`${EVBARS[k].name}: got ${r.n} ${RW[r.k][1]}`); render(); }
+      else toast(`${EVBARS[k].how} · ${t - E2.pts} to go`); }
+    else if (a === "raceclaim") { const R = raceState(); if (Date.now() >= R.end) { const i = raceBoard().findIndex(r => r.me); (RACE_REW[i] || []).forEach(giveReward); sfx("claim"); toast(`Place ${i + 1}: rewards collected`); S.race = newRace(); save(); render(); } }
+    else if (a === "laddergo") prepLadder();
+    else if (a === "ladclaim") { const L = ladderState(), k = L.claimed; if (k < LADDER_MS.length && L.wins >= LADDER_MS[k]) { giveReward(LADDER_REW[k]); L.claimed++; sfx("claim"); save(); toast(`Got ${LADDER_REW[k].n} ${RW[LADDER_REW[k].k][1]}`); render(); } }
+    else if (a === "climbswitch") { S.climbAuto = !S.climbAuto; save(); render(); }
+    else if (a === "climbauto") autoClimb();
     else if (a === "arenasub") { arenaSub = arg; if (arg !== "prep") prep = null; render(); window.scrollTo(0, 0); }
     else if (a === "gymz") { if (zoneOpen(n)) { gymZ = n; if (!gymDiffOpen(n, gymD)) gymD = 0; arenaSub = "gym"; render(); window.scrollTo(0, 0); } }
     else if (a === "gymd") { if (gymDiffOpen(gymZ, n)) { gymD = n; render(); } }
