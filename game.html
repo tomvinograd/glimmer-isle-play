@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794917530;</script>
+<script>window.GAME_BUILD = 1794917621;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2353,9 +2353,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const DIFF = ["Easy", "Normal", "Hard"];
   // gyms: trainer i of zone z at difficulty d
   function gymTrainer(z, d, i) {
-    const Z = ZONES[z], lead = i === 2, lvl = Z.lv[1] + 1 + i * 2 + d * 10, q = Math.min(3, d + 1 + (lead ? 1 : 0) - (d === 0 && !lead ? 0 : 0));
+    const hard = Math.max(0, z - 2), Z = ZONES[z], lead = i === 2, lvl = Z.lv[1] + 1 + i * 2 + d * 10 + hard * 5, q = Math.min(3, d + 1 + (lead || hard ? 1 : 0));  // zones 4-8: harder
     const n = i + 1, foes = Array.from({ length: n }, (_, k) => foeMon(Z.sp[(z + i + k) % Z.sp.length], lvl - (n - 1 - k), Math.min(3, Math.max(1, q - (k < n - 1 ? 1 : 0)))));
     if (lead) foes[foes.length - 1] = foeMon(Z.boss, lvl + 1, Math.min(3, q));
+    if (hard) foes.forEach(f => { f.boost = 1 + .12 * hard; f.hp = maxHp(f); });
     const reward = i === 0 ? { k: "coins", n: 25 * (z + 1) * (d + 1) } : i === 1 ? { k: "bright", n: d + 1 } : { k: "star", n: d + 1 };
     const energy = { k: "glow", n: (lead ? 10 : 5) * (z + 1) * (d + 1) };
     return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, energy, lvl };
