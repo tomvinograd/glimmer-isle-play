@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794918594;</script>
+<script>window.GAME_BUILD = 1794918699;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2370,9 +2370,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const gymDiffOpen = (z, d) => d === 0 || gymDone(z, d - 1);
   // daily duels
   // ladder tiers by rank points; [points, name, color, foe level bonus, foe grade weights Green..Rainbow]
-  const DRANKS = [[0, "Bronze", "#cd8a4a", 10, [30, 60, 10, 0, 0]], [100, "Silver", "#b9c3cf", 20, [0, 70, 30, 0, 0]], [300, "Gold", "#f2b42c", 35, [0, 50, 40, 10, 0]],
-                  [600, "Platinum", "#6fd0c4", 50, [0, 30, 50, 20, 0]], [1000, "Diamond", "#6fa8ff", 70, [0, 10, 50, 35, 5]], [1600, "Master", "#b07cff", 100, [0, 0, 40, 50, 10]]];  // [rank points, name, color, foe level, foe grade weights]
-  const RANK_WIN = [12, 10, 8, 6, 5, 4], RANK_LOSS = [5, 6, 7, 8, 10, 12], FOE_BOOST = [1, 1.05, 1.12, 1.22, 1.25, 1.25], FOE_STARS = [0, 0, 0, 0, 0, 0];  // by tier (1.25 x the 80% wild cut = full strength)
+  const DRANKS = [[0, "Bronze", "#cd8a4a", 15, [10, 70, 20, 0, 0]], [120, "Silver", "#b9c3cf", 30, [0, 55, 40, 5, 0]], [360, "Gold", "#f2b42c", 50, [0, 30, 50, 20, 0]],
+                  [720, "Platinum", "#6fd0c4", 70, [0, 10, 50, 40, 0]], [1200, "Diamond", "#6fa8ff", 90, [0, 0, 35, 55, 10]], [1900, "Master", "#b07cff", 100, [0, 0, 40, 50, 10]]];  // [rank points, name, color, foe level, foe grade weights]
+  const RANK_WIN = [10, 8, 7, 6, 5, 4], RANK_LOSS = [5, 7, 9, 11, 13, 15], FOE_BOOST = [1.05, 1.12, 1.2, 1.25, 1.25, 1.25], FOE_STARS = [0, 0, 0, 0, 0, 0];  // by tier (1.25 x the 80% wild cut = full strength)
   const ladderTier = p => DRANKS.filter(r => p >= r[0]).length - 1;
   function tierBadge(i, size) {  // shield in the tier's metal color, a star, one pip per tier above Bronze
     const c = DRANKS[i][2], id = "tb" + i + "-" + size;
