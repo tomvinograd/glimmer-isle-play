@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794901391;</script>
+<script>window.GAME_BUILD = 1794901487;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2917,13 +2917,18 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const sp = Z.sp[rnd(0, Z.sp.length - 1)], minQ = 1 + wpick([50, 35, 15]);
     const count = minQ === 1 ? rnd(2, 4) : minQ === 2 ? rnd(2, 3) : rnd(1, 2);  // several of a grade, no level needed
     const reward = minQ === 1 ? { k: "glow", n: 15 * count } : minQ === 2 ? { k: "fruit", n: count - 1 } : { k: "fruit", n: 2 * count };
+    if (Math.random() < .4) {  // any kind: just the grade and how many
+      const c2 = minQ === 1 ? rnd(6, 10) : minQ === 2 ? rnd(4, 6) : rnd(2, 3);
+      return { sp: -1, minQ, count: c2, got: 0, z, reward: minQ === 1 ? { k: "glow", n: 10 * c2 } : minQ === 2 ? { k: "fruit", n: c2 - 2 } : { k: "fruit", n: 2 * c2 }, readyAt: 0 };
+    }
     return { sp, minQ, count, got: 0, z, reward, readyAt: 0 };
   }
   function fillRequests() {
     if (!Array.isArray(S.requests)) S.requests = [];
     for (let i = 0; i < REQUEST_SLOTS; i++) { const r = S.requests[i]; if (!r || (r.done && Date.now() >= r.readyAt)) S.requests[i] = newRequest(); }
   }
-  const reqMatches = r => S.mons.filter(m => m.sp === r.sp && m.q >= r.minQ && !S.team.includes(m.uid));
+  const reqMatches = r => S.mons.filter(m => (r.sp < 0 || m.sp === r.sp) && m.q >= r.minQ && !S.team.includes(m.uid) && !m.lock);
+  const reqName = r => r.sp < 0 ? "Any Glumi" : SP[r.sp].name, reqArt = (r, size) => r.sp < 0 ? `<span style="width:${size}px;display:inline-grid">${TABI.team}</span>` : art(r.sp, 0, size);
   const reqLeft = r => (r.count || 1) - (r.got || 0);
   const reqWant = r => `${r.count || 1} ${r.minQ > 1 ? GRADES[r.minQ].name + " or better" : "of any grade"}${r.got ? ` · ${r.got} given` : ""}`;
   const reqReward = r => r.reward.k === "fruit" ? `${IC.fruit}<b>${r.reward.n}</b>` : `${IC.glow}<b>${r.reward.n}</b>`;
@@ -2936,17 +2941,17 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (r && !r.done) {
       const got = reqMatches(r);
       return `${head}<div class="sheethead"><button class="mb" data-act="reqpick:" aria-label="Back">‹ Back</button><h3>Request</h3><span></span></div>
-        ${islander(`I wish for ${reqLeft(r) > 1 ? `${reqLeft(r)} more ${SP[r.sp].name}s` : `a ${SP[r.sp].name}`}${r.minQ > 1 ? ` (${GRADES[r.minQ].name} or better)` : ""}! Will you help?`)}
-        <div class="minihero"><div class="hero" style="--gc:${GRADES[r.minQ].c}">${art(r.sp, 0, 74)}</div><div><div class="nmrow">${SP[r.sp].name}</div>
+        ${islander(`I wish for ${r.sp < 0 ? `${reqLeft(r)} more Glumis of any kind` : reqLeft(r) > 1 ? `${reqLeft(r)} more ${SP[r.sp].name}s` : `a ${SP[r.sp].name}`}${r.minQ > 1 ? ` (${GRADES[r.minQ].name} or better)` : ""}! Will you help?`)}
+        <div class="minihero"><div class="hero" style="--gc:${GRADES[r.minQ].c}">${reqArt(r, 74)}</div><div><div class="nmrow">${reqName(r)}</div>
           <small class="reqtxt">Wanted: ${reqWant(r)}</small><span class="reward">Reward ${reqReward(r)}</span></div></div>
         ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Glumis in your team are not shown.</p>
           <div class="slist">${got.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl}${m.stars ? ` · ${m.stars} star${m.stars > 1 ? "s" : ""}` : ""}</small></span>
             <button class="price give" data-act="give:${m.uid}">${confirmGive === m.uid ? "Sure?" : "Give"}</button></div>`).join("")}</div>`
-          : `<p class="hint" style="margin:0">You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.</p>`}`;
+          : `<p class="hint" style="margin:0">${r.sp < 0 ? `You have no ${GRADES[r.minQ].name} or better Glumi outside your team. Catch more on the path.` : `You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.`}</p>`}`;
     }
     const rows = S.requests.map((q, i) => q.done
       ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>New request soon</b><small>In ${Math.max(1, Math.ceil((q.readyAt - Date.now()) / 60000))} min</small></span><span></span></div>`
-      : `<button class="srow req" data-act="reqpick:${i}"><span class="ic">${art(q.sp, 0, 32)}</span><span class="txt"><b>${SP[q.sp].name}</b><small>${reqWant(q)}${reqMatches(q).length ? " · you have one" : ""}</small></span><span class="reward">${reqReward(q)}</span></button>`).join("");
+      : `<button class="srow req" data-act="reqpick:${i}"><span class="ic">${reqArt(q, 32)}</span><span class="txt"><b>${reqName(q)}</b><small>${reqWant(q)}${reqMatches(q).length ? " · you have one" : ""}</small></span><span class="reward">${reqReward(q)}</span></button>`).join("");
     return `${head}${islander("Can you help us? We pay in moonfruit or energy for the Glumis we wish for.")}
       <div class="slist">${rows}</div>`;
   }
