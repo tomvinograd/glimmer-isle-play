@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794896428;</script>
+<script>window.GAME_BUILD = 1794896567;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1667,7 +1667,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     busy = true; S.glow -= M.m; const z = S.zone, Z = ZONES[z]; S.zones[z].steps++; gainX(M.m); track("step"); sfx("step");
     renderActions(); spinNeedle();
     await walk();
-    const bossNow = bossReady(z) && (Math.random() < 1 / 8 || (S.zones[z].bossDry || 0) >= 20);  // can appear once all are caught
+    const bossNow = bossReady(z) && (S.zones[z].bossDry || 0) >= 5 && (Math.random() < 1 / 15 || (S.zones[z].bossDry || 0) >= 30);  // at least 5 steps after all are caught, then 1 in 15, sure by 30
     if (bossReady(z) && !bossNow) S.zones[z].bossDry = (S.zones[z].bossDry || 0) + 1;
     if (bossNow) {
       S.zones[z].bossDry = 0; autoOff(true);
