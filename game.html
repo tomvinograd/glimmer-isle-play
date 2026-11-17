@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794945731;</script>
+<script>window.GAME_BUILD = 1794945981;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -992,7 +992,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .rname b { display: block; font: 800 14px var(--display); color: var(--brown); } .rname small { font-size: 12px; color: var(--brown-2, #8a6d55); }
 .ltrack { position: relative; padding: 8px 6px 4px 56px; }
 .lwins { position: absolute; left: 0; top: 8px; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; align-content: center; background: linear-gradient(#ffe08a, #f5a623); color: #fff; }
-.lwins b { font: 900 17px/1 var(--display); } .lwins small { font: 800 9.5px var(--display); }
+.lwins b { font: 900 17px/1 var(--display); } .lwins small { font: 800 8.5px/1.05 var(--display); text-align: center; margin-top: 1px; }
 .lline { position: absolute; left: 56px; right: 6px; top: 20px; height: 8px; border-radius: 4px; background: #eadbc5; overflow: hidden; } .lline i { display: block; height: 100%; background: #f5b23c; }
 .lnodes { position: relative; display: flex; justify-content: space-between; }
 .lnode { width: 32px; height: 32px; border: 0; border-radius: 9px; background: #fff; display: grid; place-items: center; position: relative; box-shadow: 0 2px 6px rgba(91,70,54,.2); color: #3e9e57; font: 900 18px var(--display); }
@@ -1899,7 +1899,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const mon = u => S.mons.find(m => m.uid === u);
   const team = () => S.team.map(mon).filter(Boolean);
   const slots = () => 3;
-  const glowCap = () => 60 + S.xlvl * 12, lvlCap = () => 10 + S.xlvl * 2, xNeed = () => 60 + S.xlvl * 40;  /* ECONOMY_SLOWER */
+  const glowCap = () => 60 + S.xlvl * 12, lvlCap = () => 10 + S.xlvl * 2, xNeed = () => 40 + S.xlvl * 20;  // explorer levels twice as fast (Tom 17 Nov)  /* ECONOMY_SLOWER */
   const ZONE_LVL = [0, 3, 5, 7, 9, 12, 15, 18];
   const zoneOpen = i => i === 0 || (zoneAll(i - 1) && !!S.zones[i - 1].cleared) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING: Glumis + Guardian */
   const zoneProg = i => caughtIn(i) + (S.zones[i].cleared ? 1 : 0), zoneTotal = i => ZONES[i].sp.length + 1;  // Glumis + Guardian
@@ -2984,14 +2984,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (arenaSub === "ladder") {
       const L = ladderState(), nextR = DRANKS.find(r => r[0] > L.pts), weekEnd = (weekId() + 1) * 7 * 86400000 + 4 * 86400000;
       const nodes = LADDER_MS.map((need, k) => { const got = k < L.claimed, can = false;
-        return `<button class="lnode${got ? " done" : can ? " claim" : ""}" data-act="ladclaim" ${can ? "" : "disabled"} aria-label="${need} ladder points">${got ? "\u2713" : RW[LADDER_REW[k].k][0]}<small>${need}</small></button>`; }).join("");
+        return `<button class="lnode${got ? " done" : can ? " claim" : ""}" data-act="ladclaim" ${can ? "" : "disabled"} aria-label="${need} week points">${got ? "\u2713" : RW[LADDER_REW[k].k][0]}<small>${need}</small></button>`; }).join("");
       return `${back("hub")}<h3>Ladder</h3><span></span></div>
-        <div class="ltrack"><span class="lwins"><b>${L.lp}</b><small>points</small></span><div class="lline"><i style="width:${ladderFill(L.lp)}%"></i></div><div class="lnodes">${nodes}</div></div>
-        <div class="lstreak${(S.ladStreak || 0) > 1 ? " hot" : ""}"><b>${S.ladStreak || 0}</b><span>${(S.ladStreak || 0) === 1 ? "win" : "wins"} in a row</span><small>Next win: +${streakWin((S.ladStreak || 0) + 1)} points</small></div>
+        <div class="ltrack"><span class="lwins"><b>${L.lp}</b><small>week<br>points</small></span><div class="lline"><i style="width:${ladderFill(L.lp)}%"></i></div><div class="lnodes">${nodes}</div></div>
+        <div class="lstreak${(S.ladStreak || 0) > 1 ? " hot" : ""}"><b>${S.ladStreak || 0}</b><span>${(S.ladStreak || 0) === 1 ? "win" : "wins"} in a row</span><small>Next win: +${streakWin((S.ladStreak || 0) + 1)} week points</small></div>
         <div class="lrank"><span class="drank pic">${tierBadge(ladderTier(L.pts), 54)}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
         <div class="ltiers">${DRANKS.map((r, i) => `<span class="${i < ladderTier(L.pts) ? "past" : i === ladderTier(L.pts) ? "cur" : "next"}">${tierBadge(i, i === ladderTier(L.pts) ? 34 : 26)}<small>${r[1]}</small></span>`).join("")}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
-        <p class="hint" style="margin:0">Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, plus ${STREAK_STEP} for each win in a row before it (up to +${STREAK_STEP * (STREAK_MAX - 1)}); a loss ${LADDER_LOSS} and ends the streak. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but fewer rank points.</p>
+        <p class="hint" style="margin:0">Every match gives week points for this week's rewards: a win ${LADDER_WIN}, plus ${STREAK_STEP} for each win in a row before it (up to +${STREAK_STEP * (STREAK_MAX - 1)}); a loss ${LADDER_LOSS} and ends the streak. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but fewer rank points.</p>
         <button class="mb gold pbig" data-act="laddergo">Match</button>`;
     }
     if (arenaSub === "tower") {
@@ -3008,7 +3008,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const gymsDone = ZONES.filter((_, i) => gymDone(i, 0)).length, R = raceState(), L = ladderState(), place = raceBoard().findIndex(r => r.me) + 1;
     const mode = (k, title, chips, bg) => `<button class="amode" data-act="arenasub:${k}"><span class="aimg ${bg}"><b>${title}</b><span class="achips">${chips}</span></span><span class="ago">${IC.sword}<b>Go</b></span></button>`;
     return `<div class="head"><h2>Arena</h2></div>
-      ${mode("ladder", "Ladder", `<span>${duelRank(L.pts)}</span><span>${L.lp} ladder points this week</span>`, "a-duel")}
+      ${mode("ladder", "Ladder", `<span>${duelRank(L.pts)}</span><span>${L.lp} week points</span>`, "a-duel")}
       ${mode("tower", "Cloud Climb", `<span>Best floor ${S.tower || 0}</span>`, "a-tower")}
       ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}`;
   }
@@ -3100,7 +3100,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const LADDER_MS_OLD = [10, 20, 40, 60, 100, 150];  // wins, before 16 Nov: only to convert a week already started
   const STREAK_STEP = 3, STREAK_MAX = 6;  // win streak: +3 ladder points per win in a row, full bonus from the 6th
   const streakWin = s => LADDER_WIN + STREAK_STEP * (Math.min(s, STREAK_MAX) - 1);  // points for a win that makes a streak of s
-  function ladderPts(n, why) { const L = ladderState(); if (evOn("ladder")) { n *= 2; why = why ? why + ", weekend x2" : "weekend x2"; } L.lp += n; toast(`+${n} ladder points${why ? ` (${why})` : ""}`); ladderClaim(); }
+  function ladderPts(n, why) { const L = ladderState(); if (evOn("ladder")) { n *= 2; why = why ? why + ", weekend x2" : "weekend x2"; } L.lp += n; toast(`+${n} week points${why ? ` (${why})` : ""}`); ladderClaim(); }
   function ladderWinPts() { S.ladStreak = (S.ladStreak || 0) + 1; const s = S.ladStreak; statsState().streak = Math.max(statsState().streak, s); ladderPts(streakWin(s), s > 1 ? `${s} wins in a row` : ""); }
   function ladderLossPts() { const had = S.ladStreak || 0; S.ladStreak = 0; ladderPts(LADDER_LOSS, had > 1 ? `streak of ${had} ended` : ""); }
   function ladderClaim() { const L = ladderState(); while (L.claimed < LADDER_MS.length && L.lp >= LADDER_MS[L.claimed]) { const r = LADDER_REW[L.claimed]; L.claimed++; giveReward(r); sfx("claim"); toast(`Ladder reward: ${r.n} ${RW[r.k][1]}`); } save(); }
