@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794897488;</script>
+<script>window.GAME_BUILD = 1794898163;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1578,8 +1578,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const slots = () => 3;
   const glowCap = () => 80 + S.xlvl * 15, lvlCap = () => 10 + S.xlvl * 2, xNeed = () => 60 + S.xlvl * 40;  /* ECONOMY_SLOWER */
   const ZONE_LVL = [0, 3, 5, 7, 9, 12, 15, 18];
-  const zoneOpen = i => i === 0 || zoneAll(i - 1) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING */
-  const lockText = i => `${ZONES[i].name} opens when you catch every Glumi in ${ZONES[i - 1].name} (${caughtIn(i - 1)} of ${ZONES[i - 1].sp.length} caught)`;
+  const zoneOpen = i => i === 0 || (zoneAll(i - 1) && !!S.zones[i - 1].cleared) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING: Glumis + Guardian */
+  const zoneProg = i => caughtIn(i) + (S.zones[i].cleared ? 1 : 0), zoneTotal = i => ZONES[i].sp.length + 1;  // Glumis + Guardian
+  const lockText = i => `${ZONES[i].name} opens when you catch every Glumi and the Guardian in ${ZONES[i - 1].name} (${zoneProg(i - 1)} of ${zoneTotal(i - 1)} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
   const bossReady = i => !S.zones[i].cleared && zoneAll(i);  // only after every regular Glumi here is caught
   const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500 };  // glow you need to have to use each multiplier (Tom 16 Nov)
@@ -1598,7 +1599,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (!fromWild) return;  // only Glumis caught on the path count in the zone (not bought or hatched ones)
       if (!S.zones[i].caught[m.sp]) { S.reveal = S.reveal || []; if (!S.reveal.includes(m.sp)) S.reveal.push(m.sp); }
       S.zones[i].caught[m.sp] = 1;
-      if (!was && zoneAll(i) && ZONES[i + 1] && !S.zones[i + 1].steps) banners.push(`${ZONES[i + 1].name} open!`); });
+      });
     if (S.team.length < slots()) { S.team.push(m.uid); return "team"; } return "den";
   }
   const banners = [];
@@ -3342,13 +3343,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     }
     const cards = ZONES.map((ZZ, i) => `<button class="zcard${i === z ? " sel" : ""}" data-act="atlaszone:${i}"><span class="zpic" style="--sky:${ZZ.sky[0]};--gr:${ZZ.ground}${ART["bg-" + i] ? `;background:url(${ART["bg-" + i]}) center 55%/cover` : ""}">
       ${i === S.zone ? `<span class="here">${IC.balloon}</span>` : ""}
-      ${zoneOpen(i) ? "" : `<span class="zl">${IC.lock}${caughtIn(i - 1)}/${ZONES[i - 1].sp.length}</span>`}</span><span class="zn">${ZZ.name}<small>${caughtIn(i)} of ${ZZ.sp.length} caught</small></span></button>`).join("");
+      ${zoneOpen(i) ? "" : `<span class="zl">${IC.lock}${zoneProg(i - 1)}/${zoneTotal(i - 1)}</span>`}</span><span class="zn">${ZZ.name}<small>${caughtIn(i)} of ${ZZ.sp.length} caught</small></span></button>`).join("");
     const go = !open ? `<button class="lzgo" disabled aria-label="Locked">${IC.lock}</button>`
       : z === S.zone ? `<button class="lzgo here" disabled>Here</button>` : `<button class="lzgo" data-act="travel:${z}">Go</button>`;
     const newHere = Z.sp.some(sp => waiting(sp));
     return `<div class="lz${g === 4 ? " rbg" : ""}" style="--gc:${GRADES[g].c};${ART["bg-" + z] ? `--zbg:url(${ART["bg-" + z]})` : `--zbg:none;background-color:${Z.ground}`}">
       <div class="lzhead"><div><b>${Z.name}</b><small>Wild Lv ${Z.lv[0]}-${Z.lv[1]} · ${got}/${total} caught</small></div>${ART["map-world"] ? `<button class="round" data-act="atlasworld" style="font-size:15px">World</button>` : ""}</div>
-      ${open ? track + `<p class="lzpity">\u2726 ${rbPityText()}</p>` : `<p class="lzpity">${IC.lock} Catch every Glumi in ${ZONES[z - 1].name} first (${caughtIn(z - 1)} of ${ZONES[z - 1].sp.length})</p>`}
+      ${open ? track + `<p class="lzpity">\u2726 ${rbPityText()}</p>` : `<p class="lzpity">${IC.lock} Catch every Glumi and the Guardian in ${ZONES[z - 1].name} first (${zoneProg(z - 1)} of ${zoneTotal(z - 1)})</p>`}
       ${newHere ? `<p class="revhint lzrev">New Glumi caught! Tap its silhouette</p>` : revealTrip ? `<button class="big2 gold" data-act="revealback">${IC.run}Back to the path<small>Keep exploring ${ZONES[S.zone].name}</small></button>` : ""}
       <div class="lzmap">${ART["bg-" + z] ? "" : `<div class="lzdrawn">${zoneMapSVG(Z)}</div>`}${Z.sp.map((sp, k) => pinH(sp, pos[k])).join("")}${pinH(Z.boss, [50, 48], true)}${info}</div>
       <div class="lzbar"><div class="lzgrade${g === 4 ? " rb" : ""}"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>${go}</div>
