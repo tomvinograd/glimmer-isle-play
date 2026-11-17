@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794901487;</script>
+<script>window.GAME_BUILD = 1794903264;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1225,6 +1225,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .kbuy.ppurple { background: linear-gradient(#b99cff, #8e6fe0); } .kbuy.pgold { background: linear-gradient(#ffd36b, #f0a52a); }
   .kbuy b { font: 800 14px var(--display); } .kbuy small { font-size: 10.5px; opacity: .95; } .kbuy span { display: flex; align-items: center; gap: 3px; font: 800 13px var(--display); }
   .kbuy span svg { width: 15px; height: 15px; } .kbuy:disabled { filter: grayscale(.7); opacity: .7; }
+  .maillist { display: grid; gap: 8px; }
+  .mailrow { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
+  .mailic { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; background: #fff3d6; } .mailic svg, .mailic img { width: 28px !important; height: 28px; }
+  .mailtx { flex: 1; display: grid; gap: 3px; } .mailtx b { font: 800 15px var(--display); color: var(--brown); } .mailtx small { font-size: 12px; color: #8a6d55; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2015,7 +2019,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     homeTick(); const H = homeState(), homeReady = Object.keys(PLACES).some(k => Math.floor(H[k].store) >= 1);
     const found = Object.keys(S.caught).length;
     const ico = (act, icon, label, bang, timer) => `<button class="sico" data-act="${act}" aria-label="${label}"><span class="sic">${icon}</span><span class="sil">${label}</span>${timer ? `<span class="sit">${timer}</span>` : ""}${bang ? '<em class="bang">!</em>' : ""}</button>`;
-    return `<div class="sidecol l">${ico("view:shop", TABI.shop, "Shop")}${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}</div>
+    return `<div class="sidecol l">${ico("view:shop", TABI.shop, "Shop")}${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}${mailWaiting() ? ico("view:mail", IC.gift || IC.star, "Mail", true, "") : ""}</div>
       <div class="sidecol r">${ico("gobook", TABI.book, "Book", false, found ? found + " found" : "")}${ico("map", TABI.atlas, "Atlas")}${(() => { const R = raceState(), over = Date.now() >= R.end; return ico("gorace", IC.flag, "Race #" + (raceBoard().findIndex(r => r.me) + 1), over); })()}</div>`;
   }
   function zoneCard() {  // the zone painting with its name and 3 stars: every Glumi caught, guardian beaten, every reward claimed
@@ -2751,6 +2755,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <button class="mcard wide z${z}" data-act="map"><span><b>Atlas</b><small>${openN} of ${ZONES.length} zones open</small></span></button>
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
+      <button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} letter${mailWaiting() > 1 ? "s" : ""} waiting` : "Gifts from game updates"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
       <div class="mtiles"><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
@@ -2887,6 +2892,23 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   let shopTab = "jars";
   let resetSure = null;
   const resetGain = m => { let leaves = 0; for (let l = 1; l < m.lvl; l++) leaves += 5 + l * 3; let paid = 0; for (let a = 0; a < (m.asc || 0); a++) paid += ASC_COST[a]; const shards = Math.min(paid, m.ascShards || 0); return { leaves, keeps: paid - shards, shards }; };
+  // ================= MAILBOX: update gifts =================
+  const MAIL = [
+    { id: "upd-2026-11-17-moonfruit", title: "Moonfruit gift", text: "New explorers now start with 20 moonfruit. You started before that, so here are yours!", rew: [{ k: "fruit", n: 20 }] },
+  ];
+  function mailSync() {  // put every letter not delivered yet into the inbox
+    if (!S.started) return; S.mail = S.mail || []; S.mailSeen = S.mailSeen || [];
+    for (const L of MAIL) if (!S.mailSeen.includes(L.id)) { S.mailSeen.push(L.id); if (!(L.newOnly && S.mailFresh)) S.mail.push({ id: L.id, t: Date.now() }); }
+  }
+  const mailWaiting = () => (S.mail || []).length;
+  function pageMail() {
+    const items = (S.mail || []).map(x => ({ x, L: MAIL.find(m => m.id === x.id) })).filter(o => o.L);
+    const row = ({ x, L }) => `<div class="mailrow"><span class="mailic">${IC.gift || IC.star}</span><div class="mailtx"><b>${L.title}</b><small>${L.text}</small><span class="rchips">${rchips(L.rew)}</span></div>
+      <button class="mb gold" data-act="mailclaim:${x.id}">Claim</button></div>`;
+    return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Mailbox</h3><span></span></div>
+      ${items.length ? `<div class="maillist">${items.map(row).join("")}</div>${items.length > 1 ? `<button class="mb gold pbig" data-act="mailclaim:all">Claim all</button>` : ""}`
+        : `<p class="hint" style="text-align:center;margin:24px 0">No letters right now. Gifts from game updates arrive here.</p>`}`;
+  }
   const BUY_QS = [1, 5, 10, 50], buyQ = () => BUY_QS.includes(S.buyQ) ? S.buyQ : 1;
   function pageShop() {
     const tabs = [["jars", "Jars"], ["market", "Glumis"], ["requests", "Requests"]];
@@ -2917,10 +2939,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const open = ZONES.map((_, i) => i).filter(zoneOpen), z = open[rnd(0, open.length - 1)], Z = ZONES[z];
     const sp = Z.sp[rnd(0, Z.sp.length - 1)], minQ = 1 + wpick([50, 35, 15]);
     const count = minQ === 1 ? rnd(2, 4) : minQ === 2 ? rnd(2, 3) : rnd(1, 2);  // several of a grade, no level needed
-    const reward = minQ === 1 ? { k: "glow", n: 15 * count } : minQ === 2 ? { k: "fruit", n: count - 1 } : { k: "fruit", n: 2 * count };
+    const reward = minQ === 1 ? { k: "glow", n: 8 * count } : minQ === 2 ? { k: "fruit", n: count - 1 } : { k: "fruit", n: 2 * count };
     if (Math.random() < .4) {  // any kind: just the grade and how many
       const c2 = minQ === 1 ? rnd(6, 10) : minQ === 2 ? rnd(4, 6) : rnd(2, 3);
-      return { sp: -1, minQ, count: c2, got: 0, z, reward: minQ === 1 ? { k: "glow", n: 10 * c2 } : minQ === 2 ? { k: "fruit", n: c2 - 2 } : { k: "fruit", n: 2 * c2 }, readyAt: 0 };
+      return { sp: -1, minQ, count: c2, got: 0, z, reward: minQ === 1 ? { k: "glow", n: 5 * c2 } : minQ === 2 ? { k: "fruit", n: c2 - 2 } : { k: "fruit", n: 2 * c2 }, readyAt: 0 };
     }
     return { sp, minQ, count, got: 0, z, reward, readyAt: 0 };
   }
@@ -3219,7 +3241,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
   // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
-  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", book: "team", release: "team" })[v] || v;
+  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", mail: "menu", book: "team", release: "team" })[v] || v;
   function resetTab(t, keepPrep) {
     if (t === "shop") { shopTab = "jars"; marketFocus = null; reqPick = null; keepsFor = null; }
     if (t === "team") { teamTab = "team"; sheetPage = "main"; sheetTab = "stats"; sheetMulti = false; rel = null; }
@@ -3415,7 +3437,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${view === "shrine" && ART["bg-star"] ? ART["bg-star"] : ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
-    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
@@ -3530,7 +3552,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (["pickslot", "swapto"].includes(a) && swapIn && isAway(swapIn)) { swapIn = null; toast("Away on an expedition"); render(); return; }
     if (S.auto && E && !BT && (TAKE_OVER.has(a) || (a === "view" && arg === "shop"))) { E.manual = true; autoBar(); }
     if (a !== "release" && a !== "sell") confirmRelease = null;
-    if (a === "start") { S = fresh(); S.started = true; keepMon(newMon(n, 5, 1)); save(); render(); initProps(); }
+    if (a === "start") { S = fresh(); S.started = true; S.mailSeen = MAIL.map(m => m.id); keepMon(newMon(n, 5, 1)); save(); render(); initProps(); }
     else if (a === "settings") { settingsPage = arg || null; view = "menu"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); }
     else if (a === "close") { view = "explore"; showMap = false; showAuto = false; sheetUid = null; swapIn = null; settingsPage = null; homePlace = null; homePick = false; render(); window.scrollTo(0, 0); }
     else if (a === "goreq") { if (!E && !BT && !busy) { view = "shop"; shopTab = "requests"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); } }
@@ -3713,6 +3735,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
+    else if (a === "mailclaim") { const ids = arg === "all" ? (S.mail || []).map(x => x.id) : [arg], got = {};
+      for (const id of ids) { const L = MAIL.find(m => m.id === id); if (!L) continue; for (const r of L.rew) { giveReward(r); got[r.k] = (got[r.k] || 0) + r.n; } }
+      S.mail = (S.mail || []).filter(x => !ids.includes(x.id)); sfx("claim"); save(); render(); toast("Got " + Object.entries(got).map(([k, n]) => `${n} ${RW[k] ? RW[k][1] : k}`).join(", ")); }
     else if (a === "buyq") { S.buyQ = n; save(); render(); }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, q = S.jars[arg] !== undefined ? buyQ() : 1, p = prices[arg] * q;
@@ -3726,7 +3751,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const local = migrate(readLocal()); if (local) S = local;
   S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult)) S.mult = 1;
   RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM);
-  S.jars.prism = S.jars.prism || 0; S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
+  S.jars.prism = S.jars.prism || 0; mailSync(); S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
   render(); if (S.started) initProps();
   // swipe left / right on the path to change zone
   (function swipe() {
