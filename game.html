@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794896567;</script>
+<script>window.GAME_BUILD = 1794896781;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1536,7 +1536,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   let autoStat = { caught: 0 }, showAuto = false, autoLock = false, autoSession = false, autoNext = 0, autoSeenE = null;
   const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // at Auto speed x2 (the pace Auto always had)
-  const CATCH_LEAVES = 8;  // leaves per Glumi caught on the path, x multiplier  // leaves per Glumi caught on the path, x multiplier
+  const CATCH_LEAVES = 5;  // leaves per Glumi caught on the path, x multiplier  // leaves per Glumi caught on the path, x multiplier
   const AUTO_GAP_MS = 1500; let autoGapUntil = 0;  // wait after an encounter (at x2)
   const AUTO_SPEEDS = [1, 2, 3], autoSpd = () => AUTO_SPEEDS.includes(S.autoSpd) ? S.autoSpd : 2, autoPace = () => 2 / autoSpd();  // ms x autoPace  // Auto's pace: time between steps, and time to look at what appeared
   let S = fresh(), view = "explore", E = null, BT = null, busy = false, db = null, uid = null, saveTimer = null, saving = false, pendingSave = false, saveNote = "", confirmRelease = null, showMap = false;
@@ -1678,12 +1678,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       // a Glumi about 1 step in 5; after 4 steps without one, the next step brings one
       let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 4) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;  // a Glumi at least every 5 steps
       if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (list.some(w => w.q >= 3)) { busy = false; save(); render(); await banner(GRADES[Math.max(...list.map(w => w.q))].name + "!"); } }
-      else if (r === 1) E = { type: "chest", coins: rnd(4, 9) * M.m, glow: Math.random() < 1 / 12 ? rnd(15, 25) * M.m : 0 };  // coins; a rare glowing chest also gives glow
-      else if (r === 2) { const treat = Math.random() < .3; E = { type: "gather", kind: "bush", treat, n: treat ? 1 : rnd(12, 20) * M.m }; }
+      else if (r === 1) E = { type: "chest", coins: rnd(2, 5) * M.m, glow: Math.random() < 1 / 12 ? rnd(15, 25) * M.m : 0 };  // coins; a rare glowing chest also gives glow
+      else if (r === 2) { const treat = Math.random() < .3; E = { type: "gather", kind: "bush", treat, n: treat ? 1 : rnd(7, 12) * M.m }; }
       else if (r === 3) { autoPause(); const n = rnd(1, Math.min(3, slots() + 1)), foes = []; for (let k = 0; k < n; k++) { const f = newMon(Z.sp[rnd(0, Z.sp.length - 1)], zoneLevel(z), wpick([0, 70, 25, 5, 0])); f.wild = 1; f.hp = maxHp(f); foes.push(f); } E = { type: "rival", name: RIVALS[rnd(0, RIVALS.length - 1)], foes, color: ["#ff8a8a", "#7bd389", "#b48cff", "#ffb627", "#4cc3ff"][rnd(0, 4)] }; }
       else if (r === 4) { autoPause(); E = { type: "luck", stake: 10 * M.m }; }
-      else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(16, 28) * M.m : kind === 1 ? rnd(4, 8) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
-      else { E = { type: "gather", kind: "pouch", n: 2 * M.m }; }  // a little coin pouch on the path
+      else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(10, 16) * M.m : kind === 1 ? rnd(2, 5) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
+      else { E = { type: "gather", kind: "pouch", n: 1 * M.m }; }  // a little coin pouch on the path
     }
     if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
     busy = false; save(); render();
@@ -1943,7 +1943,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       // (older path kept below for reference, never reached)
       BT = null; render(); await banner("Retreat"); if (kind === "rival") E = null; render(); save(); return; }
     const foeEl = document.querySelector("#foeActor .spr"); if (foeEl && !RM) await anim(foeEl, [{ opacity: 1 }, { transform: "translateY(20px) scale(.9)", opacity: .3 }], { duration: 400, fill: "forwards" });
-    const lv = Math.max(...foes.map(f => f.lvl)), coins = (5 + lv * 2) * M.m;
+    const lv = Math.max(...foes.map(f => f.lvl)), coins = (3 + lv) * M.m;
     S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); sfx("win"); save();
     { const ar = $("arena").getBoundingClientRect(); flyIcons(IC.coin, 8, ar.width / 2, ar.height * .45, null); floatText(ar.width / 2, ar.height * .45, "+" + coins + " coins", true); }
     await resultScreen(true, [{ k: "coins", n: coins }], BT.byAuto ? 2000 * autoPace() : 0);
@@ -2433,7 +2433,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   async function quickRival(byAuto) {
     if (!E || E.type !== "rival" || busy || !front()) return;
     busy = true; const foes = E.foes, won = simulate(team(), foes), M = curM(); let rew = [];
-    if (won) { const lv = Math.max(...foes.map(f => f.lvl)), coins = (5 + lv * 2) * M.m; S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); rew = [{ k: "coins", n: coins }]; }
+    if (won) { const lv = Math.max(...foes.map(f => f.lvl)), coins = (3 + lv) * M.m; S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); rew = [{ k: "coins", n: coins }]; }
     E = null; save();
     await resultScreen(won, rew, byAuto ? 2000 * autoPace() : 0);
     busy = false; render(); await flushBanners();
@@ -2941,9 +2941,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   // ================= HOME ISLAND: Glumis work and make resources =================
   const PLACES = {
-    orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 10, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
+    orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 6, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
     spring: { name: "Energy Spring", res: "glow", unit: "energy", base: 1, els: ["Water", "Spirit"], about: "Collects energy for walking" },
-    mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 8, els: ["Fire", "Electric"], about: "Digs up coins" },
+    mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 5, els: ["Fire", "Electric"], about: "Digs up coins" },
     candy: { name: "Candy Maker", res: "treats", unit: "treats", base: .5, els: ["Fire", "Spirit"], about: "Cooks treats that calm wild Glumis" },
   };
   const HOME_CAP_HOURS = 8, HOME_SLOTS = () => S.xlvl >= 8 ? 3 : 2;
