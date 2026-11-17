@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794916769;</script>
+<script>window.GAME_BUILD = 1794916875;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1252,6 +1252,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .qjrow button { flex: 1; border: 0; border-radius: 9px; padding: 4px 0 2px; background: #fff; display: grid; justify-items: center; box-shadow: 0 1px 4px rgba(91,70,54,.18); }
   .qjrow button.on { box-shadow: 0 0 0 3px #f5b23c; background: #fff8e6; }
   .qjrow button svg, .qjrow button img { width: 24px !important; height: 24px; } .qjrow button i { font: 800 10px var(--display); font-style: normal; color: #8a6d55; }
+  body.quicking #fx > *, body.quicking .fly, body.quicking .starburst, body.quicking .float { visibility: hidden !important; }
+  body.quicking #wildActor .spr, body.quicking #wildActor .spr * { animation: none !important; }
+  .qbusy { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 30; display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 20px; background: rgba(255,250,240,.95); color: var(--brown); font: 800 15px var(--display); box-shadow: 0 4px 14px rgba(40,25,10,.3); }
+  .qbusy svg { width: 18px; height: 18px; animation: qspin .5s linear infinite; } @keyframes qspin { to { transform: rotate(360deg); } }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1682,9 +1686,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ================= FX =================
   const fxRoot = () => BT ? $("arena") : $("stage"), fxLayer = () => BT ? $("afx") : $("fx");
   function stageXY(el) { const s = fxRoot().getBoundingClientRect(), r = el.getBoundingClientRect(); return [r.left + r.width / 2 - s.left, r.top + r.height / 2 - s.top]; }
-  function floatText(x, y, txt, big) { const d = document.createElement("div"); d.className = "dmg" + (big ? " big" : ""); d.textContent = txt; d.style.left = x + "px"; d.style.top = y + "px"; fxLayer().appendChild(d); d.animate([{ transform: "translate(-50%,-50%) scale(.6)", opacity: 1 }, { transform: "translate(-50%,-120%) scale(1.1)", opacity: 1, offset: .3 }, { transform: "translate(-50%,-260%) scale(1)", opacity: 0 }], { duration: RM ? 300 : 900, easing: "ease-out" }).onfinish = () => d.remove(); }
+  function floatText(x, y, txt, big) { if (typeof quickNow !== "undefined" && quickNow) return; const d = document.createElement("div"); d.className = "dmg" + (big ? " big" : ""); d.textContent = txt; d.style.left = x + "px"; d.style.top = y + "px"; fxLayer().appendChild(d); d.animate([{ transform: "translate(-50%,-50%) scale(.6)", opacity: 1 }, { transform: "translate(-50%,-120%) scale(1.1)", opacity: 1, offset: .3 }, { transform: "translate(-50%,-260%) scale(1)", opacity: 0 }], { duration: RM ? 300 : 900, easing: "ease-out" }).onfinish = () => d.remove(); }
   async function banner(txt, ms = 1100) { const d = document.createElement("div"); d.className = "banner"; d.textContent = txt; fxRoot().appendChild(d); d.animate([{ transform: "translate(-50%,-50%) scale(2.4)", opacity: 0 }, { transform: "translate(-50%,-50%) scale(1)", opacity: 1, offset: .25 }, { opacity: 1, offset: .8 }, { transform: "translate(-50%,-70%) scale(1)", opacity: 0 }], { duration: RM ? 400 : ms, easing: "ease-out" }); await wait(ms); d.remove(); }
-  function flyIcons(icon, n, fromX, fromY, toEl) {
+  function flyIcons(icon, n, fromX, fromY, toEl) { if (typeof quickNow !== "undefined" && quickNow) return;
     const st = fxRoot().getBoundingClientRect(); let tx = st.width / 2, ty = -30;
     if (toEl) { const r = toEl.getBoundingClientRect(); tx = r.left + r.width / 2 - st.left; ty = r.top + r.height / 2 - st.top; }
     for (let i = 0; i < Math.min(n, 8); i++) {
@@ -1791,11 +1795,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const wantQuick = () => !!S.quickCatch;  // one switch for your taps and for Auto
   async function quickWrap(fn, autoThrow) {  // throw until the end, then show one result card
     const was = RM, enc = E, list0 = E && E.list, n0 = S.mons.length, j0 = JSON.stringify(S.jars), wild0 = E && E.list ? E.list.length : 0, jarSum = () => Object.values(S.jars).reduce((a, b) => a + b, 0);
-    RM = true; quickNow = true; let tries = 0;
+    RM = true; quickNow = true; let tries = 0; document.body.classList.add("quicking"); const qb = document.createElement("div"); qb.className = "qbusy"; qb.innerHTML = `${IC.fast}<span>Throwing…</span>`; $("stage").appendChild(qb); const tStart = performance.now();
     try { for (let i = 0; i < 80; i++) { const before = jarSum();
       if (!autoThrow && fn === throwJar && E && E.type === "wild") { const w = E.list[E.i], j = quickJar(w.q); if (!S.jars[j]) { toast(`Quick catch: out of ${j} jars (used for ${GRADES[w.q].name})`); break; } E.jar = j; }
       await fn(autoThrow); tries += before - jarSum(); if (!E || E !== enc || E.list !== list0 || !E.list.length || jarSum() >= before || busy) break; } }
     finally { RM = was; quickNow = false; }
+    const rest = 550 - (performance.now() - tStart); if (rest > 0) await new Promise(r => setTimeout(r, rest));
+    qb.remove(); document.body.classList.remove("quicking"); render();
     const caught = S.mons.slice(n0), left = E === enc && E && E.list === list0 ? E.list.length : 0, fled = Math.max(0, wild0 - caught.length - left);
     if (tries) await quickResult(caught, fled, tries, left, autoThrow);
   }
