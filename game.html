@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794915496;</script>
+<script>window.GAME_BUILD = 1794916610;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1787,7 +1787,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       + `<div class="popbtns"><button class="mb gold" data-act="closepop">Done</button></div></div>`;
     document.body.appendChild(d);
   }
-  const wantQuick = autoThrow => autoThrow ? (S.autoCfg && S.autoCfg.speed === "quick") : !!S.quickCatch;
+  const wantQuick = () => !!S.quickCatch;  // one switch for your taps and for Auto
   async function quickWrap(fn, autoThrow) {  // throw until the end, then show one result card
     const was = RM, enc = E, list0 = E && E.list, n0 = S.mons.length, j0 = JSON.stringify(S.jars), wild0 = E && E.list ? E.list.length : 0, jarSum = () => Object.values(S.jars).reduce((a, b) => a + b, 0);
     RM = true; quickNow = true; let tries = 0;
@@ -3766,11 +3766,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       toast(`Thank you! +${r.reward.n} ${r.reward.k === "fruit" ? "moonfruit" : "energy"}`); }
     else if (a === "autopick") { autoPick = arg || null; render(); window.scrollTo(0, 0); }
     else if (a === "autocfg") { showAuto = !showAuto; autoPick = null; render(); window.scrollTo(0, 0); }
-    else if (a === "cfg") { const [k, v] = arg.split("="); S.autoCfg[k] = v === "true" ? true : v === "false" ? false : /^\d+$/.test(v) ? +v : v; autoPick = null; save(); render(); }
+    else if (a === "cfg") { const [k, v] = arg.split("="); S.autoCfg[k] = v === "true" ? true : v === "false" ? false : /^\d+$/.test(v) ? +v : v; if (k === "speed") S.quickCatch = v === "quick"; autoPick = null; save(); render(); }
     else if (a === "chest") openChest();
     else if (a === "jar") { E.jar = arg; render(); }
     else if (a === "qjset") { const [q, j] = arg.split("-"); S.quickJars = { ...QJ_DEF, ...(S.quickJars || {}), [q]: j }; save(); quickJarPanel(); }
-    else if (a === "quickcatch") { S.quickCatch = !S.quickCatch; save(); renderActions(); toast(S.quickCatch ? "Quick catch on: one tap throws until it is caught or runs away" : "Quick catch off"); }
+    else if (a === "quickcatch") { S.quickCatch = !S.quickCatch; S.autoCfg.speed = S.quickCatch ? "quick" : "normal"; save(); renderActions(); toast(S.quickCatch ? "Quick catch on (you and Auto): throws until caught or it runs away" : "Quick catch off"); }
     else if (a === "throw") { if (E && E.type === "wild" && E.list.length > 1) throwGroup(); else throwJar(); }
     else if (a === "gather") gatherNode();
     else if (a === "treat") { if (S.treats && !E.treat) { S.treats--; E.treat = true; const spr = document.querySelector("#wildActor .spr"); if (spr) { const [x, y] = stageXY(spr); floatText(x, y - 70, "Yum!"); } save(); setTimeout(render, 500); } }
@@ -3832,7 +3832,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const local = migrate(readLocal()); if (local) S = local;
   S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult)) S.mult = 1;
   RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM);
-  S.jars.prism = S.jars.prism || 0; mailSync(); S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
+  S.jars.prism = S.jars.prism || 0; if (S.autoCfg && S.autoCfg.speed === "quick") S.quickCatch = true; if (S.autoCfg) S.autoCfg.speed = S.quickCatch ? "quick" : "normal"; mailSync(); S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
   render(); if (S.started) initProps();
   // swipe left / right on the path to change zone
   (function swipe() {
