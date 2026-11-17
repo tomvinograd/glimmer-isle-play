@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794920269;</script>
+<script>window.GAME_BUILD = 1794936914;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -820,6 +820,11 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .stgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .sttile { padding: 10px 12px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); color: var(--brown); }
 .sttile b { display: block; font: 900 20px var(--display); } .sttile small { font: 800 12px var(--display); color: #8a6d55; }
 .evchip { display: inline-flex; align-items: center; gap: 4px; margin: 4px auto 0; padding: 3px 10px; border: 0; border-radius: 7px; background: linear-gradient(90deg, #ffd36b, #ff9a5c); color: #fff; font: 900 12px var(--display); box-shadow: 0 2px 6px rgba(91,70,54,.2); } .evchip svg { width: 14px; height: 14px; }
+#hintbox { position: fixed; z-index: 60; left: 50%; top: 118px; transform: translateX(-50%); width: min(320px, calc(100vw - 32px)); padding: 12px 14px; border-radius: 12px; background: #fffaf0; color: var(--brown); box-shadow: 0 6px 20px rgba(60,40,20,.28); display: grid; gap: 8px; justify-items: end; animation: hintin .35s ease-out; }
+#hintbox p { margin: 0; justify-self: stretch; font: 700 14px/1.35 var(--body, inherit); } #hintbox .mb { padding: 5px 14px; }
+@keyframes hintin { from { opacity: 0; transform: translate(-50%, -8px); } }
+.gnick { margin-left: 6px; padding: 2px 4px; border: 0; border-radius: 5px; background: rgba(255,255,255,.7); color: #8a6d55; vertical-align: 2px; }
+.gsb.fav.on { color: #ff5d8f; } .favtag { position: absolute; top: 3px; left: 5px; color: #ff5d8f; font: 900 15px/1 var(--display); text-shadow: 0 1px 0 #fff; }
 .prew { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
@@ -2239,6 +2244,30 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   // ================= SOUND: small sounds made by the game itself =================
   let actx = null;
+  // background music: a soft arpeggio made on the fly (no files); faster during fights
+  let mus = null;
+  const MUS_CHORDS = [[60, 64, 67, 72], [57, 60, 64, 69], [53, 57, 60, 65], [55, 59, 62, 67]], midiHz = n => 440 * Math.pow(2, (n - 69) / 12);
+  function musNote(f, t, d, type, v) { const o = actx.createOscillator(), e = actx.createGain(); o.type = type; o.frequency.value = f; e.gain.setValueAtTime(0, t); e.gain.linearRampToValueAtTime(v, t + .03); e.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(e); e.connect(mus.g); o.start(t); o.stop(t + d + .05); }
+  function musTick() {
+    if (!mus) return; const eighth = 60 / (BT ? 112 : 78) / 2;
+    while (mus.next < actx.currentTime + .6) {
+      const bar = Math.floor(mus.i / 8) % 4, ch = MUS_CHORDS[bar], pos = mus.i % 8, t = mus.next;
+      musNote(midiHz(ch[[0, 1, 2, 3, 2, 1, 2, 1][pos]]), t, eighth * 1.6, "triangle", .35);
+      if (pos === 0) musNote(midiHz(ch[0] - 12), t, eighth * 7.5, "sine", .6);
+      if ((pos === 0 || pos === 4) && Math.random() < .45) musNote(midiHz(ch[1 + Math.floor(Math.random() * 3)] + 12), t, eighth * 3, "sine", .18);
+      mus.next += eighth; mus.i++;
+    }
+  }
+  function startMusic() {
+    if (mus || !S.started || (S.opt && S.opt.music === false) || document.hidden) return;
+    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch { return; }
+    const g = actx.createGain(); g.gain.setValueAtTime(0, actx.currentTime); g.gain.linearRampToValueAtTime(.05, actx.currentTime + 2.5); g.connect(actx.destination);
+    mus = { g, next: actx.currentTime + .15, i: 0, timer: setInterval(musTick, 200) };
+  }
+  function stopMusic() { if (!mus) return; const m = mus; mus = null; clearInterval(m.timer);
+    try { m.g.gain.cancelScheduledValues(actx.currentTime); m.g.gain.setValueAtTime(m.g.gain.value, actx.currentTime); m.g.gain.linearRampToValueAtTime(0, actx.currentTime + .4); setTimeout(() => m.g.disconnect(), 700); } catch {} }
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stopMusic(); else startMusic(); });
+  document.addEventListener("pointerdown", () => startMusic(), { passive: true });  // sound may only start after a tap
   function sfx(kind) {
     if (S.opt && S.opt.sound === false) return;
     try {
@@ -2838,7 +2867,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const SHARD = ART["ui-star-shard"] ? artIcon("ui-star-shard") : '<svg viewBox="0 0 24 24"><path d="M12 1.8 14.6 9.4 22.2 12 14.6 14.6 12 22.2 9.4 14.6 1.8 12 9.4 9.4z" fill="#b48cff" stroke="#7a52d6" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 6.5 13.2 10.8 17.5 12" fill="none" stroke="#f1e8ff" stroke-width="1.3" stroke-linecap="round"/></svg>';
   const SHRINE_DEALS = [{ q: 3, n: 3, label: "5 Gold Glumis or better" }, { q: 2, n: 1, label: "5 Purple Glumis or better" }];
   let shrinePick = [], shrineSort = "grade", shrineUp = true, shrineSure = false;
-  const shrineFree = m => !S.team.includes(m.uid) && !m.lock && !(typeof workingAt === "function" && workingAt(m.uid)) && !(typeof isAway === "function" && isAway(m.uid));
+  const shrineFree = m => !S.team.includes(m.uid) && !(m.lock || m.fav) && !(typeof workingAt === "function" && workingAt(m.uid)) && !(typeof isAway === "function" && isAway(m.uid));
   function shrineGain(list) {
     const keeps = {}; let cores = 0, shards = 0;
     for (const m of list) { keeps[m.sp] = (keeps[m.sp] || 0) + KEEPSAKES_BY_GRADE[m.q]; if (m.q === 4) cores += RAINBOW_STAR_CORES; }
@@ -3083,11 +3112,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${art(m.sp, m.evo, 78)}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
   }
   function monTile(m) {
-    return `<button class="tile q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${art(m.sp, m.evo, 66)}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
+    return `<button class="tile q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${m.fav ? '<span class="favtag">\u2665</span>' : ""}${art(m.sp, m.evo, 66)}<span class="nm">${m.nick || fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
   }
   function pageTeam() {
     const inTeam = m => S.team.includes(m.uid) ? 1 : 0;
-    const sorted = [...S.mons].sort((x, y) => inTeam(y) - inTeam(x) || y.q - x.q || y.lvl - x.lvl);
+    const sorted = [...S.mons].sort((x, y) => inTeam(y) - inTeam(x) || (y.fav ? 1 : 0) - (x.fav ? 1 : 0) || y.q - x.q || y.lvl - x.lvl);
     const pick = swapIn ? mon(swapIn) : null;
     return `<div class="head"><h2>My team</h2><span class="pill">${IC.leaf}${S.leaves}</span><span class="pill">${IC.fruit}${S.fruit}</span></div>
       ${pick ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a spot for <b>${fname(pick.sp, pick.evo)}</b></span><button class="mb" data-act="cancelswap">Cancel</button></div>`
@@ -3162,12 +3191,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
              ${bigBtn}
              <button class="gx${multi ? " on" : ""}" data-act="sheetmulti" aria-label="Level up as many times as you can" ${lvlN > 1 && !(atAsc && ascOf(m) < MAX_ASC) ? "" : "disabled"}>\u2303\u2303</button></div>`;
       body = `<div class="gcard q${m.q}" style="--gc:${GRADES[m.q].c}">
-          <span class="gpow">${power}</span><b class="gname">${fname(m.sp, m.evo)}</b>${where ? `<span class="gwhere">${where}</span>` : ""}
+          <span class="gpow">${power}</span><b class="gname">${m.nick || fname(m.sp, m.evo)}<button class="gnick" data-act="nickopen:${m.uid}" aria-label="Rename"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button></b>${where ? `<span class="gwhere">${where}</span>` : ""}
           <span class="gtags"><span class="gel" style="background:${EL[s.el].color}">${EL[s.el].name}</span>${gChip(m.q)}</span>
           <div class="gart">${art(m.sp, m.evo, 210)}</div>
           <span class="gstars">${Array.from({ length: MAX_STARS }, (_, k) => `<i class="${k < (m.stars || 0) ? "on" : ""}">\u2605</i>`).join("")}</span>
           <span class="glv"><small>Lv.</small>${m.lvl}</span>
           <div class="gside">
+            <button class="gsb fav${m.fav ? " on" : ""}" data-act="favmon:${m.uid}" aria-label="${m.fav ? "Not a favorite" : "Favorite"}"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 20.5 4.6 13.4a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9a4.6 4.6 0 0 1 6.5 6.5z" fill="${m.fav ? "#ff5d8f" : "none"}" stroke="${m.fav ? "#ff5d8f" : "currentColor"}" stroke-width="2.4" stroke-linejoin="round"/></svg></button>
             <button class="gsb${m.lock ? " on" : ""}" data-act="lockmon:${m.uid}" aria-label="${m.lock ? "Unlock" : "Lock"}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5" fill="currentColor" stroke="none"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
             ${!inTeam ? `<button class="gsb" data-act="addteam:${m.uid}" aria-label="Add to team">+</button>` : !lead ? `<button class="gsb" data-act="lead:${m.uid}" aria-label="Make leader">${IC.star}</button>` : ""}
             ${inTeam && S.team.length > 1 ? `<button class="gsb" data-act="den:${m.uid}" aria-label="Remove from team">\u2212</button>` : ""}
@@ -3266,7 +3296,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (!Array.isArray(S.requests)) S.requests = [];
     for (let i = 0; i < REQUEST_SLOTS; i++) { const r = S.requests[i]; if (!r || (r.done && Date.now() >= r.readyAt)) S.requests[i] = newRequest(); }
   }
-  const reqMatches = r => S.mons.filter(m => (r.sp < 0 || m.sp === r.sp) && m.q >= r.minQ && !S.team.includes(m.uid) && !m.lock);
+  const reqMatches = r => S.mons.filter(m => (r.sp < 0 || m.sp === r.sp) && m.q >= r.minQ && !S.team.includes(m.uid) && !(m.lock || m.fav));
   const reqName = r => r.sp < 0 ? "Any Glumi" : SP[r.sp].name, reqArt = (r, size) => r.sp < 0 ? `<span style="width:${size}px;display:inline-grid">${TABI.team}</span>` : art(r.sp, 0, size);
   const reqLeft = r => (r.count || 1) - (r.got || 0);
   const reqWant = r => `${r.count || 1} ${r.minQ > 1 ? GRADES[r.minQ].name + " or better" : "of any grade"}${r.got ? ` · ${r.got} given` : ""}`;
@@ -3393,11 +3423,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const sw = (k, on, label, about) => `<button class="swrow" data-act="opt:${k}" role="switch" aria-checked="${on}"><span><b>${label}</b><small>${about}</small></span><i class="sw${on ? " on" : ""}"><em></em></i></button>`;
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">‹ Back</button><h3>Settings</h3><span></span></div>
       <h3 class="grouph">Sound and motion</h3>
-      <div class="slist">${sw("sound", S.opt.sound !== false, "Sound effects", "Little sounds for steps, catches and rewards")}${sw("calm", !!S.opt.calm, "Calm animations", "Fewer moving effects")}</div>
+      <div class="slist">${sw("sound", S.opt.sound !== false, "Sound effects", "Little sounds for steps, catches and rewards")}${sw("music", S.opt.music !== false, "Music", "Soft background music")}${sw("calm", !!S.opt.calm, "Calm animations", "Fewer moving effects")}</div>
       ${appBridge() ? `<h3 class="grouph">Updates</h3><div class="slist"><div class="srow"><span class="ic">${IC.balloon}</span><span class="txt"><b>Updates</b><small id="updStatus">${appStatus()}</small>${(() => { try { const g = appBridge(); return g && g.copy ? `<small class="copyline">${g.copy()}</small>` : ""; } catch { return ""; } })()}</span>
         <span class="row" style="gap:6px"><button class="price" data-act="updcheck">Check now</button>${/^New version ready/.test(appStatus()) ? `<button class="price" data-act="updrestart">Restart</button>` : ""}</span></div></div>` : ""}
       <h3 class="grouph">Game</h3>
-      <div class="slist"><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
+      <div class="slist"><button class="setrow" data-act="hintsreset"><span>Show tips again</span><b></b><i>›</i></button><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
       <p class="saved">${saveNote || "Saved on this device"}<br>${versionText()}</p>`;
   }
   const appBridge = () => { try { return window.GlimmerApp && typeof window.GlimmerApp.status === "function" ? window.GlimmerApp : null; } catch { return null; } };
@@ -3543,7 +3573,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   // ================= RELEASE SEVERAL =================
   let rel = null;  // { sp, keep: uid not to offer, sel: [uids], sort, up, sure, back }
-  const relFree = (x, R) => x.sp === R.sp && x.uid !== R.keep && !S.team.includes(x.uid) && !x.lock && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid));
+  const relFree = (x, R) => x.sp === R.sp && x.uid !== R.keep && !S.team.includes(x.uid) && !(x.lock || x.fav) && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid));
   function openRelease(sp, keep, missing, pre) {
     rel = { sp, keep, sel: [], sort: "grade", up: true, sure: false, back: sheetUid };
     const pool = S.mons.filter(x => relFree(x, rel)).sort((a, b) => a.q - b.q || a.lvl - b.lvl);
@@ -3588,7 +3618,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   function keepsakePopup(m, missing) {
     closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2];
-    const dupN = S.mons.filter(x => x.uid !== m.uid && x.sp === m.sp && !S.team.includes(x.uid) && !x.lock && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid))).length;
+    const dupN = S.mons.filter(x => x.uid !== m.uid && x.sp === m.sp && !S.team.includes(x.uid) && !(x.lock || x.fav) && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid))).length;
     const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<button class="popbg" data-act="closepop" aria-label="Close"></button><div class="popup" role="dialog">${art(m.sp, 0, 70)}
       <h3>Not enough keepsakes</h3><p>${fname(m.sp, m.evo)} needs ${missing} more ${name} keepsake${missing > 1 ? "s" : ""} to ascend.
@@ -3753,7 +3783,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const picker = BT.pick > 0 ? `<div class="picker"><p>Choose your next Glumi</p><div class="prow">${t.filter(m => m.hp > 0).map(m => `<button class="pk" data-act="pickmon:${m.uid}">${art(m.sp, m.evo, 56)}${bar(m.hp, maxHp(m))}</button>`).join("")}</div><b id="pickT">${Math.ceil(BT.pick)}</b></div>` : "";
     $("aview").innerHTML = `${picker}${autoChip()}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(t, true)}</div></div><div class="aside r"><span class="aname">${BT.name || "Trainer"}</span><div class="tdots">${dots(BT.foes, false)}</div></div></div>
       <div class="afield">${arenaSVG()}
-        <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div class="stx" id="meSt">${stChips(BT.me)}</div></div>
+        <div class="hpcard me"><div class="nm"><span>${me.nick || fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div class="stx" id="meSt">${stChips(BT.me)}</div></div>
         <div class="hpcard foe${foe.boss ? " boss" : ""}"><div class="nm"><span>${foe.boss ? `<em class="btag">BOSS${foe.rage ? " II" : ""}</em>` : ""}${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div class="bchg" id="foeChg" ${BT.foe.chg > 0 ? "" : "hidden"}>Charging! Use Shield</div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(BT.foe.e)}</div><div class="stx" id="foeSt">${stChips(BT.foe)}</div></div>
         <div class="trainer foe${BT.enter ? " enter" : ""}">${trainerSVG(BT.color || "#ff8a8a", false)}</div>
         <div class="actor" id="foeActor" style="left:66%;top:68%"><div class="shieldfx" id="foeShield" hidden></div><div class="spr pop">${art(foe.sp, foe.evo, 130)}</div><div class="shadow"></div></div>
@@ -3766,7 +3796,26 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <div class="arow">${capb(`<button class="round${BT.auto ? " on" : ""}" data-act="autoskill" aria-label="Auto skills">${IC.auto}</button>`, "Auto")}${capb(`<button class="round${BT.speed > 1 ? " on" : ""}" data-act="speed" aria-label="Speed">${IC.fast}</button>`, "Speed")}${capb(`<button class="round" data-act="retreat" aria-label="Give up">${IC.flag}</button>`, "Give up")}</div>
       </div>`;
   }
+  const HINTS = [
+    ["walk", () => view === "explore" && !E && statsState().steps < 3, "Tap the compass to walk. Each step costs energy (top left) and finds Glumis, chests and trainers."],
+    ["catch", () => view === "explore" && E && E.type === "wild", "A wild Glumi! Tap Throw to catch it with a jar. Better jars catch rarer Glumis."],
+    ["team", () => view === "explore" && !E && S.mons.length >= 2, "You caught a Glumi! Open Glumis at the bottom to see your team and level them up with leaves."],
+    ["mult", () => view === "explore" && !E && S.mons.length >= 4 && S.glow >= 5, "The x1 button above the compass picks a multiplier: more energy a step, rarer Glumis, bigger rewards."],
+    ["auto", () => view === "explore" && !E && statsState().steps >= 15, "Hold the compass to turn on Auto: it walks and catches for you. Rules sets how."],
+    ["home", () => view === "explore" && !E && S.xlvl >= 2 && S.mons.length >= 4, "Home (bottom right) is your island. Put spare Glumis to work there for leaves, energy and coins."],
+    ["arena", () => view === "explore" && !E && S.xlvl >= 3, "The Arena has gyms, the Ladder and Cloud Climb. Win fights for coins, eggs and charms."],
+  ];
+  function maybeHint() {
+    let box = $("hintbox"); const H = S.hints || (S.hints = {});
+    const h = S.started && !BT && !document.querySelector(".popwrap") && !$("splash") && !showMap && !showAuto ? HINTS.find(x => !H[x[0]] && x[1]()) : null;
+    if (!h) { if (box) box.remove(); return; }
+    if (box && box.dataset.id === h[0]) return;
+    if (!box) { box = document.createElement("div"); box.id = "hintbox"; document.body.appendChild(box); }
+    box.dataset.id = h[0]; box.innerHTML = `<p>${h[2]}</p><button class="mb gold" data-act="hintok:${h[0]}">Got it</button>`;
+  }
+  setInterval(() => { try { maybeHint(); } catch {} }, 1500);  // also after the splash and between renders
   function render() {
+    setTimeout(maybeHint, 0);
     renderTabs();
     setTimeout(() => { sheetShown = document.querySelector('.sheet') ? sheetUid : null; }, 0);
     $("arena").hidden = !BT; if (BT) renderArena();
@@ -3887,7 +3936,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
     const [a, arg] = b.dataset.act.split(":"); const n = arg !== undefined ? +arg : null;
     if (["addteam", "join", "hire", "give", "release", "sell"].includes(a) && isAway(n)) { toast("Away on an expedition"); return; }
-    if (["release", "sell", "give"].includes(a) && mon(n) && mon(n).lock) { toast("It's locked: unlock it on its card first"); return; }
+    if (["release", "sell", "give"].includes(a) && mon(n) && (mon(n).lock || mon(n).fav)) { toast(mon(n).fav ? "It's a favorite: tap the heart on its card first" : "It's locked: unlock it on its card first"); return; }
     if (["pickslot", "swapto"].includes(a) && swapIn && isAway(swapIn)) { swapIn = null; toast("Away on an expedition"); render(); return; }
     if (S.auto && E && !BT && (TAKE_OVER.has(a) || (a === "view" && arg === "shop"))) { E.manual = true; autoBar(); }
     if (a !== "release" && a !== "sell") confirmRelease = null;
@@ -3942,13 +3991,23 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "sheettab") { sheetTab = arg; render(); }
     else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
     else if (a === "sheetnav") { const L = teamOrder(), i = L.findIndex(x => x.uid === sheetUid); if (L.length) { sheetUid = L[(i + n + L.length) % L.length].uid; sheetPage = "main"; render(); } }
-    else if (a === "lockmon") { const m = mon(n); if (m) { m.lock = !m.lock; save(); toast(m.lock ? "Locked: it can't be sold or released" : "Unlocked"); render(); } }
+    else if (a === "lockmon") { const m = mon(n); if (m) { m.lock = !(m.lock || m.fav); save(); toast(m.lock ? "Locked: it can't be sold or released" : "Unlocked"); render(); } }
     else if (a === "lvlmax") { const m = mon(n); if (m) { const k = levelsAffordable(m); if (k) { S.leaves -= levelsCost(m, k); m.lvl += k; m.hp = maxHp(m); for (let j = 0; j < k; j++) track("lvl"); sfx("up"); save(); toast(`+${k} levels`); render(); } } }
     else if (a === "taskstab") { tasksTab = arg; render(); }
     else if (a === "giftclaim") { if (!giftReady()) return; const L = loginState(), r = LOGIN_REW[L.n % 7]; giveReward(r); L.last = today(); L.n = (L.n + 1) % 7; sfx("claim"); save(); closePopup(); toast(`Daily gift: ${r.n} ${RW[r.k][1]}`); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "giftclose" || a === "awayclose") { closePopup(); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "awaycollect") { homeTick(); let got = []; for (const k in PLACES) { const n2 = collectPlace(k); if (n2) got.push(`${n2} ${PLACES[k].unit}`); } save(); closePopup(); if (got.length) toast("Collected " + got.join(", ")); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "giftopen") giftPopup();
+    else if (a === "hintok") { S.hints = S.hints || {}; S.hints[arg] = 1; save(); maybeHint(); }
+    else if (a === "hintsreset") { S.hints = {}; save(); toast("Tips will show again as you play"); render(); }
+    else if (a === "nickopen") { const m = mon(n); if (!m) return; closePopup(); const d = document.createElement("div"); d.className = "popwrap";
+      d.innerHTML = `<div class="popbg"></div><div class="popup" role="dialog">${art(m.sp, m.evo, 70)}<h3>Give it a name</h3><div class="coderow"><input id="nickIn" maxlength="14" autocomplete="off" value="${(m.nick || "").replace(/"/g, "&quot;")}" placeholder="${fname(m.sp, m.evo)}"><button class="mb gold" data-act="nicksave:${m.uid}">Save</button></div>
+        <div class="popbtns">${m.nick ? `<button class="mb" data-act="nickclear:${m.uid}">Use its kind's name</button>` : ""}<button class="mb" data-act="nickcancel">Cancel</button></div></div>`;
+      document.body.appendChild(d); setTimeout(() => { const i = $("nickIn"); if (i) i.focus(); }, 50); }
+    else if (a === "nicksave") { const m = mon(n), v = (($("nickIn") || {}).value || "").replace(/[<>&"]/g, "").trim().slice(0, 14); if (m) { m.nick = v || undefined; save(); closePopup(); render(); toast(v ? `Named ${v}` : "Name cleared"); } }
+    else if (a === "nickclear") { const m = mon(n); if (m) { delete m.nick; save(); closePopup(); render(); } }
+    else if (a === "nickcancel") closePopup();
+    else if (a === "favmon") { const m = mon(n); if (m) { m.fav = !m.fav; save(); toast(m.fav ? "Favorite: it can't be sold, released or given away" : "No longer a favorite"); render(); } }
     else if (a === "eventinfo") { const ev = eventNow(); if (ev) toast(`${ev.name}: ${ev.about}. Ends in ${mmss(ev.end - Date.now())}`); }
     else if (a === "taskclaim") { const [tab, id] = b.dataset.act.split(":").slice(1), t = TASKS[tab].find(x => x.id === id); if (t && taskReady(tab, t)) { tasksState().done[tab + ":" + id] = 1; giveReward(t.r); sfx("claim"); save(); toast(`Got ${t.r.n} ${RW[t.r.k][1]}`); render(); } }
     else if (a === "bagtab") { bagTab = arg; bagPick = null; render(); }
@@ -3961,7 +4020,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "charmmerge") { const [k, r] = arg.split("-"), G = charmGroups().find(g => g.k === k && g.r === +r); if (G && G.free.length >= 3 && +r < 2) {
         const gone = G.free.slice(0, 3).map(c => c.id); S.charms = S.charms.filter(c => !gone.includes(c.id)); const nc = addCharm(k, +r + 1); save(); sfx("claim"); toast(`Made a ${CHARM_R[nc.r]} ${CHARM[k].n}!`); render(); } }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
-    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound") S.opt.sound = S.opt.sound === false; else S.opt[arg] = !S.opt[arg]; RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
+    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music") S.opt[arg] = S.opt[arg] === false; else S.opt[arg] = !S.opt[arg]; if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
@@ -4119,6 +4178,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult)) S.mult = 1;
   RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM);
   S.jars.prism = S.jars.prism || 0; if (S.autoCfg && S.autoCfg.speed === "quick") S.quickCatch = true; if (S.autoCfg) S.autoCfg.speed = S.quickCatch ? "quick" : "normal"; mailSync(); S.auto = false; const awayInfo = { ms: Date.now() - (S.t || Date.now()), glow: -S.glow }; regen(); awayInfo.glow += S.glow; if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
+  if (S.started && !S.hints && ((S.tasks && S.tasks.total && S.tasks.total.catch) || 0) >= 5) S.hints = Object.fromEntries(HINTS.map(h => [h[0], 1]));
   render(); if (S.started) initProps();
   if (S.started) { statsState(); const welcome = () => { if (document.getElementById("splash")) return void setTimeout(welcome, 400);
       const gift = () => { if (giftReady()) giftPopup(); }; if (awayInfo.ms >= 20 * 60000) awayPopup(awayInfo, gift); else gift(); }; setTimeout(welcome, 600); }
