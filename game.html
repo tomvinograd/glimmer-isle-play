@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794918699;</script>
+<script>window.GAME_BUILD = 1794919179;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -779,6 +779,18 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .pmon { display: grid; justify-items: center; gap: 2px; width: 70px; padding: 4px 0; border-radius: 8px; background: rgba(255,255,255,.75); }
 .pmon .lv { display: flex; align-items: center; gap: 3px; font: 800 11.5px var(--display); color: var(--brown); } .pmon .el { width: 8px; height: 8px; }
 .pvs { justify-self: center; font: 900 22px var(--display); color: #e8483b; margin: -4px 0; }
+.pgrow { flex: 1; display: grid; grid-template-columns: 1fr auto; align-items: center; } .pgrow .ppow, .pgrow .pmons { grid-column: 1 / -1; } .pbest { padding: 5px 10px; font-size: 13px; }
+.ppow { display: block; font: 800 12px var(--display); color: #8a6d55; margin: 1px 0 4px; }
+.pmon { position: relative; } .pel { display: block; font: 800 10px var(--display); text-align: center; }
+.pedge { position: absolute; top: 0; right: 0; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 900 10px/1 var(--display); font-style: normal; color: #fff; }
+.pedge.up { background: #3fb36a; } .pedge.dn { background: #e5604d; }
+.podds { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(91,70,54,.12); }
+.podds span { font: 800 12px var(--display); color: #8a6d55; } .podds b { font: 900 17px var(--display); text-align: right; }
+.pobar { grid-column: 1 / -1; height: 8px; border-radius: 4px; background: #f1e6d6; overflow: hidden; } .pobar i { display: block; height: 100%; border-radius: 4px; }
+.podds.o4 b { color: #2f9e5a; } .podds.o4 i { background: #3fb36a; } .podds.o3 b { color: #5a9e2f; } .podds.o3 i { background: #8cc63f; }
+.podds.o2 b { color: #c08a12; } .podds.o2 i { background: #f2b42c; } .podds.o1 b { color: #d0602f; } .podds.o1 i { background: #f08a4b; } .podds.o0 b { color: #c43c3c; } .podds.o0 i { background: #e5484d; }
+.rwhy { max-width: 300px; margin: 6px auto 0; padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,.92); color: var(--brown); text-align: left; }
+.rwhy b { display: block; font: 900 15px var(--display); margin-bottom: 4px; } .rwhy p { margin: 4px 0 0; font: 700 13px/1.35 var(--body, inherit); }
 .prew { display: flex; align-items: center; gap: 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
@@ -1985,10 +1997,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (const [sd2, mm] of [[BT.me, me], [BT.foe, foe]]) { const st = sd2.st || (sd2.st = {}); for (const k in st) st[k] = Math.max(0, st[k] - dt);
       if (st.burn > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .04 * dt); if (st.poison > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .03 * dt); if (st.regen > 0) mm.hp = Math.min(maxHp(mm), mm.hp + maxHp(mm) * .04 * dt); }
     BT.me.t += stOn(BT.me, "stun") ? 0 : dt; BT.foe.t += stOn(BT.foe, "stun") ? 0 : dt; BT.me.e = Math.min(100, BT.me.e + E_RATE * dt); BT.foe.e = Math.min(100, BT.foe.e + E_RATE * dt);  // steady: 1 point a second
-    if (BT.me.t >= interval(me)) { BT.me.t -= interval(me); BT.fx.push({ who: "me", dmg: hit(me, foe, interval(me) * .9, BT.me, BT.foe, true) }); }
+    if (BT.me.t >= interval(me)) { BT.me.t -= interval(me); const em = mult(SP[me.sp].el, SP[foe.sp].el); BT.fx.push({ who: "me", eff: em, dmg: hit(me, foe, interval(me) * .9 * em, BT.me, BT.foe, true) }); }
     if (BT.auto) skillAI(true);
     if (foe.hp > 0) {
-      if (BT.foe.t >= interval(foe)) { BT.foe.t -= interval(foe); BT.fx.push({ who: "foe", dmg: hit(foe, me, interval(foe) * .9, BT.foe, BT.me, true) }); }
+      if (BT.foe.t >= interval(foe)) { BT.foe.t -= interval(foe); const ef = mult(SP[foe.sp].el, SP[me.sp].el); BT.fx.push({ who: "foe", eff: ef, dmg: hit(foe, me, interval(foe) * .9 * ef, BT.foe, BT.me, true) }); }
       if (Math.random() < .25 * BT.speed) skillAI(false);
     }
     playFx();
@@ -2014,14 +2026,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         orb.className = "fly"; orb.style.width = orb.style.height = "44px"; orb.style.margin = "-22px 0 0 -22px"; orb.style.borderRadius = "50%"; orb.style.background = `radial-gradient(circle, #fff, ${el} 60%, transparent 70%)`; orb.style.left = ax + "px"; orb.style.top = ay + "px"; fxLayer().appendChild(orb);
         orb.animate([{ transform: "translate(0,0) scale(.5)" }, { transform: `translate(${tx - ax}px,${ty - ay}px) scale(2.2)`, opacity: .2 }], { duration: RM ? 80 : 420, easing: "ease-in" }).onfinish = () => orb.remove();
         setTimeout(() => floatText(tx, ty - 50, f.dmg + (f.eff > 1 ? "!" : ""), true), RM ? 0 : 380);
-      } else floatText(tx + rnd(-14, 14), ty - 40, f.dmg);
+      } else floatText(tx + rnd(-14, 14), ty - 40, f.dmg + (f.eff > 1 ? "!" : ""), f.eff > 1);
     }
   }
   async function endBattle(won) {
     clearInterval(tickId); BT.over = true; const M = curM(), kind = BT.kind, foes = BT.foes;
     for (const m of team()) m.hp = maxHp(m);
     if (BT.mode) return finishArena(won);
-    if (!won) { await resultScreen(false, [], BT.byAuto ? 2000 * autoPace() : 0); BT = null; E = null; render(); save(); return;
+    if (!won) { await resultScreen(false, [], BT.byAuto ? 2000 * autoPace() : 0, lossTips(team(), foes)); BT = null; E = null; render(); save(); return;
       // (older path kept below for reference, never reached)
       BT = null; render(); await banner("Retreat"); if (kind === "rival") E = null; render(); save(); return; }
     const foeEl = document.querySelector("#foeActor .spr"); if (foeEl && !RM) await anim(foeEl, [{ opacity: 1 }, { transform: "translateY(20px) scale(.9)", opacity: .3 }], { duration: 400, fill: "forwards" });
@@ -2340,10 +2352,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const d = document.createElement("div"); d.className = "skillban" + (mine ? "" : " foe"); d.style.setProperty("--c", color); d.innerHTML = `<span>${name}</span>`;
     $("arena").appendChild(d); setTimeout(() => d.remove(), RM ? 500 : 1100);
   }
-  function resultScreen(won, rewards, autoMs) {
+  function resultScreen(won, rewards, autoMs, tips) {
     return new Promise(res => {
       const d = document.createElement("div"); d.className = "result " + (won ? "win" : "lose");
-      d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${RW[r.k][0]}<b>+${r.n}</b></span>`).join("")}</div>` : won ? "" : `<p class="rtip">Level up your team and try again</p>`}<p class="rtap">Tap to close</p>`;
+      const why = !won && tips && tips.length ? `<div class="rwhy"><b>Why you lost</b>${tips.map(t => `<p>${t}</p>`).join("")}</div>` : "";
+      d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${RW[r.k][0]}<b>+${r.n}</b></span>`).join("")}</div>` : won ? "" : why || `<p class="rtip">Level up your team and try again</p>`}<p class="rtap">Tap to close</p>`;
+      if (why && autoMs) autoMs = Math.max(autoMs, 4500);
       document.body.appendChild(d); sfx(won ? "win" : "tap");
       let done = false; const close = () => { if (done) return; done = true; d.remove(); res(); };
       setTimeout(() => d.addEventListener("click", close), 350); if (autoMs) setTimeout(close, autoMs);
@@ -2403,20 +2417,52 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return Array.from({ length: n }, () => foeMon(pickOf(Z.sp), 2 + f * 2, f < 5 ? 1 : f < 12 ? 1 + wpick([60, 40]) : 1 + wpick([30, 50, 20])));
   }
   // quick battle: the same fight worked out without showing it
-  function simulate(mine, foes) {
-    const A = mine.map(m => ({ m, hp: maxHp(m), t: 0 })), B = foes.map(m => ({ m, hp: maxHp(m), t: 0 })), ea = { e: 0 }, eb = { e: 0 };
+  function simulate(mine, foes, detail) {  // detail: { won, margin (-1..1: share of HP left on the winning side), top (foe that dealt most), topShare }
+    const A = mine.map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), B = foes.map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), ea = { e: 0 }, eb = { e: 0 };
     let i = 0, j = 0;
-    const hitS = (x, y, p, sx, sy, basic) => { y.hp -= Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m))));  };
+    const hitS = (x, y, p, sx, sy, basic) => { const d = Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m)))); y.hp -= d; x.d += d; };
+    const em = (x, y) => mult(SP[x.m.sp].el, SP[y.m.sp].el);
     const simSkill = (x, y, sx, sy) => { const X = skillOf(x.m, "x"), Sk = skillOf(x.m, "s"), use = sk => { sx.e -= sk.cost * 10; if (sk.power) hitS(x, y, sk.power * (sk.fx && sk.fx.length ? 1.25 : 1) * mult(sk.el, SP[y.m.sp].el), sx, sy, false); if (sk.heal) x.hp = Math.min(maxHp(x.m), x.hp + maxHp(x.m) * sk.heal); };
       if (Sk.heal && x.hp < maxHp(x.m) * .45 && sx.e >= Sk.cost * 10) use(Sk); else if (sx.e >= X.cost * 10) use(X); else if (!Sk.heal && sx.e >= 90 && sx.e >= Sk.cost * 10) use(Sk); };
     for (let t = 0; t < 900 && i < A.length && j < B.length; t += .1) {
       const a = A[i], b = B[j]; a.t += .1; b.t += .1; ea.e = Math.min(100, ea.e + E_RATE * .1); eb.e = Math.min(100, eb.e + E_RATE * .1);
-      if (a.t >= interval(a.m)) { a.t -= interval(a.m); hitS(a, b, interval(a.m) * .9, ea, eb, true); }
+      if (a.t >= interval(a.m)) { a.t -= interval(a.m); hitS(a, b, interval(a.m) * .9 * em(a, b), ea, eb, true); }
       simSkill(a, b, ea, eb);
-      if (b.hp > 0) { if (b.t >= interval(b.m)) { b.t -= interval(b.m); hitS(b, a, interval(b.m) * .9, eb, ea, true); } simSkill(b, a, eb, ea); }
+      if (b.hp > 0) { if (b.t >= interval(b.m)) { b.t -= interval(b.m); hitS(b, a, interval(b.m) * .9 * em(b, a), eb, ea, true); } simSkill(b, a, eb, ea); }
       if (b.hp <= 0) { j++; eb.e = 0; } if (a.hp <= 0) i++;
     }
-    return j >= B.length;
+    const won = j >= B.length; if (!detail) return won;
+    const left = X => X.reduce((s, x) => s + Math.max(0, x.hp), 0) / Math.max(1, X.reduce((s, x) => s + maxHp(x.m), 0));
+    const top = B.slice().sort((p, q) => q.d - p.d)[0], all = B.reduce((s, x) => s + x.d, 0);
+    return { won, margin: won ? left(A) : -left(B), top: top && top.m, topShare: all ? top.d / all : 0 };
+  }
+  const monPower = m => Math.round(atk(m) * 2 + def(m) * 1.5 + maxHp(m) / 2);
+  const teamPower = list => list.reduce((s, m) => s + monPower(m), 0);
+  const ODDS = [[.45, "Easy win", "o4"], [.18, "Likely win", "o3"], [0, "Close fight", "o2"], [-.3, "Likely loss", "o1"], [-2, "Very hard", "o0"]];
+  function fightOdds(mine, foes) { if (!mine.length) return null; const r = simulate(mine, foes, true); const o = ODDS.find(x => r.margin > x[0] || (x[0] === 0 && r.won)) || ODDS[4]; return { ...r, label: o[1], cls: o[2], fill: Math.round(Math.max(4, Math.min(100, 50 + r.margin * 50))) }; }
+  // 2: best team against these foes: the 6 best candidates by power x element matchup, every 3 of them in every order, scored by the quick-battle forecast
+  function bestTeam(foes) {
+    const els = foes.map(f => SP[f.sp].el), avg = (el, f) => els.reduce((s, e) => s + f(el, e), 0) / els.length;
+    const cand = S.mons.filter(m => !(typeof isAway === "function" && isAway(m.uid)))
+      .map(m => ({ m, s: monPower(m) * avg(SP[m.sp].el, mult) / Math.sqrt(avg(SP[m.sp].el, (a, e) => mult(e, a))) })).sort((a, b) => b.s - a.s).slice(0, 6).map(x => x.m);
+    const n = Math.min(slots(), cand.length); let best = null;
+    const perms = a => a.length <= 1 ? [a] : a.flatMap((x, k) => perms(a.filter((_, q) => q !== k)).map(p => [x, ...p]));
+    const combos = (a, k, st = 0, cur = []) => cur.length === k ? [cur] : a.slice(st).flatMap((x, q) => combos(a, k, st + q + 1, [...cur, x]));
+    for (const c of combos(cand, n)) for (const p of perms(c)) { const r = simulate(p, foes, true), sc = r.margin * 1e6 + teamPower(p) / 1e3; if (!best || sc > best.sc) best = { p, sc, r }; }
+    return best;
+  }
+  // 7: short reasons after a lost fight
+  function lossTips(mine, foes) {
+    if (!mine.length || !foes.length) return [];
+    const tips = [], r = simulate(mine, foes, true), pm = teamPower(mine), pf = teamPower(foes);
+    if (pf > pm * 1.15) tips.push(`Their team is ${Math.round((pf / pm - 1) * 100)}% stronger (power ${pf.toLocaleString("en")} vs ${pm.toLocaleString("en")}). Level up or ascend your team.`);
+    if (r.top && r.topShare > .45) tips.push(`Their ${GRADES[r.top.q].name} ${fname(r.top.sp, r.top.evo)} (${EL[SP[r.top.sp].el].name}) did ${Math.round(r.topShare * 100)}% of the damage.`);
+    const fe = foes.map(f => SP[f.sp].el), common = fe.sort((a, b) => fe.filter(x => x === b).length - fe.filter(x => x === a).length)[0], counter = weakTo(common);
+    const weak = mine.filter(m => fe.some(e => mult(e, SP[m.sp].el) > 1)).length;
+    if (weak) tips.push(`${weak === mine.length ? "All" : weak} of your team ${weak === 1 ? "is" : "are"} weak against their elements.`);
+    if (!mine.some(m => SP[m.sp].el === counter)) tips.push(`Try a ${EL[counter].name} Glumi: strong against ${EL[common].name}.`);
+    if (tips.length < 3) { const b = bestTeam(foes); if (b && b.r.margin > r.margin + .05 && b.p.some((m, k) => m !== mine[k])) tips.push(`"Best team" on the battle page finds a better team for this fight.`); }
+    return tips.slice(0, 3);
   }
   let arenaSub = "hub", gymZ = 0, gymD = 0, prep = null;
   function openPrep(p) { prep = p; arenaSub = "prep"; render(); window.scrollTo(0, 0); }
@@ -2435,24 +2481,28 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const P = BT.prep; let given = [];
     if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); }
     if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); }
-    save(); await resultScreen(won, given, 0);
+    save(); await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes));
     BT = null; prep = null; arenaSub = P.back; render(); save();
   }
   async function startPrep(quick) {
     const P = prep; if (!P || !team().length) return;
     if (P.mode === "duel") duelState().left--;
-    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
+    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes)); prep = null; arenaSub = P.back; render(); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
   }
   const rchips = rs => rs.map(r => `<span class="rchip">${RW[r.k][0]}${r.n}</span>`).join("");
   function pageArena() {
     const back = to => `<div class="sheethead"><button class="mb" data-act="arenasub:${to}" aria-label="Back">‹ Back</button>`;
     if (arenaSub === "prep" && prep) {
-      const P = prep, mine = team(), mon2 = (m, mine) => `<div class="pmon">${art(m.sp, m.evo, 58)}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span>${gChip(m.q)}</div>`;
+      const P = prep, mine = team(), od = fightOdds(mine, P.foes);
+      const edge = (m, others, mineSide) => { const e = SP[m.sp].el, up = others.some(o => mult(e, SP[o.sp].el) > 1), down = others.some(o => mult(SP[o.sp].el, e) > 1);
+        return up && !down ? `<em class="pedge up" title="Strong here">\u25B2</em>` : down && !up ? `<em class="pedge dn" title="Weak here">\u25BC</em>` : ""; };
+      const mon2 = (m, mineSide) => `<div class="pmon">${art(m.sp, m.evo, 58)}${mineSide ? edge(m, P.foes) : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span><span class="pel" style="color:${EL[SP[m.sp].el].color}">${EL[SP[m.sp].el].name}</span>${gChip(m.q)}</div>`;
       return `${back(P.back)}<h3>${P.title}</h3><span></span></div>
-        <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
+        <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><small class="ppow">Power ${teamPower(P.foes).toLocaleString("en")}</small><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
           <div class="pvs">VS</div>
-          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div><b>Your team</b><div class="pmons">${mine.map(m => mon2(m, true)).join("")}</div></div></div></div>
+          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}</small><div class="pmons">${mine.map(m => mon2(m, true)).join("")}</div></div></div></div>
+        ${od ? `<div class="podds ${od.cls}"><span>Forecast</span><b>${od.label}</b><div class="pobar"><i style="width:${od.fill}%"></i></div></div>` : ""}
         ${P.rewards.length ? `<div class="prew"><span>Reward</span>${rchips(P.rewards)}</div>` : `<p class="hint" style="margin:0">Already beaten: no reward this time.</p>`}
         <div class="pbtns"><button class="mb" data-act="view:team">Change team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick battle</button>` : ""}</div>`;
     }
@@ -2532,7 +2582,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     busy = true; const foes = E.foes, won = simulate(team(), foes), M = curM(); let rew = [];
     if (won) { const lv = Math.max(...foes.map(f => f.lvl)), coins = (6 + lv) * M.m; S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); rew = [{ k: "coins", n: coins }]; }
     E = null; save();
-    await resultScreen(won, rew, byAuto ? 2000 * autoPace() : 0);
+    await resultScreen(won, rew, byAuto ? 2000 * autoPace() : 0, won ? null : lossTips(team(), foes));
     busy = false; render(); await flushBanners();
   }
   // the lucky lantern: bet glow or coins, get 1x to 2x back (in the same kind)
@@ -3668,6 +3718,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
     else if (a === "rivalquick") quickRival(false);
+    else if (a === "bestteam" && prep) { const b = bestTeam(prep.foes), cur = fightOdds(team(), prep.foes);
+      if (!b) toast("No Glumis to pick from");
+      else if (cur && b.r.margin <= cur.margin + .001 && b.p.length === team().length) toast("Your team is already the best one for this fight");
+      else { S.team = b.p.map(m => m.uid); save(); sfx("claim"); toast(`Best team: ${b.p.map(m => fname(m.sp, m.evo)).join(", ")}`); render(); } }
     else if (a === "relopen") { const m = mon(n); if (m) openRelease(m.sp, null, 0, m.uid); }
     else if (a === "relpick") { if (rel) { rel.sure = false; const i = rel.sel.indexOf(n); if (i > -1) rel.sel.splice(i, 1); else rel.sel.push(n); render(); } }
     else if (a === "relgrade") { if (rel) { rel.sure = false; const all = S.mons.filter(x => relFree(x, rel) && x.q === n).map(x => x.uid), on = all.every(u => rel.sel.includes(u));
