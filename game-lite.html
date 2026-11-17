@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794900253;</script>
+<script>window.GAME_BUILD = 1794901391;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1528,7 +1528,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ================= STATE + SAVING =================
   const LS = "glimmerIsleSave";
   const freshZones = () => ZONES.map(() => ({ caught: {}, steps: 0, cleared: false }));
-  const fresh = () => ({ v: 2, t: 0, started: false, coins: 60, glow: 60, glowT: Date.now(), jars: { plain: 8, bright: 1, star: 0, prism: 0 }, treats: 2, leaves: 10, fruit: 0, requests: [], starCores: {}, keepsakes: {}, mons: [], team: [], eggs: [], seen: {}, caught: {}, zone: 0, zones: freshZones(), xlvl: 1, xxp: 0, mult: 1, pity: 0, nextUid: 1, wins: 0, autoCfg: { catch: true, low: "plain", mid: "bright", high: "star", treat: 3, only: "all", rivals: "fight", lantern: "glow" } });
+  const fresh = () => ({ v: 2, t: 0, started: false, coins: 60, glow: 60, glowT: Date.now(), jars: { plain: 8, bright: 1, star: 0, prism: 0 }, treats: 2, leaves: 10, fruit: 20, requests: [], starCores: {}, keepsakes: {}, mons: [], team: [], eggs: [], seen: {}, caught: {}, zone: 0, zones: freshZones(), xlvl: 1, xxp: 0, mult: 1, pity: 0, nextUid: 1, wins: 0, autoCfg: { catch: true, low: "plain", mid: "bright", high: "star", treat: 3, only: "all", rivals: "fight", lantern: "glow" } });
   function migrate(o) {
     if (!o) return null;
     if (o.v === 2) { const s = Object.assign(fresh(), o); s.zones = ZONES.map((_, i) => Object.assign({ caught: {}, steps: 0, cleared: false }, (o.zones || [])[i])); s.mons.forEach(m => { if (m.asc === undefined) m.asc = ascOf(m); if (m.q === 0) m.q = 1; }); /* NO_GREEN */ if (s.eggs && s.eggs.length) { s.coins += 90 * s.eggs.length; s.eggs = []; } /* EGGS_REMOVED */ return s; }
@@ -2915,16 +2915,18 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   let reqPick = null, confirmGive = null;
   function newRequest() {
     const open = ZONES.map((_, i) => i).filter(zoneOpen), z = open[rnd(0, open.length - 1)], Z = ZONES[z];
-    const sp = Z.sp[rnd(0, Z.sp.length - 1)], minQ = 1 + wpick([65, 25, 10]), minLvl = Math.min(10, Math.max(1, rnd(Z.lv[0], Z.lv[1]) - 2));
-    const fruit = minQ >= 2 || Math.random() < .3;
-    return { sp, minQ, minLvl, z, reward: fruit ? { k: "fruit", n: 1 } : { k: "glow", n: 20 + minQ * 15 + Math.floor(minLvl / 2) * 2 }, readyAt: 0 };
+    const sp = Z.sp[rnd(0, Z.sp.length - 1)], minQ = 1 + wpick([50, 35, 15]);
+    const count = minQ === 1 ? rnd(2, 4) : minQ === 2 ? rnd(2, 3) : rnd(1, 2);  // several of a grade, no level needed
+    const reward = minQ === 1 ? { k: "glow", n: 15 * count } : minQ === 2 ? { k: "fruit", n: count - 1 } : { k: "fruit", n: 2 * count };
+    return { sp, minQ, count, got: 0, z, reward, readyAt: 0 };
   }
   function fillRequests() {
     if (!Array.isArray(S.requests)) S.requests = [];
     for (let i = 0; i < REQUEST_SLOTS; i++) { const r = S.requests[i]; if (!r || (r.done && Date.now() >= r.readyAt)) S.requests[i] = newRequest(); }
   }
-  const reqMatches = r => S.mons.filter(m => m.sp === r.sp && m.q >= r.minQ && m.lvl >= r.minLvl && !S.team.includes(m.uid));
-  const reqWant = r => [r.minQ > 1 ? `${GRADES[r.minQ].name} or better` : "Any grade", r.minLvl > 1 ? `level ${r.minLvl}+` : "any level"].join(" · ");
+  const reqMatches = r => S.mons.filter(m => m.sp === r.sp && m.q >= r.minQ && !S.team.includes(m.uid));
+  const reqLeft = r => (r.count || 1) - (r.got || 0);
+  const reqWant = r => `${r.count || 1} ${r.minQ > 1 ? GRADES[r.minQ].name + " or better" : "of any grade"}${r.got ? ` · ${r.got} given` : ""}`;
   const reqReward = r => r.reward.k === "fruit" ? `${IC.fruit}<b>${r.reward.n}</b>` : `${IC.glow}<b>${r.reward.n}</b>`;
   const islander = say => ART["tr-islander"] ? `<div class="islander"><img src="${ART["tr-islander"]}" alt=""><p>${say}</p></div>` : `<p class="hint" style="margin:0">${say}</p>`;
   function pageRequests(tabs) {
@@ -2935,7 +2937,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (r && !r.done) {
       const got = reqMatches(r);
       return `${head}<div class="sheethead"><button class="mb" data-act="reqpick:" aria-label="Back">‹ Back</button><h3>Request</h3><span></span></div>
-        ${islander(`I wish for a ${SP[r.sp].name}! Will you give me one?`)}
+        ${islander(`I wish for ${reqLeft(r) > 1 ? `${reqLeft(r)} more ${SP[r.sp].name}s` : `a ${SP[r.sp].name}`}${r.minQ > 1 ? ` (${GRADES[r.minQ].name} or better)` : ""}! Will you help?`)}
         <div class="minihero"><div class="hero" style="--gc:${GRADES[r.minQ].c}">${art(r.sp, 0, 74)}</div><div><div class="nmrow">${SP[r.sp].name}</div>
           <small class="reqtxt">Wanted: ${reqWant(r)}</small><span class="reward">Reward ${reqReward(r)}</span></div></div>
         ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Glumis in your team are not shown.</p>
@@ -3651,8 +3653,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "reqpick") { reqPick = arg === "" ? null : +arg; confirmGive = null; render(); window.scrollTo(0, 0); }
     else if (a === "give") { const r = reqPick !== null ? S.requests[reqPick] : null, m = mon(n); if (!r || r.done || !m || !reqMatches(r).includes(m)) return;
       if (confirmGive !== n) { confirmGive = n; render(); return; }
-      S.mons = S.mons.filter(x => x.uid !== n); if (r.reward.k === "fruit") S.fruit += r.reward.n; else S.glow += r.reward.n;
-      r.done = true; r.readyAt = Date.now() + REQUEST_WAIT_MIN * 60000; reqPick = null; confirmGive = null; save(); render();
+      S.mons = S.mons.filter(x => x.uid !== n); r.got = (r.got || 0) + 1; confirmGive = null;
+      if (reqLeft(r) > 0) { save(); render(); toast(`Thank you! ${reqLeft(r)} more to go`); return; }
+      if (r.reward.k === "fruit") S.fruit += r.reward.n; else S.glow += r.reward.n;
+      r.done = true; r.readyAt = Date.now() + REQUEST_WAIT_MIN * 60000; reqPick = null; save(); render();
       toast(`Thank you! +${r.reward.n} ${r.reward.k === "fruit" ? "moonfruit" : "energy"}`); }
     else if (a === "autopick") { autoPick = arg || null; render(); window.scrollTo(0, 0); }
     else if (a === "autocfg") { showAuto = !showAuto; autoPick = null; render(); window.scrollTo(0, 0); }
