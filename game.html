@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794914320;</script>
+<script>window.GAME_BUILD = 1794914487;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1313,10 +1313,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     { name: "Mushroom Grove", lv: [30, 36], sp: [26, 27, 28], boss: 33, sky: ["#c9b8e8", "#f1ecfa"], far: "#7d6aa8", ground: "#8fbf7a", path: "#d8c49a", props: ["mushroom", "fern", "mushroom", "bush"] },
     { name: "Cloud Steppes", lv: [36, 42], sp: [29, 30, 31], boss: 34, sky: ["#bfe0ff", "#f4f9ff"], far: "#d9e7f7", ground: "#c9e3c0", path: "#f4f1e6", props: ["cloud", "flower", "cloud", "rock"] }
   ];
-  const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 83, 12, 5, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 79, 16, 5, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 77, 18, 5, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 75, 20, 5, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 73, 22, 5, 0], count: 10 }];  // Gold 1 in 20 from x5
+  const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 83, 12, 5, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 79, 16, 5, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 77, 18, 5, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 75, 20, 5, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 73, 22, 5, 0], count: 10 }, { m: 200, lvl: 18, grades: [0, 72, 23, 5, 0], count: 10 }, { m: 500, lvl: 22, grades: [0, 71, 24, 5, 0], count: 10 }];  // Gold 1 in 20 from x5
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }, { k: "prism", base: 1, price: 5000, c: "prism" }];  // prism: always catches
   const GLOW_EVERY = 180000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, EVOLVE_FRUIT = 10, RB_PITY = 400, RB_PITY_MULT = 10;  // a Rainbow for sure after 400 catches made at x10 or higher
-  const RAINBOW_ODDS = [Infinity, Infinity, Infinity, 250, 250, 250, 250];  // Rainbow 1 in 250 from x10, none below  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
+  const RAINBOW_ODDS = [Infinity, Infinity, Infinity, 250, 250, 250, 250, 250, 250];  // Rainbow 1 in 250 from x10, none below  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 1, MAX_STARS = 5, STAR_BONUS = .1;
   const FLEE_AFTER = [5, 6, 8, 10, 14];  // missed jars before a wild Glumi runs away, by grade Green..Rainbow
   const ASC_EVERY = 10, MAX_ASC = 9, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20, 26, 33, 40, 50];  // top level 100  // ascension: top level, +30% stats each, keepsakes needed
@@ -1594,7 +1594,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const lockText = i => `${ZONES[i].name} opens when you catch every Glumi and the Guardian in ${ZONES[i - 1].name} (${zoneProg(i - 1)} of ${zoneTotal(i - 1)} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
   const bossReady = i => !S.zones[i].cleared && zoneAll(i);  // only after every regular Glumi here is caught
-  const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500 };  // glow you need to have to use each multiplier (Tom 16 Nov)
+  const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500, 200: 1500, 500: 3000 };  // glow you need to have to use each multiplier (Tom 16 Nov)
   const multNeed = M => MULT_NEED[M.m] ?? M.m, multOpen = M => S.glow >= multNeed(M);
   const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return multOpen(want) ? want : [...MULTS].reverse().find(x => x.m <= want.m && multOpen(x)) || MULTS[0]; };
   function glowNextText() { if (S.glow >= glowCap()) return "Full"; const left = Math.max(1, Math.ceil((GLOW_EVERY - (Date.now() - S.glowT)) / 1000)); return `+1 in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
