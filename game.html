@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794898232;</script>
+<script>window.GAME_BUILD = 1794898470;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1687,12 +1687,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       // a Glumi about 1 step in 5; after 4 steps without one, the next step brings one
       let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 4) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;  // a Glumi at least every 5 steps
       if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (list.some(w => w.q >= 3)) { busy = false; save(); render(); await banner(GRADES[Math.max(...list.map(w => w.q))].name + "!"); } }
-      else if (r === 1) E = { type: "chest", coins: rnd(2, 5) * M.m, glow: Math.random() < 1 / 12 ? rnd(15, 25) * M.m : 0 };  // coins; a rare glowing chest also gives glow
+      else if (r === 1) E = { type: "chest", coins: rnd(3, 7) * M.m, glow: Math.random() < 1 / 12 ? rnd(15, 25) * M.m : 0 };  // coins; a rare glowing chest also gives glow
       else if (r === 2) { const treat = Math.random() < .3; E = { type: "gather", kind: "bush", treat, n: treat ? 1 : rnd(7, 12) * M.m }; }
       else if (r === 3) { autoPause(); const n = rnd(1, Math.min(3, slots() + 1)), foes = []; for (let k = 0; k < n; k++) { const f = newMon(Z.sp[rnd(0, Z.sp.length - 1)], zoneLevel(z), wpick([0, 70, 25, 5, 0])); f.wild = 1; f.hp = maxHp(f); foes.push(f); } E = { type: "rival", name: RIVALS[rnd(0, RIVALS.length - 1)], foes, color: ["#ff8a8a", "#7bd389", "#b48cff", "#ffb627", "#4cc3ff"][rnd(0, 4)] }; }
       else if (r === 4) { autoPause(); E = { type: "luck", stake: 10 * M.m }; }
-      else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(10, 16) * M.m : kind === 1 ? rnd(2, 5) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
-      else { E = { type: "gather", kind: "pouch", n: 1 * M.m }; }  // a little coin pouch on the path
+      else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(10, 16) * M.m : kind === 1 ? rnd(3, 7) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
+      else { E = { type: "gather", kind: "pouch", n: 2 * M.m }; }  // a little coin pouch on the path
     }
     if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
     busy = false; save(); render();
@@ -1952,7 +1952,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       // (older path kept below for reference, never reached)
       BT = null; render(); await banner("Retreat"); if (kind === "rival") E = null; render(); save(); return; }
     const foeEl = document.querySelector("#foeActor .spr"); if (foeEl && !RM) await anim(foeEl, [{ opacity: 1 }, { transform: "translateY(20px) scale(.9)", opacity: .3 }], { duration: 400, fill: "forwards" });
-    const lv = Math.max(...foes.map(f => f.lvl)), coins = (3 + lv) * M.m;
+    const lv = Math.max(...foes.map(f => f.lvl)), coins = (4 + lv) * M.m;
     S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); sfx("win"); save();
     { const ar = $("arena").getBoundingClientRect(); flyIcons(IC.coin, 8, ar.width / 2, ar.height * .45, null); floatText(ar.width / 2, ar.height * .45, "+" + coins + " coins", true); }
     await resultScreen(true, [{ k: "coins", n: coins }], BT.byAuto ? 2000 * autoPace() : 0);
@@ -2273,7 +2273,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const Z = ZONES[z], lead = i === 2, lvl = Z.lv[1] + 1 + i * 2 + d * 10, q = Math.min(3, d + 1 + (lead ? 1 : 0) - (d === 0 && !lead ? 0 : 0));
     const n = i + 1, foes = Array.from({ length: n }, (_, k) => foeMon(Z.sp[(z + i + k) % Z.sp.length], lvl - (n - 1 - k), Math.min(3, Math.max(1, q - (k < n - 1 ? 1 : 0)))));
     if (lead) foes[foes.length - 1] = foeMon(Z.boss, lvl + 1, Math.min(3, q));
-    const reward = i === 0 ? { k: "coins", n: 18 * (z + 1) * (d + 1) } : i === 1 ? { k: "bright", n: d + 1 } : { k: "star", n: d + 1 };
+    const reward = i === 0 ? { k: "coins", n: 25 * (z + 1) * (d + 1) } : i === 1 ? { k: "bright", n: d + 1 } : { k: "star", n: d + 1 };
     const energy = { k: "glow", n: (lead ? 30 : 15) * (z + 1) * (d + 1) };
     return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, energy, lvl };
   }
@@ -2334,7 +2334,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   let arenaSub = "hub", gymZ = 0, gymD = 0, prep = null;
   function openPrep(p) { prep = p; arenaSub = "prep"; render(); window.scrollTo(0, 0); }
   function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward, T.energy], quick: true, back: "gym" }); }
-  function prepDuel() { const D = duelState(); if (D.left <= 0) { toast("No duels left today"); return; } openPrep({ mode: "duel", title: "Daily Duel", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 15 + avgLvl() * 2 }], quick: true, back: "duels" }); }
+  function prepDuel() { const D = duelState(); if (D.left <= 0) { toast("No duels left today"); return; } openPrep({ mode: "duel", title: "Daily Duel", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 20 + avgLvl() * 3 }], quick: true, back: "duels" }); }
   function prepTower() { const f = (S.tower || 0) + 1; openPrep({ mode: "tower", f, title: `Cloud Climb · Floor ${f}`, name: `Floor ${f} climber`, color: "#9fd6ff", foes: towerFoes(f), rewards: climbRewards(f), quick: true, back: "tower" }); }
   function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
     if (P.mode === "gym") { if (!S.gyms) S.gyms = {}; S.gyms[gymKey(P.z, P.d, P.i)] = 1; }
@@ -2442,7 +2442,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   async function quickRival(byAuto) {
     if (!E || E.type !== "rival" || busy || !front()) return;
     busy = true; const foes = E.foes, won = simulate(team(), foes), M = curM(); let rew = [];
-    if (won) { const lv = Math.max(...foes.map(f => f.lvl)), coins = (3 + lv) * M.m; S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); rew = [{ k: "coins", n: coins }]; }
+    if (won) { const lv = Math.max(...foes.map(f => f.lvl)), coins = (4 + lv) * M.m; S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); rew = [{ k: "coins", n: coins }]; }
     E = null; save();
     await resultScreen(won, rew, byAuto ? 2000 * autoPace() : 0);
     busy = false; render(); await flushBanners();
@@ -2518,9 +2518,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (L.lp === undefined) { L.lp = L.wins * LADDER_WIN; const took = L.claimed ? LADDER_MS_OLD[L.claimed - 1] * LADDER_WIN : 0; L.claimed = LADDER_MS.filter(m => m <= took).length; setTimeout(() => { ladderClaim(); render(); }, 0); }
     return L; }
   function prepLadder() {
-    const t = ladderTier(ladderState().pts); openPrep({ mode: "ladder", title: `Ladder match · ${DRANKS[t][1]}`, name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: ladderFoes(), rewards: [{ k: "coins", n: Math.round((15 + avgLvl() * 2) * (1 + t * .3)) }], quick: true, back: "ladder" }); }
+    const t = ladderTier(ladderState().pts); openPrep({ mode: "ladder", title: `Ladder match · ${DRANKS[t][1]}`, name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: ladderFoes(), rewards: [{ k: "coins", n: Math.round((20 + avgLvl() * 3) * (1 + t * .3)) }], quick: true, back: "ladder" }); }
   // ================= CLOUD CLIMB =================
-  const climbRewards = f => [{ k: "coins", n: 12 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }] : [])];
+  const climbRewards = f => [{ k: "coins", n: 16 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }] : [])];
   let climbing = false;
   async function autoClimb() {
     if (climbing || !team().length) return; climbing = true; render();
@@ -2952,7 +2952,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const PLACES = {
     orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 6, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
     spring: { name: "Energy Spring", res: "glow", unit: "energy", base: 1, els: ["Water", "Spirit"], about: "Collects energy for walking" },
-    mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 5, els: ["Fire", "Electric"], about: "Digs up coins" },
+    mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 7, els: ["Fire", "Electric"], about: "Digs up coins" },
     candy: { name: "Candy Maker", res: "treats", unit: "treats", base: .5, els: ["Fire", "Spirit"], about: "Cooks treats that calm wild Glumis" },
   };
   const HOME_CAP_HOURS = 8, HOME_SLOTS = () => S.xlvl >= 8 ? 3 : 2;
@@ -3287,7 +3287,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (S.auto && !ZONES[z].sp.some(x => S.reveal.includes(x))) setTimeout(() => { if (revealTrip && view === "atlas") { revealTrip = false; view = "explore"; atlasZone = null; atlasPin = null; render(); } }, 1800);
   }
   const PIN_POS = [[26, 30], [72, 24], [48, 50], [22, 70], [76, 62]];
-  const REWARD = { coins: z => [`${9 * (z + 1)} coins`, IC.coin], plain: () => ["3 plain jars", IC.jar(JARS[0].c)], glow: () => ["20 energy", IC.glow], bright: () => ["1 bright jar", IC.jar(JARS[1].c)], fruit: () => ["1 moonfruit", IC.fruit] };
+  const REWARD = { coins: z => [`${12 * (z + 1)} coins`, IC.coin], plain: () => ["3 plain jars", IC.jar(JARS[0].c)], glow: () => ["20 energy", IC.glow], bright: () => ["1 bright jar", IC.jar(JARS[1].c)], fruit: () => ["1 moonfruit", IC.fruit] };
   const milestones = z => { const n = ZONES[z].sp.length; return [...Array.from({ length: n }, (_, k) => ({ need: k + 1, kind: ["coins", "plain", "glow", "bright"][k % 4] })), { need: "boss", kind: "fruit" }]; };
   const caughtIn = z => ZONES[z].sp.filter(sp => S.zones[z].caught[sp]).length;
   const reached = (z, m) => m.need === "boss" ? S.zones[z].cleared : caughtIn(z) >= m.need;
@@ -3591,7 +3591,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "revealback") { revealTrip = false; view = "explore"; atlasZone = null; atlasPin = null; render(); window.scrollTo(0, 0); }
     else if (a === "claim") {
       const z = n, ms = milestones(z), k = S.zones[z].claimed || 0, m = ms[k];
-      const g = { coins: () => S.coins += 9 * (z + 1), plain: () => S.jars.plain += 3, glow: () => S.glow += 20, bright: () => S.jars.bright += 1, fruit: () => S.fruit += 1 }, got = [];
+      const g = { coins: () => S.coins += 12 * (z + 1), plain: () => S.jars.plain += 3, glow: () => S.glow += 20, bright: () => S.jars.bright += 1, fruit: () => S.fruit += 1 }, got = [];
       for (let j = k; ms[j] && reached(z, ms[j]); j++) { g[ms[j].kind](); got.push(REWARD[ms[j].kind](z)[0]); S.zones[z].claimed = j + 1; }
       if (got.length) { sfx("claim"); save(); toast("Got " + got.join(", ")); render(); }
     }
