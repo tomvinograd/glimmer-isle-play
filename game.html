@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794915250;</script>
+<script>window.GAME_BUILD = 1794915403;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1613,7 +1613,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const bossReady = i => !S.zones[i].cleared && zoneAll(i);  // only after every regular Glumi here is caught
   const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500, 200: 1500, 500: 3000 };  // glow you need to have to use each multiplier (Tom 16 Nov)
   const multNeed = M => MULT_NEED[M.m] ?? M.m, multOpen = M => S.glow >= multNeed(M);
-  const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return multOpen(want) ? want : [...MULTS].reverse().find(x => x.m <= want.m && multOpen(x)) || MULTS[0]; };
+  const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return S.glow >= want.m ? want : [...MULTS].reverse().find(x => x.m <= want.m && S.glow >= x.m) || MULTS[0]; };  // a chosen multiplier stays while you can pay a step
   function glowNextText() { if (S.glow >= glowCap()) return "Full"; const left = Math.max(1, Math.ceil((GLOW_EVERY - (Date.now() - S.glowT)) / 1000)); return `+1 in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
   function regen() { const now = Date.now(); if (S.glow >= glowCap()) { S.glowT = now; return; } const n = Math.floor((now - S.glowT) / GLOW_EVERY); if (n > 0) { S.glow = Math.min(glowCap(), S.glow + n); S.glowT = S.glow >= glowCap() ? now : S.glowT + n * GLOW_EVERY; } }
   function newMon(sp, lvl, q, evo = 0) { const m = { uid: 0, sp, lvl, q, evo, hp: 0 }; m.hp = maxHp(m); return m; }
@@ -3706,7 +3706,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "travel") travelTo(n);
     else if (a === "zone") { if (zoneOpen(n)) { S.zone = n; showMap = false; view = "explore"; save(); render(); initProps(); } }
     else if (a === "step") step();
-    else if (a === "mult") { const open = MULTS.filter(multOpen), i = open.findIndex(x => x.m === curM().m), nextLock = MULTS.find(x => !multOpen(x));
+    else if (a === "mult") { const open = MULTS.filter(x => multOpen(x) || x.m === curM().m), i = open.findIndex(x => x.m === curM().m), nextLock = MULTS.find(x => !multOpen(x));
       S.mult = open[(i + 1) % open.length].m; save(); renderActions();
       toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} energy` : `x${S.mult}: ${S.mult} energy a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} energy` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
