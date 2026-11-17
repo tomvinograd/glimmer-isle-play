@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794912344;</script>
+<script>window.GAME_BUILD = 1794912408;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2472,9 +2472,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const CATCH_PTS = [5, 10, 30, 80, 300];  // by grade
   const EVBARS = {
     catch: { name: "Catch points", how: "Catch Glumis: Blue 10, Purple 30, Gold 80, Rainbow 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
-             rew: [{ k: "glow", n: 20, need: 40 }, { k: "glow", n: 30, need: 60 }, { k: "plain", n: 3, need: 80 }, { k: "glow", n: 40, need: 100 }, { k: "egg1", n: 1, need: 150 }, { k: "glow", n: 50, need: 150 }, { k: "glow", n: 70, need: 200 }] },
+             rew: [{ k: "glow", n: 40, need: 40 }, { k: "glow", n: 60, need: 60 }, { k: "plain", n: 3, need: 80 }, { k: "glow", n: 80, need: 100 }, { k: "egg1", n: 1, need: 150 }, { k: "glow", n: 100, need: 150 }, { k: "glow", n: 140, need: 200 }] },
     fight: { name: "Battle points", how: "Win fights: path trainers 20, gyms 40, ladder and climb 30", icon: () => IC.sword, steps: [60, 150, 300, 500, 800, 1200, 1800],
-             rew: [{ k: "glow", n: 50, need: 50 }, { k: "glow", n: 50, need: 70 }, { k: "egg1", n: 1, need: 180 }, { k: "glow", n: 100, need: 140 }, { k: "glow", n: 130, need: 170 }, { k: "egg2", n: 1, need: 320 }, { k: "egg3", n: 1, need: 500 }] },
+             rew: [{ k: "glow", n: 100, need: 50 }, { k: "glow", n: 100, need: 70 }, { k: "egg1", n: 1, need: 180 }, { k: "glow", n: 200, need: 140 }, { k: "glow", n: 260, need: 170 }, { k: "egg2", n: 1, need: 320 }, { k: "egg3", n: 1, need: 500 }] },
   };
   const nextMidnight = () => { const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); };
   // EVBARS steps: the old running totals, only used to convert old saves. A bar holds the points toward its next
