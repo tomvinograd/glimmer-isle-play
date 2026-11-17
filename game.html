@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794936914;</script>
+<script>window.GAME_BUILD = 1794937042;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -825,6 +825,17 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 @keyframes hintin { from { opacity: 0; transform: translate(-50%, -8px); } }
 .gnick { margin-left: 6px; padding: 2px 4px; border: 0; border-radius: 5px; background: rgba(255,255,255,.7); color: #8a6d55; vertical-align: 2px; }
 .gsb.fav.on { color: #ff5d8f; } .favtag { position: absolute; top: 3px; left: 5px; color: #ff5d8f; font: 900 15px/1 var(--display); text-shadow: 0 1px 0 #fff; }
+.lctl { display: flex; gap: 8px; margin: 4px 0 6px; } .lctl input { flex: 1; min-width: 0; padding: 8px 10px; border: 1.5px solid #e3d3bd; border-radius: 9px; background: #fff; font: 700 14px var(--display); color: var(--brown); }
+.lctl select { padding: 6px 8px; border: 1.5px solid #e3d3bd; border-radius: 9px; background: #fff; font: 800 13px var(--display); color: var(--brown); }
+.lchips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; } .lchips::-webkit-scrollbar { display: none; }
+.lchip { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border: 1.5px solid #e3d3bd; border-radius: 8px; background: #fff; color: var(--brown); font: 800 12px var(--display); }
+.lchip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); } .lchip.on { border-color: var(--c); background: var(--c); color: #fff; } .lchip.on i { background: #fff; }
+.newdot { position: absolute; top: 4px; right: 4px; z-index: 2; padding: 1px 5px; border-radius: 5px; background: #e5484d; color: #fff; font: 900 9px/14px var(--display); }
+.cell { position: relative; }
+.cmph { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .cmpc { display: grid; justify-items: center; gap: 3px; } .cmpc b { font: 900 15px var(--display); color: var(--brown); } .cmpc small { font: 700 11px var(--display); color: #8a6d55; }
+.cmptags { display: flex; gap: 4px; } .cmptag { padding: 1px 7px; border-radius: 5px; color: #fff; font: 800 11px var(--display); }
+.cmpt { display: grid; gap: 4px; margin: 8px 0; } .cmpr { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 4px 8px; border-radius: 7px; background: #f6efe4; }
+.cmpr span { font: 800 12px var(--display); color: #8a6d55; } .cmpr b { font: 900 15px var(--display); color: var(--brown); text-align: center; } .cmpr b.hi { color: #2f9e5a; }
 .prew { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
@@ -1696,7 +1707,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (fromWild && (m.pm || 0) >= RB_PITY_MULT && m.q !== 4) S.rbPity = (S.rbPity || 0) + 1;
     delete m.pm;
     m.lvl = 1; m.asc = 0;  // every Glumi you get starts at level 1
-    delete m.wild; m.uid = S.nextUid++; m.hp = maxHp(m); S.mons.push(m); S.caught[key(m.sp, m.evo)] = 1; S.seen[key(m.sp, m.evo)] = 1;
+    delete m.wild; m.uid = S.nextUid++; m.hp = maxHp(m); m.isNew = 1; S.mons.push(m); if (!S.caught[key(m.sp, m.evo)]) { S.bookNew = S.bookNew || {}; S.bookNew[key(m.sp, m.evo)] = 1; } S.caught[key(m.sp, m.evo)] = 1; S.seen[key(m.sp, m.evo)] = 1;
     ZONES.forEach((z, i) => { if (!z.sp.includes(m.sp)) return; const was = zoneAll(i);
       if (!fromWild) return;  // only Glumis caught on the path count in the zone (not bought or hatched ones)
       if (!S.zones[i].caught[m.sp]) { S.reveal = S.reveal || []; if (!S.reveal.includes(m.sp)) S.reveal.push(m.sp); }
@@ -3112,18 +3123,49 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${art(m.sp, m.evo, 78)}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
   }
   function monTile(m) {
-    return `<button class="tile q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${m.fav ? '<span class="favtag">\u2665</span>' : ""}${art(m.sp, m.evo, 66)}<span class="nm">${m.nick || fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
+    return `<button class="tile q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${m.fav ? '<span class="favtag">\u2665</span>' : ""}${m.isNew ? '<span class="newdot">New</span>' : ""}${art(m.sp, m.evo, 66)}<span class="nm">${m.nick || fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
+  }
+  let tq = "", bq = "", tEl = null, tQ = null, tSpare = false, cmpA = null;
+  const SORTS = [["best", "Best first"], ["level", "Level"], ["power", "Power"], ["grade", "Grade"], ["element", "Element"], ["newest", "Newest"], ["name", "Name"]];
+  const nameOf = m => m.nick || fname(m.sp, m.evo);
+  const isSpare = m => !S.team.includes(m.uid) && !m.lock && !m.fav && !(typeof workingAt === "function" && workingAt(m.uid)) && !(typeof isAway === "function" && isAway(m.uid));
+  function listMons() {
+    const inTeam = m => S.team.includes(m.uid) ? 1 : 0, by = (S.ui && S.ui.sort) || "best", q = tq.trim().toLowerCase();
+    const cmp = { best: (x, y) => inTeam(y) - inTeam(x) || (y.fav ? 1 : 0) - (x.fav ? 1 : 0) || y.q - x.q || y.lvl - x.lvl, level: (x, y) => y.lvl - x.lvl || y.q - x.q, power: (x, y) => monPower(y) - monPower(x),
+      grade: (x, y) => y.q - x.q || y.lvl - x.lvl, element: (x, y) => ELK.indexOf(SP[x.sp].el) - ELK.indexOf(SP[y.sp].el) || y.q - x.q || y.lvl - x.lvl, newest: (x, y) => y.uid - x.uid, name: (x, y) => nameOf(x).localeCompare(nameOf(y)) || y.lvl - x.lvl }[by] || (() => 0);
+    return S.mons.filter(m => (!tEl || SP[m.sp].el === tEl) && (tQ === null || m.q === tQ) && (!tSpare || isSpare(m)) && (!q || nameOf(m).toLowerCase().includes(q) || fname(m.sp, m.evo).toLowerCase().includes(q))).sort(cmp);
+  }
+  const tilesHTML = () => { const L = listMons(); return L.length ? L.map(monTile).join("") : `<p class="hint" style="grid-column:1/-1">No Glumis match.</p>`; };
+  function listControls() {
+    const by = (S.ui && S.ui.sort) || "best";
+    return `<div class="lctl"><input id="tq" type="search" placeholder="Search by name" value="${tq.replace(/"/g, "&quot;")}" autocomplete="off"><select id="tsort" aria-label="Sort">${SORTS.map(([k, n]) => `<option value="${k}"${by === k ? " selected" : ""}>${n}</option>`).join("")}</select></div>
+      <div class="lchips">${ELK.map(k => `<button class="lchip${tEl === k ? " on" : ""}" data-act="tel:${k}" aria-label="${EL[k].name}" style="--c:${EL[k].color}"><i></i>${EL[k].name}</button>`).join("")}
+        ${[1, 2, 3, 4].map(q => `<button class="lchip${tQ === q ? " on" : ""}" data-act="tq:${q}" style="--c:${GRADES[q].c}"><i></i>${GRADES[q].name}</button>`).join("")}
+        <button class="lchip${tSpare ? " on" : ""}" data-act="tspare" style="--c:#8a6d55">Spares only</button></div>`;
+  }
+  function compareOpen(ua, ub) {
+    const A = mon(ua), B = mon(ub); if (!A || !B) return; closePopup();
+    const rows = [["Power", monPower], ["Attack", atk], ["Defense", def], ["HP", maxHp], ["Level", m => m.lvl], ["Work", m => Math.round(Math.max(...Object.keys(PLACES).map(k => workerRate(m, k))))]];
+    const col = m => `<div class="cmpc">${art(m.sp, m.evo, 72)}<b>${nameOf(m)}</b><span class="cmptags"><span class="cmptag" style="background:${EL[SP[m.sp].el].color}">${EL[SP[m.sp].el].name}</span><span class="cmptag" style="background:${GRADES[m.q].c}">${GRADES[m.q].name}</span></span><small>${charmOf(m) ? `${CHARM_R[charmOf(m).r]} ${CHARM[charmOf(m).k].n}` : "No charm"}</small></div>`;
+    const swap = S.team.includes(ua) && !S.team.includes(ub) ? `<button class="mb gold" data-act="cmpswap:${ua}-${ub}">Put ${nameOf(B)} in for ${nameOf(A)}</button>` : S.team.includes(ub) && !S.team.includes(ua) ? `<button class="mb gold" data-act="cmpswap:${ub}-${ua}">Put ${nameOf(A)} in for ${nameOf(B)}</button>` : "";
+    const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<div class="popbg"></div><div class="popup cmp" role="dialog"><h3>Compare</h3><div class="cmph">${col(A)}${col(B)}</div>
+      <div class="cmpt">${rows.map(([nm, f]) => { const a = f(A), b = f(B); return `<div class="cmpr"><b class="${a > b ? "hi" : ""}">${a.toLocaleString("en")}</b><span>${nm}</span><b class="${b > a ? "hi" : ""}">${b.toLocaleString("en")}</b></div>`; }).join("")}</div>
+      <p class="hint" style="margin:0">Strong against: ${EL[BEATS[SP[A.sp].el]].name} / ${EL[BEATS[SP[B.sp].el]].name}</p>
+      <div class="popbtns"><button class="mb" data-act="nickcancel">Close</button>${swap}</div></div>`;
+    document.body.appendChild(d);
   }
   function pageTeam() {
     const inTeam = m => S.team.includes(m.uid) ? 1 : 0;
-    const sorted = [...S.mons].sort((x, y) => inTeam(y) - inTeam(x) || (y.fav ? 1 : 0) - (x.fav ? 1 : 0) || y.q - x.q || y.lvl - x.lvl);
     const pick = swapIn ? mon(swapIn) : null;
     return `<div class="head"><h2>My team</h2><span class="pill">${IC.leaf}${S.leaves}</span><span class="pill">${IC.fruit}${S.fruit}</span></div>
       ${pick ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a spot for <b>${fname(pick.sp, pick.evo)}</b></span><button class="mb" data-act="cancelswap">Cancel</button></div>`
              : `<p class="hint" style="text-align:left;margin:0">Up to 3 Glumis walk with you. The leader fights first. Tap a Glumi to see it, level it up or add it to your team.</p>`}
       <div class="slots">${[0, 1, 2].map(teamSlot).join("")}</div>
-      <h3>My Glumis · ${S.mons.length}</h3>
-      <div class="tiles">${sorted.map(monTile).join("")}</div>
+      ${cmpA && mon(cmpA) ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a Glumi to compare with <b>${nameOf(mon(cmpA))}</b></span><button class="mb" data-act="cmpcancel">Cancel</button></div>` : ""}
+      <h3>My Glumis \u00B7 <span id="tcount">${listMons().length === S.mons.length ? S.mons.length : `${listMons().length} of ${S.mons.length}`}</span></h3>
+      ${listControls()}
+      <div class="tiles" id="tilesBox">${tilesHTML()}</div>
       ${sheetUid && mon(sheetUid) ? creatureSheet(mon(sheetUid)) : ""}`;
   }
   function creatureSheet(m) {
@@ -3186,7 +3228,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
              ${[["Attack", atk(m), 70, IC.sword], ["Defense", def(m), 60, IC.flag], ["HP", maxHp(m), 260, IC.heart || IC.star], ["Work", Math.round(workBest), 30, IC.home]].map(([n, v, mx, ic]) =>
                `<div class="gcbar"><span class="gcbi">${ic}</span><b>${n}</b><span class="gctrack"><i style="width:${Math.min(100, v / mx * 100)}%"></i></span><em>${v}${n === "Work" ? "/h" : ""}</em></div>`).join("")}
            </div><button class="gcnav" data-act="sheetnav:1" aria-label="Next Glumi">\u203A</button></div>
-           ${charmRow(m)}<div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
+           ${charmRow(m)}<button class="gcharm cmpbtn" data-act="cmpstart:${m.uid}"><span class="gci"><svg viewBox="0 0 24 24" fill="none" stroke="#8a6d55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span><span class="gct"><b>Compare</b><small>Side by side with another Glumi</small></span><i>\u203A</i></button><div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
              ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
              ${bigBtn}
              <button class="gx${multi ? " on" : ""}" data-act="sheetmulti" aria-label="Level up as many times as you can" ${lvlN > 1 && !(atAsc && ascOf(m) < MAX_ASC) ? "" : "disabled"}>\u2303\u2303</button></div>`;
@@ -3214,8 +3256,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   function pageBook() {
     const total = SP.reduce((n, s) => n + (s.evo ? 2 : 1), 0), got = Object.keys(S.caught).length;
-    const cell = (sp, evo) => { const k = key(sp, evo), boss = SP[sp].tier === 3; return S.caught[k] ? `<div class="cell got${boss ? " boss" : ""}">${art(sp, evo, 54)}<span class="nm">${fname(sp, evo)}</span></div>` : S.seen[k] ? `<div class="cell sil${boss ? " boss" : ""}">${art(sp, evo, 54)}<span class="nm">${fname(sp, evo)}</span></div>` : `<div class="cell${boss ? " boss" : ""}"><div class="q">?</div><span class="nm">???</span></div>`; };
-    return `<div class="head"><h2>Book</h2><span class="pill">${got}/${total}</span></div>` + ZONES.map((Z, i) => `<h3>${zoneOpen(i) ? Z.name : "???"}</h3><div class="book">${Z.sp.flatMap(sp => [cell(sp, 0), cell(sp, 1)]).join("")}${cell(Z.boss, 0)}</div>`).join("");
+    const fresh = S.bookNew || {}; setTimeout(() => { if (view === "team" || view === "book") { S.bookNew = {}; } }, 2500);
+    const cell = (sp, evo) => { const k = key(sp, evo), boss = SP[sp].tier === 3, dn = `data-n="${S.seen[k] ? fname(sp, evo).toLowerCase() : ""}"`; return S.caught[k] ? `<div class="cell got${boss ? " boss" : ""}" ${dn}>${fresh[k] ? '<span class="newdot">New</span>' : ""}${art(sp, evo, 54)}<span class="nm">${fname(sp, evo)}</span></div>` : S.seen[k] ? `<div class="cell sil${boss ? " boss" : ""}" ${dn}>${art(sp, evo, 54)}<span class="nm">${fname(sp, evo)}</span></div>` : `<div class="cell${boss ? " boss" : ""}" data-n=""><div class="q">?</div><span class="nm">???</span></div>`; };
+    return `<div class="head"><h2>Book</h2><span class="pill">${got}/${total}</span></div><div class="lctl"><input id="bq" type="search" placeholder="Search the Book" autocomplete="off"></div>` + ZONES.map((Z, i) => `<div class="bookzone"><h3>${zoneOpen(i) ? Z.name : "???"}</h3><div class="book">${Z.sp.flatMap(sp => [cell(sp, 0), cell(sp, 1)]).join("")}${cell(Z.boss, 0)}</div></div>`).join("");
   }
   let shopTab = "jars";
   let resetSure = null;
@@ -3931,6 +3974,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   document.addEventListener("contextmenu", e => { if (e.target.closest(".compass")) e.preventDefault(); });
   // the tap that ends a hold must not also take a step
   document.addEventListener("click", e => { if (holdEatClick) { holdEatClick = false; e.stopPropagation(); e.preventDefault(); } }, true);
+  document.addEventListener("input", e => {
+    if (e.target.id === "tq") { tq = e.target.value; const b = $("tilesBox"); if (b) b.innerHTML = tilesHTML(); const c = $("tcount"); if (c) { const n2 = listMons().length; c.textContent = n2 === S.mons.length ? n2 : `${n2} of ${S.mons.length}`; } }
+    if (e.target.id === "bq") { bq = e.target.value.trim().toLowerCase(); document.querySelectorAll(".book .cell").forEach(c => { c.hidden = !!bq && !(c.dataset.n || "").includes(bq); }); document.querySelectorAll(".bookzone").forEach(z => { z.hidden = !!bq && !z.querySelector(".cell:not([hidden])"); }); }
+  });
+  document.addEventListener("change", e => { if (e.target.id === "tsort") { S.ui = S.ui || {}; S.ui.sort = e.target.value; save(); render(); } });
   // ---------- input ----------
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
@@ -3998,6 +4046,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "giftclose" || a === "awayclose") { closePopup(); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "awaycollect") { homeTick(); let got = []; for (const k in PLACES) { const n2 = collectPlace(k); if (n2) got.push(`${n2} ${PLACES[k].unit}`); } save(); closePopup(); if (got.length) toast("Collected " + got.join(", ")); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "giftopen") giftPopup();
+    else if (a === "tel") { tEl = tEl === arg ? null : arg; render(); }
+    else if (a === "tq") { tQ = tQ === n ? null : n; render(); }
+    else if (a === "tspare") { tSpare = !tSpare; render(); }
+    else if (a === "cmpstart") { cmpA = n; sheetUid = null; view = "team"; render(); toast("Now tap the Glumi to compare with"); }
+    else if (a === "cmpcancel") { cmpA = null; render(); }
+    else if (a === "cmpswap") { const [ua, ub] = arg.split("-").map(Number), i = S.team.indexOf(ua); if (i >= 0 && !S.team.includes(ub) && !isAway(ub)) { S.team[i] = ub; save(); closePopup(); render(); toast(`${nameOf(mon(ub))} joined the team`); } }
     else if (a === "hintok") { S.hints = S.hints || {}; S.hints[arg] = 1; save(); maybeHint(); }
     else if (a === "hintsreset") { S.hints = {}; save(); toast("Tips will show again as you play"); render(); }
     else if (a === "nickopen") { const m = mon(n); if (!m) return; closePopup(); const d = document.createElement("div"); d.className = "popwrap";
@@ -4140,7 +4194,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         view = "explore"; render(); reveal(m, "Evolved!").then(() => { view = "team"; render(); });
       }
     }
-    else if (a === "sheet") { sheetTab = "stats"; if (swapIn) return; sheetUid = n; sheetPage = "main"; confirmRelease = null; render(); }
+    else if (a === "sheet") { sheetTab = "stats"; if (swapIn) return; if (cmpA && cmpA !== n) { const A = cmpA; cmpA = null; compareOpen(A, n); render(); return; } { const mm = mon(n); if (mm && mm.isNew) { delete mm.isNew; save(); } } sheetUid = n; sheetPage = "main"; confirmRelease = null; render(); }
     else if (a === "spage") { sheetPage = arg; confirmRelease = null; render(); const sh = document.querySelector(".sheet"); if (sh) sh.scrollTop = 0; }
     else if (a === "closesheet") { sheetUid = null; sheetPage = "main"; render(); }
     else if (a === "addteam") { sheetUid = null; if (S.team.length < slots()) { S.team.push(n); save(); toast("Added to your team"); } else { swapIn = n; } render(); window.scrollTo(0, 0); }
