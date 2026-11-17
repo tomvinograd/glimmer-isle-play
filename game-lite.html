@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794937431;</script>
+<script>window.GAME_BUILD = 1794937558;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -3565,6 +3565,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <div class="slist">${sw("sound", S.opt.sound !== false, "Sound effects", "Little sounds for steps, catches and rewards")}${sw("music", S.opt.music !== false, "Music", "Soft background music")}${sw("vibe", S.opt.vibe !== false, "Vibration", "Short buzzes on catches, wins and rewards")}${sw("calm", !!S.opt.calm, "Calm animations", "Fewer moving effects")}${sw("big", !!S.opt.big, "Bigger text", "Makes pages easier to read")}</div>
       ${appBridge() ? `<h3 class="grouph">Updates</h3><div class="slist"><div class="srow"><span class="ic">${IC.balloon}</span><span class="txt"><b>Updates</b><small id="updStatus">${appStatus()}</small>${(() => { try { const g = appBridge(); return g && g.copy ? `<small class="copyline">${g.copy()}</small>` : ""; } catch { return ""; } })()}</span>
         <span class="row" style="gap:6px"><button class="price" data-act="updcheck">Check now</button>${/^New version ready/.test(appStatus()) ? `<button class="price" data-act="updrestart">Restart</button>` : ""}</span></div></div>` : ""}
+      ${appCan("schedule") ? `<h3 class="grouph">Phone</h3><div class="slist">${sw("notify", S.opt.notify !== false, "Reminders", "Energy full, buildings full, expeditions back, daily gift (never at night)")}</div>` : ""}
       <h3 class="grouph">Game</h3>
       <div class="slist"><button class="setrow" data-act="settings:backup"><span>Save backup</span><b>Move to another phone</b><i>›</i></button><button class="setrow" data-act="hintsreset"><span>Show tips again</span><b></b><i>›</i></button><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
       <p class="saved">${saveNote || "Saved on this device"}<br>${versionText()}</p>`;
@@ -4139,6 +4140,40 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     d.innerHTML = `<div class="popbg"></div><div class="popup" role="dialog"><h3>Not yet</h3><p>${w[0]}</p><div class="popbtns"><button class="mb" data-act="nickcancel">OK</button>${w[1] ? `<button class="mb gold" data-act="whygo:${w[1]}">${w[2] || "Take me there"}</button>` : ""}</div></div>`;
     document.body.appendChild(d);
   }, true);
+  // the phone's back button (app 1.26+): one step back at a time; false = nothing left to close
+  window.glimmerBack = () => {
+    const hb = $("helpbub"); if (hb && !hb.hidden) { hb.hidden = true; return true; }
+    const res = document.querySelector(".result"); if (res) { res.click(); return true; }
+    if (document.querySelector(".popwrap")) { if (document.querySelector(".popup.gift, .popup.away")) actNow("awayclose"); else closePopup(); return true; }
+    if (BT) { toast("Tap Give up to leave the fight"); return true; }
+    if (sheetUid) { sheetUid = null; render(); return true; }
+    if (cmpA) { cmpA = null; render(); return true; }
+    if (showAuto) { showAuto = false; autoPick = null; render(); return true; }
+    if (showMap || view === "atlas") { showMap = false; view = "explore"; atlasZone = null; atlasPin = null; render(); return true; }
+    if (view === "menu" && settingsPage) { settingsPage = settingsPage === "main" ? null : "main"; render(); return true; }
+    if (view === "charms") { actNow("charmback"); return true; }
+    if (["stats", "log", "timers", "tasks", "bag", "mail", "shrine"].includes(view)) { actNow("view:menu"); return true; }
+    if (view === "arena" && arenaSub !== "hub") { prep = null; arenaSub = arenaSub === "gym" ? "gyms" : "hub"; render(); return true; }
+    if (view === "home" && homePlace) { homePlace = null; homePick = false; render(); return true; }
+    if (view !== "explore") { actNow("view:explore"); return true; }
+    if (E && !busy) return true;  // an encounter on the path: stay
+    return false;
+  };
+  // phone reminders (app 1.26+)
+  function reminders() {
+    if (!S.started || (S.opt && S.opt.notify === false)) return [];
+    const now = Date.now(), L = [], cap = glowCap();
+    const day = t => { const d = new Date(t), h = d.getHours(); if (h >= 22) { d.setDate(d.getDate() + 1); d.setHours(8, 30, 0, 0); return d.getTime(); } if (h < 8 || (h === 8 && d.getMinutes() < 30)) { d.setHours(8, 30, 0, 0); return d.getTime(); } return t; };
+    if (S.glow < cap) L.push({ id: 1, at: day(now + (cap - S.glow - 1) * glowEvery() + Math.max(0, glowEvery() - (now - S.glowT))), title: "Energy is full", text: "Your energy is full. Time to explore Glimmer Isle!" });
+    try { homeTick(); let i = 0; for (const k in PLACES) { const r = placeRate(k), st = homeState()[k].store, c = placeCap(k); if (r > 0 && st < c) L.push({ id: 10 + i, at: day(now + (c - st) / r * 3600000), title: `${PLACES[k].name} is full`, text: "Collect it so your workers keep going." }); i++; } } catch {}
+    (S.exps || []).forEach((x, i) => { if (x.until > now) { const m = mon(x.uid); L.push({ id: 20 + i, at: day(x.until), title: "Back from the expedition", text: `${m ? nameOf(m) : "Your Glumi"} is home with a find.` }); } });
+    const g = new Date(); g.setDate(g.getDate() + 1); g.setHours(9, 0, 0, 0); L.push({ id: 2, at: g.getTime(), title: "Daily gift", text: "Your daily gift is waiting on Glimmer Isle." });
+    return L;
+  }
+  const appCan = f => { try { const a = window.GlimmerApp; return a && typeof a[f] === "function" ? a : null; } catch { return null; } };
+  window.glimmerPause = () => { try { save(); const a = appCan("schedule"); if (a) a.schedule(JSON.stringify(reminders())); } catch {} };
+  window.glimmerResume = () => { try { const a = appCan("schedule"); if (a) a.schedule("[]"); } catch {} };
+  setTimeout(() => { try { const a = appCan("askNotify"); if (a && S.started && !S.notifyAsked && !(S.opt && S.opt.notify === false) && !a.canNotify()) { S.notifyAsked = 1; save(); a.askNotify(); } } catch {} }, 20000);
   // ---------- input ----------
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
@@ -4248,7 +4283,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "charmmerge") { const [k, r] = arg.split("-"), G = charmGroups().find(g => g.k === k && g.r === +r); if (G && G.free.length >= 3 && +r < 2) {
         const gone = G.free.slice(0, 3).map(c => c.id); S.charms = S.charms.filter(c => !gone.includes(c.id)); const nc = addCharm(k, +r + 1); save(); sfx("claim"); toast(`Made a ${CHARM_R[nc.r]} ${CHARM[k].n}!`); render(); } }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
-    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music" || arg === "vibe") S.opt[arg] = S.opt[arg] === false; else S.opt[arg] = !S.opt[arg]; document.body.classList.toggle("bigtext", !!S.opt.big); if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
+    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music" || arg === "vibe" || arg === "notify") S.opt[arg] = S.opt[arg] === false; if (arg === "notify" && S.opt.notify !== false) { const ap = appCan("askNotify"); if (ap && !ap.canNotify()) ap.askNotify(); } else S.opt[arg] = !S.opt[arg]; document.body.classList.toggle("bigtext", !!S.opt.big); if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
