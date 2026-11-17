@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794897203;</script>
+<script>window.GAME_BUILD = 1794897488;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1595,7 +1595,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     m.lvl = 1; m.asc = 0;  // every Glumi you get starts at level 1
     delete m.wild; m.uid = S.nextUid++; m.hp = maxHp(m); S.mons.push(m); S.caught[key(m.sp, m.evo)] = 1; S.seen[key(m.sp, m.evo)] = 1;
     ZONES.forEach((z, i) => { if (!z.sp.includes(m.sp)) return; const was = zoneAll(i);
-      if (fromWild && !S.zones[i].caught[m.sp]) { S.reveal = S.reveal || []; if (!S.reveal.includes(m.sp)) S.reveal.push(m.sp); }
+      if (!fromWild) return;  // only Glumis caught on the path count in the zone (not bought or hatched ones)
+      if (!S.zones[i].caught[m.sp]) { S.reveal = S.reveal || []; if (!S.reveal.includes(m.sp)) S.reveal.push(m.sp); }
       S.zones[i].caught[m.sp] = 1;
       if (!was && zoneAll(i) && ZONES[i + 1] && !S.zones[i + 1].steps) banners.push(`${ZONES[i + 1].name} open!`); });
     if (S.team.length < slots()) { S.team.push(m.uid); return "team"; } return "den";
@@ -2702,7 +2703,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (!((S["egg" + t] || 0) > 0)) return;
     const pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []); if (!pool.length) return;
     S["egg" + t]--; const [qs, ws] = EGG_ODDS[t], q = qs[wpick(ws)], m = newMon(pool[rnd(0, pool.length - 1)], 1, q);
-    keepMon(m); const B = bestQ(); B[m.sp] = Math.max(B[m.sp] || 0, m.q); save();
+    keepMon(m); save();
     const ov = document.createElement("div"); ov.className = "hatch"; ov.style.setProperty("--c", EGG_COL[t][1]);
     const crack = `<svg class="cracks" viewBox="0 0 100 120"><path class="k1" d="M50 40 46 52 54 58 48 70"/><path class="k2" d="M48 70 36 76 30 70M54 58 66 62 72 56"/><path class="k3" d="M48 70 52 84 44 94M66 62 70 78 80 82"/></svg>`;
     ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${eggBig(t, "h1")}</div><div class="half bot">${eggBig(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">Tap to hatch faster</p>`; if (ART["bg-hatch"]) ov.style.background = `url(${ART["bg-hatch"]}) center/cover`;
@@ -3148,6 +3149,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ================= CREATURE MARKET: Purple and Gold Glumis for coins =================
   const MARKET_HOURS = 6, MARKET_SLOTS = 4;
   let confirmBuy = null;
+  const kindPrice = (k, q) => marketPrice(q, k.lvl) * (k.boss ? 3 : 1);
   const marketPrice = (q, lvl) => q >= 3 ? 150 + lvl * 10 : 50 + lvl * 5;  // 16 Nov: much cheaper (Purple 55, Gold 160 at level 1)
   function closePopup() { const p = document.querySelector(".popwrap"); if (p) p.remove(); }
   const JAR_NAME = { plain: "plain", bright: "bright", star: "star", prism: "prism" }, JAR_PRICE = { plain: 15, bright: 45, star: 120, prism: 5000 };
@@ -3167,7 +3169,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function keepsBox() {
     const m = keepsFor && mon(keepsFor.uid); if (!m) return "";
     const k = marketKinds().find(x => x.sp === m.sp), miss = keepsMissing(m), name = SP[m.sp].name;
-    const btn = q => { const p = marketPrice(q, k.lvl); return `<button class="kbuy ${q >= 3 ? "pgold" : "ppurple"}" data-act="buykeep:${q}" ${S.coins >= p ? "" : "disabled"}><b>+${KEEPSAKES_BY_GRADE[q]} keepsakes</b><small>Buy and release a ${GRADES[q].name} ${name}</small><span>${IC.coin}${p}</span></button>`; };
+    const btn = q => { const p = kindPrice(k, q); return `<button class="kbuy ${q >= 3 ? "pgold" : "ppurple"}" data-act="buykeep:${q}" ${S.coins >= p ? "" : "disabled"}><b>+${KEEPSAKES_BY_GRADE[q]} keepsakes</b><small>Buy and release a ${GRADES[q].name} ${name}</small><span>${IC.coin}${p}</span></button>`; };
     return `<div class="kbox"><div class="krow">${art(m.sp, m.evo, 44)}<div><b>Keepsakes for ${fname(m.sp, m.evo)}</b><small>${miss ? `${miss} more needed to ascend · you have ${S.keepsakes[m.sp] || 0}` : "Enough to ascend"}</small></div></div>
       ${k ? `<div class="kbtns">${btn(2)}${btn(3)}</div>` : `<p class="hint" style="margin:0">${name} isn't sold in the shop. Catch more on the path or offer spare Glumis at the Star Shrine for star shards.</p>`}
       <button class="mb" data-act="keepsback">\u2039 Back to ${fname(m.sp, m.evo)}</button></div>`;
@@ -3232,11 +3234,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const seen = new Set(), out = [];
     const owned = new Set(S.mons.map(m => m.sp));  // kinds you own are always for sale (for keepsakes), even from zones not open yet
     ZONES.forEach((Z, z) => { Z.sp.forEach(sp => { if ((zoneOpen(z) || owned.has(sp)) && !seen.has(sp)) { seen.add(sp); out.push({ sp, z, lvl: 1 }); } }); });
+    ZONES.forEach((Z, z) => { if ((zoneOpen(z) || owned.has(Z.boss)) && !seen.has(Z.boss)) { seen.add(Z.boss); out.push({ sp: Z.boss, z, lvl: 1, boss: true }); } });  // guardians: 3x price
     return out;
   }
   function pageMarket(tabs) {
     const kinds = marketKinds();
-    const chip = (k, q) => { const id = `${k.sp}-${q}`, p = marketPrice(q, k.lvl);
+    const chip = (k, q) => { const id = `${k.sp}-${q}`, p = kindPrice(k, q);
       return `<button class="price ${q >= 3 ? "pgold" : "ppurple"}" data-act="buymon:${id}" ${S.coins >= p ? "" : "disabled"}>${confirmBuy === id ? "Sure?" : `${GRADES[q].name} ${IC.coin}${p}`}</button>`; };
     const rows = kinds.map(k => `<div class="srow mrow${marketFocus === k.sp ? " focus" : ""}" id="mk-${k.sp}"><span class="ic">${art(k.sp, 0, 36)}</span><span class="txt"><b>${SP[k.sp].name}</b><small>Level ${k.lvl} · ${ZONES[k.z].name}${S.keepsakes[k.sp] ? ` · ${S.keepsakes[k.sp]} keepsake${S.keepsakes[k.sp] > 1 ? "s" : ""}` : ""}</small></span>
         <span class="mprices">${chip(k, 2)}${chip(k, 3)}</span></div>`).join("");
@@ -3323,7 +3326,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     // medallions
     const waiting = sp => S.reveal && S.reveal.includes(sp);
     const pinH = (sp, [x, y], big) => {
-      const c = big ? (st.cleared || S.caught[key(sp, 0)]) : (st.caught[sp] || S.caught[key(sp, 0)]) && !waiting(sp), q = B[sp] ?? (big && st.cleared ? 1 : -1);
+      const c = big ? !!st.cleared : !!st.caught[sp] && !waiting(sp), q = B[sp] ?? (big && st.cleared ? 1 : -1);
       const cls = waiting(sp) ? "reveal" : !c ? "unknown" : q >= g ? "lit" : "dim";
       return `<button class="lzpin ${cls}${big ? " big" : ""}${g === 4 && cls === "lit" ? " rb" : ""}${atlasPin === sp ? " sel" : ""}${revealAnim === sp ? " pop" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${c ? SP[sp].name : waiting(sp) ? "New Glumi: tap to reveal" : "Not caught yet"}"><span class="lzin">${art(sp, 0, big ? 84 : 62)}</span></button>`
         + `${waiting(sp) ? `<span class="tapme" style="left:${x}%;top:${y}%">Tap!</span>` : ""}${revealAnim === sp ? `<span class="revburst" style="left:${x}%;top:${y}%"></span>` : ""}`;
@@ -3626,13 +3629,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "send") { const m = mon(n); if (!S.exps) S.exps = []; if (m && expPick && S.exps.length < expSlots() && !S.team.includes(n) && !workingAt(n) && !isAway(n)) { S.exps.push({ uid: n, h: expPick, until: Date.now() + expPick * 3600000 }); expPick = null; save(); render(); toast(`${fname(m.sp, m.evo)} set off`); } }
     else if (a === "expback") { const x = (S.exps || [])[n], m = x && mon(x.uid); if (x && Date.now() >= x.until) { S.exps.splice(n, 1); if (m) { const loot = tripLoot(m, x.h); loot.forEach(giveReward); sfx("claim"); toast("Brought back " + loot.map(r => `${r.n} ${RW[r.k][1]}`).join(", ")); } save(); render(); } }
     else if (a === "collectall") { homeTick(); const got = Object.keys(PLACES).map(k => [k, collectPlace(k)]).filter(x => x[1]); if (got.length) { save(); render(); toast(got.map(([k, v]) => `+${v} ${PLACES[k].unit}`).join(", ")); } }
-    else if (a === "buymon") { const [sp, q] = arg.split("-").map(Number), k = marketKinds().find(x => x.sp === sp); if (!k) return; const p = marketPrice(q, k.lvl); if (S.coins < p) return;
+    else if (a === "buymon") { const [sp, q] = arg.split("-").map(Number), k = marketKinds().find(x => x.sp === sp); if (!k) return; const p = kindPrice(k, q); if (S.coins < p) return;
       if (confirmBuy !== arg) { confirmBuy = arg; render(); return; }
       S.coins -= p; confirmBuy = null; const m = newMon(sp, k.lvl, q); keepMon(m); save(); render(); reveal(m, "Welcome!"); }
     else if (a === "keepsshop") { closePopup(); const m = mon(n); if (!m) return; keepsFor = { uid: n }; sheetUid = null; view = "shop"; shopTab = "market"; showMap = false; render(); window.scrollTo(0, 0); }
     else if (a === "keepsrel") { closePopup(); const m = mon(n); if (m) openRelease(m.sp, m.uid, keepsMissing(m)); }
     else if (a === "keepsback") { const u = keepsFor && keepsFor.uid; keepsFor = null; if (u && mon(u)) { view = "team"; sheetUid = u; sheetPage = "main"; } render(); window.scrollTo(0, 0); }
-    else if (a === "buykeep") { const m = keepsFor && mon(keepsFor.uid); if (!m) return; const k = marketKinds().find(x => x.sp === m.sp); if (!k) return; const q = n, p = marketPrice(q, k.lvl); if (S.coins < p) return;
+    else if (a === "buykeep") { const m = keepsFor && mon(keepsFor.uid); if (!m) return; const k = marketKinds().find(x => x.sp === m.sp); if (!k) return; const q = n, p = kindPrice(k, q); if (S.coins < p) return;
       S.coins -= p; S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + KEEPSAKES_BY_GRADE[q]; sfx("coin"); save();
       if (keepsMissing(m) <= 0) { keepsFor = null; view = "team"; sheetUid = m.uid; sheetPage = "main"; render(); window.scrollTo(0, 0); toast(`Enough keepsakes: ${fname(m.sp, m.evo)} can ascend now`); }
       else { render(); toast(`+${KEEPSAKES_BY_GRADE[q]} ${SP[m.sp].name} keepsakes · ${keepsMissing(m)} more needed`); } }
