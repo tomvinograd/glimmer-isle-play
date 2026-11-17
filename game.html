@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794910370;</script>
+<script>window.GAME_BUILD = 1794912344;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1228,6 +1228,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .mailrow { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
   .mailic { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; background: #fff3d6; } .mailic svg, .mailic img { width: 28px !important; height: 28px; }
   .mailtx { flex: 1; display: grid; gap: 3px; } .mailtx b { font: 800 15px var(--display); color: var(--brown); } .mailtx small { font-size: 12px; color: #8a6d55; }
+  .jarrow { display: flex; justify-content: center; gap: 5px; margin-top: 6px; }
+  .jarrow .jartype { min-width: 0; padding: 0 9px; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2072,8 +2074,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const w = E.list[E.i], must = tough(w) && !E.fought, J = JARS.find(j => j.k === E.jar), noJars = !S.jars.plain && !S.jars.bright && !S.jars.star;
       A.innerHTML = `<div class="dock"><div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round" data-act="treat" aria-label="Give treat" ${!S.treats || E.treat || must || busy ? "disabled" : ""}>${IC.treat}${S.treats}</button><span class="cap">Treat</span></div></div>
         <div style="display:grid;justify-items:center;gap:6px">${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>`}
-        <div class="row" style="gap:4px">${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div></div>
-        <div class="side"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div></div></div>`;
+        </div>
+        <div class="side"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div></div></div>
+        <div class="jarrow">${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div>`;
       return;
     }
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
@@ -2982,6 +2985,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 6, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
     spring: { name: "Energy Spring", res: "glow", unit: "energy", base: 1, els: ["Water", "Spirit"], about: "Collects energy for walking" },
     mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 7, els: ["Fire", "Electric"], about: "Digs up coins" },
+    jars: { name: "Jar Workshop", res: "jars", unit: "plain jars", base: .6, els: ["Earth", "Water"], about: "Blows plain jars for catching" },
     candy: { name: "Candy Maker", res: "treats", unit: "treats", base: .5, els: ["Fire", "Spirit"], about: "Cooks treats that calm wild Glumis" },
   };
   const HOME_CAP_HOURS = 8, HOME_SLOTS = () => S.xlvl >= 8 ? 3 : 2;
@@ -2991,6 +2995,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     spring: '<svg viewBox="0 0 48 48"><ellipse cx="24" cy="36" rx="18" ry="7" fill="#7fe7ff" stroke="#2f8fb3" stroke-width="2"/><path d="M14 30l3-14 4 6 3-12 3 12 4-6 3 14" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="2" stroke-linejoin="round"/><circle cx="24" cy="35" r="3" fill="#e8fbff"/></svg>',
     mine: '<svg viewBox="0 0 48 48"><path d="M6 40l8-20 10-8 10 8 8 20z" fill="#a39a92" stroke="#5f554d" stroke-width="2" stroke-linejoin="round"/><path d="M18 40v-8a6 6 0 0112 0v8z" fill="#4a3f38"/><path d="M14 30l3-2 2 3-3 2zM31 26l3-1 1 3-3 1z" fill="#ffd13b" stroke="#c4901a" stroke-width="1"/></svg>',
   };
+  PLACE_SVG.jars = IC.jar(JARS[0].c);
   for (const [k, a] of [["orchard", "bld-orchard"], ["spring", "bld-energy-spring"], ["mine", "bld-gold-mine"]]) if (ART[a]) PLACE_SVG[k] = artIcon(a);
   const HOME_ISLAND_SVG = `<svg class="iland" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><linearGradient id="isea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fdcf0"/><stop offset="1" stop-color="#4fb6d8"/></linearGradient>
@@ -3011,6 +3016,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <path d="M72 144q-18-8-30 4 16-2 30-2zM72 144q16-12 32-4-16 0-32 4zM72 144q-4-16 8-24-4 12-8 24zM72 144q12 4 18 16-10-8-18-14z" fill="#5fbf6a"/></g>
   </svg>`;
   const HOME_BLD_SVG = {
+    jars: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="92" rx="50" ry="7" fill="#5f6f8a" opacity=".22"/><rect x="74" y="18" width="12" height="30" rx="2" fill="#b8a48c" stroke="#6b5640" stroke-width="2.5"/><path d="M80 14c-6-4-2-10 3-9" fill="none" stroke="#d9d2c8" stroke-width="3" stroke-linecap="round"/><rect x="20" y="44" width="80" height="46" rx="6" fill="#eaf4ff" stroke="#5a7090" stroke-width="3"/><path d="M14 47 60 22 106 47Z" fill="#8fb8e8" stroke="#5a7090" stroke-width="3" stroke-linejoin="round"/><rect x="50" y="62" width="20" height="28" rx="3" fill="#c9875f" stroke="#7a4a32" stroke-width="2.5"/><g stroke="#5a7090" stroke-width="2"><rect x="27" y="58" width="16" height="18" rx="5" fill="#bfe8ff"/><rect x="31" y="54" width="8" height="5" rx="1.5" fill="#b98a5a"/><rect x="78" y="58" width="16" height="18" rx="5" fill="#ffe08a"/><rect x="82" y="54" width="8" height="5" rx="1.5" fill="#b98a5a"/></g><circle cx="60" cy="36" r="6" fill="#bfe8ff" stroke="#5a7090" stroke-width="2"/></svg>',
     candy: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="92" rx="50" ry="7" fill="#b06a8a" opacity=".22"/><line x1="60" y1="34" x2="60" y2="14" stroke="#fff" stroke-width="4"/><circle cx="60" cy="13" r="11" fill="#ffd36b" stroke="#a0566f" stroke-width="2.5"/><path d="M60 13m-6 0a6 6 0 1 1 6 6a3 3 0 1 1-3-3" fill="none" stroke="#ff6fa8" stroke-width="2.5"/><rect x="22" y="44" width="76" height="46" rx="6" fill="#fff1f6" stroke="#a0566f" stroke-width="3"/><path d="M16 46h88l-6-14H22z" fill="#ff9ec4" stroke="#a0566f" stroke-width="3" stroke-linejoin="round"/><path d="M33 33v12M47 33v12M61 33v12M75 33v12M89 33v12" stroke="#fff" stroke-width="5"/><path d="M16 46q7 8 14 0q7 8 15 0q7 8 15 0q7 8 15 0q7 8 15 0q7 8 14 0" fill="#ff9ec4" stroke="#a0566f" stroke-width="2.5" stroke-linejoin="round"/><rect x="50" y="62" width="20" height="28" rx="3" fill="#c9875f" stroke="#7a4a32" stroke-width="2.5"/><circle cx="65" cy="77" r="1.8" fill="#7a4a32"/><rect x="29" y="59" width="15" height="12" rx="2" fill="#bfe8ff" stroke="#a0566f" stroke-width="2"/><rect x="76" y="59" width="15" height="12" rx="2" fill="#bfe8ff" stroke="#a0566f" stroke-width="2"/><circle cx="36" cy="80" r="3" fill="#ff6fa8"/><circle cx="84" cy="80" r="3" fill="#8fd6ff"/></svg>',
     orchard: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="90" rx="52" ry="8" fill="#3f7d33" opacity=".25"/><path d="M10 86h100" stroke="#a8754a" stroke-width="4"/><path d="M16 72v16M36 72v16M84 72v16M104 72v16" stroke="#a8754a" stroke-width="4" stroke-linecap="round"/><path d="M12 76h96" stroke="#c9935f" stroke-width="4"/><rect x="28" y="48" width="6" height="30" fill="#8a5a36"/><rect x="58" y="40" width="7" height="38" fill="#8a5a36"/><rect x="86" y="50" width="6" height="28" fill="#8a5a36"/><circle cx="31" cy="40" r="18" fill="#6fbf5a" stroke="#3a7a30" stroke-width="3"/><circle cx="61" cy="28" r="22" fill="#86cf6a" stroke="#3a7a30" stroke-width="3"/><circle cx="89" cy="42" r="17" fill="#6fbf5a" stroke="#3a7a30" stroke-width="3"/><g fill="#ff7aa8" stroke="#c0446f" stroke-width="1.5"><circle cx="24" cy="36" r="4"/><circle cx="54" cy="22" r="4"/><circle cx="70" cy="32" r="4"/><circle cx="94" cy="38" r="4"/><circle cx="36" cy="46" r="3.5"/></g></svg>',
     spring: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="92" rx="50" ry="7" fill="#2f8fb3" opacity=".25"/><ellipse cx="60" cy="78" rx="48" ry="14" fill="#c9b79a" stroke="#8a7a60" stroke-width="3"/><ellipse cx="60" cy="76" rx="40" ry="10" fill="#7fe7ff"/><ellipse cx="52" cy="74" rx="14" ry="3" fill="#e8fbff" opacity=".8"/><g class="icrys"><path d="M60 72l-8-36 8-22 8 22z" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M46 74l-10-26 4-12 10 12 2 26z" fill="#c9f6ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M74 74l2-24 10-10 4 14-8 20z" fill="#c9f6ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M61 20l-2 44" stroke="#fff" stroke-width="3" stroke-linecap="round"/></g></svg>',
@@ -3040,10 +3046,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   function collectPlace(k) {
     const p = homeState()[k], n = Math.floor(p.store); if (n < 1) return 0;
-    p.store -= n; const r = PLACES[k].res; if (r === "leaves") S.leaves += n; else if (r === "glow") S.glow += n; else if (r === "treats") S.treats += n; else S.coins += n;
+    p.store -= n; const r = PLACES[k].res; if (r === "leaves") S.leaves += n; else if (r === "glow") S.glow += n; else if (r === "treats") S.treats += n; else if (r === "jars") S.jars.plain += n; else S.coins += n;
     return n;
   }
-  const resIcon = k => PLACES[k].res === "leaves" ? IC.leaf : PLACES[k].res === "glow" ? IC.glow : PLACES[k].res === "treats" ? IC.treat : IC.coin;
+  const resIcon = k => PLACES[k].res === "leaves" ? IC.leaf : PLACES[k].res === "glow" ? IC.glow : PLACES[k].res === "treats" ? IC.treat : PLACES[k].res === "jars" ? IC.jar(JARS[0].c) : IC.coin;
   const perHour = v => v >= 10 ? Math.round(v) : Math.round(v * 10) / 10;
   let settingsPage = null;  // null | "main" | "delete"
   function pageSettings() {
@@ -3156,8 +3162,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         ${slots < 3 ? `<p class="hint" style="margin:0">A third worker spot opens at Explorer level 8.</p>` : ""}`;
     }
     // the island itself: buildings to tap, workers busy beside them, bubbles with what is ready to collect
-    const BLD = { orchard: { x: 26, y: 33 }, spring: { x: 74, y: 30 }, mine: { x: 30, y: 67 }, candy: { x: 71, y: 67 } };
-    const WORK_SPOTS = { orchard: [[-15, 13], [15, 15], [0, 19]], spring: [[-15, 13], [15, 14], [0, 18]], mine: [[-17, 12], [17, 12], [0, 17]], candy: [[-16, 12], [16, 12], [0, 17]] };
+    const BLD = { orchard: { x: 25, y: 24 }, spring: { x: 75, y: 22 }, mine: { x: 26, y: 76 }, candy: { x: 74, y: 76 }, jars: { x: 50, y: 50 } };
+    const WORK_SPOTS = { orchard: [[-15, 13], [15, 15], [0, 19]], spring: [[-15, 13], [15, 14], [0, 18]], mine: [[-17, 12], [17, 12], [0, 17]], candy: [[-16, 12], [16, 12], [0, 17]], jars: [[-15, 11], [15, 11], [0, 15]] };
     const total = Object.keys(PLACES).reduce((a, k) => a + Math.floor(H[k].store), 0);
     const blds = Object.keys(PLACES).map(k => {
       const P = PLACES[k], b = BLD[k], ws = placeWorkers(k), n = Math.floor(H[k].store);
