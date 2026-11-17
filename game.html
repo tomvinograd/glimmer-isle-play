@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794917621;</script>
+<script>window.GAME_BUILD = 1794918594;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -928,6 +928,9 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .lnode { width: 32px; height: 32px; border: 0; border-radius: 9px; background: #fff; display: grid; place-items: center; position: relative; box-shadow: 0 2px 6px rgba(91,70,54,.2); color: #3e9e57; font: 900 18px var(--display); }
 .lnode svg { width: 20px; height: 20px; } .lnode small { position: absolute; bottom: -16px; font: 800 11px var(--display); color: var(--brown); }
 .lnode.done { background: #e6f8ea; } .lnode.claim { background: #ffe08a; animation: zpulse 1.1s ease-in-out infinite; } .lnode:disabled { opacity: 1; }
+.lstreak { display: flex; align-items: baseline; gap: 6px; margin-top: 10px; padding: 8px 12px; border-radius: 10px; background: #fff; color: var(--brown); box-shadow: 0 2px 10px rgba(91,70,54,.12); }
+.lstreak b { font: 900 20px/1 var(--display); } .lstreak span { font: 800 13px var(--display); } .lstreak small { margin-left: auto; font: 800 12px var(--display); color: #8a6d55; }
+.lstreak.hot { background: linear-gradient(90deg, #ffb347, #ff6a3d); color: #fff; } .lstreak.hot small { color: #fff; }
 .lrank { display: flex; gap: 10px; align-items: center; margin-top: 12px; padding: 12px; border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(91,70,54,.12); }
 .lrank > div { flex: 1; } .lrank b { display: block; font: 800 18px var(--display); color: var(--brown); } .lrank small { font-size: 12px; color: var(--brown-2, #8a6d55); }
 .lteam { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: #f3e7d6; } .lteam > b { font: 800 14px var(--display); color: var(--brown); } .lteam .pmons { flex: 1; margin: 0; }
@@ -2423,7 +2426,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
     if (P.mode === "gym") { if (!S.gyms) S.gyms = {}; S.gyms[gymKey(P.z, P.d, P.i)] = 1; }
     if (P.mode === "duel") { const D = duelState(); D.pts += 12; D.wins++; }
-    if (P.mode === "ladder") { const L = ladderState(); ladderRank(RANK_WIN[ladderTier(L.pts)]); L.wins++; ladderPts(LADDER_WIN); }
+    if (P.mode === "ladder") { const L = ladderState(); ladderRank(RANK_WIN[ladderTier(L.pts)]); L.wins++; ladderWinPts(); }
     if (P.mode === "tower") S.tower = Math.max(S.tower || 0, P.f);
     for (const r of P.rewards) giveReward(r);
     track("win", null, { gym: 40, ladder: 30, tower: 30, duel: 30 }[P.mode] || 20); return P.rewards;
@@ -2431,14 +2434,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   async function finishArena(won) {
     const P = BT.prep; let given = [];
     if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); }
-    if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderPts(LADDER_LOSS); }
+    if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); }
     save(); await resultScreen(won, given, 0);
     BT = null; prep = null; arenaSub = P.back; render(); save();
   }
   async function startPrep(quick) {
     const P = prep; if (!P || !team().length) return;
     if (P.mode === "duel") duelState().left--;
-    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderPts(LADDER_LOSS); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
+    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); await resultScreen(won, given, 0); prep = null; arenaSub = P.back; render(); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
   }
   const rchips = rs => rs.map(r => `<span class="rchip">${RW[r.k][0]}${r.n}</span>`).join("");
@@ -2484,10 +2487,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         return `<button class="lnode${got ? " done" : can ? " claim" : ""}" data-act="ladclaim" ${can ? "" : "disabled"} aria-label="${need} ladder points">${got ? "\u2713" : RW[LADDER_REW[k].k][0]}<small>${need}</small></button>`; }).join("");
       return `${back("hub")}<h3>Ladder</h3><span></span></div>
         <div class="ltrack"><span class="lwins"><b>${L.lp}</b><small>points</small></span><div class="lline"><i style="width:${ladderFill(L.lp)}%"></i></div><div class="lnodes">${nodes}</div></div>
+        <div class="lstreak${(S.ladStreak || 0) > 1 ? " hot" : ""}"><b>${S.ladStreak || 0}</b><span>${(S.ladStreak || 0) === 1 ? "win" : "wins"} in a row</span><small>Next win: +${streakWin((S.ladStreak || 0) + 1)} points</small></div>
         <div class="lrank"><span class="drank pic">${tierBadge(ladderTier(L.pts), 54)}</span><div><b>${duelRank(L.pts)}</b><small>${L.pts} rank points${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
         <div class="ltiers">${DRANKS.map((r, i) => `<span class="${i < ladderTier(L.pts) ? "past" : i === ladderTier(L.pts) ? "cur" : "next"}">${tierBadge(i, i === ladderTier(L.pts) ? 34 : 26)}<small>${r[1]}</small></span>`).join("")}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
-        <p class="hint" style="margin:0">Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, a loss ${LADDER_LOSS}. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but fewer rank points.</p>
+        <p class="hint" style="margin:0">Every match gives ladder points for the week's rewards: a win ${LADDER_WIN}, plus ${STREAK_STEP} for each win in a row before it (up to +${STREAK_STEP * (STREAK_MAX - 1)}); a loss ${LADDER_LOSS} and ends the streak. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but fewer rank points.</p>
         <button class="mb gold pbig" data-act="laddergo">Match</button>`;
     }
     if (arenaSub === "tower") {
@@ -2594,7 +2598,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const LADDER_REW = [{ k: "glow", n: 40 }, { k: "egg1", n: 1 }, { k: "glow", n: 80 }, { k: "glow", n: 100 }, { k: "egg2", n: 1 }, { k: "glow", n: 160 }, { k: "egg3", n: 1 }];
   const ladderFill = p => { const n = LADDER_MS.length; if (p >= LADDER_MS[n - 1]) return 100; const k = LADDER_MS.findIndex(m => p < m), a = k ? LADDER_MS[k - 1] : 0; return Math.max(0, ((k ? k - 1 : -1) + (p - a) / (LADDER_MS[k] - a)) / (n - 1) * 100); };
   const LADDER_MS_OLD = [10, 20, 40, 60, 100, 150];  // wins, before 16 Nov: only to convert a week already started
-  function ladderPts(n) { const L = ladderState(); L.lp += n; toast(`+${n} ladder points`); ladderClaim(); }
+  const STREAK_STEP = 3, STREAK_MAX = 6;  // win streak: +3 ladder points per win in a row, full bonus from the 6th
+  const streakWin = s => LADDER_WIN + STREAK_STEP * (Math.min(s, STREAK_MAX) - 1);  // points for a win that makes a streak of s
+  function ladderPts(n, why) { const L = ladderState(); L.lp += n; toast(`+${n} ladder points${why ? ` (${why})` : ""}`); ladderClaim(); }
+  function ladderWinPts() { S.ladStreak = (S.ladStreak || 0) + 1; const s = S.ladStreak; ladderPts(streakWin(s), s > 1 ? `${s} wins in a row` : ""); }
+  function ladderLossPts() { const had = S.ladStreak || 0; S.ladStreak = 0; ladderPts(LADDER_LOSS, had > 1 ? `streak of ${had} ended` : ""); }
   function ladderClaim() { const L = ladderState(); while (L.claimed < LADDER_MS.length && L.lp >= LADDER_MS[L.claimed]) { const r = LADDER_REW[L.claimed]; L.claimed++; giveReward(r); sfx("claim"); toast(`Ladder reward: ${r.n} ${RW[r.k][1]}`); } save(); }
   const weekId = () => Math.floor((Date.now() - 4 * 86400000) / (7 * 86400000));  // weeks start on Monday
   function ladderState() {
