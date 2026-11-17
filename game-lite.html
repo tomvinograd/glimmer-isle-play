@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794914969;</script>
+<script>window.GAME_BUILD = 1794915073;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -3357,7 +3357,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <div class="slist">${R.opts.map(([v, n]) => `<button class="choice${C[R.k] === v ? " on" : ""}" data-act="cfg:${R.k}=${v}"><span>${n}</span><i>${C[R.k] === v ? "✓" : ""}</i></button>`).join("")}</div>`;
     return `<div class="head"><h2>Auto rules</h2><button class="mb gold" data-act="autocfg">Done</button></div>
       <div class="slist">${AUTO_RULES.map(r => `<button class="setrow" data-act="autopick:${r.k}"><span>${r.name}</span><b>${label(r)}</b><i>›</i></button>`).join("")}</div>
-      <p class="hint">When the chosen jar runs out, Auto uses a cheaper one. It never spends energy or coins on stalls, and it pauses at zone guardians and when energy or jars run out.</p>`;
+      <p class="hint">Auto throws only the jar its rule names; when that jar runs out it stops and asks you to go to the Shop. Catch speed Quick throws until each Glumi is caught or runs away and shows just the result. Auto pauses at zone guardians and when energy runs out.</p>`;
   }
   // ================= ATLAS =================
   let atlasZone = null, atlasPin = null, revealAnim = null, revealTrip = false;
