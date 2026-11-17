@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794897036;</script>
+<script>window.GAME_BUILD = 1794897203;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1217,6 +1217,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .bqrow button.on { background: #f5b23c; color: #fff; }
   .price .bq { font-style: normal; font-size: 11px; margin-right: 3px; opacity: .9; }
   .gsb.warn { background: #e5603b; color: #fff; }
+  .kbox { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: #fff; box-shadow: 0 0 0 3px #f5b23c, 0 3px 10px rgba(91,70,54,.15); }
+  .krow { display: flex; align-items: center; gap: 10px; } .krow b { display: block; font: 800 15px var(--display); color: var(--brown); } .krow small { font-size: 12px; color: #8a6d55; }
+  .kbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kbuy { border: 0; border-radius: 12px; padding: 8px 6px; display: grid; justify-items: center; gap: 2px; color: #fff; text-align: center; }
+  .kbuy.ppurple { background: linear-gradient(#b99cff, #8e6fe0); } .kbuy.pgold { background: linear-gradient(#ffd36b, #f0a52a); }
+  .kbuy b { font: 800 14px var(--display); } .kbuy small { font-size: 10.5px; opacity: .95; } .kbuy span { display: flex; align-items: center; gap: 3px; font: 800 13px var(--display); }
+  .kbuy span svg { width: 15px; height: 15px; } .kbuy:disabled { filter: grayscale(.7); opacity: .7; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3154,13 +3161,16 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   function autoResume() { S.auto = true; autoSession = true; autoNext = performance.now() + 500; save(); render(); }
   // not enough keepsakes to ascend: open a duplicate's release page, or the shop row of that kind
-  function goForKeepsakes(m, missing) {
-    const free = x => x.uid !== m.uid && x.sp === m.sp && !S.team.includes(x.uid) && !x.lock && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid));
-    const dup = S.mons.filter(free).sort((a, b) => a.q - b.q || a.lvl - b.lvl)[0];
-    if (dup) { openRelease(m.sp, m.uid, missing); toast(`${missing} more ${SP[m.sp].name} keepsake${missing > 1 ? "s" : ""} needed`); return; }
-    sheetUid = null; view = "shop"; shopTab = "market"; marketFocus = m.sp; showMap = false; render();
-    setTimeout(() => { const r = $("mk-" + m.sp); if (r) r.scrollIntoView({ block: "center", behavior: "auto" }); }, 150); setTimeout(() => { marketFocus = null; }, 4000);
-    toast(`No spare ${SP[m.sp].name}: buy one here, then release it for keepsakes`);
+  function goForKeepsakes(m, missing) { keepsakePopup(m, missing); }
+  let keepsFor = null;  // { uid } of the Glumi waiting to ascend while the player gets keepsakes in the shop
+  const keepsMissing = m => Math.max(0, (ASC_COST[ascOf(m)] || 0) - ((S.keepsakes[m.sp] || 0) + (S.shards || 0)));
+  function keepsBox() {
+    const m = keepsFor && mon(keepsFor.uid); if (!m) return "";
+    const k = marketKinds().find(x => x.sp === m.sp), miss = keepsMissing(m), name = SP[m.sp].name;
+    const btn = q => { const p = marketPrice(q, k.lvl); return `<button class="kbuy ${q >= 3 ? "pgold" : "ppurple"}" data-act="buykeep:${q}" ${S.coins >= p ? "" : "disabled"}><b>+${KEEPSAKES_BY_GRADE[q]} keepsakes</b><small>Buy and release a ${GRADES[q].name} ${name}</small><span>${IC.coin}${p}</span></button>`; };
+    return `<div class="kbox"><div class="krow">${art(m.sp, m.evo, 44)}<div><b>Keepsakes for ${fname(m.sp, m.evo)}</b><small>${miss ? `${miss} more needed to ascend · you have ${S.keepsakes[m.sp] || 0}` : "Enough to ascend"}</small></div></div>
+      ${k ? `<div class="kbtns">${btn(2)}${btn(3)}</div>` : `<p class="hint" style="margin:0">${name} isn't sold in the shop. Catch more on the path or offer spare Glumis at the Star Shrine for star shards.</p>`}
+      <button class="mb" data-act="keepsback">\u2039 Back to ${fname(m.sp, m.evo)}</button></div>`;
   }
   // ================= RELEASE SEVERAL =================
   let rel = null;  // { sp, keep: uid not to offer, sel: [uids], sort, up, sure, back }
@@ -3200,7 +3210,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
   const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", book: "team", release: "team" })[v] || v;
   function resetTab(t, keepPrep) {
-    if (t === "shop") { shopTab = "jars"; marketFocus = null; reqPick = null; }
+    if (t === "shop") { shopTab = "jars"; marketFocus = null; reqPick = null; keepsFor = null; }
     if (t === "team") { teamTab = "team"; sheetPage = "main"; sheetTab = "stats"; sheetMulti = false; rel = null; }
     if (t === "arena" && !keepPrep) { arenaSub = "hub"; prep = null; }
     if (t === "home") { homePlace = null; homePick = false; expPick = null; }
@@ -3208,12 +3218,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (t === "atlas") { atlasZone = null; atlasPin = null; }
   }
   function keepsakePopup(m, missing) {
-    closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2], buys = Math.ceil(missing / per);
+    closePopup(); const name = SP[m.sp].name, per = KEEPSAKES_BY_GRADE[2];
+    const dupN = S.mons.filter(x => x.uid !== m.uid && x.sp === m.sp && !S.team.includes(x.uid) && !x.lock && !(typeof workingAt === "function" && workingAt(x.uid)) && !(typeof isAway === "function" && isAway(x.uid))).length;
     const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<button class="popbg" data-act="closepop" aria-label="Close"></button><div class="popup" role="dialog">${art(m.sp, 0, 70)}
       <h3>Not enough keepsakes</h3><p>${fname(m.sp, m.evo)} needs ${missing} more ${name} keepsake${missing > 1 ? "s" : ""} to ascend.
-      Buy ${buys > 1 ? `${buys} Purple ${name}s` : `a Purple ${name}`} in the shop and release ${buys > 1 ? "them" : "it"} for ${per} keepsakes each.</p>
-      <div class="popbtns"><button class="mb" data-act="closepop">Not now</button><button class="mb gold" data-act="gotoshop:${m.sp}">Go to the shop</button></div></div>`;
+      In the shop one tap buys a ${name} and releases it for keepsakes (${per} from a Purple), then you come back here to ascend.</p>
+      <div class="popbtns"><button class="mb" data-act="closepop">Not now</button>${dupN ? `<button class="mb" data-act="keepsrel:${m.uid}">Release spares (${dupN})</button>` : ""}<button class="mb gold" data-act="keepsshop:${m.uid}">Go to the shop</button></div></div>`;
     document.body.appendChild(d);
   }
   let marketFocus = null;  // a Glumi kind to scroll to and highlight (from the Ascend pop-up)
@@ -3231,7 +3242,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <span class="mprices">${chip(k, 2)}${chip(k, 3)}</span></div>`).join("");
     return `<div class="head"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
       <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
-      <p class="hint" style="margin:0">Every Glumi of the zones you have opened. Release a Purple one for ${KEEPSAKES_BY_GRADE[2]} keepsakes.</p>
+      ${keepsBox()}<p class="hint" style="margin:0">Every Glumi of the zones you have opened. Release a Purple one for ${KEEPSAKES_BY_GRADE[2]} keepsakes.</p>
       <div class="slist">${rows}</div>`;
   }
   let autoPick = null;  // the rule whose choices are open, or null for the list
@@ -3618,6 +3629,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "buymon") { const [sp, q] = arg.split("-").map(Number), k = marketKinds().find(x => x.sp === sp); if (!k) return; const p = marketPrice(q, k.lvl); if (S.coins < p) return;
       if (confirmBuy !== arg) { confirmBuy = arg; render(); return; }
       S.coins -= p; confirmBuy = null; const m = newMon(sp, k.lvl, q); keepMon(m); save(); render(); reveal(m, "Welcome!"); }
+    else if (a === "keepsshop") { closePopup(); const m = mon(n); if (!m) return; keepsFor = { uid: n }; sheetUid = null; view = "shop"; shopTab = "market"; showMap = false; render(); window.scrollTo(0, 0); }
+    else if (a === "keepsrel") { closePopup(); const m = mon(n); if (m) openRelease(m.sp, m.uid, keepsMissing(m)); }
+    else if (a === "keepsback") { const u = keepsFor && keepsFor.uid; keepsFor = null; if (u && mon(u)) { view = "team"; sheetUid = u; sheetPage = "main"; } render(); window.scrollTo(0, 0); }
+    else if (a === "buykeep") { const m = keepsFor && mon(keepsFor.uid); if (!m) return; const k = marketKinds().find(x => x.sp === m.sp); if (!k) return; const q = n, p = marketPrice(q, k.lvl); if (S.coins < p) return;
+      S.coins -= p; S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + KEEPSAKES_BY_GRADE[q]; sfx("coin"); save();
+      if (keepsMissing(m) <= 0) { keepsFor = null; view = "team"; sheetUid = m.uid; sheetPage = "main"; render(); window.scrollTo(0, 0); toast(`Enough keepsakes: ${fname(m.sp, m.evo)} can ascend now`); }
+      else { render(); toast(`+${KEEPSAKES_BY_GRADE[q]} ${SP[m.sp].name} keepsakes · ${keepsMissing(m)} more needed`); } }
     else if (a === "gotoshop") { closePopup(); sheetUid = null; view = "shop"; shopTab = "market"; marketFocus = n; showMap = false; render();
       setTimeout(() => { const r = $("mk-" + n); if (r) r.scrollIntoView({ block: "center", behavior: "smooth" }); }, 60); setTimeout(() => { marketFocus = null; }, 4000); }
     else if (a === "closepop") closePopup();
