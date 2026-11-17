@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794937558;</script>
+<script>window.GAME_BUILD = 1794938449;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2075,7 +2075,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     clearInterval(tickId); let last = performance.now();
     tickId = setInterval(() => { const now = performance.now(); tick(Math.min(.25, (now - last) / 1000)); last = now; }, 100);
   }
-  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1) * stMul(sideA, sideD) * (att.rage ? 1.3 : 1))); dfn.hp = Math.max(0, dfn.hp - dmg);  return dmg; }
+  const DMG_MULT = 1.6;  // all fight damage (Tom 17 Nov: fights dragged on)
+  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(DMG_MULT * atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1) * stMul(sideA, sideD) * (att.rage ? 1.3 : 1))); dfn.hp = Math.max(0, dfn.hp - dmg);  return dmg; }
   function doSkill(mine) {
     const me = front(), foe = BT.foes[BT.fi], a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me;
     return castSkill(mine, "x");
@@ -2087,7 +2088,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     dt *= BT.speed; BT.swapCd = Math.max(0, BT.swapCd - dt); BT.me.sh = Math.max(0, (BT.me.sh || 0) - dt); BT.foe.sh = Math.max(0, (BT.foe.sh || 0) - dt);
     const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return;
     for (const [sd2, mm] of [[BT.me, me], [BT.foe, foe]]) { const st = sd2.st || (sd2.st = {}); for (const k in st) st[k] = Math.max(0, st[k] - dt);
-      if (st.burn > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .04 * dt); if (st.poison > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .03 * dt); if (st.regen > 0) mm.hp = Math.min(maxHp(mm), mm.hp + maxHp(mm) * .04 * dt); }
+      if (st.burn > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .04 * dt); if (st.poison > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .03 * dt); if (st.regen > 0) mm.hp = Math.min(maxHp(mm), mm.hp + maxHp(mm) * .015 * dt); }
     BT.me.t += stOn(BT.me, "stun") ? 0 : dt; BT.foe.t += stOn(BT.foe, "stun") ? 0 : dt; BT.me.e = Math.min(100, BT.me.e + E_RATE * dt * (1 + charmB(me, "en"))); BT.foe.e = Math.min(100, BT.foe.e + E_RATE * dt);  // steady: 1 point a second
     if (BT.me.t >= interval(me)) { BT.me.t -= interval(me); const em = mult(SP[me.sp].el, SP[foe.sp].el); BT.fx.push({ who: "me", eff: em, dmg: hit(me, foe, interval(me) * .9 * em, BT.me, BT.foe, true) }); }
     if (BT.auto) skillAI(true);
@@ -2524,20 +2525,20 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     "Jelly Wobble", "Lantern Glare", "Hot Tea Pinch", "Spore Squeak", "Glow Trail", "Puff Burrow", "Drizzle Pounce", "Chime Song", "Balloon Bump",
     "Coral Crown", "Fungal Fist", "Thunder Wing"];
   const SHARED = {  // [name, energy cost, hit power, heal share]
-    ember: [["Cinder Pop", 3, 1.4, 0], ["Flare Blast", 6, 2.6, 0], ["Warm Glow", 4, 0, .25]],
-    tide: [["Bubble Splash", 3, 1.4, 0], ["Tidal Crash", 6, 2.6, 0], ["Rain Soothe", 4, 0, .25]],
-    leaf: [["Leaf Whirl", 3, 1.4, 0], ["Thorn Storm", 6, 2.6, 0], ["Sap Mend", 4, 0, .25]],
-    spark: [["Static Zap", 3, 1.4, 0], ["Thunder Clap", 6, 2.6, 0], ["Spark Tonic", 4, 0, .25]],
-    stone: [["Pebble Crash", 3, 1.4, 0], ["Boulder Drop", 6, 2.6, 0], ["Stone Rest", 4, 0, .25]],
-    shade: [["Moon Hush", 3, 1.4, 0], ["Star Fall", 6, 2.6, 0], ["Moonlit Rest", 4, 0, .25]],
+    ember: [["Cinder Pop", 3, 1.4, 0], ["Flare Blast", 6, 2.6, 0], ["Warm Glow", 4, 0, .12]],
+    tide: [["Bubble Splash", 3, 1.4, 0], ["Tidal Crash", 6, 2.6, 0], ["Rain Soothe", 4, 0, .12]],
+    leaf: [["Leaf Whirl", 3, 1.4, 0], ["Thorn Storm", 6, 2.6, 0], ["Sap Mend", 4, 0, .12]],
+    spark: [["Static Zap", 3, 1.4, 0], ["Thunder Clap", 6, 2.6, 0], ["Spark Tonic", 4, 0, .12]],
+    stone: [["Pebble Crash", 3, 1.4, 0], ["Boulder Drop", 6, 2.6, 0], ["Stone Rest", 4, 0, .12]],
+    shade: [["Moon Hush", 3, 1.4, 0], ["Star Fall", 6, 2.6, 0], ["Moonlit Rest", 4, 0, .12]],
   };
   const EL_GLYPH = { ember: "M12 2c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 0-3 0-5 1-7z", tide: "M12 2C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-13z",
     leaf: "M5 19C5 9 11 4 20 4c0 9-5 15-15 15zm0 0 8-8", spark: "M13 2 4 14h7l-1 8 9-12h-7z", stone: "M4 17l3-8 6-4 6 5 1 7-6 3H8z", shade: "M15 3a9 9 0 1 0 6 13A7 7 0 0 1 15 3z" };
   const elGlyph = (el, sz) => `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" aria-hidden="true"><path d="${EL_GLYPH[el]}" fill="#fff" stroke="rgba(60,40,20,.45)" stroke-width="1.3" stroke-linejoin="round"/></svg>`;
   const STATUS = { burn: { n: "Burn", t: 4, foe: 1, c: "#ff7a3c", d: "loses 4% HP a second for 4 s" }, poison: { n: "Poison", t: 8, foe: 1, c: "#8fcf5a", d: "loses 3% HP a second for 8 s" },
     atkdown: { n: "Attack down", t: 6, foe: 1, c: "#7fb8ff", d: "deals 30% less damage for 6 s" }, defdown: { n: "Defense down", t: 6, foe: 1, c: "#c9a27a", d: "takes 35% more damage for 6 s" },
-    stun: { n: "Stun", t: 2, foe: 1, c: "#ffd34d", d: "can't attack for 2 s" }, regen: { n: "Regen", t: 6, foe: 0, c: "#5fcf6a", d: "heals 4% HP a second for 6 s" },
-    atkup: { n: "Attack up", t: 6, foe: 0, c: "#ff9a5c", d: "deals 30% more damage for 6 s" }, drain: { n: "Drain", t: 0, foe: 0, c: "#b48cff", d: "heals half the damage dealt" } };
+    stun: { n: "Stun", t: 2, foe: 1, c: "#ffd34d", d: "can't attack for 2 s" }, regen: { n: "Regen", t: 4, foe: 0, c: "#5fcf6a", d: "heals 1.5% HP a second for 4 s" },
+    atkup: { n: "Attack up", t: 6, foe: 0, c: "#ff9a5c", d: "deals 30% more damage for 6 s" }, drain: { n: "Drain", t: 0, foe: 0, c: "#b48cff", d: "heals a quarter of the damage dealt" } };
   const EL_FX = { ember: ["burn", "atkup"], tide: ["atkdown", "regen"], leaf: ["poison", "regen"], spark: ["stun", "defdown"], stone: ["defdown", "atkup"], shade: ["drain", "atkdown"] };
   const sigFx = sp => SP[sp].tier === 3 ? EL_FX[SP[sp].el] : [EL_FX[SP[sp].el][sp % 2]];
   const stOn = (side, k) => side && side.st && side.st[k] > 0;
@@ -2546,11 +2547,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const SHIELD_COST = 4, E_RATE = 10;  // fight energy per second (10 = 1 bar point)
   function skillOf(m, k) {
     const s = SP[m.sp];
-    if (k === "x") return { k, name: EXCL[m.sp] || "Signature", fx: sigFx(m.sp), cost: 5, power: s.shape === "tall" ? 4.4 : 3.8, heal: s.shape === "round" ? .15 : 0, shield: s.shape === "wide" ? 3 : 0, el: s.el, sig: true };
+    if (k === "x") return { k, name: EXCL[m.sp] || "Signature", fx: sigFx(m.sp), cost: 5, power: s.shape === "tall" ? 4.4 : 3.8, heal: s.shape === "round" ? .08 : 0, shield: s.shape === "wide" ? 3 : 0, el: s.el, sig: true };
     const [name, cost, power, heal] = SHARED[s.el][m.wild ? m.sp % 3 : Math.min(2, m.sk || 0)]; return { k, name, cost, power, heal, shield: 0, el: s.el };
   }
   const skillText = sk => [sk.power ? `a ${sk.power}x hit` : "", sk.heal ? `heals ${Math.round(sk.heal * 100)}% HP` : "", sk.shield ? `a ${sk.shield} s shield` : "", ...(sk.fx || []).map(f => `${STATUS[f].n}: ${STATUS[f].foe ? "the foe" : "your Glumi"} ${STATUS[f].d}`)].filter(Boolean).join(" + ");
-  const skillEst = (a, d, sk) => sk.power ? Math.max(1, Math.round(atk(a) * sk.power * mult(sk.el, SP[d.sp].el) * 60 / (60 + def(d)))) : Math.round(maxHp(a) * sk.heal);
+  const skillEst = (a, d, sk) => sk.power ? Math.max(1, Math.round(DMG_MULT * atk(a) * sk.power * mult(sk.el, SP[d.sp].el) * 60 / (60 + def(d)))) : Math.round(maxHp(a) * sk.heal);
   function castSkill(mine, k) {
     if (!BT) return false; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return false;
     const a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me, sk = skillOf(a, k);
@@ -2558,7 +2559,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     sa.e -= sk.cost * 10;
     let dealt = 0; if (sk.power) { const m = mult(sk.el, SP[d.sp].el); dealt = hit(a, d, sk.power * m, sa, sd, false); BT.fx.push({ who: mine ? "me" : "foe", dmg: dealt, skill: true, eff: m }); }
     for (const f of sk.fx || []) { const S2 = STATUS[f];
-      if (f === "drain") { const h = Math.max(1, Math.round(dealt / 2)); a.hp = Math.min(maxHp(a), a.hp + h); BT.fx.push({ who: mine ? "me" : "foe", heal: h }); continue; }
+      if (f === "drain") { const h = Math.max(1, Math.round(dealt / 4)); a.hp = Math.min(maxHp(a), a.hp + h); BT.fx.push({ who: mine ? "me" : "foe", heal: h }); continue; }
       const side = S2.foe ? sd : sa; side.st = side.st || {}; side.st[f] = S2.t; BT.fx.push({ who: (S2.foe ? !mine : mine) ? "me" : "foe", stat: S2.n, c: S2.c }); }
     if (sk.heal) { const h = Math.round(maxHp(a) * sk.heal); a.hp = Math.min(maxHp(a), a.hp + h); BT.fx.push({ who: mine ? "me" : "foe", heal: h }); }
     if (sk.shield) sa.sh = Math.max(sa.sh || 0, sk.shield);
@@ -2660,7 +2661,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function simulate(mine, foes, detail) {  // detail: { won, margin (-1..1: share of HP left on the winning side), top (foe that dealt most), topShare }
     const A = withTB(mine).map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), B = withTB(foes).map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), ea = { e: 0 }, eb = { e: 0 };
     let i = 0, j = 0;
-    const hitS = (x, y, p, sx, sy, basic) => { const d = Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m)) * (x.rage ? 1.3 : 1))); y.hp -= d; x.d += d; };
+    const hitS = (x, y, p, sx, sy, basic) => { const d = Math.max(1, Math.round(DMG_MULT * atk(x.m) * p * 60 / (60 + def(y.m)) * (x.rage ? 1.3 : 1))); y.hp -= d; x.d += d; };
     const em = (x, y) => mult(SP[x.m.sp].el, SP[y.m.sp].el);
     const simSkill = (x, y, sx, sy) => { const X = skillOf(x.m, "x"), Sk = skillOf(x.m, "s"), use = sk => { sx.e -= sk.cost * 10; if (sk.power) hitS(x, y, sk.power * (sk.fx && sk.fx.length ? 1.25 : 1) * mult(sk.el, SP[y.m.sp].el), sx, sy, false); if (sk.heal) x.hp = Math.min(maxHp(x.m), x.hp + maxHp(x.m) * sk.heal); };
       if (Sk.heal && x.hp < maxHp(x.m) * .45 && sx.e >= Sk.cost * 10) use(Sk); else if (sx.e >= X.cost * 10) use(X); else if (!Sk.heal && sx.e >= 90 && sx.e >= Sk.cost * 10) use(Sk); };
