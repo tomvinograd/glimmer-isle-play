@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794919958;</script>
+<script>window.GAME_BUILD = 1794920047;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -804,6 +804,12 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .clist { display: grid; gap: 8px; } .crow { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
 .crow.cur { background: #fff8e6; margin-bottom: 8px; } .cbtn { display: grid; gap: 4px; justify-items: end; } .cbtn .mb { padding: 5px 10px; font-size: 12px; }
 .rchip svg { width: 18px; height: 18px; }
+.bsec { margin: 4px 2px 0; font: 900 15px var(--display); color: var(--brown); }
+.blist { display: grid; gap: 8px; } .brow { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
+.brow.own { background: #f1fbf3; } .bmx { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 10px; background: linear-gradient(#ffe08a, #f5a623); color: #fff; font: 900 15px var(--display); } .bmx svg { width: 26px; height: 26px; }
+.brow .price { flex: none; }
+.glowpill.efull { box-shadow: 0 0 0 2px #3fc1e8, 0 0 12px rgba(63,193,232,.8); animation: efull 1.2s ease-in-out infinite alternate; }
+@keyframes efull { from { box-shadow: 0 0 0 2px #3fc1e8, 0 0 6px rgba(63,193,232,.5); } to { box-shadow: 0 0 0 2px #3fc1e8, 0 0 16px rgba(63,193,232,.95); } }
 .prew { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
@@ -1663,7 +1669,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
   const bossReady = i => !S.zones[i].cleared && zoneAll(i);  // only after every regular Glumi here is caught
   const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500, 200: 1500, 500: 3000 };  // glow you need to have to use each multiplier (Tom 16 Nov)
-  const multNeed = M => MULT_NEED[M.m] ?? M.m, multOpen = M => S.glow >= multNeed(M);
+  const MULT_PRICE = { 5: 150, 10: 600, 20: 1500, 50: 4000, 100: 10000, 200: 25000, 500: 60000 };  // coins to unlock a multiplier for good
+  const multOwned = M => !!(S.multOwned && S.multOwned[M.m]);
+  const multNeed = M => MULT_NEED[M.m] ?? M.m, multOpen = M => S.glow >= multNeed(M) || multOwned(M);
   const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return S.glow >= want.m ? want : [...MULTS].reverse().find(x => x.m <= want.m && S.glow >= x.m) || MULTS[0]; };  // a chosen multiplier stays while you can pay a step
   function glowNextText() { if (S.glow >= glowCap()) return "Full"; const left = Math.max(1, Math.ceil((GLOW_EVERY - (Date.now() - S.glowT)) / 1000)); return `+1 in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
   function regen() { const now = Date.now(); if (S.glow >= glowCap()) { S.glowT = now; return; } const n = Math.floor((now - S.glowT) / GLOW_EVERY); if (n > 0) { S.glow = Math.min(glowCap(), S.glow + n); S.glowT = S.glow >= glowCap() ? now : S.glowT + n * GLOW_EVERY; } }
@@ -3123,9 +3131,26 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         : `<p class="hint" style="text-align:center;margin:24px 0">No letters right now. Gifts from game updates arrive here.</p>`}`;
   }
   const BUY_QS = [1, 5, 10, 50], buyQ = () => BUY_QS.includes(S.buyQ) ? S.buyQ : 1;
+  const EPACK = { n: 15, price: 120, perDay: 3 };
+  const epackLeft = () => { const P = S.epack; return P && P.d === today() ? Math.max(0, EPACK.perDay - P.n) : EPACK.perDay; };
+  function pageBoost(tabs) {
+    const left = epackLeft();
+    const mrow = M => { const own = multOwned(M), p = MULT_PRICE[M.m];
+      return `<div class="brow${own ? " own" : ""}"><span class="bmx">x${M.m}</span><span class="gct"><b>x${M.m} multiplier</b><small>${own ? "Yours for good: pick it any time" : `Pick it without ${multNeed(M).toLocaleString("en")} energy saved up`} \u00B7 ${M.m} energy a step</small></span>
+        ${own ? `<span class="skuse on">Owned</span>` : `<button class="price" data-act="buymult:${M.m}" ${S.coins >= p ? "" : "disabled"}>${IC.coin}${p.toLocaleString("en")}</button>`}</div>`; };
+    return `<div class="shophead"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
+      <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
+      <h4 class="bsec">Energy</h4>
+      <div class="brow"><span class="bmx">${IC.glow}</span><span class="gct"><b>Energy pack: ${EPACK.n} energy</b><small>${left} of ${EPACK.perDay} left today${S.glow >= glowCap() ? " \u00B7 can go above your cap" : ""}</small></span>
+        <button class="price" data-act="buyepack" ${left && S.coins >= EPACK.price ? "" : "disabled"}>${IC.coin}${EPACK.price}</button></div>
+      <h4 class="bsec">Multipliers</h4>
+      <div class="blist">${MULTS.filter(M => MULT_PRICE[M.m]).map(mrow).join("")}</div>
+      <p class="hint" style="margin:0">A multiplier makes each step cost more energy and gives rarer Glumis and bigger rewards. Without buying it, you can only pick it while you have the energy shown in its card saved up.</p>`;
+  }
   function pageShop() {
-    const tabs = [["jars", "Jars"], ["market", "Glumis"], ["requests", "Requests"]];
+    const tabs = [["jars", "Jars"], ["boost", "Boosts"], ["market", "Glumis"], ["requests", "Requests"]];
     if (shopTab === "supplies") shopTab = "jars";
+    if (shopTab === "boost") return pageBoost(tabs);
     if (shopTab === "requests") return pageRequests(tabs);
     if (shopTab === "market") return pageMarket(tabs);
     const row = (k, icon, name, about, price, ok = true) => `<div class="scard"><span class="sci">${icon}</span><b>${name}</b><small>${about.replace(/ · you have (\d+)/, "")}</small><small class="have">${(about.match(/you have (\d+)/) || [])[1] !== undefined ? "You have " + about.match(/you have (\d+)/)[1] : ""}</small>
@@ -3688,7 +3713,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ---------- loops ----------
   function frame() { const r = $("ring"); if (r && E && E.type === "wild" && !busy) r.style.transform = `scale(${ringScale()})`; requestAnimationFrame(frame); }
   requestAnimationFrame(frame);
-  setInterval(() => { if (!S.started) return; const b = S.glow; regen(); if ($("glowNext")) $("glowNext").textContent = glowNextText(); if (S.glow !== b && $("glowNum")) { $("glowNum").textContent = S.glow; $("glowBar").style.width = Math.min(100, S.glow / glowCap() * 100) + "%"; if (!E && !BT && !busy && view === "explore") renderActions(); } }, 1000);
+  setInterval(() => { if (!S.started) return; const b = S.glow; regen(); if (b < glowCap() && S.glow >= glowCap() && S.opt?.efull !== false) { toast("Energy is full! Go explore"); sfx("claim"); }
+    { const gp = $("hudGlow"); if (gp) gp.classList.toggle("efull", S.glow >= glowCap()); } if ($("glowNext")) $("glowNext").textContent = glowNextText(); if (S.glow !== b && $("glowNum")) { $("glowNum").textContent = S.glow; $("glowBar").style.width = Math.min(100, S.glow / glowCap() * 100) + "%"; if (!E && !BT && !busy && view === "explore") renderActions(); } }, 1000);
   function autoOff(quiet) { if (S.auto) { S.auto = false; if (!quiet) toast("Auto paused"); render(); } }
   function autoTick() {
     if (!S.auto || !S.started || view !== "explore" || showMap || showAuto || BT || busy || document.querySelector(".shade")) return;
@@ -3878,7 +3904,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "step") step();
     else if (a === "mult") { const open = MULTS.filter(x => multOpen(x) || x.m === curM().m), i = open.findIndex(x => x.m === curM().m), nextLock = MULTS.find(x => !multOpen(x));
       S.mult = open[(i + 1) % open.length].m; save(); renderActions();
-      toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} energy` : `x${S.mult}: ${S.mult} energy a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} energy` : ""}`); }
+      toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} energy, or unlock it in the Shop` : `x${S.mult}: ${S.mult} energy a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} energy or the Shop` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
     else if (a === "autospd") { S.autoSpd = AUTO_SPEEDS[(AUTO_SPEEDS.indexOf(autoSpd()) + 1) % AUTO_SPEEDS.length]; save(); toast(`Auto speed ×${autoSpd()}`); render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
@@ -3995,6 +4021,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       for (const id of ids) { const L = MAIL.find(m => m.id === id); if (!L) continue; for (const r of L.rew) { giveReward(r); got[r.k] = (got[r.k] || 0) + r.n; } }
       S.mail = (S.mail || []).filter(x => !ids.includes(x.id)); sfx("claim"); save(); render(); toast("Got " + Object.entries(got).map(([k, n]) => `${n} ${RW[k] ? RW[k][1] : k}`).join(", ")); }
     else if (a === "buyq") { S.buyQ = n; save(); render(); }
+    else if (a === "buymult") { const p = MULT_PRICE[n]; if (!p || S.coins < p || (S.multOwned && S.multOwned[n])) return; S.coins -= p; S.multOwned = S.multOwned || {}; S.multOwned[n] = 1; sfx("claim"); save(); render(); toast(`x${n} is yours: pick it with the knob on the compass`); }
+    else if (a === "buyepack") { if (!epackLeft() || S.coins < EPACK.price) return; if (!S.epack || S.epack.d !== today()) S.epack = { d: today(), n: 0 }; S.epack.n++; S.coins -= EPACK.price; S.glow += EPACK.n; sfx("coin"); save(); render(); toast(`+${EPACK.n} energy`); }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, q = S.jars[arg] !== undefined ? buyQ() : 1, p = prices[arg] * q;
       if (prices[arg] === undefined || S.coins < p) return;
