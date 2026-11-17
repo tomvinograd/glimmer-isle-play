@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794942840;</script>
+<script>window.GAME_BUILD = 1794944622;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1329,6 +1329,31 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   body.quicking #wildActor .spr, body.quicking #wildActor .spr * { animation: none !important; }
   .qbusy { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 30; display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 20px; background: rgba(255,250,240,.95); color: var(--brown); font: 800 15px var(--display); box-shadow: 0 4px 14px rgba(40,25,10,.3); }
   .qbusy svg { width: 18px; height: 18px; animation: qspin .5s linear infinite; } @keyframes qspin { to { transform: rotate(360deg); } }
+
+/* ---- motion kit ---- */
+.mo-f { display: inline-block; transform-origin: 50% 100%; }
+.mo { display: block; transform-origin: 50% 100%; animation: mo-breathe 4s ease-in-out infinite; will-change: transform; }
+.mo.el-ember { animation-name: mo-ember; }
+.mo.el-tide { animation-name: mo-tide; }
+.mo.el-leaf { animation-name: mo-leaf; }
+.mo.el-spark { animation-name: mo-spark; }
+.mo.el-stone { animation-name: mo-stone; }
+.mo.el-shade { animation-name: mo-shade; }
+@keyframes mo-breathe { 0%, 50%, 100% { transform: scale(1.015, .985); } 25%, 75% { transform: scale(.975, 1.035); } }
+@keyframes mo-ember { 0%, 100% { transform: scale(1.02, .98); } 30% { transform: translateY(-3px) scale(.97, 1.045); } 50% { transform: scale(1.03, .97); } 70% { transform: translateY(-1px) scale(.98, 1.03); } }
+@keyframes mo-tide { 0%, 100% { transform: none; } 25% { transform: translateY(-5px) rotate(-2deg) scale(.985, 1.02); } 50% { transform: scale(1.02, .98); } 75% { transform: translateY(-5px) rotate(2deg) scale(.985, 1.02); } }
+@keyframes mo-leaf { 0%, 50%, 100% { transform: scale(1.01, .99); } 25% { transform: rotate(-2.5deg) scale(.98, 1.03); } 75% { transform: rotate(2.5deg) scale(.98, 1.03); } }
+@keyframes mo-spark { 0%, 40%, 80%, 100% { transform: scale(1.015, .985); } 20%, 60% { transform: scale(.975, 1.03); } 86% { transform: translateX(-2px) rotate(-4deg); } 90% { transform: translateX(2px) rotate(4deg); } 94% { transform: none; } }
+@keyframes mo-stone { 0%, 100% { transform: scale(1.025, .975); } 50% { transform: scale(.985, 1.025); } }
+@keyframes mo-shade { 0%, 100% { transform: none; } 50% { transform: translateY(-8px) scale(.98, 1.02); } }
+.mo-f.joy { animation: mo-hop .62s ease-out .35s 2; }
+@keyframes mo-hop { 0%, 100% { transform: none; } 15% { transform: scale(1.12, .86); } 45% { transform: translateY(-26px) scale(.93, 1.08); } 70% { transform: scale(1.1, .9); } 85% { transform: scale(.97, 1.03); } }
+[data-mo="tap"] { cursor: pointer; }
+.shade.evo { cursor: pointer; }
+.evobox { position: relative; width: 190px; height: 190px; }
+.evobox > div { position: absolute; inset: 0; display: grid; place-items: center; transform-origin: 50% 70%; }
+.evobox .evo-b { opacity: 0; }
+.evoflash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 5; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1593,6 +1618,93 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (ART[k]) return `<img src="${ART[k]}" alt="" width="${Math.round(size * .82)}" style="height:auto;display:block" draggable="false">`;
     if (DRAGON_SLOTS.includes(sp)) return dragonArt(sp, evo, size);
     return blobArt(sp, evo, size);
+  }
+  // ---------- motion kit: idle, fidgets, battle moves, catch, evolve ----------
+  const MO_EL_T = { ember: 2.6, tide: 4.2, leaf: 4.6, spark: 3, stone: 5, shade: 4 };
+  function live(sp, evo, size, o = {}) {
+    const el = SP[sp].el, t = (MO_EL_T[el] || 4) * (.9 + (sp % 5) * .05), seed = o.seed != null ? o.seed : sp;
+    const d = ((performance.now() / 1000 + seed * .618 * t) % t).toFixed(2);  // phase follows the clock: a redraw doesn't restart it
+    const inner = o.flip ? `<div style="transform:scaleX(-1)">${art(sp, evo, size)}</div>` : art(sp, evo, size);
+    return `<div class="mo-f${o.cls ? " " + o.cls : ""}"${o.tap ? ' data-mo="tap"' : ""}><div class="mo el-${el}" style="animation-duration:${t.toFixed(2)}s;animation-delay:-${d}s">${inner}</div></div>`;
+  }
+  const moOff = () => RM || (typeof quickNow !== "undefined" && quickNow) || document.hidden;
+  function moPlay(el, kf, o) {
+    if (!el || moOff()) return Promise.resolve();
+    const a = el.animate(kf, o), ms = (o.duration || 0) * (o.iterations || 1) + (o.delay || 0) + 80;
+    return Promise.race([a.finished.catch(() => {}), new Promise(r => setTimeout(r, ms))]).then(() => a);
+  }
+  const MO_HOP = [{ transform: "none" }, { transform: "scale(1.12,.86)", offset: .15 }, { transform: "translateY(-26px) scale(.93,1.08)", offset: .45 }, { transform: "scale(1.1,.9)", offset: .7 }, { transform: "scale(.97,1.03)", offset: .85 }, { transform: "none" }];
+  const MO_FIDGET = {
+    hop: [MO_HOP, 620],
+    wiggle: [[{ transform: "none" }, { transform: "rotate(-8deg)", offset: .2 }, { transform: "rotate(7deg)", offset: .45 }, { transform: "rotate(-4deg)", offset: .7 }, { transform: "none" }], 620],
+    stretch: [[{ transform: "none" }, { transform: "scale(.9,1.13)", offset: .4 }, { transform: "scale(1.07,.94)", offset: .7 }, { transform: "none" }], 760],
+    look: [[{ transform: "none" }, { transform: "translateX(-3px) rotate(-6deg)", offset: .25 }, { transform: "translateX(-3px) rotate(-6deg)", offset: .45 }, { transform: "translateX(3px) rotate(6deg)", offset: .7 }, { transform: "none" }], 1300],
+    turn: [[{ transform: "none" }, { transform: "translateY(-12px) rotateY(180deg)", offset: .5 }, { transform: "rotateY(360deg)" }], 760],
+  };
+  function moFidget(el, tapped) {
+    const ks = tapped ? ["hop", "hop", "turn", "wiggle"] : Object.keys(MO_FIDGET), [kf, ms] = MO_FIDGET[ks[Math.floor(Math.random() * ks.length)]];
+    if (el.getAnimations && el.getAnimations().length) return;
+    if (tapped) try { sfx("tap"); } catch {}
+    moPlay(el, kf, { duration: ms, easing: "ease-in-out" });
+  }
+  setInterval(() => {
+    try { if (moOff() || busy || BT || Math.random() < .35) return; } catch { return; }
+    const els = [...document.querySelectorAll(".mo-f")].filter(e => e.offsetParent !== null && !e.closest(".reveal,.shade"));
+    if (els.length) moFidget(els[Math.floor(Math.random() * els.length)]);
+  }, 3200);
+  document.addEventListener("click", e => { const f = e.target.closest && e.target.closest('[data-mo="tap"]'); if (f) moFidget(f, true); });
+  function moVec(a, b) { const [ax, ay] = stageXY(a), [bx, by] = stageXY(b), dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy) || 1; return [dx / L, dy / L, L]; }
+  function moAttack(att, tgt, skill, strong) {
+    if (moOff()) return; const [x, y, L] = moVec(att, tgt), r = x > 0 ? 7 : -7, D = L * .28;
+    const wind = skill ? `translate(${-x * 18}px,${-y * 18 - 18}px) scale(.92,1.1)` : `translate(${-x * 14}px,${-y * 14}px) scale(1.08,.9)`;
+    const dur = skill ? 520 : 320, hitAt = dur * .55;
+    moPlay(att, [{ transform: "none" }, { transform: wind, offset: .3 }, { transform: `translate(${x * D}px,${y * D}px) rotate(${r}deg) scale(.9,1.1)`, offset: .55 }, { transform: `translate(${x * D * .4}px,${y * D * .4}px) scale(1.05,.95)`, offset: .75 }, { transform: "none" }], { duration: dur, easing: "ease-in-out" });
+    const k = strong ? 1.6 : 1;
+    moPlay(tgt, [{ transform: "none", filter: "brightness(1)" }, { transform: `translate(${x * 12 * k}px,${y * 12 * k}px) rotate(${r * k}deg) scale(1.1,.88)`, filter: "brightness(2.5)", offset: .2 },
+      { transform: `translate(${-x * 4 * k}px,${-y * 4 * k}px) scale(.96,1.04)`, filter: "brightness(1.4)", offset: .45 }, { transform: `translate(${x * 5 * k}px,${y * 5 * k}px)`, offset: .65 }, { transform: "none", filter: "brightness(1)" }],
+      { duration: strong ? 440 : 330, delay: hitAt });
+  }
+  function moKO(who) {  // true while the fainting creature falls over; the battle waits for it
+    if (!BT || moOff()) return false;
+    const el = document.querySelector(who === "me" ? "#meActor .spr" : "#foeActor .spr"); if (!el) return false;
+    const r = who === "me" ? -1 : 1; BT.koWho = who; BT.ko = .75;
+    moPlay(el, [{ transform: "none", opacity: 1 }, { transform: "scale(1.12,.84)", offset: .2 }, { transform: `translateY(-10px) rotate(${-10 * r}deg) scale(.95,1.05)`, offset: .45 },
+      { transform: `translateY(14px) rotate(${80 * r}deg) scale(.85)`, filter: "saturate(.3)", opacity: 0 }], { duration: 700, easing: "ease-in", fill: "forwards" });
+    return true;
+  }
+  async function moWin() { const el = document.querySelector("#meActor .spr"); if (el) await moPlay(el, MO_HOP, { duration: 560, iterations: 2 }); }
+  function moHero() { setTimeout(() => moPlay(document.querySelector(".gart .mo-f"), MO_HOP, { duration: 620 }), 30); }
+  const MO_IN = [{ transform: "none", filter: "brightness(1)" }, { transform: "scale(1.14,.84)", filter: "brightness(1.5)", offset: .25 }, { transform: "translateY(-18px) scale(.55,1.25)", filter: "brightness(2.6)", offset: .6 }, { transform: "translateY(-6px) scale(.08)", filter: "brightness(3)", opacity: 0 }];
+  const MO_OUT = [{ transform: "translateY(-10px) scale(.2)", opacity: 0 }, { transform: "translateY(-30px) scale(.9,1.15)", opacity: 1, offset: .35 }, { transform: "scale(1.18,.82)", offset: .6 }, { transform: "rotate(-7deg) scale(.97,1.03)", offset: .74 }, { transform: "rotate(6deg)", offset: .87 }, { transform: "none", opacity: 1 }];
+  const MO_RUN = [{ transform: "none" }, { transform: "scaleX(-1)", offset: .1 }, { transform: "translate(60px,-34px) scaleX(-1)", offset: .3 }, { transform: "translate(110px,0) scale(-1.08,.9)", offset: .48 }, { transform: "translate(170px,-30px) scaleX(-1)", offset: .68 }, { transform: "translate(260px,0) scaleX(-1)", opacity: 0 }];
+  function evolveShow(m) {  // m has already evolved; shows the old form turning into the new one
+    if (moOff()) return Promise.resolve();
+    return new Promise(res => {
+      const sh = document.createElement("div"); sh.className = "shade evo";
+      sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div class="evobox"><div class="evo-a">${art(m.sp, 0, 170)}</div><div class="evo-b">${art(m.sp, 1, 170)}</div><div class="evoflash"></div></div>`;
+      $("stage").appendChild(sh);
+      const a = sh.querySelector(".evo-a"), b = sh.querySelector(".evo-b"), fl = sh.querySelector(".evoflash"); let done = false;
+      const finish = () => { if (done) return; done = true; sh.remove(); res(); };
+      sh.addEventListener("click", finish);
+      const W = "brightness(0) invert(1) drop-shadow(0 0 14px #fff)";
+      (async () => {
+        await moPlay(a, [{ filter: "none", transform: "none" }, { filter: W, transform: "scale(1.06)" }], { duration: 700, fill: "forwards", easing: "ease-in" });
+        b.style.filter = W; let show = a;
+        for (const ms of [360, 300, 240, 190, 150, 120, 100, 90]) {
+          if (done) return; show = show === a ? b : a;
+          a.style.opacity = show === a ? 1 : 0; b.style.opacity = show === b ? 1 : 0;
+          await moPlay(show, [{ transform: "scale(.82)" }, { transform: "scale(1.08)" }], { duration: ms, easing: "ease-out" });
+        }
+        if (done) return; a.style.opacity = 0; b.style.opacity = 1;
+        try { sfx("win"); } catch {}
+        moPlay(fl, [{ opacity: 0 }, { opacity: .95, offset: .25 }, { opacity: 0 }], { duration: 650 });
+        try { const [x, y] = stageXY(b); flyIcons(IC.star, 8, x, y, null); } catch {}
+        await moPlay(b, [{ filter: W }, { filter: "none" }], { duration: 500, fill: "forwards" });
+        await moPlay(b, MO_HOP, { duration: 600 });
+        setTimeout(finish, 250);
+      })();
+      setTimeout(finish, 6000);
+    });
   }
   // Placeholder for Glumis whose art is not made yet: a soft round critter in the element's colors.
   function blobArt(sp, evo, size) {
@@ -1938,7 +2050,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const sx = st.clientWidth * .55, sy = st.clientHeight + 30; jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar);
     const flight = await anim(jar, [{ transform: "translate(0,0) rotate(0) scale(1.2)" }, { transform: `translate(${(cx - sx) * .5}px,${(cy - sy) - 120}px) rotate(300deg) scale(.9)`, offset: .55 }, { transform: `translate(${cx - sx}px,${cy - sy}px) rotate(720deg) scale(.8)` }], { duration: RM ? 120 : 600, easing: "ease-in", fill: "forwards" });
     jar.style.transform = `translate(${cx - sx}px,${cy - sy}px) scale(.8)`; flight.cancel();
-    if (spr) await anim(spr, [{ transform: "scale(1)", filter: "brightness(1)" }, { transform: "scale(.2) translateY(30px)", filter: "brightness(3)", opacity: 0 }], { duration: RM ? 80 : 300, fill: "forwards" });
+    if (spr) await anim(spr, MO_IN, { duration: RM ? 80 : 420, easing: "ease-in", fill: "forwards" });
     await anim(jar, [{ transform: jar.style.transform }, { transform: `translate(${cx - sx}px,${cy - sy + 50}px) scale(.8)` }], { duration: RM ? 40 : 220, easing: "cubic-bezier(.5,0,.7,1.4)" });
     jar.style.transform = `translate(${cx - sx}px,${cy - sy + 50}px) scale(.8)`;
     const c = chance(w, E.jar, timing), ok = Math.random() < c, wobbles = ok ? 3 : rnd(1, 2);
@@ -1952,9 +2064,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       nextWild(); await flushBanners();
     } else {
       jar.animate([{ transform: jar.style.transform, opacity: 1 }, { transform: jar.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => jar.remove(), 260);
-      if (spr) spr.animate([{ transform: "scale(.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: RM ? 60 : 350, easing: "cubic-bezier(.3,1.6,.5,1)", fill: "forwards" });
-      w.miss = (w.miss || 0) + 1; const left = E.boss ? 99 : FLEE_AFTER[w.q] - w.miss; await wait(450);
-      if (left <= 0) { if (spr) await anim(spr, [{ transform: "translateX(0)" }, { transform: "translateX(260px)", opacity: 0 }], { duration: RM ? 60 : 450, fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
+      if (spr) spr.animate(MO_OUT, { duration: RM ? 60 : 560, easing: "ease-out", fill: "forwards" });
+      w.miss = (w.miss || 0) + 1; const left = E.boss ? 99 : FLEE_AFTER[w.q] - w.miss; await wait(RM ? 450 : 580);
+      if (left <= 0) { if (spr) await anim(spr, MO_RUN, { duration: RM ? 60 : 650, easing: "ease-in-out", fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
       else { busy = false; E.t0 = performance.now(); render(); floatText(cx, cy - 60, left <= 3 ? `Broke free! ${left} ${left === 1 ? "try" : "tries"} left` : "Broke free!"); }
     }
     save();
@@ -1964,7 +2076,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (quickNow) return Promise.resolve();
     return new Promise(res => {
       const sh = document.createElement("div"); sh.className = "shade";
-      sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">${title}</div><div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${art(m.sp, m.evo, 130)}<div class="nm">${fname(m.sp, m.evo)}</div><div class="nmrow" style="font-size:14px"><span class="grade q${m.q}">${GRADES[m.q].name}</span><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</div></div></div></div>`;
+      sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">${title}</div><div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${live(m.sp, m.evo, 130, { cls: "joy" })}<div class="nm">${fname(m.sp, m.evo)}</div><div class="nmrow" style="font-size:14px"><span class="grade q${m.q}">${GRADES[m.q].name}</span><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</div></div></div></div>`;
       $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
       sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, quickNow ? 700 : 2600);
     });
@@ -1994,7 +2106,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return new Promise(res => {
       const sh = document.createElement("div"); sh.className = "shade";
       sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">Caught ${list.length}!</div>
-        <div class="grouprev">${list.map(m => `<div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${art(m.sp, m.evo, 64)}<div class="nm">${fname(m.sp, m.evo)}</div><span class="grade q${m.q}">${GRADES[m.q].name}</span></div></div>`).join("")}</div></div>`;
+        <div class="grouprev">${list.map(m => `<div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${live(m.sp, m.evo, 64, { cls: "joy", seed: m.uid })}<div class="nm">${fname(m.sp, m.evo)}</div><span class="grade q${m.q}">${GRADES[m.q].name}</span></div></div>`).join("")}</div></div>`;
       $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
       sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, quickNow ? 700 : 2800);
     });
@@ -2021,7 +2133,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar); p.el = jar;
       const f = await anim(jar, [{ transform: "translate(0,0) rotate(0) scale(1.1)" }, { transform: `translate(${(cx - sx) * .5}px,${(cy - sy) - 110}px) rotate(300deg) scale(.9)`, offset: .55 }, { transform: `translate(${cx - sx}px,${cy - sy}px) rotate(720deg) scale(.75)` }], { duration: RM ? 120 : 600, easing: "ease-in", fill: "forwards" });
       jar.style.transform = `translate(${cx - sx}px,${cy - sy + 30}px) scale(.75)`; f.cancel();
-      if (spr) await anim(spr, [{ transform: "scale(1)", filter: "brightness(1)" }, { transform: "scale(.2) translateY(30px)", filter: "brightness(3)", opacity: 0 }], { duration: RM ? 80 : 300, fill: "forwards" });
+      if (spr) await anim(spr, MO_IN, { duration: RM ? 80 : 420, easing: "ease-in", fill: "forwards" });
     }));
     plan.forEach(p => { p.ok = Math.random() < chance(p.w, p.jar, 1); });
     for (let k = 0; k < 2; k++) { await wait(200); await Promise.all(plan.map(p => anim(p.el, [{ transform: p.el.style.transform + " rotate(0)" }, { transform: p.el.style.transform + " rotate(-20deg)" }, { transform: p.el.style.transform + " rotate(16deg)" }, { transform: p.el.style.transform + " rotate(0)" }], { duration: RM ? 60 : 380 }))); }
@@ -2030,11 +2142,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (p.ok) { flyIcons(IC.star, 4, p.cx, p.cy + 30, null); p.el.remove(); keepMon(p.w); track("catch", p.w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(5); if (autoThrow) autoStat.caught++; caught.push(p.w); }
       else {
         p.el.animate([{ opacity: 1 }, { transform: p.el.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => p.el.remove(), 260);
-        if (p.spr) p.spr.animate([{ transform: "scale(.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: RM ? 60 : 350, easing: "cubic-bezier(.3,1.6,.5,1)", fill: "forwards" });
+        if (p.spr) p.spr.animate(MO_OUT, { duration: RM ? 60 : 560, easing: "ease-out", fill: "forwards" });
         p.w.miss = (p.w.miss || 0) + 1; if (p.w.miss >= FLEE_AFTER[p.w.q]) fled.push(p.w);
       }
     }
-    await wait(500);
+    await wait(RM ? 500 : 600);
     E.list = E.list.filter(w => !caught.includes(w) && !fled.includes(w));
     busy = false;
     if (caught.length) await revealGroup(caught);
@@ -2085,6 +2197,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function tick(dt) {
     if (!BT || BT.over) return;
     if (BT.pick > 0) { BT.pick -= dt; const pt = $("pickT"); if (pt) pt.textContent = Math.max(0, Math.ceil(BT.pick)); if (BT.pick <= 0) { BT.pick = 0; BT.me.t = 0; render(); } return; }
+    if (BT.ko > 0) { BT.ko -= dt; if (BT.ko > 0) return; const who = BT.koWho; BT.koWho = null;  // the fallen one has fallen over: now bring in the next
+      if (who === "foe") { if (BT.fi + 1 < BT.foes.length) { BT.fi++; BT.foe = { e: 0, t: 0 }; render(); return; } return endBattle(true); }
+      if (front()) { BT.me.t = 0; if (!BT.auto && team().filter(m => m.hp > 0).length > 1) BT.pick = 5; render(); return; } return endBattle(false); }
     dt *= BT.speed; BT.swapCd = Math.max(0, BT.swapCd - dt); BT.me.sh = Math.max(0, (BT.me.sh || 0) - dt); BT.foe.sh = Math.max(0, (BT.foe.sh || 0) - dt);
     const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return;
     for (const [sd2, mm] of [[BT.me, me], [BT.foe, foe]]) { const st = sd2.st || (sd2.st = {}); for (const k in st) st[k] = Math.max(0, st[k] - dt);
@@ -2099,10 +2214,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     }
     playFx();
     if (foe.hp <= 0) {
+      if (moKO("foe")) return;
       if (BT.fi + 1 < BT.foes.length) { BT.fi++; BT.foe = { e: 0, t: 0 }; render(); return; }
       return endBattle(true);
     }
-    if (me.hp <= 0) { if (front()) { BT.me.t = 0; if (!BT.auto && team().filter(m => m.hp > 0).length > 1) BT.pick = 5; render(); return; } return endBattle(false); }
+    if (me.hp <= 0) { if (moKO("me")) return; if (front()) { BT.me.t = 0; if (!BT.auto && team().filter(m => m.hp > 0).length > 1) BT.pick = 5; render(); return; } return endBattle(false); }
     paintBattle();
   }
   const BOSS_EVERY = 9, BOSS_CHARGE = 2, BOSS_HIT = 3.2;
@@ -2121,8 +2237,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (f.heal) { const [hx, hy] = stageXY(att); floatText(hx, hy - 60, "+" + f.heal, true); continue; }
       if (f.stat) { const [qx, qy] = stageXY(att); floatText(qx, qy - 80, f.stat + "!", true); continue; }
       const [ax, ay] = stageXY(att), [tx, ty] = stageXY(tgt);
-      if (!RM) att.animate([{ transform: "translate(0,0)" }, { transform: `translate(${(tx - ax) * .25}px,${(ty - ay) * .25}px) scale(1.08)` }, { transform: "translate(0,0)" }], { duration: f.skill ? 380 : 240, easing: "ease-out" });
-      if (!RM) tgt.animate([{ filter: "brightness(1)" }, { filter: "brightness(2.6)" }, { filter: "brightness(1)" }], { duration: 200, delay: 110 });
+      moAttack(att, tgt, f.skill, f.eff > 1);
       if (f.skill) {
         const el = f.who === "me" ? EL[SP[front().sp].el].color : EL[SP[BT.foes[BT.fi].sp].el].color, orb = document.createElement("div");
         orb.className = "fly"; orb.style.width = orb.style.height = "44px"; orb.style.margin = "-22px 0 0 -22px"; orb.style.borderRadius = "50%"; orb.style.background = `radial-gradient(circle, #fff, ${el} 60%, transparent 70%)`; orb.style.left = ax + "px"; orb.style.top = ay + "px"; fxLayer().appendChild(orb);
@@ -2134,11 +2249,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   async function endBattle(won) {
     clearInterval(tickId); BT.over = true; const M = curM(), kind = BT.kind, foes = BT.foes;
     for (const m of S.mons) delete m.tb; for (const m of team()) m.hp = maxHp(m);
+    if (won) await moWin();
     if (BT.mode) return finishArena(won);
     if (!won) { await resultScreen(false, [], BT.byAuto ? 2000 * autoPace() : 0, lossTips(team(), foes)); BT = null; E = null; render(); save(); return;
       // (older path kept below for reference, never reached)
       BT = null; render(); await banner("Retreat"); if (kind === "rival") E = null; render(); save(); return; }
-    const foeEl = document.querySelector("#foeActor .spr"); if (foeEl && !RM) await anim(foeEl, [{ opacity: 1 }, { transform: "translateY(20px) scale(.9)", opacity: .3 }], { duration: 400, fill: "forwards" });
     const lv = Math.max(...foes.map(f => f.lvl)), coins = (6 + lv) * M.m;
     S.coins += coins; S.wins++; gainX(4 * M.m); track("win"); sfx("win"); save();
     { const ar = $("arena").getBoundingClientRect(); flyIcons(IC.coin, 8, ar.width / 2, ar.height * .45, null); floatText(ar.width / 2, ar.height * .45, "+" + coins + " coins", true); }
@@ -2214,13 +2329,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (false) {
       const me = front(), foe = BT.foes[BT.fi];
       return `<div class="bars"><div class="hpbox"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div></div><div class="hpbox"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn">${bar(BT.foe.e, 100, true)}</div></div></div>
-        <div class="actor" id="foeActor" style="left:66%;top:60%"><div class="spr pop">${art(foe.sp, foe.evo, 120)}</div><div class="shadow"></div></div>
-        <div class="actor" id="meActor" style="left:30%;top:93%"><div class="spr pop"><div style="transform:scaleX(-1)">${art(me.sp, me.evo, 180)}</div></div><div class="shadow"></div></div>`;
+        <div class="actor" id="foeActor" style="left:66%;top:60%"><div class="spr pop">${live(foe.sp, foe.evo, 120)}</div><div class="shadow"></div></div>
+        <div class="actor" id="meActor" style="left:30%;top:93%"><div class="spr pop">${live(me.sp, me.evo, 180, { flip: 1 })}</div><div class="shadow"></div></div>`;
     }
     if (!E) return "";
     if (E.type === "wild" && E.list.length > 1) {
       const n = E.list.length, POS = [[50, 50], [21, 56], [79, 56], [34, 67], [66, 67]], size = n === 2 ? 118 : 96;
-      return E.list.map((w, k) => `<div class="actor wildg${E.intro ? " intro" : ""}" id="wildActor${k}" style="left:${POS[k][0]}%;top:${POS[k][1]}%;--d:${introD(k)}s"><div class="spr"><div class="pop"><div class="idle" style="animation-delay:-${k * .37}s">${art(w.sp, w.evo, size)}</div></div></div><div class="cloudpad" style="animation-delay:-${k * .37}s"></div>
+      return E.list.map((w, k) => `<div class="actor wildg${E.intro ? " intro" : ""}" id="wildActor${k}" style="left:${POS[k][0]}%;top:${POS[k][1]}%;--d:${introD(k)}s"><div class="spr"><div class="pop"><div class="idle" style="animation-delay:-${k * .37}s">${live(w.sp, w.evo, size, { seed: k })}</div></div></div><div class="cloudpad" style="animation-delay:-${k * .37}s"></div>
         <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span><span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span></div></div>`).join("")
         + (E.waves && E.waves.length ? `<div class="wavetag">Next wave: ${E.waves[0].length}</div>` : "");
     }
@@ -2228,7 +2343,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (E.type === "wild") {
       const w = E.list[E.i];
       const gc = E.boss ? "#ffd36b" : GRADES[w.q].c;
-      return `${E.intro ? `<div class="flashfx"></div>` : ""}<div class="actor${E.intro ? " intro" : ""}" id="wildActor" style="left:50%;top:72%;--d:${introD(0)}s">${E.intro ? `<div class="excl">!</div>` : ""}<div class="spr"><div class="pop"><div class="idle">${art(w.sp, w.evo, E.boss ? 180 : 150)}</div></div></div>
+      return `${E.intro ? `<div class="flashfx"></div>` : ""}<div class="actor${E.intro ? " intro" : ""}" id="wildActor" style="left:50%;top:72%;--d:${introD(0)}s">${E.intro ? `<div class="excl">!</div>` : ""}<div class="spr"><div class="pop">${live(w.sp, w.evo, E.boss ? 180 : 150)}</div></div>
         ${tough(w) && !E.fought ? "" : `<div class="target"></div><div class="ring" id="ring"></div>`}<div class="shadow"></div>
         <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>`;
     }
@@ -3166,7 +3281,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function teamSlot(i) {
     const m = team()[i];
     if (!m) return `<button class="slot empty${swapIn ? " swapping" : ""}" data-act="pickslot:${i}"><span class="plus">+</span><span class="cap">${swapIn ? "Put here" : "Empty spot"}</span></button>`;
-    return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${art(m.sp, m.evo, 78)}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
+    return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${live(m.sp, m.evo, 78, { seed: i })}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
   }
   function monTile(m) {
     return `<button class="tile q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${m.fav ? '<span class="favtag">\u2665</span>' : ""}${m.isNew ? '<span class="newdot">New</span>' : ""}${art(m.sp, m.evo, 66)}<span class="nm">${m.nick || fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
@@ -3325,7 +3440,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       body = `<div class="gcard q${m.q}" style="--gc:${GRADES[m.q].c}">
           <span class="gpow">${power}</span><b class="gname">${m.nick || fname(m.sp, m.evo)}<button class="gnick" data-act="nickopen:${m.uid}" aria-label="Rename"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button></b>${where ? `<span class="gwhere">${where}</span>` : ""}
           <span class="gtags"><span class="gel" style="background:${EL[s.el].color}">${EL[s.el].name}</span>${gChip(m.q)}</span>
-          <div class="gart">${art(m.sp, m.evo, 210)}</div>
+          <div class="gart">${live(m.sp, m.evo, 210, { tap: 1 })}</div>
           <span class="gstars">${Array.from({ length: MAX_STARS }, (_, k) => `<i class="${k < (m.stars || 0) ? "on" : ""}">\u2605</i>`).join("")}</span>
           <span class="glv"><small>Lv.</small>${m.lvl}</span>
           <div class="gside">
@@ -3940,9 +4055,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <div class="hpcard me"><div class="nm"><span>${me.nick || fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div class="stx" id="meSt">${stChips(BT.me)}</div></div>
         <div class="hpcard foe${foe.boss ? " boss" : ""}"><div class="nm"><span>${foe.boss ? `<em class="btag">BOSS${foe.rage ? " II" : ""}</em>` : ""}${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div class="bchg" id="foeChg" ${BT.foe.chg > 0 ? "" : "hidden"}>Charging! Use Shield</div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(BT.foe.e)}</div><div class="stx" id="foeSt">${stChips(BT.foe)}</div></div>
         <div class="trainer foe${BT.enter ? " enter" : ""}">${trainerSVG(BT.color || "#ff8a8a", false)}</div>
-        <div class="actor" id="foeActor" style="left:66%;top:68%"><div class="shieldfx" id="foeShield" hidden></div><div class="spr pop">${art(foe.sp, foe.evo, 130)}</div><div class="shadow"></div></div>
+        <div class="actor" id="foeActor" style="left:66%;top:68%"><div class="shieldfx" id="foeShield" hidden></div><div class="spr pop">${live(foe.sp, foe.evo, 130)}</div><div class="shadow"></div></div>
         <div class="trainer me${BT.enter ? " enter" : ""}">${trainerSVG("#5aa8ff", true)}</div>
-        <div class="actor" id="meActor" style="left:38%;top:92%"><div class="shieldfx" id="meShield" hidden></div><div class="spr pop"><div style="transform:scaleX(-1)">${art(me.sp, me.evo, 170)}</div></div><div class="shadow"></div></div>
+        <div class="actor" id="meActor" style="left:38%;top:92%"><div class="shieldfx" id="meShield" hidden></div><div class="spr pop">${live(me.sp, me.evo, 170, { flip: 1 })}</div><div class="shadow"></div></div>
       </div>
       <div class="actrl">
         <div class="bmain"><div class="tswrow">${sw}</div><div class="skcol">${skCard(me, foe, "x")}${skCard(me, foe, "s")}</div></div>
@@ -4235,7 +4350,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
     else if (a === "sheetnav") { const L = teamOrder(), i = L.findIndex(x => x.uid === sheetUid); if (L.length) { sheetUid = L[(i + n + L.length) % L.length].uid; sheetPage = "main"; render(); } }
     else if (a === "lockmon") { const m = mon(n); if (m) { m.lock = !(m.lock || m.fav); save(); toast(m.lock ? "Locked: it can't be sold or released" : "Unlocked"); render(); } }
-    else if (a === "lvlmax") { const m = mon(n); if (m) { const k = levelsAffordable(m); if (k) { S.leaves -= levelsCost(m, k); m.lvl += k; m.hp = maxHp(m); for (let j = 0; j < k; j++) track("lvl"); sfx("up"); save(); toast(`+${k} levels`); render(); } } }
+    else if (a === "lvlmax") { const m = mon(n); if (m) { const k = levelsAffordable(m); if (k) { S.leaves -= levelsCost(m, k); m.lvl += k; m.hp = maxHp(m); for (let j = 0; j < k; j++) track("lvl"); sfx("up"); save(); toast(`+${k} levels`); render(); moHero(); } } }
     else if (a === "taskstab") { tasksTab = arg; render(); }
     else if (a === "giftclaim") { if (!giftReady()) return; const L = loginState(), r = LOGIN_REW[L.n % 7]; giveReward(r); L.last = today(); L.n = (L.n + 1) % 7; sfx("claim"); save(); closePopup(); toast(`Daily gift: ${r.n} ${RW[r.k][1]}`); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "giftclose" || a === "awayclose") { closePopup(); render(); const f = popThen; popThen = null; if (f) f(); }
@@ -4396,11 +4511,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (resetSure !== n) { const g0 = resetGain(m); resetSure = n; render(); toast(`Tap again to reset to level 1: +${g0.leaves} leaves${g0.keeps ? `, +${g0.keeps} keepsakes` : ""}${g0.shards ? `, +${g0.shards} star shards` : ""}`); setTimeout(() => { if (resetSure === n) { resetSure = null; render(); } }, 3000); return; }
       const g = resetGain(m); resetSure = null; S.leaves += g.leaves; if (g.keeps) S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + g.keeps; if (g.shards) S.shards = (S.shards || 0) + g.shards;
       m.lvl = 1; m.asc = 0; m.ascShards = 0; m.hp = maxHp(m); sfx("claim"); save(); render(); toast(`${fname(m.sp, m.evo)} is level 1 again: +${g.leaves} leaves${g.keeps ? `, +${g.keeps} ${SP[m.sp].name} keepsakes` : ""}${g.shards ? `, +${g.shards} star shards` : ""}`); }
-    else if (a === "lvl") { const m = mon(n), cost = 5 + m.lvl * 3; if (m && S.leaves >= cost && m.lvl < lvlCap() && m.lvl < ascTop(m)) { S.leaves -= cost; m.lvl++; m.hp = maxHp(m); track("lvl"); sfx("up"); save(); render(); } }
+    else if (a === "lvl") { const m = mon(n), cost = 5 + m.lvl * 3; if (m && S.leaves >= cost && m.lvl < lvlCap() && m.lvl < ascTop(m)) { S.leaves -= cost; m.lvl++; m.hp = maxHp(m); track("lvl"); sfx("up"); save(); render(); moHero(); } }
     else if (a === "evolve") {
       const m = mon(n); if (m && SP[m.sp].evo && !m.evo && m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60) {
         S.fruit -= EVOLVE_FRUIT; S.coins -= 60; track("evolve"); sfx("win"); m.evo = 1; m.q = m.q >= 4 ? 4 : Math.min(3, m.q + wpick([70, 25, 5])); m.hp = maxHp(m); S.caught[key(m.sp, 1)] = 1; S.seen[key(m.sp, 1)] = 1; save();
-        view = "explore"; render(); reveal(m, "Evolved!").then(() => { view = "team"; render(); });
+        view = "explore"; render(); evolveShow(m).then(() => reveal(m, "Evolved!")).then(() => { view = "team"; render(); });
       }
     }
     else if (a === "sheet") { sheetTab = "stats"; if (swapIn) return; if (cmpA && cmpA !== n) { const A = cmpA; cmpA = null; compareOpen(A, n); render(); return; } { const mm = mon(n); if (mm && mm.isNew) { delete mm.isNew; save(); } } sheetUid = n; sheetPage = "main"; confirmRelease = null; render(); }
