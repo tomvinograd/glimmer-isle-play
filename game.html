@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794920047;</script>
+<script>window.GAME_BUILD = 1794920269;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -810,6 +810,16 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .brow .price { flex: none; }
 .glowpill.efull { box-shadow: 0 0 0 2px #3fc1e8, 0 0 12px rgba(63,193,232,.8); animation: efull 1.2s ease-in-out infinite alternate; }
 @keyframes efull { from { box-shadow: 0 0 0 2px #3fc1e8, 0 0 6px rgba(63,193,232,.5); } to { box-shadow: 0 0 0 2px #3fc1e8, 0 0 16px rgba(63,193,232,.95); } }
+.lgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0; }
+.lday { position: relative; display: grid; justify-items: center; gap: 2px; padding: 6px 2px; border-radius: 8px; background: #f6efe4; color: var(--brown); } .lday svg { width: 26px; height: 26px; }
+.lday small { font: 800 10px var(--display); } .lday b { font: 900 13px var(--display); } .lday.got { opacity: .55; } .lday.now { background: #fff3cc; box-shadow: 0 0 0 2px #f5a623; }
+.lday em { position: absolute; top: 2px; right: 4px; color: #2f9e5a; font: 900 13px var(--display); font-style: normal; } .lday:last-child { grid-column: span 2; background: #f3eaff; }
+.alist { display: grid; gap: 6px; margin: 8px 0; text-align: left; } .arow2 { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; background: #f6efe4; }
+.aic { width: 28px; height: 28px; flex: none; } .aic svg { width: 100%; height: 100%; }
+.evcard { margin: 0 0 10px; padding: 10px 12px; border-radius: 10px; background: linear-gradient(90deg, #ffd36b, #ff9a5c); color: #fff; } .evcard b { display: block; font: 900 16px var(--display); } .evcard small { font: 800 12px var(--display); }
+.stgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .sttile { padding: 10px 12px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); color: var(--brown); }
+.sttile b { display: block; font: 900 20px var(--display); } .sttile small { font: 800 12px var(--display); color: #8a6d55; }
+.evchip { display: inline-flex; align-items: center; gap: 4px; margin: 4px auto 0; padding: 3px 10px; border: 0; border-radius: 7px; background: linear-gradient(90deg, #ffd36b, #ff9a5c); color: #fff; font: 900 12px var(--display); box-shadow: 0 2px 6px rgba(91,70,54,.2); } .evchip svg { width: 14px; height: 14px; }
 .prew { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
@@ -1673,8 +1683,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const multOwned = M => !!(S.multOwned && S.multOwned[M.m]);
   const multNeed = M => MULT_NEED[M.m] ?? M.m, multOpen = M => S.glow >= multNeed(M) || multOwned(M);
   const curM = () => { const want = MULTS.find(x => x.m === +S.mult) || MULTS[0]; return S.glow >= want.m ? want : [...MULTS].reverse().find(x => x.m <= want.m && S.glow >= x.m) || MULTS[0]; };  // a chosen multiplier stays while you can pay a step
-  function glowNextText() { if (S.glow >= glowCap()) return "Full"; const left = Math.max(1, Math.ceil((GLOW_EVERY - (Date.now() - S.glowT)) / 1000)); return `+1 in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
-  function regen() { const now = Date.now(); if (S.glow >= glowCap()) { S.glowT = now; return; } const n = Math.floor((now - S.glowT) / GLOW_EVERY); if (n > 0) { S.glow = Math.min(glowCap(), S.glow + n); S.glowT = S.glow >= glowCap() ? now : S.glowT + n * GLOW_EVERY; } }
+  function glowNextText() { if (S.glow >= glowCap()) return "Full"; const left = Math.max(1, Math.ceil((glowEvery() - (Date.now() - S.glowT)) / 1000)); return `+1 in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; }
+  function regen() { const now = Date.now(); if (S.glow >= glowCap()) { S.glowT = now; return; } const ge = glowEvery(), n = Math.floor((now - S.glowT) / ge); if (n > 0) { S.glow = Math.min(glowCap(), S.glow + n); S.glowT = S.glow >= glowCap() ? now : S.glowT + n * ge; } }
   function newMon(sp, lvl, q, evo = 0) { const m = { uid: 0, sp, lvl, q, evo, hp: 0 }; m.hp = maxHp(m); return m; }
   function keepMon(m) {
     const fromWild = m.wild;
@@ -1691,8 +1701,16 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   const banners = [];
   function gainX(n) { S.xxp += n; while (S.xxp >= xNeed()) { S.xxp -= xNeed(); S.xlvl++; banners.push(`Explorer Lv ${S.xlvl}`); } }
+  // weekend events: Saturday and Sunday, one of three by week
+  const EVENTS = [{ k: "gold", name: "Golden Weekend", about: "Gold Glumis are twice as likely" }, { k: "energy", name: "Energy Weekend", about: "Energy refills twice as fast" },
+    { k: "ladder", name: "Ladder Weekend", about: "Double ladder points" }];
+  function eventNow() { const d = new Date(), day = d.getDay(); if (day !== 0 && day !== 6) return null;
+    const mon = new Date(d); mon.setHours(24 * (day === 6 ? 2 : 1), 0, 0, 0);  // next Monday 00:00
+    const wk = Math.floor((d.getTime() - 4 * 86400000) / (7 * 86400000)); return { ...EVENTS[((wk % 3) + 3) % 3], end: mon.getTime() }; }
+  const evOn = k => { const e = eventNow(); return !!e && e.k === k; };
+  const glowEvery = () => GLOW_EVERY / (evOn("energy") ? 2 : 1);
   function rollGrade(M) { const odds = RAINBOW_ODDS[Math.max(0, MULTS.indexOf(M))] || 400;
-    if ((M.m >= RB_PITY_MULT && (S.rbPity || 0) >= RB_PITY) || Math.random() < 1 / odds) { S.rbPity = 0; return 4; } return wpick(M.grades); }
+    if ((M.m >= RB_PITY_MULT && (S.rbPity || 0) >= RB_PITY) || Math.random() < 1 / odds) { S.rbPity = 0; return 4; } return wpick(evOn("gold") ? M.grades.map((w, i) => i === 3 ? w * 2 : w) : M.grades); }
   const zoneLevel = z => rnd(ZONES[z].lv[0], ZONES[z].lv[1]);
   function wildFrom(z, M) { const pool = ZONES[z].sp, sp = pool[wpick(pool.map(s => TIER[SP[s].tier].w))], zl = zoneLevel(z); const w = newMon(sp, 1, rollGrade(M), zl >= 14 && Math.random() < .3 ? 1 : 0); w.wild = 1; w.pm = M.m; w.hp = maxHp(w); S.seen[key(w.sp, w.evo)] = 1; return w; }
   const bestJar = () => S.jars.plain ? "plain" : S.jars.bright ? "bright" : S.jars.star ? "star" : "plain";
@@ -2138,7 +2156,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <span class="rescol"><span class="pill res" id="hudLeaves">${IC.leaf}${S.leaves}</span></span></div>
       ${E ? "" : sideIcons()}
       <div class="zarrows">${zArrow(-1)}${zArrow(1)}</div>
-      <div class="ztop"><div class="evbars">${evBar("catch")}${evBar("fight")}<span class="evtime">${CLOCK}${mmss(nextMidnight() - Date.now())}</span></div></div>`;
+      <div class="ztop"><div class="evbars">${evBar("catch")}${evBar("fight")}<span class="evtime">${CLOCK}${mmss(nextMidnight() - Date.now())}</span>${(() => { const ev = eventNow(); return ev ? `<button class="evchip" data-act="eventinfo">${IC.star}${ev.name} · ${mmss(ev.end - Date.now())}</button>` : ""; })()}</div></div>`;
   }
   const mmss = ms => { const t = Math.max(1, Math.ceil(ms / 1000)); return t >= 86400 ? `${Math.floor(t / 86400)}d ${Math.floor(t % 86400 / 3600)}h` : t >= 3600 ? `${Math.floor(t / 3600)}h ${Math.floor(t % 3600 / 60)}m` : `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
   function sideIcons() {  // shortcut columns on both sides of the walk screen
@@ -2149,7 +2167,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     homeTick(); const H = homeState(), homeReady = Object.keys(PLACES).some(k => Math.floor(H[k].store) >= 1);
     const found = Object.keys(S.caught).length;
     const ico = (act, icon, label, bang, timer) => `<button class="sico" data-act="${act}" aria-label="${label}"><span class="sic">${icon}</span><span class="sil">${label}</span>${timer ? `<span class="sit">${timer}</span>` : ""}${bang ? '<em class="bang">!</em>' : ""}</button>`;
-    return `<div class="sidecol l">${ico("view:shop", TABI.shop, "Shop")}${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}${mailWaiting() ? ico("view:mail", IC.gift || IC.star, "Mail", true, "") : ""}</div>
+    return `<div class="sidecol l">${ico("view:shop", TABI.shop, "Shop")}${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}${mailWaiting() ? ico("view:mail", IC.gift || IC.star, "Mail", true, "") : ""}${giftReady() ? ico("giftopen", IC.gift || IC.star, "Daily gift", true, "") : ""}</div>
       <div class="sidecol r">${ico("gobook", TABI.book, "Book", false, found ? found + " found" : "")}${ico("map", TABI.atlas, "Atlas")}${(() => { const R = raceState(), over = Date.now() >= R.end; return ico("gorace", IC.flag, "Race #" + (raceBoard().findIndex(r => r.me) + 1), over); })()}</div>`;
   }
   function zoneCard() {  // the zone painting with its name and 3 stars: every Glumi caught, guardian beaten, every reward claimed
@@ -2259,6 +2277,23 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       { id: "gather", name: "Forager", about: "Gather 5 times", need: 5, got: T => T.day.gather, r: { k: "leaves", n: 10 } },
       { id: "lvl", name: "Trainer's care", about: "Level up Glumis 3 times", need: 3, got: T => T.day.lvl, r: { k: "coins", n: 40 } },
     ],
+    goals: [
+      { id: "g-c500", name: "Collector", about: "Catch 500 Glumis", need: 500, got: T => T.total.catch, r: { k: "star", n: 5 } },
+      { id: "g-c2000", name: "Grand collector", about: "Catch 2,000 Glumis", need: 2000, got: T => T.total.catch, r: { k: "prism", n: 1 } },
+      { id: "g-c10000", name: "Legend of the isle", about: "Catch 10,000 Glumis", need: 10000, got: T => T.total.catch, r: { k: "egg4", n: 1 } },
+      { id: "g-gold25", name: "Gold digger", about: "Catch 25 Gold or better", need: 25, got: T => T.total.q3, r: { k: "egg3", n: 1 } },
+      { id: "g-rb1", name: "Over the rainbow", about: "Find a Rainbow Glumi", need: 1, got: () => statsState().rb, r: { k: "egg3", n: 1 } },
+      { id: "g-rb10", name: "Rainbow chaser", about: "Find 10 Rainbow Glumis", need: 10, got: () => statsState().rb, r: { k: "egg4", n: 1 } },
+      { id: "g-gold", name: "Rising star", about: "Reach Gold on the Ladder", need: 1, got: () => statsState().tier >= 2 ? 1 : 0, r: { k: "glow", n: 100 } },
+      { id: "g-diamond", name: "Diamond trainer", about: "Reach Diamond on the Ladder", need: 1, got: () => statsState().tier >= 4 ? 1 : 0, r: { k: "egg3", n: 1 } },
+      { id: "g-master", name: "Ladder master", about: "Reach Master on the Ladder", need: 1, got: () => statsState().tier >= 5 ? 1 : 0, r: { k: "egg4", n: 1 } },
+      { id: "g-streak", name: "Unstoppable", about: "Win 10 Ladder matches in a row", need: 10, got: () => statsState().streak, r: { k: "egg2", n: 1 } },
+      { id: "g-gyms", name: "Badge collector", about: "Beat every Easy gym", need: ZONES.length, got: () => ZONES.filter((_, z) => gymDone(z, 0)).length, r: { k: "egg3", n: 1 } },
+      { id: "g-cc25", name: "Cloud walker", about: "Reach Cloud Climb floor 25", need: 25, got: () => S.tower || 0, r: { k: "star", n: 3 } },
+      { id: "g-cc50", name: "Sky high", about: "Reach Cloud Climb floor 50", need: 50, got: () => S.tower || 0, r: { k: "egg3", n: 1 } },
+      { id: "g-lv100", name: "Fully grown", about: "Get a Glumi to level 100", need: 100, got: () => Math.max(0, ...S.mons.map(m => m.lvl)), r: { k: "prism", n: 1 } },
+      { id: "g-steps", name: "Long road", about: "Walk 10,000 steps", need: 10000, got: () => statsState().steps, r: { k: "glow", n: 200 } },
+    ],
     challenge: [
       ...ELK.map(k => ({ id: "el-" + k, name: `${EL[k].name} friends`, about: `Catch 5 ${EL[k].name} Glumis`, need: 5, got: T => (T.total.el[k] || 0), r: { k: "star", n: 1 }, el: k })),
       { id: "p5", name: "Purple parade", about: "Catch 5 Purple or better", need: 5, got: T => T.total.q2, r: { k: "fruit", n: 1 } },
@@ -2273,8 +2308,39 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (T.date !== today()) { T.date = today(); T.day = blankDay(); for (const t of TASKS.daily) delete T.done["daily:" + t.id]; }
     return T;
   }
+  const LOGIN_REW = [{ k: "glow", n: 20 }, { k: "plain", n: 5 }, { k: "coins", n: 150 }, { k: "bright", n: 3 }, { k: "glow", n: 40 }, { k: "fruit", n: 3 }, { k: "egg2", n: 1 }];
+  const loginState = () => { if (!S.login) S.login = { n: 0, last: "" }; return S.login; };
+  const giftReady = () => S.started && loginState().last !== today();
+  function awayPopup(info, then) {
+    closePopup(); homeTick(); const H = homeState(), now = Date.now(), rows = [];
+    const hrs = Math.floor(info.ms / 3600000), mins = Math.floor(info.ms / 60000) % 60;
+    if (info.glow > 0) rows.push([IC.glow, `+${info.glow} energy`, S.glow >= glowCap() ? "Energy is full" : `${S.glow} of ${glowCap()}`]);
+    for (const k in PLACES) { const n = Math.floor(H[k].store); if (n >= 1) rows.push([resIcon(k), `${PLACES[k].name}`, `${n} ${PLACES[k].unit} ready${n >= placeCap(k) ? " (full)" : ""}`]); }
+    try { const sc = Math.floor(standState().coins); if (sc >= 1) rows.push([IC.coin, "Snack Stand", `${sc} coins ready`]); } catch {}
+    const back = (S.exps || []).filter(x => now >= x.until).length; if (back) rows.push([IC.home, "Expeditions", `${back} back home`]);
+    if (!rows.length) { if (then) then(); return; }
+    const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<div class="popbg"></div><div class="popup away" role="dialog"><h3>While you were away</h3><p>${hrs ? `${hrs} h ` : ""}${mins} min</p>
+      <div class="alist">${rows.map(([ic, a, b]) => `<div class="arow2"><span class="aic">${ic}</span><span class="gct"><b>${a}</b><small>${b}</small></span></div>`).join("")}</div>
+      <div class="popbtns"><button class="mb" data-act="awayclose">Close</button>${rows.length > (info.glow > 0 ? 1 : 0) ? `<button class="mb gold" data-act="awaycollect">Collect buildings</button>` : ""}</div></div>`;
+    document.body.appendChild(d); popThen = then || null;
+  }
+  function giftPopup(then) {
+    closePopup(); const L = loginState(), ready = giftReady(), d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<div class="popbg"></div><div class="popup gift" role="dialog"><h3>Daily gift</h3><p>Come back every day. Day 7 gives a Purple egg, then the week starts again.</p>
+      <div class="lgrid">${LOGIN_REW.map((r, i) => `<span class="lday${i < L.n ? " got" : i === L.n && ready ? " now" : ""}"><small>Day ${i + 1}</small>${RW[r.k][0]}<b>${r.n}</b>${i < L.n ? '<em>\u2713</em>' : ""}</span>`).join("")}</div>
+      <div class="popbtns">${ready ? `<button class="mb gold pbig" data-act="giftclaim">Claim day ${L.n + 1}</button>` : `<button class="mb" data-act="giftclose">Come back tomorrow</button>`}</div></div>`;
+    document.body.appendChild(d); popThen = then || null;
+  }
+  let popThen = null;  // what to show after the current welcome popup closes
+  function statsState() {  // lifetime numbers; first use fills in what older saves already show
+    if (!S.stats) { const Tt = (S.tasks && S.tasks.total) || {}; S.stats = { rb: S.mons.filter(m => m.q === 4).length, steps: S.zones.reduce((a, z) => a + (z.steps || 0), 0), streak: S.ladStreak || 0,
+      tier: S.ladder ? ladderTier(S.ladder.pts || 0) : 0, days: 1, lastDay: today(), since: Date.now() }; }
+    const st = S.stats; if (st.lastDay !== today()) { st.lastDay = today(); st.days++; } return st;
+  }
   function track(ev, w, pts) {
-    const T = tasksState();
+    const T = tasksState(), ST = statsState();
+    if (ev === "catch" && w.q === 4) ST.rb++; if (ev === "step") ST.steps++;
     if (ev === "catch") evAdd("catch", CATCH_PTS[w.q] || 10);
     if (ev === "win") { const p = pts || 20; evAdd("fight", p); raceAdd(p); }
     if (ev === "catch") { const B = bestQ(); B[w.sp] = Math.max(B[w.sp] || 0, w.q); T.day.catch++; T.total.catch++; if (w.q >= 2) { T.day.q2++; T.total.q2++; } if (w.q >= 3) T.total.q3++; const k = SP[w.sp].el; T.total.el[k] = (T.total.el[k] || 0) + 1; }
@@ -2285,8 +2351,19 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const taskReady = (tab, t) => { const T = tasksState(); return !T.done[tab + ":" + t.id] && t.got(T) >= t.need; };
   const tasksWaiting = () => Object.keys(TASKS).reduce((a, tab) => a + TASKS[tab].filter(t => taskReady(tab, t)).length, 0);
   let tasksTab = "daily";
+  function pageStats() {
+    const T = tasksState(), st = statsState(), goals = TASKS.goals, gDone = goals.filter(t => T.done["goals:" + t.id]).length;
+    const gymsBeat = Object.keys(S.gyms || {}).length, best = S.mons.reduce((a, m) => m.lvl > a ? m.lvl : a, 0), kinds = Object.keys(S.caught).length;
+    const tiles = [["Glumis caught", T.total.catch], ["Purple or better", T.total.q2], ["Gold or better", T.total.q3], ["Rainbows found", st.rb],
+      ["Forms in the Book", kinds], ["Glumis you own", S.mons.length], ["Highest level", best], ["Explorer level", S.xlvl],
+      ["Steps walked", st.steps], ["Fights won", T.total.win], ["Best Ladder tier", DRANKS[st.tier][1]], ["Longest win streak", st.streak],
+      ["Cloud Climb floor", S.tower || 0], ["Gym fights won", gymsBeat], ["Goals done", `${gDone} of ${goals.length}`], ["Days played", st.days]];
+    return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Stats</h3><span></span></div>
+      <div class="stgrid">${tiles.map(([a, b]) => `<div class="sttile"><b>${typeof b === "number" ? b.toLocaleString("en") : b}</b><small>${a}</small></div>`).join("")}</div>
+      <p class="hint" style="margin:0">Rainbows, steps and win streaks count from ${new Date(st.since).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} (earlier ones counted where the game could tell).</p>`;
+  }
   function pageTasks() {
-    const T = tasksState(), tabs = [["starter", "Starter"], ["daily", "Daily"], ["challenge", "Challenge"]];
+    const T = tasksState(), tabs = [["starter", "Starter"], ["daily", "Daily"], ["challenge", "Challenge"], ["goals", "Goals"]];
     const midnight = new Date(); midnight.setHours(24, 0, 0, 0);
     const list = TASKS[tasksTab].map(t => ({ t, done: !!T.done[tasksTab + ":" + t.id], have: Math.min(t.need, t.got(T)) })).sort((a, b) => (a.done - b.done) || ((b.have >= b.t.need) - (a.have >= a.t.need)));
     const card = ({ t, done, have }) => { const ok = have >= t.need, [ic, nm] = RW[t.r.k];
@@ -2476,7 +2553,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       + `<path d="M32 17 l4.4 9 9.8 1.4 -7.1 6.9 1.7 9.8 -8.8 -4.6 -8.8 4.6 1.7 -9.8 -7.1 -6.9 9.8 -1.4 Z" fill="#fff" stroke="rgba(70,45,25,.35)" stroke-width="1.5"/>${i === 5 ? '<path d="M22 9 l4 4 6-6 6 6 4-4 -2 7 H24 Z" fill="#ffd34d" stroke="rgba(70,45,25,.5)" stroke-width="1.2"/>' : ""}${pips}</svg>`;
   }
   function ladderRank(d) {  // change rank points; tell the player when the tier changes
-    const L = ladderState(), t0 = ladderTier(L.pts); L.pts = Math.max(0, L.pts + d); const t1 = ladderTier(L.pts);
+    const L = ladderState(), t0 = ladderTier(L.pts); L.pts = Math.max(0, L.pts + d); const t1 = ladderTier(L.pts); statsState().tier = Math.max(statsState().tier, t1);
     if (t1 > t0) toast(`Promoted to ${DRANKS[t1][1]}! Fights get tougher`); else if (t1 < t0) toast(`Down to ${DRANKS[t1][1]}`);
   }
   function ladderFoes() {
@@ -2732,8 +2809,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const LADDER_MS_OLD = [10, 20, 40, 60, 100, 150];  // wins, before 16 Nov: only to convert a week already started
   const STREAK_STEP = 3, STREAK_MAX = 6;  // win streak: +3 ladder points per win in a row, full bonus from the 6th
   const streakWin = s => LADDER_WIN + STREAK_STEP * (Math.min(s, STREAK_MAX) - 1);  // points for a win that makes a streak of s
-  function ladderPts(n, why) { const L = ladderState(); L.lp += n; toast(`+${n} ladder points${why ? ` (${why})` : ""}`); ladderClaim(); }
-  function ladderWinPts() { S.ladStreak = (S.ladStreak || 0) + 1; const s = S.ladStreak; ladderPts(streakWin(s), s > 1 ? `${s} wins in a row` : ""); }
+  function ladderPts(n, why) { const L = ladderState(); if (evOn("ladder")) { n *= 2; why = why ? why + ", weekend x2" : "weekend x2"; } L.lp += n; toast(`+${n} ladder points${why ? ` (${why})` : ""}`); ladderClaim(); }
+  function ladderWinPts() { S.ladStreak = (S.ladStreak || 0) + 1; const s = S.ladStreak; statsState().streak = Math.max(statsState().streak, s); ladderPts(streakWin(s), s > 1 ? `${s} wins in a row` : ""); }
   function ladderLossPts() { const had = S.ladStreak || 0; S.ladStreak = 0; ladderPts(LADDER_LOSS, had > 1 ? `streak of ${had} ended` : ""); }
   function ladderClaim() { const L = ladderState(); while (L.claimed < LADDER_MS.length && L.lp >= LADDER_MS[L.claimed]) { const r = LADDER_REW[L.claimed]; L.claimed++; giveReward(r); sfx("claim"); toast(`Ladder reward: ${r.n} ${RW[r.k][1]}`); } save(); }
   const weekId = () => Math.floor((Date.now() - 4 * 86400000) / (7 * 86400000));  // weeks start on Monday
@@ -2977,7 +3054,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
       <button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} letter${mailWaiting() > 1 ? "s" : ""} waiting` : "Gifts from game updates"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
-      <div class="mtiles"><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
+      ${(() => { const ev = eventNow(); return ev ? `<div class="evcard"><b>${ev.name}</b><small>${ev.about} \u00B7 ends in ${mmss(ev.end - Date.now())}</small></div>` : ""; })()}
+      <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
   function pageStart() {
     return `<div class="head"><h2>Choose a buddy</h2></div><div class="starters">${[0, 3, 6].map(sp => `<button class="card starter" data-act="start:${sp}">${art(sp, 0, 84)}<span class="nmrow" style="font-size:16px">${SP[sp].name}</span><span class="el" style="background:${EL[SP[sp].el].color}"></span></button>`).join("")}</div>`;
@@ -3499,7 +3577,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
   // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
-  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", mail: "menu", book: "team", release: "team", charms: "team" })[v] || v;
+  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", mail: "menu", book: "team", release: "team", charms: "team", stats: "menu" })[v] || v;
   function resetTab(t, keepPrep) {
     if (t === "shop") { shopTab = "jars"; marketFocus = null; reqPick = null; keepsFor = null; }
     if (t === "team") { teamTab = "team"; sheetPage = "main"; sheetTab = "stats"; sheetMulti = false; rel = null; }
@@ -3696,7 +3774,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${view === "shrine" && ART["bg-star"] ? ART["bg-star"] : ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
-    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "charms" ? pageCharms() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "charms" ? pageCharms() : view === "stats" ? pageStats() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
@@ -3867,6 +3945,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "lockmon") { const m = mon(n); if (m) { m.lock = !m.lock; save(); toast(m.lock ? "Locked: it can't be sold or released" : "Unlocked"); render(); } }
     else if (a === "lvlmax") { const m = mon(n); if (m) { const k = levelsAffordable(m); if (k) { S.leaves -= levelsCost(m, k); m.lvl += k; m.hp = maxHp(m); for (let j = 0; j < k; j++) track("lvl"); sfx("up"); save(); toast(`+${k} levels`); render(); } } }
     else if (a === "taskstab") { tasksTab = arg; render(); }
+    else if (a === "giftclaim") { if (!giftReady()) return; const L = loginState(), r = LOGIN_REW[L.n % 7]; giveReward(r); L.last = today(); L.n = (L.n + 1) % 7; sfx("claim"); save(); closePopup(); toast(`Daily gift: ${r.n} ${RW[r.k][1]}`); render(); const f = popThen; popThen = null; if (f) f(); }
+    else if (a === "giftclose" || a === "awayclose") { closePopup(); render(); const f = popThen; popThen = null; if (f) f(); }
+    else if (a === "awaycollect") { homeTick(); let got = []; for (const k in PLACES) { const n2 = collectPlace(k); if (n2) got.push(`${n2} ${PLACES[k].unit}`); } save(); closePopup(); if (got.length) toast("Collected " + got.join(", ")); render(); const f = popThen; popThen = null; if (f) f(); }
+    else if (a === "giftopen") giftPopup();
+    else if (a === "eventinfo") { const ev = eventNow(); if (ev) toast(`${ev.name}: ${ev.about}. Ends in ${mmss(ev.end - Date.now())}`); }
     else if (a === "taskclaim") { const [tab, id] = b.dataset.act.split(":").slice(1), t = TASKS[tab].find(x => x.id === id); if (t && taskReady(tab, t)) { tasksState().done[tab + ":" + id] = 1; giveReward(t.r); sfx("claim"); save(); toast(`Got ${t.r.n} ${RW[t.r.k][1]}`); render(); } }
     else if (a === "bagtab") { bagTab = arg; bagPick = null; render(); }
     else if (a === "charmfor") { charmFor = n; sheetUid = null; view = "charms"; render(); window.scrollTo(0, 0); }
@@ -4035,8 +4118,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const local = migrate(readLocal()); if (local) S = local;
   S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult)) S.mult = 1;
   RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM);
-  S.jars.prism = S.jars.prism || 0; if (S.autoCfg && S.autoCfg.speed === "quick") S.quickCatch = true; if (S.autoCfg) S.autoCfg.speed = S.quickCatch ? "quick" : "normal"; mailSync(); S.auto = false; regen(); if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
+  S.jars.prism = S.jars.prism || 0; if (S.autoCfg && S.autoCfg.speed === "quick") S.quickCatch = true; if (S.autoCfg) S.autoCfg.speed = S.quickCatch ? "quick" : "normal"; mailSync(); S.auto = false; const awayInfo = { ms: Date.now() - (S.t || Date.now()), glow: -S.glow }; regen(); awayInfo.glow += S.glow; if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
   render(); if (S.started) initProps();
+  if (S.started) { statsState(); const welcome = () => { if (document.getElementById("splash")) return void setTimeout(welcome, 400);
+      const gift = () => { if (giftReady()) giftPopup(); }; if (awayInfo.ms >= 20 * 60000) awayPopup(awayInfo, gift); else gift(); }; setTimeout(welcome, 600); }
+  // a new day while the game stays open: offer the gift
+  setInterval(() => { if (giftReady() && !document.querySelector(".popwrap") && !E && !BT && view === "explore") { const L = loginState(); if (L.offered !== today()) { L.offered = today(); giftPopup(); } } }, 60000);
   // swipe left / right on the path to change zone
   (function swipe() {
     let x0 = null, y0 = 0, t0 = 0; const st = $("stage");
