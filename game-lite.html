@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794914641;</script>
+<script>window.GAME_BUILD = 1794914826;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1237,6 +1237,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .jmake span { width: 30px; height: 30px; } .jmake span svg, .jmake span img { width: 30px !important; height: 30px; }
   .jmake b { font: 800 14px var(--display); } .jmake small { font-size: 11px; color: #8a6d55; }
   .jarrow .qchip { gap: 3px; } .jarrow .qchip svg { width: 15px; height: 15px; } .jarrow .qchip span { font-size: 11px; font-weight: 800; }
+  .stx { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; min-height: 0; }
+  .stx i { font: 800 9.5px/1 var(--display); font-style: normal; color: #fff; padding: 2px 5px; border-radius: 5px; text-shadow: 0 1px 1px rgba(0,0,0,.3); }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1919,7 +1921,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     clearInterval(tickId); let last = performance.now();
     tickId = setInterval(() => { const now = performance.now(); tick(Math.min(.25, (now - last) / 1000)); last = now; }, 100);
   }
-  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1))); dfn.hp = Math.max(0, dfn.hp - dmg);  return dmg; }
+  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1) * stMul(sideA, sideD))); dfn.hp = Math.max(0, dfn.hp - dmg);  return dmg; }
   function doSkill(mine) {
     const me = front(), foe = BT.foes[BT.fi], a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me;
     return castSkill(mine, "x");
@@ -1930,7 +1932,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (BT.pick > 0) { BT.pick -= dt; const pt = $("pickT"); if (pt) pt.textContent = Math.max(0, Math.ceil(BT.pick)); if (BT.pick <= 0) { BT.pick = 0; BT.me.t = 0; render(); } return; }
     dt *= BT.speed; BT.swapCd = Math.max(0, BT.swapCd - dt); BT.me.sh = Math.max(0, (BT.me.sh || 0) - dt); BT.foe.sh = Math.max(0, (BT.foe.sh || 0) - dt);
     const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return;
-    BT.me.t += dt; BT.foe.t += dt; BT.me.e = Math.min(100, BT.me.e + E_RATE * dt); BT.foe.e = Math.min(100, BT.foe.e + E_RATE * dt);  // steady: 1 point a second
+    for (const [sd2, mm] of [[BT.me, me], [BT.foe, foe]]) { const st = sd2.st || (sd2.st = {}); for (const k in st) st[k] = Math.max(0, st[k] - dt);
+      if (st.burn > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .04 * dt); if (st.poison > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .03 * dt); if (st.regen > 0) mm.hp = Math.min(maxHp(mm), mm.hp + maxHp(mm) * .04 * dt); }
+    BT.me.t += stOn(BT.me, "stun") ? 0 : dt; BT.foe.t += stOn(BT.foe, "stun") ? 0 : dt; BT.me.e = Math.min(100, BT.me.e + E_RATE * dt); BT.foe.e = Math.min(100, BT.foe.e + E_RATE * dt);  // steady: 1 point a second
     if (BT.me.t >= interval(me)) { BT.me.t -= interval(me); BT.fx.push({ who: "me", dmg: hit(me, foe, interval(me) * .9, BT.me, BT.foe, true) }); }
     if (BT.auto) skillAI(true);
     if (foe.hp > 0) {
@@ -1951,6 +1955,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const att = f.who === "me" ? meEl : foeEl, tgt = f.who === "me" ? foeEl : meEl; if (!att || !tgt) continue;
       if (f.shield) { const [sx, sy] = stageXY(att); floatText(sx, sy - 60, "Shield!", true); continue; }
       if (f.heal) { const [hx, hy] = stageXY(att); floatText(hx, hy - 60, "+" + f.heal, true); continue; }
+      if (f.stat) { const [qx, qy] = stageXY(att); floatText(qx, qy - 80, f.stat + "!", true); continue; }
       const [ax, ay] = stageXY(att), [tx, ty] = stageXY(tgt);
       if (!RM) att.animate([{ transform: "translate(0,0)" }, { transform: `translate(${(tx - ax) * .25}px,${(ty - ay) * .25}px) scale(1.08)` }, { transform: "translate(0,0)" }], { duration: f.skill ? 380 : 240, easing: "ease-out" });
       if (!RM) tgt.animate([{ filter: "brightness(1)" }, { filter: "brightness(2.6)" }, { filter: "brightness(1)" }], { duration: 200, delay: 110 });
@@ -2229,20 +2234,32 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const EL_GLYPH = { ember: "M12 2c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 0-3 0-5 1-7z", tide: "M12 2C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-13z",
     leaf: "M5 19C5 9 11 4 20 4c0 9-5 15-15 15zm0 0 8-8", spark: "M13 2 4 14h7l-1 8 9-12h-7z", stone: "M4 17l3-8 6-4 6 5 1 7-6 3H8z", shade: "M15 3a9 9 0 1 0 6 13A7 7 0 0 1 15 3z" };
   const elGlyph = (el, sz) => `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" aria-hidden="true"><path d="${EL_GLYPH[el]}" fill="#fff" stroke="rgba(60,40,20,.45)" stroke-width="1.3" stroke-linejoin="round"/></svg>`;
+  const STATUS = { burn: { n: "Burn", t: 4, foe: 1, c: "#ff7a3c", d: "loses 4% HP a second for 4 s" }, poison: { n: "Poison", t: 8, foe: 1, c: "#8fcf5a", d: "loses 3% HP a second for 8 s" },
+    atkdown: { n: "Attack down", t: 6, foe: 1, c: "#7fb8ff", d: "deals 30% less damage for 6 s" }, defdown: { n: "Defense down", t: 6, foe: 1, c: "#c9a27a", d: "takes 35% more damage for 6 s" },
+    stun: { n: "Stun", t: 2, foe: 1, c: "#ffd34d", d: "can't attack for 2 s" }, regen: { n: "Regen", t: 6, foe: 0, c: "#5fcf6a", d: "heals 4% HP a second for 6 s" },
+    atkup: { n: "Attack up", t: 6, foe: 0, c: "#ff9a5c", d: "deals 30% more damage for 6 s" }, drain: { n: "Drain", t: 0, foe: 0, c: "#b48cff", d: "heals half the damage dealt" } };
+  const EL_FX = { ember: ["burn", "atkup"], tide: ["atkdown", "regen"], leaf: ["poison", "regen"], spark: ["stun", "defdown"], stone: ["defdown", "atkup"], shade: ["drain", "atkdown"] };
+  const sigFx = sp => SP[sp].tier === 3 ? EL_FX[SP[sp].el] : [EL_FX[SP[sp].el][sp % 2]];
+  const stOn = (side, k) => side && side.st && side.st[k] > 0;
+  const stMul = (sa, sd) => (stOn(sa, "atkup") ? 1.3 : 1) * (stOn(sa, "atkdown") ? .7 : 1) * (stOn(sd, "defdown") ? 1.35 : 1);
+  const stChips = side => Object.keys(STATUS).filter(k => stOn(side, k)).map(k => `<i style="background:${STATUS[k].c}">${STATUS[k].n}</i>`).join("");
   const SHIELD_COST = 4, E_RATE = 10;  // fight energy per second (10 = 1 bar point)
   function skillOf(m, k) {
     const s = SP[m.sp];
-    if (k === "x") return { k, name: EXCL[m.sp] || "Signature", cost: 8, power: s.shape === "tall" ? 4.4 : 3.8, heal: s.shape === "round" ? .15 : 0, shield: s.shape === "wide" ? 3 : 0, el: s.el, sig: true };
+    if (k === "x") return { k, name: EXCL[m.sp] || "Signature", fx: sigFx(m.sp), cost: 5, power: s.shape === "tall" ? 4.4 : 3.8, heal: s.shape === "round" ? .15 : 0, shield: s.shape === "wide" ? 3 : 0, el: s.el, sig: true };
     const [name, cost, power, heal] = SHARED[s.el][m.wild ? m.sp % 3 : Math.min(2, m.sk || 0)]; return { k, name, cost, power, heal, shield: 0, el: s.el };
   }
-  const skillText = sk => [sk.power ? `a ${sk.power}x hit` : "", sk.heal ? `heals ${Math.round(sk.heal * 100)}% HP` : "", sk.shield ? `a ${sk.shield} s shield` : ""].filter(Boolean).join(" + ");
+  const skillText = sk => [sk.power ? `a ${sk.power}x hit` : "", sk.heal ? `heals ${Math.round(sk.heal * 100)}% HP` : "", sk.shield ? `a ${sk.shield} s shield` : "", ...(sk.fx || []).map(f => `${STATUS[f].n}: ${STATUS[f].foe ? "the foe" : "your Glumi"} ${STATUS[f].d}`)].filter(Boolean).join(" + ");
   const skillEst = (a, d, sk) => sk.power ? Math.max(1, Math.round(atk(a) * sk.power * mult(sk.el, SP[d.sp].el) * 60 / (60 + def(d)))) : Math.round(maxHp(a) * sk.heal);
   function castSkill(mine, k) {
     if (!BT) return false; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return false;
     const a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me, sk = skillOf(a, k);
     if (sa.e < sk.cost * 10) return false;
     sa.e -= sk.cost * 10;
-    if (sk.power) { const m = mult(sk.el, SP[d.sp].el); BT.fx.push({ who: mine ? "me" : "foe", dmg: hit(a, d, sk.power * m, sa, sd, false), skill: true, eff: m }); }
+    let dealt = 0; if (sk.power) { const m = mult(sk.el, SP[d.sp].el); dealt = hit(a, d, sk.power * m, sa, sd, false); BT.fx.push({ who: mine ? "me" : "foe", dmg: dealt, skill: true, eff: m }); }
+    for (const f of sk.fx || []) { const S2 = STATUS[f];
+      if (f === "drain") { const h = Math.max(1, Math.round(dealt / 2)); a.hp = Math.min(maxHp(a), a.hp + h); BT.fx.push({ who: mine ? "me" : "foe", heal: h }); continue; }
+      const side = S2.foe ? sd : sa; side.st = side.st || {}; side.st[f] = S2.t; BT.fx.push({ who: (S2.foe ? !mine : mine) ? "me" : "foe", stat: S2.n, c: S2.c }); }
     if (sk.heal) { const h = Math.round(maxHp(a) * sk.heal); a.hp = Math.min(maxHp(a), a.hp + h); BT.fx.push({ who: mine ? "me" : "foe", heal: h }); }
     if (sk.shield) sa.sh = Math.max(sa.sh || 0, sk.shield);
     skillBanner(sk.name, mine, EL[sk.el].color); return true;
@@ -2339,7 +2356,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const A = mine.map(m => ({ m, hp: maxHp(m), t: 0 })), B = foes.map(m => ({ m, hp: maxHp(m), t: 0 })), ea = { e: 0 }, eb = { e: 0 };
     let i = 0, j = 0;
     const hitS = (x, y, p, sx, sy, basic) => { y.hp -= Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m))));  };
-    const simSkill = (x, y, sx, sy) => { const X = skillOf(x.m, "x"), Sk = skillOf(x.m, "s"), use = sk => { sx.e -= sk.cost * 10; if (sk.power) hitS(x, y, sk.power * mult(sk.el, SP[y.m.sp].el), sx, sy, false); if (sk.heal) x.hp = Math.min(maxHp(x.m), x.hp + maxHp(x.m) * sk.heal); };
+    const simSkill = (x, y, sx, sy) => { const X = skillOf(x.m, "x"), Sk = skillOf(x.m, "s"), use = sk => { sx.e -= sk.cost * 10; if (sk.power) hitS(x, y, sk.power * (sk.fx && sk.fx.length ? 1.25 : 1) * mult(sk.el, SP[y.m.sp].el), sx, sy, false); if (sk.heal) x.hp = Math.min(maxHp(x.m), x.hp + maxHp(x.m) * sk.heal); };
       if (Sk.heal && x.hp < maxHp(x.m) * .45 && sx.e >= Sk.cost * 10) use(Sk); else if (sx.e >= X.cost * 10) use(X); else if (!Sk.heal && sx.e >= 90 && sx.e >= Sk.cost * 10) use(Sk); };
     for (let t = 0; t < 900 && i < A.length && j < B.length; t += .1) {
       const a = A[i], b = B[j]; a.t += .1; b.t += .1; ea.e = Math.min(100, ea.e + E_RATE * .1); eb.e = Math.min(100, eb.e + E_RATE * .1);
@@ -3436,8 +3453,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const picker = BT.pick > 0 ? `<div class="picker"><p>Choose your next Glumi</p><div class="prow">${t.filter(m => m.hp > 0).map(m => `<button class="pk" data-act="pickmon:${m.uid}">${art(m.sp, m.evo, 56)}${bar(m.hp, maxHp(m))}</button>`).join("")}</div><b id="pickT">${Math.ceil(BT.pick)}</b></div>` : "";
     $("aview").innerHTML = `${picker}${autoChip()}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(t, true)}</div></div><div class="aside r"><span class="aname">${BT.name || "Trainer"}</span><div class="tdots">${dots(BT.foes, false)}</div></div></div>
       <div class="afield">${arenaSVG()}
-        <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div></div>
-        <div class="hpcard foe"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(BT.foe.e)}</div></div>
+        <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div class="stx" id="meSt">${stChips(BT.me)}</div></div>
+        <div class="hpcard foe"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(BT.foe.e)}</div><div class="stx" id="foeSt">${stChips(BT.foe)}</div></div>
         <div class="trainer foe${BT.enter ? " enter" : ""}">${trainerSVG(BT.color || "#ff8a8a", false)}</div>
         <div class="actor" id="foeActor" style="left:66%;top:68%"><div class="shieldfx" id="foeShield" hidden></div><div class="spr pop">${art(foe.sp, foe.evo, 130)}</div><div class="shadow"></div></div>
         <div class="trainer me${BT.enter ? " enter" : ""}">${trainerSVG("#5aa8ff", true)}</div>
@@ -3462,7 +3479,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
     $("meHp").innerHTML = bar(me.hp, maxHp(me)); $("foeHp").innerHTML = bar(foe.hp, maxHp(foe)); $("foeEn").innerHTML = segs(BT.foe.e); $("meSegs").innerHTML = segs(BT.me.e); $("eNum").textContent = Math.floor(BT.me.e / 10);
-    $("meShield").hidden = !(BT.me.sh > 0); $("foeShield").hidden = !(BT.foe.sh > 0);
+    $("meShield").hidden = !(BT.me.sh > 0); $("foeShield").hidden = !(BT.foe.sh > 0); if ($("meSt")) $("meSt").innerHTML = stChips(BT.me); if ($("foeSt")) $("foeSt").innerHTML = stChips(BT.foe);
     const sh = $("shieldBtn"); if (sh) sh.disabled = BT.me.e < SHIELD_COST * 10 || BT.me.sh > 0;
     document.querySelectorAll(".tsw").forEach(b => { const cur = b.classList.contains("cur"), c = b.querySelector(".cd"); const u = +b.dataset.act.split(":")[1], m = mon(u); b.disabled = cur || !m || m.hp <= 0 || BT.swapCd > 0; c.hidden = !(BT.swapCd > 0 && !cur && m && m.hp > 0); c.textContent = Math.ceil(BT.swapCd); const i = b.querySelector(".bar i"); if (i && m) i.style.width = Math.max(0, m.hp / maxHp(m) * 100) + "%"; });
     document.querySelectorAll(".skcard").forEach(c => { const need = +c.dataset.cost * 10, ok = BT.me.e >= need; c.disabled = !ok; c.classList.toggle("ready", ok); c.style.setProperty("--p", Math.min(100, BT.me.e / need * 100) + "%"); });
