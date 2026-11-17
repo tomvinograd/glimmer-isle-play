@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794873359;</script>
+<script>window.GAME_BUILD = 1794873604;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2790,7 +2790,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     { const a = ascOf(m), need = ASC_COST[a], have = S.keepsakes[m.sp] || 0;
       if (a < MAX_ASC) L.push(`<button class="big2 ascend${atAsc && have >= need ? " ready" : ""}" data-act="ascend:${m.uid}" ${atAsc ? "" : "disabled"}>${IC.up}Ascend${a ? ` again (${a + 1} of ${MAX_ASC})` : ""}<small>${atAsc ? `Costs ${need} ${s.name} keepsakes · you have ${have}` : `At level ${ascTop(m)} · needs ${need} ${s.name} keepsakes (you have ${have})`}. +${Math.round(ASC_BONUS * 100)}% stats, levels up to ${ascTop(m) + ASC_EVERY}</small></button>`); }
     if (s.evo && !m.evo) L.push(`<button class="big2" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}Evolve into ${s.evo}<small>${m.lvl < EVOLVE_AT ? `Reach level ${EVOLVE_AT} first` : `Costs ${EVOLVE_FRUIT} moonfruit and 60 coins · you have ${S.fruit} and ${S.coins}`}</small></button>`);
-    if (m.lvl > 1) { const g = resetGain(m); L.push(`<button class="big2 danger" data-act="lvlreset:${m.uid}">${IC.up.replace("M12 19V5M6 11l6-6 6 6", "M12 5v14M6 13l6 6 6-6")}${resetSure === m.uid ? "Tap again to reset" : "Reset levels"}<small>Back to level 1 · you get ${g.leaves} leaves${g.keeps ? ` and ${g.keeps} ${s.name} keepsakes` : ""} back</small></button>`); }
+    if (m.lvl > 1) { const g = resetGain(m); L.push(`<button class="big2 danger" data-act="lvlreset:${m.uid}">${IC.up.replace("M12 19V5M6 11l6-6 6 6", "M12 5v14M6 13l6 6 6-6")}${resetSure === m.uid ? "Tap again to reset" : "Reset levels"}<small>Back to level 1 · you get ${g.leaves} leaves${g.keeps ? `, ${g.keeps} ${s.name} keepsakes` : ""}${g.shards ? `, ${g.shards} star shards` : ""} back</small></button>`); }
     { const st = m.stars || 0, have = S.starCores[m.sp] || 0, need = st + 1;
       ST.push(`<button class="big2 starup" data-act="starup:${m.uid}" ${st < MAX_STARS && have >= need ? "" : "disabled"}>${IC.star}${st >= MAX_STARS ? "All stars reached" : `Star up to ${st + 1} of ${MAX_STARS}`}<small>${st >= MAX_STARS ? `+${Math.round(MAX_STARS * STAR_BONUS * 100)}% HP, Attack and Defense` : `Costs ${need} ${s.name} star core${need > 1 ? "s" : ""} · you have ${have}. Release a Rainbow ${s.name} to get ${RAINBOW_STAR_CORES}`}</small></button>`); }
     if (!inTeam) T.push(`<button class="big2" data-act="addteam:${m.uid}">${IC.up.replace('M12 19V5M6 11l6-6 6 6', 'M12 5v14M5 12h14')}Add to team<small>${S.team.length < slots() ? "There is a free spot" : "You choose who it swaps with"}</small></button>`);
@@ -2875,7 +2875,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   let shopTab = "jars";
   let resetSure = null;
-  const resetGain = m => { let leaves = 0; for (let l = 1; l < m.lvl; l++) leaves += 5 + l * 3; let keeps = 0; for (let a = 0; a < (m.asc || 0); a++) keeps += ASC_COST[a]; return { leaves, keeps }; };
+  const resetGain = m => { let leaves = 0; for (let l = 1; l < m.lvl; l++) leaves += 5 + l * 3; let paid = 0; for (let a = 0; a < (m.asc || 0); a++) paid += ASC_COST[a]; const shards = Math.min(paid, m.ascShards || 0); return { leaves, keeps: paid - shards, shards }; };
   const BUY_QS = [1, 5, 10, 50], buyQ = () => BUY_QS.includes(S.buyQ) ? S.buyQ : 1;
   function pageShop() {
     const tabs = [["jars", "Jars"], ["market", "Glumis"], ["requests", "Requests"]];
@@ -3651,9 +3651,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "retreat") { if (BT) { clearInterval(tickId); BT = null; for (const m of team()) m.hp = maxHp(m); if (E && E.type === "rival") E = null; save(); render(); } }
     else if (a === "starup") { const m = mon(n); if (m) { const st = m.stars || 0, need = st + 1, have = S.starCores[m.sp] || 0; if (st < MAX_STARS && have >= need) { S.starCores[m.sp] = have - need; m.stars = st + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} reached ${m.stars} star${m.stars > 1 ? "s" : ""}!`); } } }
     else if (a === "lvlreset") { const m = mon(n); if (!m || m.lvl <= 1) return;
-      if (resetSure !== n) { const g0 = resetGain(m); resetSure = n; render(); toast(`Tap again to reset to level 1: +${g0.leaves} leaves${g0.keeps ? `, +${g0.keeps} keepsakes` : ""}`); setTimeout(() => { if (resetSure === n) { resetSure = null; render(); } }, 3000); return; }
-      const g = resetGain(m); resetSure = null; S.leaves += g.leaves; if (g.keeps) S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + g.keeps;
-      m.lvl = 1; m.asc = 0; m.hp = maxHp(m); sfx("claim"); save(); render(); toast(`${fname(m.sp, m.evo)} is level 1 again: +${g.leaves} leaves${g.keeps ? `, +${g.keeps} keepsakes` : ""}`); }
+      if (resetSure !== n) { const g0 = resetGain(m); resetSure = n; render(); toast(`Tap again to reset to level 1: +${g0.leaves} leaves${g0.keeps ? `, +${g0.keeps} keepsakes` : ""}${g0.shards ? `, +${g0.shards} star shards` : ""}`); setTimeout(() => { if (resetSure === n) { resetSure = null; render(); } }, 3000); return; }
+      const g = resetGain(m); resetSure = null; S.leaves += g.leaves; if (g.keeps) S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + g.keeps; if (g.shards) S.shards = (S.shards || 0) + g.shards;
+      m.lvl = 1; m.asc = 0; m.ascShards = 0; m.hp = maxHp(m); sfx("claim"); save(); render(); toast(`${fname(m.sp, m.evo)} is level 1 again: +${g.leaves} leaves${g.keeps ? `, +${g.keeps} ${SP[m.sp].name} keepsakes` : ""}${g.shards ? `, +${g.shards} star shards` : ""}`); }
     else if (a === "lvl") { const m = mon(n), cost = 5 + m.lvl * 3; if (m && S.leaves >= cost && m.lvl < lvlCap() && m.lvl < ascTop(m)) { S.leaves -= cost; m.lvl++; m.hp = maxHp(m); track("lvl"); sfx("up"); save(); render(); } }
     else if (a === "evolve") {
       const m = mon(n); if (m && SP[m.sp].evo && !m.evo && m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60) {
@@ -3679,7 +3679,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const p = sellPrice(m); S.coins += p; S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
-      if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
     else if (a === "buyq") { S.buyQ = n; save(); render(); }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, q = S.jars[arg] !== undefined ? buyQ() : 1, p = prices[arg] * q;
