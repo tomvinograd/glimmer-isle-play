@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794919179;</script>
+<script>window.GAME_BUILD = 1794919958;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -791,7 +791,20 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .podds.o2 b { color: #c08a12; } .podds.o2 i { background: #f2b42c; } .podds.o1 b { color: #d0602f; } .podds.o1 i { background: #f08a4b; } .podds.o0 b { color: #c43c3c; } .podds.o0 i { background: #e5484d; }
 .rwhy { max-width: 300px; margin: 6px auto 0; padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,.92); color: var(--brown); text-align: left; }
 .rwhy b { display: block; font: 900 15px var(--display); margin-bottom: 4px; } .rwhy p { margin: 4px 0 0; font: 700 13px/1.35 var(--body, inherit); }
-.prew { display: flex; align-items: center; gap: 8px; font: 800 14px var(--display); color: var(--brown); }
+.ptb { color: #2f9e5a; }
+.btag { display: inline-block; margin-right: 5px; padding: 0 5px; border-radius: 4px; background: #e5484d; color: #fff; font: 900 10px/16px var(--display); font-style: normal; vertical-align: 1px; }
+.hpcard.boss { box-shadow: 0 0 0 2px #e5484d, 0 4px 14px rgba(229,72,77,.35); }
+.bchg { margin: 3px 0; padding: 2px 6px; border-radius: 4px; background: #e5484d; color: #fff; font: 900 11px var(--display); text-align: center; animation: bchg .5s ease-in-out infinite alternate; }
+@keyframes bchg { from { opacity: .65; } to { opacity: 1; } }
+.shieldb.urge { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #e5484d; animation: bchg .4s ease-in-out infinite alternate; }
+.gcharm { display: flex; align-items: center; gap: 10px; width: 100%; margin: 6px 0; padding: 7px 10px; border: 0; border-radius: 10px; background: rgba(255,255,255,.85); color: var(--brown); text-align: left; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
+.gci { width: 34px; height: 34px; flex: none; } .gci svg { width: 100%; height: 100%; }
+.gct { flex: 1; display: grid; } .gct b { font: 800 14px var(--display); } .gct small { font: 700 12px var(--display); color: #8a6d55; }
+.gcharm i { font: 900 20px var(--display); font-style: normal; color: #b9a68f; }
+.clist { display: grid; gap: 8px; } .crow { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
+.crow.cur { background: #fff8e6; margin-bottom: 8px; } .cbtn { display: grid; gap: 4px; justify-items: end; } .cbtn .mb { padding: 5px 10px; font-size: 12px; }
+.rchip svg { width: 18px; height: 18px; }
+.prew { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
 .pbtns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
@@ -834,7 +847,7 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .result h1 { margin: 0; font: 900 52px var(--display); color: #fff; text-shadow: 0 3px 0 rgba(150,80,0,.5), 0 6px 14px rgba(0,0,0,.25); animation: rpop .5s ease-out; }
 .result.lose h1 { text-shadow: 0 3px 0 rgba(60,70,90,.5), 0 6px 14px rgba(0,0,0,.25); }
 @keyframes rpop { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-.rrew { display: flex; gap: 10px; } .rrew span { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; background: #fff; font: 800 17px var(--display); color: var(--brown); } .rrew svg { width: 26px; height: 26px; }
+.rrew { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 330px; padding: 0 10px; } .rrew span { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; background: #fff; font: 800 17px var(--display); color: var(--brown); } .rrew svg { width: 26px; height: 26px; }
 .rtip { margin: 0; font: 700 14px var(--body); color: #fff; } .rtap { margin: 24px 0 0; font: 800 14px var(--display); color: rgba(255,255,255,.9); }
 .gcol { display: grid; gap: 8px; padding: 10px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 2px var(--gc); }
 .gcsw { display: flex; align-items: center; justify-content: center; gap: 10px; } .gcsw b { min-width: 90px; text-align: center; font: 800 16px var(--display); color: #fff; background: var(--gc); border-radius: 6px; padding: 3px 0; }
@@ -1371,7 +1384,26 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const key = (sp, evo) => sp + "-" + (evo ? 1 : 0);
   const ascOf = m => m.asc !== undefined ? m.asc : Math.min(MAX_ASC, Math.floor(Math.max(0, m.lvl - 1) / ASC_EVERY));  // wild ones: by level
   const ascTop = m => (ascOf(m) + 1) * ASC_EVERY, sellPrice = m => Math.round((SELL_BASE[m.q] + m.lvl) * (m.evo ? 1.5 : 1));
-  const stat = (m, k, per) => Math.round((TIER[SP[m.sp].tier][k] + (m.lvl - 1) * per) * GRADES[m.q].mul * (m.evo ? 1.25 : 1) * (m.wild ? .8 : 1) * (1 + (m.stars || 0) * STAR_BONUS) * (1 + ascOf(m) * ASC_BONUS) * (m.boost || 1));
+  // charms: one per Glumi, kept in S.charms [{id, k, r}], m.charm = id
+  const CHARM = { atk: { n: "Power charm", s: "attack", b: [.08, .15, .25], c: "#ff7a5c" }, def: { n: "Guard charm", s: "defense", b: [.08, .15, .25], c: "#7f93ad" },
+    hp: { n: "Life charm", s: "HP", b: [.1, .18, .3], c: "#ff6fa8" }, en: { n: "Spark charm", s: "fight energy", b: [.1, .2, .3], c: "#f5b400" } };
+  const CHARM_R = ["Common", "Rare", "Epic"], CHARM_RC = ["#b9a68f", "#4f9cff", "#a46bff"];
+  const charmOf = m => m && m.charm && S && S.charms ? S.charms.find(c => c.id === m.charm) || null : null;
+  const charmB = (m, k) => { if (!m || !m.charm || m.wild) return 0; const c = charmOf(m); return c && c.k === k ? CHARM[c.k].b[c.r] : 0; };
+  const charmSvg = (k, r) => `<svg viewBox="0 0 24 24"><path d="M7 3.5 12 8l5-4.5" fill="none" stroke="#8a6d55" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="14" r="7.5" fill="${CHARM_RC[r || 0]}" stroke="#5b4636" stroke-width="1.3"/><circle cx="12" cy="14" r="5" fill="${CHARM[k || "atk"].c}"/>${(r || 0) >= 1 ? '<path d="M12 10.6l1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#fff"/>' : '<circle cx="10" cy="12" r="1.6" fill="#fff" opacity=".8"/>'}</svg>`;
+  const charmUser = id => S.mons.find(m => m.charm === id) || null;
+  function addCharm(k, r) { S.charms = S.charms || []; S.charmId = (S.charmId || 0) + 1; const c = { id: S.charmId, k: k || pickOf(Object.keys(CHARM)), r: r || 0 }; S.charms.push(c); return c; }
+  // team bonus by elements (4): set on fighters as m.tb = { a, h, txt } only while a fight or a forecast runs
+  function teamBonus(list) {
+    const cnt = {}; for (const m of list) { const e = SP[m.sp].el; cnt[e] = (cnt[e] || 0) + 1; }
+    const [el, mx] = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0] || [null, 0];
+    if (mx >= 3) return { a: 1.2, h: 1, txt: `3 ${EL[el].name}: +20% attack` };
+    if (mx === 2) return { a: 1.1, h: 1, txt: `2 ${EL[el].name}: +10% attack` };
+    if (list.length >= 3) return { a: 1, h: 1.1, txt: "3 elements: +10% HP" };
+    return null;
+  }
+  const withTB = list => { const tb = teamBonus(list); return list.map(m => ({ ...m, tb })); };
+  const stat = (m, k, per) => Math.round((TIER[SP[m.sp].tier][k] + (m.lvl - 1) * per) * GRADES[m.q].mul * (m.evo ? 1.25 : 1) * (m.wild ? .8 : 1) * (1 + (m.stars || 0) * STAR_BONUS) * (1 + ascOf(m) * ASC_BONUS) * (m.boost || 1) * (1 + charmB(m, k)) * (m.tb ? (k === "atk" ? m.tb.a : k === "hp" ? m.tb.h : 1) : 1) * (m.boss && k === "hp" ? 1.5 : 1));
   const maxHp = m => stat(m, "hp", 7), atk = m => stat(m, "atk", 2.2), def = m => stat(m, "def", 1.8);
   const interval = m => ({ round: 1, tall: .8, wide: 1.25 }[SP[m.sp].shape]);
 
@@ -1786,6 +1818,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     await wait(380);
     const rays = document.createElement("div"); rays.className = "rays"; rays.style.left = x + "px"; rays.style.top = y + "px"; rays.style.margin = "-260px 0 0 -260px"; $("fx").appendChild(rays);
     const c = E.chestCopy = E; track("chest"); sfx("coin"); S.coins += c.coins; if (c.glow) S.glow += c.glow;
+    if (Math.random() < .03) { const ch = addCharm(null, 0); setTimeout(() => toast(`Found a ${CHARM[ch.k].n} in the chest!`), 900); }
     flyIcons(IC.coin, 6, x, y, $("hudCoins")); if (c.glow) { flyIcons(IC.glow, 6, x, y, $("hudGlow")); toast("A glowing chest! +" + c.glow + " energy"); }
     floatText(x, y - 50, "+" + c.coins, true);
     await wait(900); rays.remove(); E = null; busy = false; save(); render();
@@ -1976,14 +2009,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   let tickId = null;
   const front = () => team().find(m => m.hp > 0);
   async function startBattle(foes, kind, opt = {}) {
-    if (busy) return; for (const m of team()) m.hp = maxHp(m);
+    if (busy) return; { const tb = teamBonus(team()), fb = teamBonus(foes); for (const m of team()) { m.tb = tb; m.hp = maxHp(m); } for (const f of foes) { f.tb = fb; f.hp = maxHp(f); } }
     BT = { mode: opt.mode, prep: opt.prep, foes, fi: 0, kind, name: opt.name || (E && E.name), color: opt.color || (E && E.color), me: { e: 0, t: 0, sh: 0 }, foe: { e: 0, t: 0, sh: 0 }, swapCd: 0, auto: !!S.autoSkill || (!opt.mode && autoCatchOn() && !(E && E.manual)), byAuto: !opt.mode && autoCatchOn() && !(E && E.manual), speed: S.speed || 1, over: false, fx: [], enter: true };
     render(); BT.enter = false; const vs = document.createElement("div"); vs.className = "vs"; vs.textContent = "VS"; $("arena").appendChild(vs); setTimeout(() => vs.remove(), 950);
     await wait(700);
     clearInterval(tickId); let last = performance.now();
     tickId = setInterval(() => { const now = performance.now(); tick(Math.min(.25, (now - last) / 1000)); last = now; }, 100);
   }
-  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1) * stMul(sideA, sideD))); dfn.hp = Math.max(0, dfn.hp - dmg);  return dmg; }
+  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1) * stMul(sideA, sideD) * (att.rage ? 1.3 : 1))); dfn.hp = Math.max(0, dfn.hp - dmg);  return dmg; }
   function doSkill(mine) {
     const me = front(), foe = BT.foes[BT.fi], a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me;
     return castSkill(mine, "x");
@@ -1996,12 +2029,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return;
     for (const [sd2, mm] of [[BT.me, me], [BT.foe, foe]]) { const st = sd2.st || (sd2.st = {}); for (const k in st) st[k] = Math.max(0, st[k] - dt);
       if (st.burn > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .04 * dt); if (st.poison > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .03 * dt); if (st.regen > 0) mm.hp = Math.min(maxHp(mm), mm.hp + maxHp(mm) * .04 * dt); }
-    BT.me.t += stOn(BT.me, "stun") ? 0 : dt; BT.foe.t += stOn(BT.foe, "stun") ? 0 : dt; BT.me.e = Math.min(100, BT.me.e + E_RATE * dt); BT.foe.e = Math.min(100, BT.foe.e + E_RATE * dt);  // steady: 1 point a second
+    BT.me.t += stOn(BT.me, "stun") ? 0 : dt; BT.foe.t += stOn(BT.foe, "stun") ? 0 : dt; BT.me.e = Math.min(100, BT.me.e + E_RATE * dt * (1 + charmB(me, "en"))); BT.foe.e = Math.min(100, BT.foe.e + E_RATE * dt);  // steady: 1 point a second
     if (BT.me.t >= interval(me)) { BT.me.t -= interval(me); const em = mult(SP[me.sp].el, SP[foe.sp].el); BT.fx.push({ who: "me", eff: em, dmg: hit(me, foe, interval(me) * .9 * em, BT.me, BT.foe, true) }); }
     if (BT.auto) skillAI(true);
     if (foe.hp > 0) {
       if (BT.foe.t >= interval(foe)) { BT.foe.t -= interval(foe); const ef = mult(SP[foe.sp].el, SP[me.sp].el); BT.fx.push({ who: "foe", eff: ef, dmg: hit(foe, me, interval(foe) * .9 * ef, BT.foe, BT.me, true) }); }
       if (Math.random() < .25 * BT.speed) skillAI(false);
+      if (foe.boss) bossTick(foe, me, dt);
     }
     playFx();
     if (foe.hp <= 0) {
@@ -2010,6 +2044,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     }
     if (me.hp <= 0) { if (front()) { BT.me.t = 0; if (!BT.auto && team().filter(m => m.hp > 0).length > 1) BT.pick = 5; render(); return; } return endBattle(false); }
     paintBattle();
+  }
+  const BOSS_EVERY = 9, BOSS_CHARGE = 2, BOSS_HIT = 3.2;
+  function bossTick(foe, me, dt) {  // phase 2 under half HP; a big attack every 9 s after a 2 s warning
+    if (!foe.rage && foe.hp < maxHp(foe) * .5) { foe.rage = 1; BT.foe.sh = Math.max(BT.foe.sh || 0, 3); skillBanner("Phase 2!", false, "#e5484d"); toast(`${fname(foe.sp, foe.evo)} is angry: stronger attacks!`); render(); return; }
+    if (BT.foe.chg > 0) { BT.foe.chg -= dt;
+      if (BT.foe.chg <= 0) { BT.foe.chg = 0; const m2 = mult(SP[foe.sp].el, SP[me.sp].el); BT.fx.push({ who: "foe", dmg: hit(foe, me, BOSS_HIT * m2, BT.foe, BT.me, false), skill: true, eff: m2 }); skillBanner("Big attack!", false, "#e5484d"); }
+      return; }
+    BT.foe.bt = (BT.foe.bt || 0) + dt; if (BT.foe.bt >= BOSS_EVERY) { BT.foe.bt = 0; BT.foe.chg = BOSS_CHARGE; }
   }
   function playFx() {
     const meEl = document.querySelector("#meActor .spr"), foeEl = document.querySelector("#foeActor .spr");
@@ -2031,7 +2073,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   async function endBattle(won) {
     clearInterval(tickId); BT.over = true; const M = curM(), kind = BT.kind, foes = BT.foes;
-    for (const m of team()) m.hp = maxHp(m);
+    for (const m of S.mons) delete m.tb; for (const m of team()) m.hp = maxHp(m);
     if (BT.mode) return finishArena(won);
     if (!won) { await resultScreen(false, [], BT.byAuto ? 2000 * autoPace() : 0, lossTips(team(), foes)); BT = null; E = null; render(); save(); return;
       // (older path kept below for reference, never reached)
@@ -2187,8 +2229,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ================= TASKS: Starter (once), Daily (new every day), Challenge (once) =================
   const ELK = Object.keys(EL);
   const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "energy"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"], prism: [IC.jar("prism"), "prism jar"],
-               treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"] };
-  function giveReward(r) { if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
+               treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"], charm: [charmSvg("atk", 1), "charm"] };
+  function giveReward(r) { if (r.k === "charm") { for (let i = 0; i < r.n; i++) addCharm(r.kind, r.r || 0); return; } if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
   const TASKS = {
     starter: [
       { id: "c1", name: "First catch", about: "Catch a Glumi", need: 1, got: T => T.total.catch, r: { k: "plain", n: 3 } },
@@ -2250,8 +2292,37 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   // ================= BACKPACK =================
   let bagTab = "items", bagPick = null;
+  let charmFor = null;  // uid of the Glumi choosing a charm, or null (charm list from the Backpack)
+  const charmPct = c => Math.round(CHARM[c.k].b[c.r] * 100);
+  function charmRow(m) {
+    const c = charmOf(m);
+    return `<button class="gcharm" data-act="charmfor:${m.uid}"><span class="gci">${c ? charmSvg(c.k, c.r) : '<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7.5" fill="none" stroke="#b9a68f" stroke-width="1.6" stroke-dasharray="3 2"/></svg>'}</span><span class="gct"><b>${c ? `${CHARM_R[c.r]} ${CHARM[c.k].n}` : "No charm"}</b><small>${c ? `+${charmPct(c)}% ${CHARM[c.k].s}` : "Tap to give it a charm"}</small></span><i>\u203A</i></button>`;
+  }
+  function charmGroups() {  // [{k, r, all, free}] most valuable first
+    const g = {}; for (const c of S.charms || []) { const id = c.k + "-" + c.r; (g[id] = g[id] || { k: c.k, r: c.r, all: [], free: [] }).all.push(c); if (!charmUser(c.id)) g[id].free.push(c); }
+    return Object.values(g).sort((a, b) => b.r - a.r || Object.keys(CHARM).indexOf(a.k) - Object.keys(CHARM).indexOf(b.k));
+  }
+  function charmList(m) {
+    const G = charmGroups();
+    if (!G.length) return `<p class="hint">No charms yet. Gym leaders (first win), every 10th Cloud Climb floor and some chests give charms.</p>`;
+    return `<div class="clist">${G.map(g => { const worn = g.all.length - g.free.length, mine = m && charmOf(m) && charmOf(m).k === g.k && charmOf(m).r === g.r;
+      const eq = m ? (mine ? `<span class="skuse on">Wearing</span>` : `<button class="mb gold" data-act="charmeq:${g.k}-${g.r}">${g.free.length ? "Use" : "Move here"}</button>`) : "";
+      const merge = g.r < 2 && g.free.length >= 3 ? `<button class="mb" data-act="charmmerge:${g.k}-${g.r}">Merge 3 \u2192 ${CHARM_R[g.r + 1]}</button>` : "";
+      return `<div class="crow"><span class="gci">${charmSvg(g.k, g.r)}</span><span class="gct"><b>${CHARM_R[g.r]} ${CHARM[g.k].n} \u00D7${g.all.length}</b><small>+${Math.round(CHARM[g.k].b[g.r] * 100)}% ${CHARM[g.k].s}${worn ? ` \u00B7 ${worn} worn` : ""}</small></span><span class="cbtn">${eq}${merge}</span></div>`; }).join("")}</div>
+      <p class="hint" style="margin:0">Each Glumi can wear one charm. Merge 3 spare charms of the same kind and rarity into one of the next rarity.</p>`;
+  }
+  function pageCharms() {
+    const m = mon(charmFor);
+    if (!m) { charmFor = null; return pageBag(); }
+    const c = charmOf(m);
+    return `<div class="sheethead"><button class="mb" data-act="charmback" aria-label="Back">\u2039 Back</button><h3>Charm for ${fname(m.sp, m.evo)}</h3><span></span></div>
+      ${c ? `<div class="crow cur"><span class="gci">${charmSvg(c.k, c.r)}</span><span class="gct"><b>Wearing: ${CHARM_R[c.r]} ${CHARM[c.k].n}</b><small>+${charmPct(c)}% ${CHARM[c.k].s}</small></span><span class="cbtn"><button class="mb" data-act="charmoff">Take off</button></span></div>` : ""}
+      ${charmList(m)}`;
+  }
   function pageBag() {
-    const tabs = [["items", "Items"], ["keep", "Keepsakes"], ["cores", "Star cores"]];
+    const tabs = [["items", "Items"], ["charms", "Charms"], ["keep", "Keepsakes"], ["cores", "Star cores"]];
+    if (bagTab === "charms") return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Backpack</h3><span></span></div>
+      <div class="seg">${tabs.map(([k, n]) => `<button class="${bagTab === k ? "on" : ""}" data-act="bagtab:${k}">${n}</button>`).join("")}</div>${charmList(null)}`;
     let tiles = [], info = "";
     if (bagTab === "items") {
       const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
@@ -2328,6 +2399,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   function skillAI(mine) {  // Auto and foes: heal when low, signature when affordable, otherwise spend a nearly full bar
     const a = mine ? front() : BT.foes[BT.fi], side = mine ? BT.me : BT.foe; if (!a) return;
+    if (mine && BT.foe.chg > 0 && side.e >= SHIELD_COST * 10 && !(side.sh > 0)) return useShield(true);  // block a boss's big attack
     const x = skillOf(a, "x"), sh = skillOf(a, "s");
     if (sh.heal && a.hp < maxHp(a) * .45 && side.e >= sh.cost * 10) return castSkill(mine, "s");
     if (side.e >= x.cost * 10) return castSkill(mine, "x");
@@ -2356,7 +2428,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return new Promise(res => {
       const d = document.createElement("div"); d.className = "result " + (won ? "win" : "lose");
       const why = !won && tips && tips.length ? `<div class="rwhy"><b>Why you lost</b>${tips.map(t => `<p>${t}</p>`).join("")}</div>` : "";
-      d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${RW[r.k][0]}<b>+${r.n}</b></span>`).join("")}</div>` : won ? "" : why || `<p class="rtip">Level up your team and try again</p>`}<p class="rtap">Tap to close</p>`;
+      d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${r.k === "charm" ? charmSvg(r.kind || "atk", r.r || 0) : RW[r.k][0]}<b>${r.k === "charm" ? CHARM_R[r.r || 0] + " charm" : "+" + r.n}</b></span>`).join("")}</div>` : won ? "" : why || `<p class="rtip">Level up your team and try again</p>`}<p class="rtap">Tap to close</p>`;
       if (why && autoMs) autoMs = Math.max(autoMs, 4500);
       document.body.appendChild(d); sfx(won ? "win" : "tap");
       let done = false; const close = () => { if (done) return; done = true; d.remove(); res(); };
@@ -2372,11 +2444,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function gymTrainer(z, d, i) {
     const hard = Math.max(0, z - 2), Z = ZONES[z], lead = i === 2, lvl = Z.lv[1] + 1 + i * 2 + d * 10 + hard * 5, q = Math.min(3, d + 1 + (lead || hard ? 1 : 0));  // zones 4-8: harder
     const n = i + 1, foes = Array.from({ length: n }, (_, k) => foeMon(Z.sp[(z + i + k) % Z.sp.length], lvl - (n - 1 - k), Math.min(3, Math.max(1, q - (k < n - 1 ? 1 : 0)))));
-    if (lead) foes[foes.length - 1] = foeMon(Z.boss, lvl + 1, Math.min(3, q));
+    if (lead) { const b = foeMon(Z.boss, lvl + 1, Math.min(3, q)); b.boss = 1; b.hp = maxHp(b); foes[foes.length - 1] = b; }
     if (hard) foes.forEach(f => { f.boost = 1 + .12 * hard; f.hp = maxHp(f); });
     const reward = i === 0 ? { k: "coins", n: 25 * (z + 1) * (d + 1) } : i === 1 ? { k: "bright", n: d + 1 } : { k: "star", n: d + 1 };
     const energy = { k: "glow", n: (lead ? 10 : 5) * (z + 1) * (d + 1) };
-    return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, energy, lvl };
+    return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, energy, lvl, charm: lead ? { k: "charm", n: 1, r: d } : null };
   }
   const gymKey = (z, d, i) => `${z}-${d}-${i}`;
   const gymBeat = (z, d, i) => !!(S.gyms && S.gyms[gymKey(z, d, i)]);
@@ -2412,20 +2484,22 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return Array.from({ length: 3 }, () => foeMon(pickOf(pool), L + rnd(-1, 2), 1 + wpick([60, 30, 10])));
   }
   // sky tower
-  function towerFoes(f) {
+  function towerFoes(f) { const L = towerFoes0(f); if (f % 10 === 0 && L.length) { const b = L[L.length - 1]; b.boss = 1; b.hp = maxHp(b); } return L; }
+  function towerFoes0(f) {
     const Z = ZONES[Math.min(ZONES.length - 1, Math.floor((f - 1) / 4))], n = Math.min(3, 1 + Math.floor((f - 1) / 3));
     return Array.from({ length: n }, () => foeMon(pickOf(Z.sp), 2 + f * 2, f < 5 ? 1 : f < 12 ? 1 + wpick([60, 40]) : 1 + wpick([30, 50, 20])));
   }
   // quick battle: the same fight worked out without showing it
   function simulate(mine, foes, detail) {  // detail: { won, margin (-1..1: share of HP left on the winning side), top (foe that dealt most), topShare }
-    const A = mine.map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), B = foes.map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), ea = { e: 0 }, eb = { e: 0 };
+    const A = withTB(mine).map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), B = withTB(foes).map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), ea = { e: 0 }, eb = { e: 0 };
     let i = 0, j = 0;
-    const hitS = (x, y, p, sx, sy, basic) => { const d = Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m)))); y.hp -= d; x.d += d; };
+    const hitS = (x, y, p, sx, sy, basic) => { const d = Math.max(1, Math.round(atk(x.m) * p * 60 / (60 + def(y.m)) * (x.rage ? 1.3 : 1))); y.hp -= d; x.d += d; };
     const em = (x, y) => mult(SP[x.m.sp].el, SP[y.m.sp].el);
     const simSkill = (x, y, sx, sy) => { const X = skillOf(x.m, "x"), Sk = skillOf(x.m, "s"), use = sk => { sx.e -= sk.cost * 10; if (sk.power) hitS(x, y, sk.power * (sk.fx && sk.fx.length ? 1.25 : 1) * mult(sk.el, SP[y.m.sp].el), sx, sy, false); if (sk.heal) x.hp = Math.min(maxHp(x.m), x.hp + maxHp(x.m) * sk.heal); };
       if (Sk.heal && x.hp < maxHp(x.m) * .45 && sx.e >= Sk.cost * 10) use(Sk); else if (sx.e >= X.cost * 10) use(X); else if (!Sk.heal && sx.e >= 90 && sx.e >= Sk.cost * 10) use(Sk); };
     for (let t = 0; t < 900 && i < A.length && j < B.length; t += .1) {
-      const a = A[i], b = B[j]; a.t += .1; b.t += .1; ea.e = Math.min(100, ea.e + E_RATE * .1); eb.e = Math.min(100, eb.e + E_RATE * .1);
+      const a = A[i], b = B[j]; a.t += .1; b.t += .1; ea.e = Math.min(100, ea.e + E_RATE * .1 * (1 + charmB(a.m, "en"))); eb.e = Math.min(100, eb.e + E_RATE * .1);
+      if (b.m.boss) { if (!b.rage && b.hp < maxHp(b.m) * .5) b.rage = 1; b.bt = (b.bt || 0) + .1; if (b.bt >= BOSS_EVERY + BOSS_CHARGE) { b.bt = 0; hitS(b, a, BOSS_HIT * .7 * em(b, a)); } }  // .7: the player shields some
       if (a.t >= interval(a.m)) { a.t -= interval(a.m); hitS(a, b, interval(a.m) * .9 * em(a, b), ea, eb, true); }
       simSkill(a, b, ea, eb);
       if (b.hp > 0) { if (b.t >= interval(b.m)) { b.t -= interval(b.m); hitS(b, a, interval(b.m) * .9 * em(b, a), eb, ea, true); } simSkill(b, a, eb, ea); }
@@ -2437,7 +2511,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return { won, margin: won ? left(A) : -left(B), top: top && top.m, topShare: all ? top.d / all : 0 };
   }
   const monPower = m => Math.round(atk(m) * 2 + def(m) * 1.5 + maxHp(m) / 2);
-  const teamPower = list => list.reduce((s, m) => s + monPower(m), 0);
+  const teamPower = list => withTB(list).reduce((s, m) => s + monPower(m), 0);
   const ODDS = [[.45, "Easy win", "o4"], [.18, "Likely win", "o3"], [0, "Close fight", "o2"], [-.3, "Likely loss", "o1"], [-2, "Very hard", "o0"]];
   function fightOdds(mine, foes) { if (!mine.length) return null; const r = simulate(mine, foes, true); const o = ODDS.find(x => r.margin > x[0] || (x[0] === 0 && r.won)) || ODDS[4]; return { ...r, label: o[1], cls: o[2], fill: Math.round(Math.max(4, Math.min(100, 50 + r.margin * 50))) }; }
   // 2: best team against these foes: the 6 best candidates by power x element matchup, every 3 of them in every order, scored by the quick-battle forecast
@@ -2466,7 +2540,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   let arenaSub = "hub", gymZ = 0, gymD = 0, prep = null;
   function openPrep(p) { prep = p; arenaSub = "prep"; render(); window.scrollTo(0, 0); }
-  function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward, T.energy], quick: true, back: "gym" }); }
+  function prepGym(z, d, i) { const T = gymTrainer(z, d, i); openPrep({ mode: "gym", z, d, i, title: `${ZONES[z].name} Gym · ${DIFF[d]}`, name: T.name, color: T.color, foes: T.foes, rewards: gymBeat(z, d, i) ? [] : [T.reward, T.energy, ...(T.charm ? [T.charm] : [])], quick: true, back: "gym" }); }
   function prepDuel() { const D = duelState(); if (D.left <= 0) { toast("No duels left today"); return; } openPrep({ mode: "duel", title: "Daily Duel", name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: duelFoes(), rewards: [{ k: "coins", n: 20 + avgLvl() * 3 }], quick: true, back: "duels" }); }
   function prepTower() { const f = (S.tower || 0) + 1; openPrep({ mode: "tower", f, title: `Cloud Climb · Floor ${f}`, name: `Floor ${f} climber`, color: "#9fd6ff", foes: towerFoes(f), rewards: climbRewards(f), quick: true, back: "tower" }); }
   function arenaWin(P) {  // progress and rewards for a won arena fight; returns the rewards given
@@ -2490,7 +2564,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes)); prep = null; arenaSub = P.back; render(); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
   }
-  const rchips = rs => rs.map(r => `<span class="rchip">${RW[r.k][0]}${r.n}</span>`).join("");
+  const rchips = rs => rs.map(r => `<span class="rchip">${r.k === "charm" ? charmSvg(r.kind || "atk", r.r || 0) : RW[r.k][0]}${r.k === "charm" ? CHARM_R[r.r || 0] : r.n}</span>`).join("");
   function pageArena() {
     const back = to => `<div class="sheethead"><button class="mb" data-act="arenasub:${to}" aria-label="Back">‹ Back</button>`;
     if (arenaSub === "prep" && prep) {
@@ -2499,9 +2573,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         return up && !down ? `<em class="pedge up" title="Strong here">\u25B2</em>` : down && !up ? `<em class="pedge dn" title="Weak here">\u25BC</em>` : ""; };
       const mon2 = (m, mineSide) => `<div class="pmon">${art(m.sp, m.evo, 58)}${mineSide ? edge(m, P.foes) : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span><span class="pel" style="color:${EL[SP[m.sp].el].color}">${EL[SP[m.sp].el].name}</span>${gChip(m.q)}</div>`;
       return `${back(P.back)}<h3>${P.title}</h3><span></span></div>
-        <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><small class="ppow">Power ${teamPower(P.foes).toLocaleString("en")}</small><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
+        <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><small class="ppow">Power ${teamPower(P.foes).toLocaleString("en")}${teamBonus(P.foes) ? ` \u00B7 ${teamBonus(P.foes).txt}` : ""}</small><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
           <div class="pvs">VS</div>
-          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}</small><div class="pmons">${mine.map(m => mon2(m, true)).join("")}</div></div></div></div>
+          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}${teamBonus(mine) ? ` \u00B7 <span class="ptb">${teamBonus(mine).txt}</span>` : ""}</small><div class="pmons">${mine.map(m => mon2(m, true)).join("")}</div></div></div></div>
         ${od ? `<div class="podds ${od.cls}"><span>Forecast</span><b>${od.label}</b><div class="pobar"><i style="width:${od.fill}%"></i></div></div>` : ""}
         ${P.rewards.length ? `<div class="prew"><span>Reward</span>${rchips(P.rewards)}</div>` : `<p class="hint" style="margin:0">Already beaten: no reward this time.</p>`}
         <div class="pbtns"><button class="mb" data-act="view:team">Change team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick battle</button>` : ""}</div>`;
@@ -2511,7 +2585,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const idx = open.indexOf(z), prev = open[idx - 1], next = open[idx + 1];
       const badges = ZONES.map((ZZ, i) => `<button class="gbadge${gymDone(i, 0) ? " done" : ""}${i === z ? " cur" : ""}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"} aria-label="${ZZ.name} Gym">${zoneOpen(i) ? (ART["badge-zone-" + i] ? `<img src="${ART["badge-zone-" + i]}" alt="">` : gymDone(i, 0) ? "\u2713" : i + 1) : IC.lock}</button>`).join("");
       const tcard = i => { const T = gymTrainer(z, d, i), beat = gymBeat(z, d, i);
-        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false, i === 2 && ART["tr-leader-" + z] ? "tr-leader-" + z : "")}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward, T.energy])}</span></button>`; };
+        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false, i === 2 && ART["tr-leader-" + z] ? "tr-leader-" + z : "")}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward, T.energy, ...(T.charm ? [T.charm] : [])])}</span></button>`; };
       return `${back("gyms")}<h3>${Z.name} Gym</h3><span></span></div>
         <div class="gbadges">${badges}</div>
         <div class="seg">${DIFF.map((n, k) => `<button class="${d === k ? "on" : ""}" data-act="gymd:${k}" ${gymDiffOpen(z, k) ? "" : "disabled"}>${gymDiffOpen(z, k) ? "" : IC.lock.replace(/#fff/g, "#8a6d55")}${n}</button>`).join("")}</div>
@@ -2663,7 +2737,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function prepLadder() {
     const t = ladderTier(ladderState().pts); openPrep({ mode: "ladder", title: `Ladder match · ${DRANKS[t][1]}`, name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: ladderFoes(), rewards: [{ k: "coins", n: Math.round((20 + avgLvl() * 3) * (1 + t * .3)) }], quick: true, back: "ladder" }); }
   // ================= CLOUD CLIMB =================
-  const climbRewards = f => [{ k: "coins", n: 16 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }] : [])];
+  const climbRewards = f => [{ k: "coins", n: 16 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }, { k: "charm", n: 1, r: f >= 30 ? 2 : f >= 20 ? 1 : 0 }] : [])];
   let climbing = false;
   async function autoClimb() {
     if (climbing || !team().length) return; climbing = true; render();
@@ -2997,7 +3071,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
              ${[["Attack", atk(m), 70, IC.sword], ["Defense", def(m), 60, IC.flag], ["HP", maxHp(m), 260, IC.heart || IC.star], ["Work", Math.round(workBest), 30, IC.home]].map(([n, v, mx, ic]) =>
                `<div class="gcbar"><span class="gcbi">${ic}</span><b>${n}</b><span class="gctrack"><i style="width:${Math.min(100, v / mx * 100)}%"></i></span><em>${v}${n === "Work" ? "/h" : ""}</em></div>`).join("")}
            </div><button class="gcnav" data-act="sheetnav:1" aria-label="Next Glumi">\u203A</button></div>
-           <div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
+           ${charmRow(m)}<div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
              ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
              ${bigBtn}
              <button class="gx${multi ? " on" : ""}" data-act="sheetmulti" aria-label="Level up as many times as you can" ${lvlN > 1 && !(atAsc && ascOf(m) < MAX_ASC) ? "" : "disabled"}>\u2303\u2303</button></div>`;
@@ -3032,6 +3106,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const resetGain = m => { let leaves = 0; for (let l = 1; l < m.lvl; l++) leaves += 5 + l * 3; let paid = 0; for (let a = 0; a < (m.asc || 0); a++) paid += ASC_COST[a]; const shards = Math.min(paid, m.ascShards || 0); return { leaves, keeps: paid - shards, shards }; };
   // ================= MAILBOX: update gifts =================
   const MAIL = [
+    { id: "upd-2026-11-17-charms", title: "Charms are here", text: "Glumis can now wear a charm (on their card). Gym leaders and Cloud Climb now give charms, so here are some for the fights you already won.", rew: [{ k: "charm", n: 1, r: 1 }, { k: "charm", n: 2, r: 0 }] },
     { id: "upd-2026-11-17-moonfruit", title: "Moonfruit gift", text: "New explorers now start with 20 moonfruit. You started before that, so here are yours!", rew: [{ k: "fruit", n: 20 }] },
   ];
   function mailSync() {  // put every letter not delivered yet into the inbox
@@ -3399,7 +3474,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
   // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
-  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", mail: "menu", book: "team", release: "team" })[v] || v;
+  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", mail: "menu", book: "team", release: "team", charms: "team" })[v] || v;
   function resetTab(t, keepPrep) {
     if (t === "shop") { shopTab = "jars"; marketFocus = null; reqPick = null; keepsFor = null; }
     if (t === "team") { teamTab = "team"; sheetPage = "main"; sheetTab = "stats"; sheetMulti = false; rel = null; }
@@ -3576,7 +3651,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     $("aview").innerHTML = `${picker}${autoChip()}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(t, true)}</div></div><div class="aside r"><span class="aname">${BT.name || "Trainer"}</span><div class="tdots">${dots(BT.foes, false)}</div></div></div>
       <div class="afield">${arenaSVG()}
         <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div class="stx" id="meSt">${stChips(BT.me)}</div></div>
-        <div class="hpcard foe"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(BT.foe.e)}</div><div class="stx" id="foeSt">${stChips(BT.foe)}</div></div>
+        <div class="hpcard foe${foe.boss ? " boss" : ""}"><div class="nm"><span>${foe.boss ? `<em class="btag">BOSS${foe.rage ? " II" : ""}</em>` : ""}${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div class="bchg" id="foeChg" ${BT.foe.chg > 0 ? "" : "hidden"}>Charging! Use Shield</div><div id="foeHp">${bar(foe.hp, maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(BT.foe.e)}</div><div class="stx" id="foeSt">${stChips(BT.foe)}</div></div>
         <div class="trainer foe${BT.enter ? " enter" : ""}">${trainerSVG(BT.color || "#ff8a8a", false)}</div>
         <div class="actor" id="foeActor" style="left:66%;top:68%"><div class="shieldfx" id="foeShield" hidden></div><div class="spr pop">${art(foe.sp, foe.evo, 130)}</div><div class="shadow"></div></div>
         <div class="trainer me${BT.enter ? " enter" : ""}">${trainerSVG("#5aa8ff", true)}</div>
@@ -3596,13 +3671,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${view === "shrine" && ART["bg-star"] ? ART["bg-star"] : ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
-    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "charms" ? pageCharms() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
     $("meHp").innerHTML = bar(me.hp, maxHp(me)); $("foeHp").innerHTML = bar(foe.hp, maxHp(foe)); $("foeEn").innerHTML = segs(BT.foe.e); $("meSegs").innerHTML = segs(BT.me.e); $("eNum").textContent = Math.floor(BT.me.e / 10);
     $("meShield").hidden = !(BT.me.sh > 0); $("foeShield").hidden = !(BT.foe.sh > 0); if ($("meSt")) $("meSt").innerHTML = stChips(BT.me); if ($("foeSt")) $("foeSt").innerHTML = stChips(BT.foe);
-    const sh = $("shieldBtn"); if (sh) sh.disabled = BT.me.e < SHIELD_COST * 10 || BT.me.sh > 0;
+    const sh = $("shieldBtn"); if (sh) { sh.disabled = BT.me.e < SHIELD_COST * 10 || BT.me.sh > 0; sh.classList.toggle("urge", BT.foe.chg > 0 && !sh.disabled); }
+    const cg = $("foeChg"); if (cg) cg.hidden = !(BT.foe.chg > 0);
     document.querySelectorAll(".tsw").forEach(b => { const cur = b.classList.contains("cur"), c = b.querySelector(".cd"); const u = +b.dataset.act.split(":")[1], m = mon(u); b.disabled = cur || !m || m.hp <= 0 || BT.swapCd > 0; c.hidden = !(BT.swapCd > 0 && !cur && m && m.hp > 0); c.textContent = Math.ceil(BT.swapCd); const i = b.querySelector(".bar i"); if (i && m) i.style.width = Math.max(0, m.hp / maxHp(m) * 100) + "%"; });
     document.querySelectorAll(".skcard").forEach(c => { const need = +c.dataset.cost * 10, ok = BT.me.e >= need; c.disabled = !ok; c.classList.toggle("ready", ok); c.style.setProperty("--p", Math.min(100, BT.me.e / need * 100) + "%"); });
     document.querySelectorAll(".swap").forEach(b => { b.disabled = BT.swapCd > 0; const c = b.querySelector(".cd"); c.hidden = BT.swapCd <= 0; c.textContent = Math.ceil(BT.swapCd); });
@@ -3767,6 +3843,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "taskstab") { tasksTab = arg; render(); }
     else if (a === "taskclaim") { const [tab, id] = b.dataset.act.split(":").slice(1), t = TASKS[tab].find(x => x.id === id); if (t && taskReady(tab, t)) { tasksState().done[tab + ":" + id] = 1; giveReward(t.r); sfx("claim"); save(); toast(`Got ${t.r.n} ${RW[t.r.k][1]}`); render(); } }
     else if (a === "bagtab") { bagTab = arg; bagPick = null; render(); }
+    else if (a === "charmfor") { charmFor = n; sheetUid = null; view = "charms"; render(); window.scrollTo(0, 0); }
+    else if (a === "charmback") { const u = charmFor; charmFor = null; view = "team"; sheetUid = u; render(); }
+    else if (a === "charmoff") { const m = mon(charmFor); if (m) { m.charm = null; m.hp = maxHp(m); save(); toast("Charm taken off"); render(); } }
+    else if (a === "charmeq") { const m = mon(charmFor), [k, r] = arg.split("-"), G = charmGroups().find(g => g.k === k && g.r === +r); if (m && G) {
+        const c = G.free[0] || G.all.find(x => charmUser(x.id) !== m), was = c && charmUser(c.id); if (!c) return;
+        if (was) was.charm = null; m.charm = c.id; m.hp = maxHp(m); save(); sfx("claim"); toast(was ? `Moved from ${fname(was.sp, was.evo)}` : `${fname(m.sp, m.evo)} wears the ${CHARM[c.k].n}`); render(); } }
+    else if (a === "charmmerge") { const [k, r] = arg.split("-"), G = charmGroups().find(g => g.k === k && g.r === +r); if (G && G.free.length >= 3 && +r < 2) {
+        const gone = G.free.slice(0, 3).map(c => c.id); S.charms = S.charms.filter(c => !gone.includes(c.id)); const nc = addCharm(k, +r + 1); save(); sfx("claim"); toast(`Made a ${CHARM_R[nc.r]} ${CHARM[k].n}!`); render(); } }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
     else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound") S.opt.sound = S.opt.sound === false; else S.opt[arg] = !S.opt[arg]; RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
@@ -3875,7 +3959,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "autoskill") { BT.auto = !BT.auto; S.autoSkill = BT.auto; render(); }
     else if (a === "speed") { BT.speed = BT.speed > 1 ? 1 : 2; S.speed = BT.speed; render(); }
     else if (a === "swap") { if (BT && BT.swapCd <= 0) { const i = S.team.indexOf(n), cur = front(); if (i > -1 && cur) { const ci = S.team.indexOf(cur.uid); [S.team[ci], S.team[i]] = [S.team[i], S.team[ci]]; BT.swapCd = 8; BT.me.t = 0; render(); } } }
-    else if (a === "retreat") { if (BT) { clearInterval(tickId); BT = null; for (const m of team()) m.hp = maxHp(m); if (E && E.type === "rival") E = null; save(); render(); } }
+    else if (a === "retreat") { if (BT) { clearInterval(tickId); BT = null; for (const m of S.mons) delete m.tb; for (const m of team()) m.hp = maxHp(m); if (E && E.type === "rival") E = null; save(); render(); } }
     else if (a === "starup") { const m = mon(n); if (m) { const st = m.stars || 0, need = st + 1, have = S.starCores[m.sp] || 0; if (st < MAX_STARS && have >= need) { S.starCores[m.sp] = have - need; m.stars = st + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} reached ${m.stars} star${m.stars > 1 ? "s" : ""}!`); } } }
     else if (a === "lvlreset") { const m = mon(n); if (!m || m.lvl <= 1) return;
       if (resetSure !== n) { const g0 = resetGain(m); resetSure = n; render(); toast(`Tap again to reset to level 1: +${g0.leaves} leaves${g0.keeps ? `, +${g0.keeps} keepsakes` : ""}${g0.shards ? `, +${g0.shards} star shards` : ""}`); setTimeout(() => { if (resetSure === n) { resetSure = null; render(); } }, 3000); return; }
