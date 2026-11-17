@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794914487;</script>
+<script>window.GAME_BUILD = 1794914641;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1236,6 +1236,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .jmake button.on { box-shadow: 0 0 0 3px #f5b23c, 0 2px 8px rgba(91,70,54,.14); background: #fff8e6; }
   .jmake span { width: 30px; height: 30px; } .jmake span svg, .jmake span img { width: 30px !important; height: 30px; }
   .jmake b { font: 800 14px var(--display); } .jmake small { font-size: 11px; color: #8a6d55; }
+  .jarrow .qchip { gap: 3px; } .jarrow .qchip svg { width: 15px; height: 15px; } .jarrow .qchip span { font-size: 11px; font-weight: 800; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1762,13 +1763,17 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function chance(w, jarK, timing = 1) { const J = JARS.find(j => j.k === jarK); if (jarK === "prism") return 1;
     const base = w.q >= 3 ? RARE_JAR[jarK] * (SP[w.sp].tier === 3 ? .6 : 1) : J.base * TIER[SP[w.sp].tier].catch * GRADES[w.q].catch;
     return Math.min(.98, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1) * (w.q >= 3 ? 1 : timing))); }  // Gold/Rainbow: throw timing doesn't change the chance (star jar = 30%)
+  let quickNow = false;
+  const wantQuick = autoThrow => autoThrow ? (S.autoCfg && S.autoCfg.speed === "quick") : !!S.quickCatch;
+  async function quickWrap(fn, autoThrow) { const was = RM; RM = true; quickNow = true; try { await fn(autoThrow); } finally { RM = was; quickNow = false; } }
   async function throwJar(autoThrow) {
+    if (!quickNow && wantQuick(autoThrow)) return quickWrap(throwJar, autoThrow);
     const w = E && E.type === "wild" ? E.list[E.i] : null; if (!w || busy) return;
     if (tough(w) && !E.fought) { toast("Battle it first"); return; }
     if (!S.jars[E.jar]) { toast("No jars of that kind"); return; }
     if (autoThrow) {  // Auto aims: wait for the ring to reach the Perfect size (at most one full ring cycle)
       const enc = E, t0 = performance.now();
-      while (E === enc && !busy && !enc.manual && Math.abs(ringScale() - .78) >= .05 && performance.now() - t0 < 2800) await wait(15);
+      while (!quickNow && E === enc && !busy && !enc.manual && Math.abs(ringScale() - .78) >= .05 && performance.now() - t0 < 2800) await wait(15);
       if (E !== enc || busy || enc.manual) return;
     }
     busy = true; const sc = ringScale(), d = Math.abs(sc - .78), timing = d < .1 ? 1.5 : d < .28 ? 1.15 : .8;
@@ -1807,7 +1812,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const sh = document.createElement("div"); sh.className = "shade";
       sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">${title}</div><div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${art(m.sp, m.evo, 130)}<div class="nm">${fname(m.sp, m.evo)}</div><div class="nmrow" style="font-size:14px"><span class="grade q${m.q}">${GRADES[m.q].name}</span><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</div></div></div></div>`;
       $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
-      sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, 2600);
+      sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, quickNow ? 700 : 2600);
     });
   }
 
@@ -1836,10 +1841,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">Caught ${list.length}!</div>
         <div class="grouprev">${list.map(m => `<div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${art(m.sp, m.evo, 64)}<div class="nm">${fname(m.sp, m.evo)}</div><span class="grade q${m.q}">${GRADES[m.q].name}</span></div></div>`).join("")}</div></div>`;
       $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
-      sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, 2800);
+      sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, quickNow ? 700 : 2800);
     });
   }
   async function throwGroup(autoThrow) {
+    if (!quickNow && wantQuick(autoThrow)) return quickWrap(throwGroup, autoThrow);
     if (!E || E.type !== "wild" || busy) return;
     const C = S.autoCfg, plan = []; let missing = null;
     if (autoThrow) for (const w of E.list) { if (C.only === "new" && S.caught[key(w.sp, w.evo)]) continue; const want = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, need = E.list.filter(x => (x.q >= 3 ? C.high : x.q === 2 ? C.mid : C.low) === want && !(C.only === "new" && S.caught[key(x.sp, x.evo)])).length;
@@ -2082,7 +2088,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <div style="display:grid;justify-items:center;gap:6px">${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>`}
         </div>
         <div class="side"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div></div></div>
-        <div class="jarrow">${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div>`;
+        <div class="jarrow"><button class="round jartype qchip${S.quickCatch ? " on" : ""}" data-act="quickcatch" aria-label="Quick catch">${IC.fast}<span>Quick</span></button>${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div>`;
       return;
     }
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
@@ -3301,7 +3307,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
     { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
-    { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet energy"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
+    { k: "speed", name: "Catch speed", about: "How Auto throws jars", opts: [["normal", "Normal: aims for Perfect"], ["quick", "Quick: no animations"]] },
+  { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet energy"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
     const C = S.autoCfg, label = r => (r.opts.find(o => o[0] === C[r.k]) || r.opts[0])[1];
@@ -3705,6 +3712,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "cfg") { const [k, v] = arg.split("="); S.autoCfg[k] = v === "true" ? true : v === "false" ? false : /^\d+$/.test(v) ? +v : v; autoPick = null; save(); render(); }
     else if (a === "chest") openChest();
     else if (a === "jar") { E.jar = arg; render(); }
+    else if (a === "quickcatch") { S.quickCatch = !S.quickCatch; save(); renderActions(); toast(S.quickCatch ? "Quick catch on: no throw animations" : "Quick catch off"); }
     else if (a === "throw") { if (E && E.type === "wild" && E.list.length > 1) throwGroup(); else throwJar(); }
     else if (a === "gather") gatherNode();
     else if (a === "treat") { if (S.treats && !E.treat) { S.treats--; E.treat = true; const spr = document.querySelector("#wildActor .spr"); if (spr) { const [x, y] = stageXY(spr); floatText(x, y - 70, "Yum!"); } save(); setTimeout(render, 500); } }
