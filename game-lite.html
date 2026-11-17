@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794916672;</script>
+<script>window.GAME_BUILD = 1794916769;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1776,9 +1776,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ---------- catching ----------
   const ringScale = () => { const T = 1300, ph = ((performance.now() - (E ? E.t0 : 0)) % (2 * T)) / T, p = ph < 1 ? ph : 2 - ph; return 1.7 - p * 1.2; };
   const RARE_JAR = { plain: .03, bright: .06, star: .3 };  // Gold and Rainbow: base catch chance by jar
-  function chance(w, jarK, timing = 1) { const J = JARS.find(j => j.k === jarK); if (jarK === "prism") return 1;
-    const base = w.q >= 3 ? RARE_JAR[jarK] * (SP[w.sp].tier === 3 ? .6 : 1) : J.base * TIER[SP[w.sp].tier].catch * GRADES[w.q].catch;
-    return Math.min(.98, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1) * (w.q >= 3 ? 1 : timing))); }  // Gold/Rainbow: throw timing doesn't change the chance (star jar = 30%)
+  const CATCH_TABLE = { plain: [.55, .55, .3, .03, .03], bright: [.75, .75, .55, .06, .06], star: [1, 1, 1, .5, .3] };  // by grade Green..Rainbow
+  function chance(w, jarK, timing = 1) { if (jarK === "prism") return 1;
+    const base = (CATCH_TABLE[jarK] || CATCH_TABLE.plain)[w.q] * (SP[w.sp].tier === 3 ? .6 : 1);  // guardians are harder
+    return Math.min(1, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1))); }  // throw timing no longer changes the chance
   let quickNow = false;
   const QJ_DEF = { 1: "plain", 2: "bright", 3: "star", 4: "star" }, quickJar = q => { const C = S.autoCfg || {}; return (q >= 3 ? C.high : q === 2 ? C.mid : C.low) || QJ_DEF[Math.max(1, q)]; };  // the Auto rules' jars
   function quickJarPanel() {
