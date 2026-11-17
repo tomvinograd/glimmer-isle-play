@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794873604;</script>
+<script>window.GAME_BUILD = 1794873740;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1284,7 +1284,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     ["Coralqueen", null, "tide", 3, "tall"], ["Fungolem", null, "leaf", 3, "wide"], ["Thunderroc", null, "spark", 3, "wide"],
   ].map(([name, evo, el, tier, shape], i) => ({ i, name, evo, el, tier, shape }));
   const TIER = [{ name: "Common", hp: 40, atk: 9, def: 8, catch: 1, w: 6 }, { name: "Rare", hp: 46, atk: 11, def: 10, catch: .8, w: 4 }, { name: "Epic", hp: 54, atk: 13, def: 12, catch: .6, w: 3 }, { name: "Guardian", hp: 90, atk: 15, def: 15, catch: .35, w: 0 }];
-  const GRADES = [{ name: "Green", mul: 1, catch: 1, c: "#6fd38a" }, { name: "Blue", mul: 1.1, catch: .85, c: "#5aa8ff" }, { name: "Purple", mul: 1.22, catch: .7, c: "#a77bff" }, { name: "Gold", mul: 1.36, catch: .5, c: "#ffb627" }, { name: "Rainbow", mul: 1.55, catch: .3, c: "#ff9ad1" }];
+  const GRADES = [{ name: "Green", mul: 1, catch: 1, c: "#6fd38a" }, { name: "Blue", mul: 1.1, catch: .85, c: "#5aa8ff" }, { name: "Purple", mul: 1.22, catch: .7, c: "#a77bff" }, { name: "Gold", mul: 1.75, catch: .5, c: "#ffb627" }, { name: "Rainbow", mul: 2.3, catch: .3, c: "#ff9ad1" }];
   const ZONES = [
     { name: "Mossy Shore", lv: [1, 4], sp: [3, 6, 12, 9], boss: 18, sky: ["#a9e3f0", "#e8f8f4"], far: "#8fd0b8", ground: "#a6dc8c", path: "#efdcae", props: ["palm", "bush", "flower", "rock"] },
     { name: "Fern Hollow", lv: [4, 8], sp: [7, 15, 0, 4], boss: 19, sky: ["#bfe7c4", "#eef8e6"], far: "#6eae7c", ground: "#82c873", path: "#dcc592", props: ["tree", "fern", "bush", "flower"] },
@@ -1536,7 +1536,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   let autoStat = { caught: 0 }, showAuto = false, autoLock = false, autoSession = false, autoNext = 0, autoSeenE = null;
   const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // at Auto speed x2 (the pace Auto always had)
-  const CATCH_LEAVES = 3;  // leaves per Glumi caught on the path, x multiplier
+  const CATCH_LEAVES = 3, CATCH_LEAF_Q = [1, 1, 2, 6, 20];  // leaves per catch x grade factor (Green..Rainbow)  // leaves per Glumi caught on the path, x multiplier
   const AUTO_GAP_MS = 1500; let autoGapUntil = 0;  // wait after an encounter (at x2)
   const AUTO_SPEEDS = [1, 2, 3], autoSpd = () => AUTO_SPEEDS.includes(S.autoSpd) ? S.autoSpd : 2, autoPace = () => 2 / autoSpd();  // ms x autoPace  // Auto's pace: time between steps, and time to look at what appeared
   let S = fresh(), view = "explore", E = null, BT = null, busy = false, db = null, uid = null, saveTimer = null, saving = false, pendingSave = false, saveNote = "", confirmRelease = null, showMap = false;
@@ -1764,7 +1764,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (let k = 0; k < wobbles; k++) { await wait(250); await anim(jar, [{ transform: jar.style.transform + " rotate(0)" }, { transform: jar.style.transform + " rotate(-22deg)" }, { transform: jar.style.transform + " rotate(18deg)" }, { transform: jar.style.transform + " rotate(0)" }], { duration: RM ? 60 : 420 }); }
     if (ok) {
       flyIcons(IC.star, 6, cx, cy + 50, null); jar.remove();
-      keepMon(w); track("catch", w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(E.boss ? 20 : 5); if (autoThrow) autoStat.caught++;
+      keepMon(w); track("catch", w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m * (CATCH_LEAF_Q[w.q] || 1); gainX(E.boss ? 20 : 5); if (autoThrow) autoStat.caught++;
       let cleared = false; if (E.boss) { const z = S.zone; S.zones[z].cleared = true; S.fruit += 2; cleared = true; }
       busy = false; await reveal(w, "Caught!");
       if (cleared) banners.push(S.zone + 1 < ZONES.length ? `${ZONES[S.zone + 1].name} open!` : "All zones cleared!");
@@ -1842,7 +1842,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (let k = 0; k < 2; k++) { await wait(200); await Promise.all(plan.map(p => anim(p.el, [{ transform: p.el.style.transform + " rotate(0)" }, { transform: p.el.style.transform + " rotate(-20deg)" }, { transform: p.el.style.transform + " rotate(16deg)" }, { transform: p.el.style.transform + " rotate(0)" }], { duration: RM ? 60 : 380 }))); }
     const caught = [], fled = [];
     for (const p of plan) {
-      if (p.ok) { flyIcons(IC.star, 4, p.cx, p.cy + 30, null); p.el.remove(); keepMon(p.w); track("catch", p.w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(5); if (autoThrow) autoStat.caught++; caught.push(p.w); }
+      if (p.ok) { flyIcons(IC.star, 4, p.cx, p.cy + 30, null); p.el.remove(); keepMon(p.w); track("catch", p.w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m * (CATCH_LEAF_Q[p.w.q] || 1); gainX(5); if (autoThrow) autoStat.caught++; caught.push(p.w); }
       else {
         p.el.animate([{ opacity: 1 }, { transform: p.el.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => p.el.remove(), 260);
         if (p.spr) p.spr.animate([{ transform: "scale(.2)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: RM ? 60 : 350, easing: "cubic-bezier(.3,1.6,.5,1)", fill: "forwards" });
