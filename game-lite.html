@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794944628;</script>
+<script>window.GAME_BUILD = 1794944949;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2003,7 +2003,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function chance(w, jarK, timing = 1) { if (jarK === "prism") return 1;
     const base = (CATCH_TABLE[jarK] || CATCH_TABLE.plain)[w.q] * (SP[w.sp].tier === 3 ? .6 : 1);  // guardians are harder
     return Math.min(1, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1))); }  // throw timing no longer changes the chance
-  let quickNow = false;
+  let quickNow = false, qCaught = [], qFled = 0, qThrown = 0;  // what really happened during one quick catch (caught ones may be auto-released, so counting the collection is wrong)
   const QJ_DEF = { 1: "plain", 2: "bright", 3: "star", 4: "star" }, quickJar = q => { const C = S.autoCfg || {}; return (q >= 3 ? C.high : q === 2 ? C.mid : C.low) || QJ_DEF[Math.max(1, q)]; };  // the Auto rules' jars
   function quickJarPanel() {
     closePopup(); const d = document.createElement("div"); d.className = "popwrap";
@@ -2015,14 +2015,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const wantQuick = () => !!S.quickCatch;  // one switch for your taps and for Auto
   async function quickWrap(fn, autoThrow) {  // throw until the end, then show one result card
     const was = RM, enc = E, list0 = E && E.list, n0 = S.mons.length, j0 = JSON.stringify(S.jars), wild0 = E && E.list ? E.list.length + (E.waves || []).reduce((a, w) => a + w.length, 0) : 0, jarSum = () => Object.values(S.jars).reduce((a, b) => a + b, 0);
-    RM = true; quickNow = true; let tries = 0; document.body.classList.add("quicking"); const qb = document.createElement("div"); qb.className = "qbusy"; qb.innerHTML = `${IC.fast}<span>Throwing…</span>`; $("stage").appendChild(qb); const tStart = performance.now();
-    try { for (let i = 0; i < 400; i++) { const before = jarSum(); fn = E && E.list && E.list.length > 1 ? throwGroup : throwJar;
+    RM = true; quickNow = true; qCaught = []; qFled = 0; qThrown = 0; let tries = 0; document.body.classList.add("quicking"); const qb = document.createElement("div"); qb.className = "qbusy"; qb.innerHTML = `${IC.fast}<span>Throwing…</span>`; $("stage").appendChild(qb); const tStart = performance.now();
+    try { for (let i = 0; i < 400; i++) { const before = qThrown; fn = E && E.list && E.list.length > 1 ? throwGroup : throwJar;
       if (!autoThrow && fn === throwJar && E && E.type === "wild") { const w = E.list[E.i], j = quickJar(w.q); if (!S.jars[j]) { toast(`Quick catch: out of ${j} jars (used for ${GRADES[w.q].name})`); break; } E.jar = j; }
-      await fn(autoThrow); tries += before - jarSum(); if (!E || E !== enc || E.type !== "wild" || !E.list.length || jarSum() >= before || busy) break; } }  // all waves
+      await fn(autoThrow); tries = qThrown; if (!E || E !== enc || E.type !== "wild" || !E.list.length || qThrown === before || busy) break; } }  // count real throws: rewards can add jars mid-catch  // all waves
     finally { RM = was; quickNow = false; }
     const rest = 550 - (performance.now() - tStart); if (rest > 0) await new Promise(r => setTimeout(r, rest));
     qb.remove(); document.body.classList.remove("quicking"); render();
-    const caught = S.mons.slice(n0), left = E === enc && E && E.type === "wild" ? E.list.length + (E.waves || []).reduce((a, w) => a + w.length, 0) : 0, fled = Math.max(0, wild0 - caught.length - left);
+    const caught = qCaught.slice(), left = E === enc && E && E.type === "wild" ? E.list.length + (E.waves || []).reduce((a, w) => a + w.length, 0) : 0, fled = qFled;
     if (tries) await quickResult(caught, fled, tries, left, autoThrow);
   }
   function quickResult(caught, fled, tries, left, autoThrow) {
@@ -2043,7 +2043,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (E !== enc || busy || enc.manual) return;
     }
     busy = true; const sc = ringScale(), d = Math.abs(sc - .78), timing = d < .1 ? 1.5 : d < .28 ? 1.15 : .8;
-    S.jars[E.jar]--; renderActions();
+    S.jars[E.jar]--; if (quickNow) qThrown++; renderActions();
     const spr = document.querySelector("#wildActor .spr"), ring = document.querySelector(".ring"); if (ring) ring.style.display = "none";
     const [cx, cy] = spr ? stageXY(spr) : [180, 280]; const st = $("stage");
     floatText(cx, cy - 90, timing === 1.5 ? "Perfect!" : timing > 1 ? "Nice!" : "Okay", timing === 1.5);
@@ -2058,7 +2058,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (let k = 0; k < wobbles; k++) { await wait(250); await anim(jar, [{ transform: jar.style.transform + " rotate(0)" }, { transform: jar.style.transform + " rotate(-22deg)" }, { transform: jar.style.transform + " rotate(18deg)" }, { transform: jar.style.transform + " rotate(0)" }], { duration: RM ? 60 : 420 }); }
     if (ok) {
       flyIcons(IC.star, 6, cx, cy + 50, null); jar.remove();
-      keepMon(w); track("catch", w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(E.boss ? 20 : 5); if (autoThrow) autoStat.caught++;
+      keepMon(w); if (quickNow) qCaught.push(w); track("catch", w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(E.boss ? 20 : 5); if (autoThrow) autoStat.caught++;
       let cleared = false; if (E.boss) { const z = S.zone; S.zones[z].cleared = true; S.fruit += 2; cleared = true; }
       busy = false; await reveal(w, "Caught!");
       if (cleared) banners.push(S.zone + 1 < ZONES.length ? `${ZONES[S.zone + 1].name} open!` : "All zones cleared!");
@@ -2067,7 +2067,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       jar.animate([{ transform: jar.style.transform, opacity: 1 }, { transform: jar.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => jar.remove(), 260);
       if (spr) spr.animate(MO_OUT, { duration: RM ? 60 : 560, easing: "ease-out", fill: "forwards" });
       w.miss = (w.miss || 0) + 1; const left = E.boss ? 99 : FLEE_AFTER[w.q] - w.miss; await wait(RM ? 450 : 580);
-      if (left <= 0) { if (spr) await anim(spr, MO_RUN, { duration: RM ? 60 : 650, easing: "ease-in-out", fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
+      if (left <= 0) { if (quickNow) qFled++; if (spr) await anim(spr, MO_RUN, { duration: RM ? 60 : 650, easing: "ease-in-out", fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
       else { busy = false; E.t0 = performance.now(); render(); floatText(cx, cy - 60, left <= 3 ? `Broke free! ${left} ${left === 1 ? "try" : "tries"} left` : "Broke free!"); }
     }
     save();
@@ -2122,7 +2122,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     E.list.forEach((w, k) => {
       if (autoThrow && C.only === "new" && S.caught[key(w.sp, w.evo)]) return;
       const want = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, jar = autoThrow ? JAR_DOWN[want].find(j => S.jars[j] > 0) : quickNow ? (S.jars[quickJar(w.q)] > 0 ? quickJar(w.q) : null) : (S.jars[E.jar] > 0 ? E.jar : null);
-      if (!jar) { if (autoThrow && !missing) missing = { k: want, w }; return; } S.jars[jar]--; plan.push({ w, k, jar });
+      if (!jar) { if (autoThrow && !missing) missing = { k: want, w }; return; } S.jars[jar]--; if (quickNow) qThrown++; plan.push({ w, k, jar });
     });
     if (!plan.length) { if (autoThrow && missing) { autoOff(true); jarPopup(missing.k, missing.w); return; } if (autoThrow) { toast("Walked past: you have all of these (Auto rule: only new ones)"); E = null; save(); render(); } else toast("No jars of that kind"); return; }
     busy = true; renderActions();
@@ -2140,13 +2140,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (let k = 0; k < 2; k++) { await wait(200); await Promise.all(plan.map(p => anim(p.el, [{ transform: p.el.style.transform + " rotate(0)" }, { transform: p.el.style.transform + " rotate(-20deg)" }, { transform: p.el.style.transform + " rotate(16deg)" }, { transform: p.el.style.transform + " rotate(0)" }], { duration: RM ? 60 : 380 }))); }
     const caught = [], fled = [];
     for (const p of plan) {
-      if (p.ok) { flyIcons(IC.star, 4, p.cx, p.cy + 30, null); p.el.remove(); keepMon(p.w); track("catch", p.w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(5); if (autoThrow) autoStat.caught++; caught.push(p.w); }
+      if (p.ok) { flyIcons(IC.star, 4, p.cx, p.cy + 30, null); p.el.remove(); keepMon(p.w); if (quickNow) qCaught.push(p.w); track("catch", p.w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(5); if (autoThrow) autoStat.caught++; caught.push(p.w); }
       else {
         p.el.animate([{ opacity: 1 }, { transform: p.el.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => p.el.remove(), 260);
         if (p.spr) p.spr.animate(MO_OUT, { duration: RM ? 60 : 560, easing: "ease-out", fill: "forwards" });
         p.w.miss = (p.w.miss || 0) + 1; if (p.w.miss >= FLEE_AFTER[p.w.q]) fled.push(p.w);
       }
     }
+    if (quickNow) qFled += fled.length;
     await wait(RM ? 500 : 600);
     E.list = E.list.filter(w => !caught.includes(w) && !fled.includes(w));
     busy = false;
