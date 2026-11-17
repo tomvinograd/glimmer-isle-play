@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794937042;</script>
+<script>window.GAME_BUILD = 1794937202;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -836,6 +836,13 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .cmptags { display: flex; gap: 4px; } .cmptag { padding: 1px 7px; border-radius: 5px; color: #fff; font: 800 11px var(--display); }
 .cmpt { display: grid; gap: 4px; margin: 8px 0; } .cmpr { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 4px 8px; border-radius: 7px; background: #f6efe4; }
 .cmpr span { font: 800 12px var(--display); color: #8a6d55; } .cmpr b { font: 900 15px var(--display); color: var(--brown); text-align: center; } .cmpr b.hi { color: #2f9e5a; }
+.lvteam { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 6px 0 2px; padding: 8px 12px; } .lvteam svg { width: 22px; height: 22px; flex: none; } .lvteam span { display: grid; text-align: left; } .lvteam b { font: 800 14px var(--display); } .lvteam small { font: 700 11px var(--display); color: #8a6d55; }
+.claimall { background: linear-gradient(90deg, #fff8e6, #fff) !important; }
+.pmbtn { position: relative; padding: 0; border: 0; background: none; } .pmbtn.padd { width: 70px; min-height: 100px; border: 2px dashed #b9cde6; border-radius: 10px; color: #5a8ac0; font: 900 26px var(--display); }
+.pslist { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 52vh; overflow: auto; margin: 8px 0; } .pspick { position: relative; padding: 4px 2px; border: 0; border-radius: 8px; background: #f6efe4; display: grid; justify-items: center; } .pspick small { font: 800 10px var(--display); color: #8a6d55; }
+.rnext { padding: 10px 26px; font-size: 17px; }
+#undobar { position: fixed; z-index: 70; left: 50%; bottom: 84px; transform: translateX(-50%); width: min(340px, calc(100vw - 32px)); display: flex; align-items: center; gap: 10px; padding: 8px 10px 10px 14px; border-radius: 10px; background: #4a3a2e; color: #fff; font: 800 14px var(--display); overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
+#undobar span { flex: 1; } #undobar i { position: absolute; left: 0; bottom: 0; height: 3px; background: #ffd36b; animation: undoline 10s linear forwards; } @keyframes undoline { from { width: 100%; } to { width: 0; } }
 .prew { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
@@ -2549,14 +2556,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const d = document.createElement("div"); d.className = "skillban" + (mine ? "" : " foe"); d.style.setProperty("--c", color); d.innerHTML = `<span>${name}</span>`;
     $("arena").appendChild(d); setTimeout(() => d.remove(), RM ? 500 : 1100);
   }
-  function resultScreen(won, rewards, autoMs, tips) {
+  function resultScreen(won, rewards, autoMs, tips, next) {
     return new Promise(res => {
       const d = document.createElement("div"); d.className = "result " + (won ? "win" : "lose");
       const why = !won && tips && tips.length ? `<div class="rwhy"><b>Why you lost</b>${tips.map(t => `<p>${t}</p>`).join("")}</div>` : "";
-      d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${r.k === "charm" ? charmSvg(r.kind || "atk", r.r || 0) : RW[r.k][0]}<b>${r.k === "charm" ? CHARM_R[r.r || 0] + " charm" : "+" + r.n}</b></span>`).join("")}</div>` : won ? "" : why || `<p class="rtip">Level up your team and try again</p>`}<p class="rtap">Tap to close</p>`;
+      d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${r.k === "charm" ? charmSvg(r.kind || "atk", r.r || 0) : RW[r.k][0]}<b>${r.k === "charm" ? CHARM_R[r.r || 0] + " charm" : "+" + r.n}</b></span>`).join("")}</div>` : won ? "" : why || `<p class="rtip">Level up your team and try again</p>`}${next ? `<button class="mb gold rnext">${next}</button>` : ""}<p class="rtap">Tap to close</p>`;
       if (why && autoMs) autoMs = Math.max(autoMs, 4500);
       document.body.appendChild(d); sfx(won ? "win" : "tap");
-      let done = false; const close = () => { if (done) return; done = true; d.remove(); res(); };
+      let done = false; const close = e => { if (done) return; done = true; d.remove(); res(e && e.target && e.target.closest && e.target.closest(".rnext") ? "next" : null); };
       setTimeout(() => d.addEventListener("click", close), 350); if (autoMs) setTimeout(close, autoMs);
     });
   }
@@ -2676,17 +2683,19 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (const r of P.rewards) giveReward(r);
     track("win", null, { gym: 40, ladder: 30, tower: 30, duel: 30 }[P.mode] || 20); return P.rewards;
   }
+  const nextLabel = (P, won) => P.mode === "ladder" ? "Next match" : P.mode === "tower" ? (won ? "Next floor" : "Try again") : null;
+  function playNext(P) { if (P.mode === "ladder") prepLadder(); else if (P.mode === "tower") prepTower(); }
   async function finishArena(won) {
     const P = BT.prep; let given = [];
     if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); }
     if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); }
-    save(); await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes));
-    BT = null; prep = null; arenaSub = P.back; render(); save();
+    save(); const ch = await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes), nextLabel(P, won));
+    BT = null; prep = null; arenaSub = P.back; render(); save(); if (ch === "next") playNext(P);
   }
   async function startPrep(quick) {
     const P = prep; if (!P || !team().length) return;
     if (P.mode === "duel") duelState().left--;
-    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes)); prep = null; arenaSub = P.back; render(); return; }
+    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); const ch = await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes), nextLabel(P, won)); prep = null; arenaSub = P.back; render(); if (ch === "next") playNext(P); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
   }
   const rchips = rs => rs.map(r => `<span class="rchip">${r.k === "charm" ? charmSvg(r.kind || "atk", r.r || 0) : RW[r.k][0]}${r.k === "charm" ? CHARM_R[r.r || 0] : r.n}</span>`).join("");
@@ -2700,7 +2709,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       return `${back(P.back)}<h3>${P.title}</h3><span></span></div>
         <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><small class="ppow">Power ${teamPower(P.foes).toLocaleString("en")}${teamBonus(P.foes) ? ` \u00B7 ${teamBonus(P.foes).txt}` : ""}</small><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
           <div class="pvs">VS</div>
-          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}${teamBonus(mine) ? ` \u00B7 <span class="ptb">${teamBonus(mine).txt}</span>` : ""}</small><div class="pmons">${mine.map(m => mon2(m, true)).join("")}</div></div></div></div>
+          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}${teamBonus(mine) ? ` \u00B7 <span class="ptb">${teamBonus(mine).txt}</span>` : ""}</small><div class="pmons">${[0, 1, 2].map(i => mine[i] ? `<button class="pmbtn" data-act="prepslot:${i}" aria-label="Swap ${nameOf(mine[i])}">${mon2(mine[i], true)}</button>` : `<button class="pmbtn padd" data-act="prepslot:${i}" aria-label="Add a Glumi">+</button>`).join("")}</div></div></div></div>
         ${od ? `<div class="podds ${od.cls}"><span>Forecast</span><b>${od.label}</b><div class="pobar"><i style="width:${od.fill}%"></i></div></div>` : ""}
         ${P.rewards.length ? `<div class="prew"><span>Reward</span>${rchips(P.rewards)}</div>` : `<p class="hint" style="margin:0">Already beaten: no reward this time.</p>`}
         <div class="pbtns"><button class="mb" data-act="view:team">Change team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick battle</button>` : ""}</div>`;
@@ -3089,6 +3098,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const z = S.zone, openN = ZONES.filter((_, i) => zoneOpen(i)).length, reqs = Array.isArray(S.requests) ? S.requests : [];
     const reqCan = reqs.some(r => !r.done && reqMatches(r).length);
     return `<div class="head"><h2>Menu</h2></div>
+      <button class="mcard soft claimall" data-act="claimall"><span class="mic">${IC.gift || IC.star}</span><span><b>Claim all</b><small>${claimReady() ? "Tasks, mail, gifts, Atlas and Home rewards waiting" : "Collects every ready reward in one tap"}</small></span>${claimReady() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard wide z${z}" data-act="map"><span><b>Atlas</b><small>${openN} of ${ZONES.length} zones open</small></span></button>
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
@@ -3143,6 +3153,49 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         ${[1, 2, 3, 4].map(q => `<button class="lchip${tQ === q ? " on" : ""}" data-act="tq:${q}" style="--c:${GRADES[q].c}"><i></i>${GRADES[q].name}</button>`).join("")}
         <button class="lchip${tSpare ? " on" : ""}" data-act="tspare" style="--c:#8a6d55">Spares only</button></div>`;
   }
+  function actNow(act) { const f = document.createElement("button"); f.dataset.act = act; f.hidden = true; document.body.appendChild(f); f.click(); f.remove(); }  // run a button's action
+  function levelTeam() {  // Q7: always the lowest level team Glumi next, while leaves last
+    let n = 0;
+    for (;;) { const c = team().filter(m => m.lvl < lvlCap() && m.lvl < ascTop(m) && S.leaves >= 5 + m.lvl * 3).sort((a, b) => a.lvl - b.lvl)[0]; if (!c) break;
+      S.leaves -= 5 + c.lvl * 3; c.lvl++; c.hp = maxHp(c); track("lvl"); n++; if (n > 5000) break; }
+    if (n) { sfx("up"); save(); render(); toast(`${n} level${n > 1 ? "s" : ""} up: ${team().map(m => `${nameOf(m)} Lv ${m.lvl}`).join(", ")}`); }
+    else toast(team().every(m => m.lvl >= lvlCap() || m.lvl >= ascTop(m)) ? "Your team is at its top level: ascend or raise your Explorer level" : "Not enough leaves for the next level");
+  }
+  function claimEverything() {  // Q8
+    const keys = Object.keys(RW), have = k => (S.jars[k] !== undefined ? S.jars[k] : S[k]) || 0, before = Object.fromEntries(keys.map(k => [k, have(k)])), charms0 = (S.charms || []).length;
+    const realToast = toast; let quiet = true; toast = msg => { if (!quiet) realToast(msg); };
+    try {
+      ZONES.forEach((_, z) => { if (zoneOpen(z)) actNow("claim:" + z); });
+      const g0 = atlasGrade; for (const g of [1, 2, 3, 4]) { atlasGrade = g; ZONES.forEach((_, z) => { if (zoneOpen(z)) actNow("gclaim:" + z); }); } atlasGrade = g0;
+      for (const tab in TASKS) for (const t of TASKS[tab]) if (taskReady(tab, t)) actNow(`taskclaim:${tab}:${t.id}`);
+      if (mailWaiting()) actNow("mailclaim:all");
+      if (giftReady()) actNow("giftclaim");
+      homeTick(); for (const k in PLACES) collectPlace(k);
+    } finally { quiet = false; toast = realToast; }
+    closePopup();
+    const got = keys.map(k => [k, have(k) - before[k]]).filter(([, d]) => d > 0).map(([k, d]) => `${d} ${RW[k][1]}`), nc = (S.charms || []).length - charms0;
+    if (nc > 0) got.push(`${nc} charm${nc > 1 ? "s" : ""}`);
+    save(); render(); toast(got.length ? "Collected " + got.join(", ") : "Nothing ready right now");
+  }
+  const claimReady = () => tasksWaiting() + mailWaiting() + (giftReady() ? 1 : 0) + (homeAlert() ? 1 : 0);
+  let spendKey = null, spendT = 0;
+  function sureSpend(key, p) { if (spendKey === key && Date.now() - spendT < 4000) { spendKey = null; return true; } spendKey = key; spendT = Date.now(); toast(`Tap again to spend ${p.toLocaleString("en")} coins`); return false; }
+  let lastGone = null;
+  function showUndo(text) {
+    let u = $("undobar"); if (!u) { u = document.createElement("div"); u.id = "undobar"; document.body.appendChild(u); }
+    u.innerHTML = `<span>${text}</span><button class="mb gold" data-act="undo">Undo</button><i></i>`; u.hidden = false;
+    clearTimeout(showUndo.t); showUndo.t = setTimeout(() => { u.hidden = true; lastGone = null; }, 10000);
+  }
+  function prepSwapPopup(i) {  // Q9
+    const P = prep; if (!P) return; closePopup(); const cur = team()[i];
+    const list = S.mons.filter(m => !S.team.includes(m.uid) && !isAway(m.uid)).sort((a, b) => monPower(b) - monPower(a)).slice(0, 30);
+    const mark = m => { const e = SP[m.sp].el, up = P.foes.some(o => mult(e, SP[o.sp].el) > 1), dn = P.foes.some(o => mult(SP[o.sp].el, e) > 1); return up && !dn ? '<em class="pedge up">\u25B2</em>' : dn && !up ? '<em class="pedge dn">\u25BC</em>' : ""; };
+    const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<div class="popbg"></div><div class="popup pswap" role="dialog"><h3>${cur ? `Swap ${nameOf(cur)} for` : "Add to the team"}</h3>
+      <div class="pslist">${list.map(m => `<button class="pmon pspick" data-act="prepswap:${i}-${m.uid}">${art(m.sp, m.evo, 52)}${mark(m)}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span><small>${monPower(m).toLocaleString("en")}</small></button>`).join("") || '<p class="hint">No other Glumis.</p>'}</div>
+      <div class="popbtns"><button class="mb" data-act="nickcancel">Cancel</button></div></div>`;
+    document.body.appendChild(d);
+  }
   function compareOpen(ua, ub) {
     const A = mon(ua), B = mon(ub); if (!A || !B) return; closePopup();
     const rows = [["Power", monPower], ["Attack", atk], ["Defense", def], ["HP", maxHp], ["Level", m => m.lvl], ["Work", m => Math.round(Math.max(...Object.keys(PLACES).map(k => workerRate(m, k))))]];
@@ -3162,6 +3215,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       ${pick ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a spot for <b>${fname(pick.sp, pick.evo)}</b></span><button class="mb" data-act="cancelswap">Cancel</button></div>`
              : `<p class="hint" style="text-align:left;margin:0">Up to 3 Glumis walk with you. The leader fights first. Tap a Glumi to see it, level it up or add it to your team.</p>`}
       <div class="slots">${[0, 1, 2].map(teamSlot).join("")}</div>
+      <button class="mb lvteam" data-act="lvteam">${IC.leaf}<span><b>Level up team</b><small>Uses your leaves, lowest level first</small></span></button>
       ${cmpA && mon(cmpA) ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a Glumi to compare with <b>${nameOf(mon(cmpA))}</b></span><button class="mb" data-act="cmpcancel">Cancel</button></div>` : ""}
       <h3>My Glumis \u00B7 <span id="tcount">${listMons().length === S.mons.length ? S.mons.length : `${listMons().length} of ${S.mons.length}`}</span></h3>
       ${listControls()}
@@ -4046,6 +4100,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "giftclose" || a === "awayclose") { closePopup(); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "awaycollect") { homeTick(); let got = []; for (const k in PLACES) { const n2 = collectPlace(k); if (n2) got.push(`${n2} ${PLACES[k].unit}`); } save(); closePopup(); if (got.length) toast("Collected " + got.join(", ")); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "giftopen") giftPopup();
+    else if (a === "lvteam") levelTeam();
+    else if (a === "claimall") claimEverything();
+    else if (a === "prepslot") prepSwapPopup(n);
+    else if (a === "prepswap") { const [i, u] = arg.split("-").map(Number); if (!isAway(u) && !S.team.includes(u)) { if (S.team[i] !== undefined) S.team[i] = u; else S.team.push(u); save(); closePopup(); render(); toast(`${nameOf(mon(u))} is in the team`); } }
+    else if (a === "undo") { const G = lastGone; const u = $("undobar"); if (u) u.hidden = true; if (!G || Date.now() - G.t > 12000) return;
+      const sp = G.m.sp; if ((S.keepsakes[sp] || 0) < G.keeps || (S.starCores[sp] || 0) < G.cores || S.coins < G.coins) { toast("Can't undo: what you got for it is already spent"); lastGone = null; return; }
+      S.keepsakes[sp] -= G.keeps; if (G.cores) S.starCores[sp] -= G.cores; S.coins -= G.coins; if (G.m.charm && S.mons.some(x => x.charm === G.m.charm)) delete G.m.charm;
+      if (!S.mons.some(x => x.uid === G.m.uid)) S.mons.push(G.m); lastGone = null; save(); render(); toast(`${nameOf(G.m)} is back`); }
     else if (a === "tel") { tEl = tEl === arg ? null : arg; render(); }
     else if (a === "tq") { tQ = tQ === n ? null : n; render(); }
     else if (a === "tspare") { tSpare = !tSpare; render(); }
@@ -4206,10 +4268,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "join") { if (S.team.length < slots()) { S.team.push(n); save(); render(); } }
     else if (a === "release") { if (confirmRelease !== n) { confirmRelease = n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const k = KEEPSAKES_BY_GRADE[m.q]; S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + k; if (m.q === 4) S.starCores[m.sp] = (S.starCores[m.sp] || 0) + RAINBOW_STAR_CORES;
+      lastGone = { m: JSON.parse(JSON.stringify(m)), keeps: k, cores: m.q === 4 ? RAINBOW_STAR_CORES : 0, coins: 0, t: Date.now() }; showUndo(`Released ${nameOf(m)}`);
       S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render();
       toast(`+${k} ${SP[m.sp].name} keepsake${k > 1 ? "s" : ""}${m.q === 4 ? ` and +${RAINBOW_STAR_CORES} star core${RAINBOW_STAR_CORES > 1 ? "s" : ""}` : ""}`); } }
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
-      const p = sellPrice(m); S.coins += p; S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
+      const p = sellPrice(m); S.coins += p; lastGone = { m: JSON.parse(JSON.stringify(m)), keeps: 0, cores: 0, coins: p, t: Date.now() }; showUndo(`Sold ${nameOf(m)}`); S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); } } }
@@ -4217,11 +4280,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       for (const id of ids) { const L = MAIL.find(m => m.id === id); if (!L) continue; for (const r of L.rew) { giveReward(r); got[r.k] = (got[r.k] || 0) + r.n; } }
       S.mail = (S.mail || []).filter(x => !ids.includes(x.id)); sfx("claim"); save(); render(); toast("Got " + Object.entries(got).map(([k, n]) => `${n} ${RW[k] ? RW[k][1] : k}`).join(", ")); }
     else if (a === "buyq") { S.buyQ = n; save(); render(); }
-    else if (a === "buymult") { const p = MULT_PRICE[n]; if (!p || S.coins < p || (S.multOwned && S.multOwned[n])) return; S.coins -= p; S.multOwned = S.multOwned || {}; S.multOwned[n] = 1; sfx("claim"); save(); render(); toast(`x${n} is yours: pick it with the knob on the compass`); }
+    else if (a === "buymult") { const p = MULT_PRICE[n]; if (!p || S.coins < p || (S.multOwned && S.multOwned[n])) return; if (p >= 1000 && !sureSpend("mult:" + n, p)) return; S.coins -= p; S.multOwned = S.multOwned || {}; S.multOwned[n] = 1; sfx("claim"); save(); render(); toast(`x${n} is yours: pick it with the knob on the compass`); }
     else if (a === "buyepack") { if (!epackLeft() || S.coins < EPACK.price) return; if (!S.epack || S.epack.d !== today()) S.epack = { d: today(), n: 0 }; S.epack.n++; S.coins -= EPACK.price; S.glow += EPACK.n; sfx("coin"); save(); render(); toast(`+${EPACK.n} energy`); }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, q = S.jars[arg] !== undefined ? buyQ() : 1, p = prices[arg] * q;
       if (prices[arg] === undefined || S.coins < p) return;
+      if ((p >= 1000 || arg === "prism") && !sureSpend("buy:" + arg + ":" + q, p)) return;
       if (S.jars[arg] !== undefined) S.jars[arg] += q; else if (arg === "treat") S.treats++; else if (arg === "leaves") S.leaves += 10; else if (arg === "glow") S.glow += 20; else if (arg === "fruit") S.fruit++;
       S.coins -= p; sfx("coin"); save(); render(); if (q > 1) toast(`Bought ${q} ${JAR_NAME[arg] || arg} jars`);
     }
