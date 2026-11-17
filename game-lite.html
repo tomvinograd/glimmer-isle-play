@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794915073;</script>
+<script>window.GAME_BUILD = 1794915250;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1245,6 +1245,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .qmons { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 300px; }
   .qmons span { display: grid; justify-items: center; padding: 4px; border-radius: 12px; background: color-mix(in srgb, var(--gc) 25%, #fff); box-shadow: inset 0 0 0 2px var(--gc); }
   .qmons i { font: 800 10px var(--display); font-style: normal; color: #fff; background: var(--gc); padding: 1px 6px; border-radius: 5px; }
+  .jarrow .qgear { min-width: 0; padding: 0 7px; } .jarrow .qgear svg { width: 16px; height: 16px; }
+  .qjp { gap: 8px; } .qjp p { margin: 0 0 4px; }
+  .qjrow { display: flex; align-items: center; gap: 8px; width: 100%; }
+  .qjrow > b { width: 70px; flex: none; text-align: center; padding: 4px 0; border-radius: 8px; color: #fff; font: 800 13px var(--display); text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+  .qjrow > span { flex: 1; display: flex; gap: 5px; }
+  .qjrow button { flex: 1; border: 0; border-radius: 9px; padding: 4px 0 2px; background: #fff; display: grid; justify-items: center; box-shadow: 0 1px 4px rgba(91,70,54,.18); }
+  .qjrow button.on { box-shadow: 0 0 0 3px #f5b23c; background: #fff8e6; }
+  .qjrow button svg, .qjrow button img { width: 24px !important; height: 24px; } .qjrow button i { font: 800 10px var(--display); font-style: normal; color: #8a6d55; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1772,11 +1780,21 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const base = w.q >= 3 ? RARE_JAR[jarK] * (SP[w.sp].tier === 3 ? .6 : 1) : J.base * TIER[SP[w.sp].tier].catch * GRADES[w.q].catch;
     return Math.min(.98, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1) * (w.q >= 3 ? 1 : timing))); }  // Gold/Rainbow: throw timing doesn't change the chance (star jar = 30%)
   let quickNow = false;
+  const QJ_DEF = { 1: "plain", 2: "bright", 3: "star", 4: "star" }, quickJar = q => ((S.quickJars || {})[Math.max(1, q)] || QJ_DEF[Math.max(1, q)]);
+  function quickJarPanel() {
+    closePopup(); const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<button class="popbg" data-act="closepop" aria-label="Close"></button><div class="popup qjp" role="dialog"><h3>Quick catch jars</h3><p>Which jar quick catch throws at each grade</p>`
+      + [1, 2, 3, 4].map(q => `<div class="qjrow"><b style="background:${q === 4 ? "linear-gradient(90deg,#ff8a8a,#ffc94d,#6fd38a,#5aa8ff,#a77bff)" : GRADES[q].c}">${GRADES[q].name}</b><span>${JARS.map(j => `<button class="${quickJar(q) === j.k ? "on" : ""}" data-act="qjset:${q}-${j.k}" aria-label="${j.k} jar">${IC.jar(j.c)}<i>${S.jars[j.k] || 0}</i></button>`).join("")}</span></div>`).join("")
+      + `<div class="popbtns"><button class="mb gold" data-act="closepop">Done</button></div></div>`;
+    document.body.appendChild(d);
+  }
   const wantQuick = autoThrow => autoThrow ? (S.autoCfg && S.autoCfg.speed === "quick") : !!S.quickCatch;
   async function quickWrap(fn, autoThrow) {  // throw until the end, then show one result card
     const was = RM, enc = E, list0 = E && E.list, n0 = S.mons.length, j0 = JSON.stringify(S.jars), wild0 = E && E.list ? E.list.length : 0, jarSum = () => Object.values(S.jars).reduce((a, b) => a + b, 0);
     RM = true; quickNow = true; let tries = 0;
-    try { for (let i = 0; i < 80; i++) { const before = jarSum(); await fn(autoThrow); tries += before - jarSum(); if (!E || E !== enc || E.list !== list0 || !E.list.length || jarSum() >= before || busy) break; } }
+    try { for (let i = 0; i < 80; i++) { const before = jarSum();
+      if (!autoThrow && fn === throwJar && E && E.type === "wild") { const w = E.list[E.i], j = quickJar(w.q); if (!S.jars[j]) { toast(`Quick catch: out of ${j} jars (used for ${GRADES[w.q].name})`); break; } E.jar = j; }
+      await fn(autoThrow); tries += before - jarSum(); if (!E || E !== enc || E.list !== list0 || !E.list.length || jarSum() >= before || busy) break; } }
     finally { RM = was; quickNow = false; }
     const caught = S.mons.slice(n0), left = E === enc && E && E.list === list0 ? E.list.length : 0, fled = Math.max(0, wild0 - caught.length - left);
     if (tries) await quickResult(caught, fled, tries, left, autoThrow);
@@ -1874,9 +1892,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const C = S.autoCfg, plan = []; let missing = null;
     if (autoThrow) for (const w of E.list) { if (C.only === "new" && S.caught[key(w.sp, w.evo)]) continue; const want = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, need = E.list.filter(x => (x.q >= 3 ? C.high : x.q === 2 ? C.mid : C.low) === want && !(C.only === "new" && S.caught[key(x.sp, x.evo)])).length;
       if ((S.jars[want] || 0) < need) { autoOff(true); jarPopup(want, w); return; } }
+    if (!autoThrow && quickNow) for (const w of E.list) { const j = quickJar(w.q), need = E.list.filter(x => quickJar(x.q) === j).length; if ((S.jars[j] || 0) < need) { toast(`Quick catch: not enough ${j} jars (used for ${GRADES[w.q].name})`); return; } }
     E.list.forEach((w, k) => {
       if (autoThrow && C.only === "new" && S.caught[key(w.sp, w.evo)]) return;
-      const want = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, jar = autoThrow ? JAR_DOWN[want].find(j => S.jars[j] > 0) : (S.jars[E.jar] > 0 ? E.jar : null);
+      const want = w.q >= 3 ? C.high : w.q === 2 ? C.mid : C.low, jar = autoThrow ? JAR_DOWN[want].find(j => S.jars[j] > 0) : quickNow ? (S.jars[quickJar(w.q)] > 0 ? quickJar(w.q) : null) : (S.jars[E.jar] > 0 ? E.jar : null);
       if (!jar) { if (autoThrow && !missing) missing = { k: want, w }; return; } S.jars[jar]--; plan.push({ w, k, jar });
     });
     if (!plan.length) { if (autoThrow && missing) { autoOff(true); jarPopup(missing.k, missing.w); return; } if (autoThrow) { toast("Walked past: you have all of these (Auto rule: only new ones)"); E = null; save(); render(); } else toast("No jars of that kind"); return; }
@@ -2115,7 +2134,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <div style="display:grid;justify-items:center;gap:6px">${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>`}
         </div>
         <div class="side"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div></div></div>
-        <div class="jarrow"><button class="round jartype qchip${S.quickCatch ? " on" : ""}" data-act="quickcatch" aria-label="Quick catch">${IC.fast}<span>Quick</span></button>${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div>`;
+        <div class="jarrow"><button class="round jartype qgear" data-act="quickjars" aria-label="Quick catch jars">${IC.gear}</button><button class="round jartype qchip${S.quickCatch ? " on" : ""}" data-act="quickcatch" aria-label="Quick catch">${IC.fast}<span>Quick</span></button>${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div>`;
       return;
     }
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
@@ -3751,6 +3770,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "cfg") { const [k, v] = arg.split("="); S.autoCfg[k] = v === "true" ? true : v === "false" ? false : /^\d+$/.test(v) ? +v : v; autoPick = null; save(); render(); }
     else if (a === "chest") openChest();
     else if (a === "jar") { E.jar = arg; render(); }
+    else if (a === "quickjars") quickJarPanel();
+    else if (a === "qjset") { const [q, j] = arg.split("-"); S.quickJars = { ...QJ_DEF, ...(S.quickJars || {}), [q]: j }; save(); quickJarPanel(); }
     else if (a === "quickcatch") { S.quickCatch = !S.quickCatch; save(); renderActions(); toast(S.quickCatch ? "Quick catch on: one tap throws until it is caught or runs away" : "Quick catch off"); }
     else if (a === "throw") { if (E && E.type === "wild" && E.list.length > 1) throwGroup(); else throwJar(); }
     else if (a === "gather") gatherNode();
