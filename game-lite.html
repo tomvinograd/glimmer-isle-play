@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794938449;</script>
+<script>window.GAME_BUILD = 1794942840;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -4284,7 +4284,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "charmmerge") { const [k, r] = arg.split("-"), G = charmGroups().find(g => g.k === k && g.r === +r); if (G && G.free.length >= 3 && +r < 2) {
         const gone = G.free.slice(0, 3).map(c => c.id); S.charms = S.charms.filter(c => !gone.includes(c.id)); const nc = addCharm(k, +r + 1); save(); sfx("claim"); toast(`Made a ${CHARM_R[nc.r]} ${CHARM[k].n}!`); render(); } }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
-    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music" || arg === "vibe" || arg === "notify") S.opt[arg] = S.opt[arg] === false; if (arg === "notify" && S.opt.notify !== false) { const ap = appCan("askNotify"); if (ap && !ap.canNotify()) ap.askNotify(); } else S.opt[arg] = !S.opt[arg]; document.body.classList.toggle("bigtext", !!S.opt.big); if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
+    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music" || arg === "vibe" || arg === "notify") S.opt[arg] = S.opt[arg] === false; else S.opt[arg] = !S.opt[arg]; if (arg === "notify" && S.opt.notify !== false) { const ap = appCan("askNotify"); if (ap && !ap.canNotify()) ap.askNotify(); } document.body.classList.toggle("bigtext", !!S.opt.big); if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
