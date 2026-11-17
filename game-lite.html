@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794917227;</script>
+<script>window.GAME_BUILD = 1794917530;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -3035,6 +3035,20 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const reqLeft = r => (r.count || 1) - (r.got || 0);
   const reqWant = r => `${r.count || 1} ${r.minQ > 1 ? GRADES[r.minQ].name + " or better" : "of any grade"}${r.got ? ` · ${r.got} given` : ""}`;
   const reqReward = r => r.reward.k === "fruit" ? `${IC.fruit}<b>${r.reward.n}</b>` : `${IC.glow}<b>${r.reward.n}</b>`;
+  // buying what a request needs
+  const reqMissing = r => Math.max(0, reqLeft(r) - reqMatches(r).length);
+  function reqBuyOpt(r) {  // the Glumi kind + grade to buy, and its price
+    const q = Math.max(2, r.minQ), kinds = marketKinds().filter(k => !k.boss && (r.sp < 0 || k.sp === r.sp)); if (!kinds.length) return null;
+    const k = kinds.reduce((a, b) => (kindPrice(b, q) < kindPrice(a, q) ? b : a)); return { k, q, price: kindPrice(k, q) };
+  }
+  function reqBuyPopup(i) {
+    closePopup(); const r = S.requests[i], o = r && reqBuyOpt(r), miss = r ? reqMissing(r) : 0; if (!r || !o || !miss) return;
+    const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<button class="popbg" data-act="closepop" aria-label="Close"></button><div class="popup" role="dialog">${art(o.k.sp, 0, 70)}
+      <h3>You need ${miss} more</h3><p>${reqName(r)} wants ${reqWant(r)}. Buy ${miss > 1 ? `them` : `one`} now: a ${GRADES[o.q].name} ${SP[o.k.sp].name} costs ${o.price} coins. You have ${S.coins}.</p>
+      <div class="popbtns"><button class="mb" data-act="closepop">Not now</button><button class="mb gold" data-act="reqbuy:${i}-1" ${S.coins >= o.price ? "" : "disabled"}>Buy 1 ${IC.coin}${o.price}</button>${miss > 1 ? `<button class="mb gold" data-act="reqbuy:${i}-${miss}" ${S.coins >= o.price * miss ? "" : "disabled"}>Buy ${miss} ${IC.coin}${o.price * miss}</button>` : ""}</div></div>`;
+    document.body.appendChild(d);
+  }
   const islander = say => ART["tr-islander"] ? `<div class="islander"><img src="${ART["tr-islander"]}" alt=""><p>${say}</p></div>` : `<p class="hint" style="margin:0">${say}</p>`;
   function pageRequests(tabs) {
     fillRequests();
@@ -3050,7 +3064,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Glumis in your team are not shown.</p>
           <div class="slist">${got.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl}${m.stars ? ` · ${m.stars} star${m.stars > 1 ? "s" : ""}` : ""}</small></span>
             <button class="price give" data-act="give:${m.uid}">${confirmGive === m.uid ? "Sure?" : "Give"}</button></div>`).join("")}</div>`
-          : `<p class="hint" style="margin:0">${r.sp < 0 ? `You have no ${GRADES[r.minQ].name} or better Glumi outside your team. Catch more on the path.` : `You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.`}</p>`}`;
+          : `<p class="hint" style="margin:0">${r.sp < 0 ? `You have no ${GRADES[r.minQ].name} or better Glumi outside your team. Catch more on the path.` : `You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.`}</p>`}
+        ${reqMissing(r) && reqBuyOpt(r) ? `<button class="mb gold pbig" data-act="reqbuypop:${reqPick}">Buy what's missing (${reqMissing(r)})</button>` : ""}`;
     }
     const rows = S.requests.map((q, i) => q.done
       ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>New request soon</b><small>In ${Math.max(1, Math.ceil((q.readyAt - Date.now()) / 60000))} min</small></span><span></span></div>`
@@ -3765,7 +3780,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "jarwalk") { closePopup(); nextWild(); autoResume(); }
     else if (a === "jarshop") { closePopup(); view = "shop"; shopTab = "jars"; showMap = false; render(); window.scrollTo(0, 0); toast("Buy jars, then go back to the Glumi"); }
     else if (a === "shoptab") { shopTab = arg; confirmBuy = null; reqPick = null; confirmGive = null; render(); }
-    else if (a === "reqpick") { reqPick = arg === "" ? null : +arg; confirmGive = null; render(); window.scrollTo(0, 0); }
+    else if (a === "reqpick") { reqPick = arg === "" ? null : +arg; confirmGive = null; render(); window.scrollTo(0, 0); const r = reqPick !== null && S.requests[reqPick]; if (r && !r.done && !reqMatches(r).length && reqBuyOpt(r)) reqBuyPopup(reqPick); }
+    else if (a === "reqbuypop") reqBuyPopup(n);
+    else if (a === "reqbuy") { const [i, cnt] = arg.split("-").map(Number), r = S.requests[i], o = r && reqBuyOpt(r); if (!o || S.coins < o.price * cnt) return;
+      let last = null; for (let k = 0; k < cnt; k++) { S.coins -= o.price; const m = newMon(o.k.sp, o.k.lvl, o.q); keepMon(m); if (S.team.includes(m.uid) && S.team.length > 1) S.team = S.team.filter(u => u !== m.uid); last = m; }  // keep it out of the team so it can be given
+      closePopup(); view = "shop"; shopTab = "requests"; reqPick = i; confirmGive = last ? last.uid : null; sfx("coin"); save(); render(); window.scrollTo(0, 0);
+      toast(`Bought ${cnt} ${GRADES[o.q].name} ${SP[o.k.sp].name}${cnt > 1 ? "s" : ""}: tap Give`); }
     else if (a === "give") { const r = reqPick !== null ? S.requests[reqPick] : null, m = mon(n); if (!r || r.done || !m || !reqMatches(r).includes(m)) return;
       if (confirmGive !== n) { confirmGive = n; render(); return; }
       S.mons = S.mons.filter(x => x.uid !== n); r.got = (r.got || 0) + 1; confirmGive = null;
