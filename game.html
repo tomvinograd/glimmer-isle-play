@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794937202;</script>
+<script>window.GAME_BUILD = 1794937431;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -843,6 +843,12 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .rnext { padding: 10px 26px; font-size: 17px; }
 #undobar { position: fixed; z-index: 70; left: 50%; bottom: 84px; transform: translateX(-50%); width: min(340px, calc(100vw - 32px)); display: flex; align-items: center; gap: 10px; padding: 8px 10px 10px 14px; border-radius: 10px; background: #4a3a2e; color: #fff; font: 800 14px var(--display); overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
 #undobar span { flex: 1; } #undobar i { position: absolute; left: 0; bottom: 0; height: 3px; background: #ffd36b; animation: undoline 10s linear forwards; } @keyframes undoline { from { width: 100%; } to { width: 0; } }
+body.bigtext #page, body.bigtext .popup, body.bigtext #hintbox, body.bigtext #toast { zoom: 1.12; }
+body.bigtext #page { width: calc(100% / 1.12); max-width: calc(560px / 1.12); box-sizing: border-box; }
+.loglist { display: grid; gap: 4px; } .logrow { display: grid; grid-template-columns: 52px 1fr; gap: 8px; padding: 6px 10px; border-radius: 8px; background: #fff; font: 700 13px/1.3 var(--display); color: var(--brown); } .logrow small { color: #8a6d55; font-weight: 800; }
+.tval { font: 900 14px var(--display); color: var(--brown); white-space: nowrap; }
+#helpbub { position: fixed; z-index: 120; width: 240px; padding: 8px 10px; border-radius: 9px; background: #4a3a2e; color: #fff; font: 700 13px/1.35 var(--display); transform: translateY(-100%); box-shadow: 0 6px 16px rgba(0,0,0,.3); pointer-events: none; } #helpbub.below { transform: none; }
+.bkta { width: 100%; min-height: 84px; padding: 8px; border: 1.5px solid #e3d3bd; border-radius: 9px; font: 600 11px/1.3 monospace; color: var(--brown); background: #fff; resize: vertical; box-sizing: border-box; }
 .prew { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font: 800 14px var(--display); color: var(--brown); }
 .rchip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; background: #fff6e2; font: 800 13px var(--display); color: var(--brown); }
 .rchip svg { width: 20px; height: 20px; } .rchip.ok { background: #e6f8ea; color: #3e9e57; }
@@ -1720,6 +1726,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (!S.zones[i].caught[m.sp]) { S.reveal = S.reveal || []; if (!S.reveal.includes(m.sp)) S.reveal.push(m.sp); }
       S.zones[i].caught[m.sp] = 1;
       });
+    logEv(`${fromWild ? "Caught" : "Got"} ${GRADES[m.q].name} ${fname(m.sp, m.evo)}`);
+    const keepN = S.auto && fromWild && m.q === 1 && S.autoCfg ? +S.autoCfg.release || 0 : 0;
+    if (keepN > 0 && S.mons.filter(x => x !== m && x.sp === m.sp && x.q === 1 && isSpare(x)).length >= keepN) {
+      const k = KEEPSAKES_BY_GRADE[1]; S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + k; S.mons = S.mons.filter(x => x !== m); logEv(`Auto released the extra ${fname(m.sp, m.evo)} (+${k} keepsake)`); return "released"; }
     if (S.team.length < slots()) { S.team.push(m.uid); return "team"; } return "den";
   }
   const banners = [];
@@ -2287,6 +2297,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   document.addEventListener("visibilitychange", () => { if (document.hidden) stopMusic(); else startMusic(); });
   document.addEventListener("pointerdown", () => startMusic(), { passive: true });  // sound may only start after a tap
   function sfx(kind) {
+    if (!(S.opt && S.opt.vibe === false)) { const v = { catch: [40, 40, 60], win: [60, 50, 90], claim: [30], up: [20] }[kind]; if (v) try { navigator.vibrate && navigator.vibrate(v); } catch {} }
     if (S.opt && S.opt.sound === false) return;
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume();
@@ -2398,6 +2409,30 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const taskReady = (tab, t) => { const T = tasksState(); return !T.done[tab + ":" + t.id] && t.got(T) >= t.need; };
   const tasksWaiting = () => Object.keys(TASKS).reduce((a, tab) => a + TASKS[tab].filter(t => taskReady(tab, t)).length, 0);
   let tasksTab = "daily";
+  function pageLog() {
+    const L = (S.log || []).slice().reverse(), hm = t => { const d = new Date(t); return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+    return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Activity log</h3><span></span></div>
+      ${L.length ? `<div class="loglist">${L.map(e => `<div class="logrow"><small>${new Date(e.t).toDateString() === new Date().toDateString() ? hm(e.t) : new Date(e.t).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + " " + hm(e.t)}</small><span>${e.x}</span></div>`).join("")}</div>` : `<p class="hint">Nothing yet. Catches, fights and messages show up here, also the ones from Auto.</p>`}`;
+  }
+  function timersList() {
+    const now = Date.now(), rows = [], cap = glowCap();
+    rows.push([IC.glow, "Energy full", S.glow >= cap ? "Full now" : mmss((cap - S.glow - 1) * glowEvery() + Math.max(0, glowEvery() - (now - S.glowT)))]);
+    try { homeTick(); for (const k in PLACES) { const r = placeRate(k), st = homeState()[k].store, c = placeCap(k); rows.push([resIcon(k), PLACES[k].name, !r ? "No workers" : st >= c ? "Full now" : "Full in " + mmss((c - st) / r * 3600000)]); } } catch {}
+    for (const x of S.exps || []) { const m = mon(x.uid); rows.push([IC.home, `Expedition${m ? ": " + nameOf(m) : ""}`, now >= x.until ? "Back now" : "Back in " + mmss(x.until - now)]); }
+    try { const reqs = Array.isArray(S.requests) ? S.requests : [], w = reqs.filter(r => r.done && r.readyAt > now).map(r => r.readyAt - now); if (w.length) rows.push([IC.lantern, "Next request", mmss(Math.min(...w))]); } catch {}
+    rows.push([IC.tasks || IC.flag, "New daily tasks", mmss(nextMidnight() - now)]);
+    rows.push([IC.gift || IC.star, "Daily gift", giftReady() ? "Ready now" : mmss(nextMidnight() - now)]);
+    try { const R = raceState(); rows.push([IC.flag, "Island Race ends", now >= R.end ? "Finished" : mmss(R.end - now)]); } catch {}
+    rows.push([IC.sword, "Ladder week ends", mmss((weekId() + 1) * 7 * 86400000 + 4 * 86400000 - now)]);
+    const ev = eventNow(); if (ev) rows.push([IC.star, ev.name + " ends", mmss(ev.end - now)]);
+    else { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7 || 7)); rows.push([IC.star, "Next weekend event", mmss(d.getTime() - now)]); }
+    return rows;
+  }
+  function pageTimers() {
+    return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Timers</h3><span></span></div>
+      <div class="alist" id="timerList">${timersList().map(([ic, a, b]) => `<div class="arow2"><span class="aic">${ic}</span><span class="gct"><b>${a}</b></span><b class="tval">${b}</b></div>`).join("")}</div>`;
+  }
+  setInterval(() => { if (view === "timers" && $("timerList") && !document.querySelector(".popwrap")) render(); }, 1000);
   function pageStats() {
     const T = tasksState(), st = statsState(), goals = TASKS.goals, gDone = goals.filter(t => T.done["goals:" + t.id]).length;
     const gymsBeat = Object.keys(S.gyms || {}).length, best = S.mons.reduce((a, m) => m.lvl > a ? m.lvl : a, 0), kinds = Object.keys(S.caught).length;
@@ -2562,7 +2597,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const why = !won && tips && tips.length ? `<div class="rwhy"><b>Why you lost</b>${tips.map(t => `<p>${t}</p>`).join("")}</div>` : "";
       d.innerHTML = `<h1>${won ? "Victory!" : "Defeated"}</h1>${rewards.length ? `<div class="rrew">${rewards.map(r => `<span>${r.k === "charm" ? charmSvg(r.kind || "atk", r.r || 0) : RW[r.k][0]}<b>${r.k === "charm" ? CHARM_R[r.r || 0] + " charm" : "+" + r.n}</b></span>`).join("")}</div>` : won ? "" : why || `<p class="rtip">Level up your team and try again</p>`}${next ? `<button class="mb gold rnext">${next}</button>` : ""}<p class="rtap">Tap to close</p>`;
       if (why && autoMs) autoMs = Math.max(autoMs, 4500);
-      document.body.appendChild(d); sfx(won ? "win" : "tap");
+      document.body.appendChild(d); sfx(won ? "win" : "tap"); logEv(won ? `Won a fight${rewards.length ? ": " + rewards.map(r => r.k === "charm" ? "a charm" : `${r.n} ${RW[r.k] ? RW[r.k][1] : r.k}`).join(", ") : ""}` : "Lost a fight");
       let done = false; const close = e => { if (done) return; done = true; d.remove(); res(e && e.target && e.target.closest && e.target.closest(".rnext") ? "next" : null); };
       setTimeout(() => d.addEventListener("click", close), 350); if (autoMs) setTimeout(close, autoMs);
     });
@@ -3105,7 +3140,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       <button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} letter${mailWaiting() > 1 ? "s" : ""} waiting` : "Gifts from game updates"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
       ${(() => { const ev = eventNow(); return ev ? `<div class="evcard"><b>${ev.name}</b><small>${ev.about} \u00B7 ends in ${mmss(ev.end - Date.now())}</small></div>` : ""; })()}
-      <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
+      <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
   function pageStart() {
     return `<div class="head"><h2>Choose a buddy</h2></div><div class="starters">${[0, 3, 6].map(sp => `<button class="card starter" data-act="start:${sp}">${art(sp, 0, 84)}<span class="nmrow" style="font-size:16px">${SP[sp].name}</span><span class="el" style="background:${EL[SP[sp].el].color}"></span></button>`).join("")}</div>`;
@@ -3514,18 +3549,37 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (settingsPage === "delete") return `<div class="sheethead"><button class="mb" data-act="settings:main" aria-label="Back">‹ Back</button><h3>Delete my data</h3><span></span></div>
       <p class="hint" style="margin:0;text-align:left">This deletes all your Glumis, coins, items and progress on this phone, and you start again from the beginning. It can't be undone.</p>
       <div class="slist"><button class="setrow danger" data-act="wipe"><span>Delete everything</span><b></b><i>›</i></button></div>`;
+    if (settingsPage === "backup") return `<div class="sheethead"><button class="mb" data-act="settings:main" aria-label="Back">‹ Back</button><h3>Save backup</h3><span></span></div>
+      <p class="hint" style="margin:0;text-align:left">A save code holds your whole game. Copy it somewhere safe (a note or a message to yourself). To move to another phone, paste it there and load it.</p>
+      <h3 class="grouph">Your save code</h3><textarea id="bkOut" class="bkta" readonly placeholder="Tap Make code"></textarea>
+      <div class="row" style="gap:8px"><button class="mb gold" data-act="bkmake">Make code</button><button class="mb" data-act="bkcopy">Copy</button>${navigator.share ? `<button class="mb" data-act="bkshare">Share</button>` : ""}</div>
+      <h3 class="grouph">Load a save code</h3><textarea id="bkIn" class="bkta" placeholder="Paste a save code here"></textarea>
+      <button class="mb" data-act="bkload">${bkSure ? "Tap again: this replaces the game on this phone" : "Load this save"}</button>`;
     if (settingsPage === "code") return `<div class="sheethead"><button class="mb" data-act="settings:main" aria-label="Back">‹ Back</button><h3>Gift code</h3><span></span></div>
       <p class="hint" style="margin:0;text-align:left">Type a gift code to get a present. Each code works once.</p>
       <div class="coderow"><input id="codeIn" maxlength="20" autocomplete="off" autocapitalize="characters" placeholder="Code"><button class="mb gold" data-act="redeem">Use</button></div>`;
     const sw = (k, on, label, about) => `<button class="swrow" data-act="opt:${k}" role="switch" aria-checked="${on}"><span><b>${label}</b><small>${about}</small></span><i class="sw${on ? " on" : ""}"><em></em></i></button>`;
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">‹ Back</button><h3>Settings</h3><span></span></div>
       <h3 class="grouph">Sound and motion</h3>
-      <div class="slist">${sw("sound", S.opt.sound !== false, "Sound effects", "Little sounds for steps, catches and rewards")}${sw("music", S.opt.music !== false, "Music", "Soft background music")}${sw("calm", !!S.opt.calm, "Calm animations", "Fewer moving effects")}</div>
+      <div class="slist">${sw("sound", S.opt.sound !== false, "Sound effects", "Little sounds for steps, catches and rewards")}${sw("music", S.opt.music !== false, "Music", "Soft background music")}${sw("vibe", S.opt.vibe !== false, "Vibration", "Short buzzes on catches, wins and rewards")}${sw("calm", !!S.opt.calm, "Calm animations", "Fewer moving effects")}${sw("big", !!S.opt.big, "Bigger text", "Makes pages easier to read")}</div>
       ${appBridge() ? `<h3 class="grouph">Updates</h3><div class="slist"><div class="srow"><span class="ic">${IC.balloon}</span><span class="txt"><b>Updates</b><small id="updStatus">${appStatus()}</small>${(() => { try { const g = appBridge(); return g && g.copy ? `<small class="copyline">${g.copy()}</small>` : ""; } catch { return ""; } })()}</span>
         <span class="row" style="gap:6px"><button class="price" data-act="updcheck">Check now</button>${/^New version ready/.test(appStatus()) ? `<button class="price" data-act="updrestart">Restart</button>` : ""}</span></div></div>` : ""}
       <h3 class="grouph">Game</h3>
-      <div class="slist"><button class="setrow" data-act="hintsreset"><span>Show tips again</span><b></b><i>›</i></button><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
+      <div class="slist"><button class="setrow" data-act="settings:backup"><span>Save backup</span><b>Move to another phone</b><i>›</i></button><button class="setrow" data-act="hintsreset"><span>Show tips again</span><b></b><i>›</i></button><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
       <p class="saved">${saveNote || "Saved on this device"}<br>${versionText()}</p>`;
+  }
+  let bkSure = false;
+  const b64 = u8 => { let s = ""; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+  async function makeBackup() {
+    const json = JSON.stringify(S);
+    if (typeof CompressionStream === "function") { const buf = await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer(); return "GLIMMER1." + b64(new Uint8Array(buf)); }
+    return "GLIMMER0." + b64(new TextEncoder().encode(json));
+  }
+  async function readBackup(code) {
+    code = (code || "").replace(/\s+/g, ""); const m = code.match(/^GLIMMER([01])\.(.+)$/); if (!m) throw new Error("not a save code");
+    const bin = atob(m[2]), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    const text = m[1] === "1" ? await new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream("gzip"))).text() : new TextDecoder().decode(u8);
+    const o = JSON.parse(text); if (!o || !Array.isArray(o.mons)) throw new Error("not a save"); return o;
   }
   const appBridge = () => { try { return window.GlimmerApp && typeof window.GlimmerApp.status === "function" ? window.GlimmerApp : null; } catch { return null; } };
   const appStatus = () => { try { const a = appBridge(); return a ? String(a.status()) : ""; } catch { return ""; } };
@@ -3704,7 +3758,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
   // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
-  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", mail: "menu", book: "team", release: "team", charms: "team", stats: "menu" })[v] || v;
+  const tabOf = v => ({ tasks: "menu", bag: "menu", shrine: "menu", mail: "menu", book: "team", release: "team", charms: "team", stats: "menu", log: "menu", timers: "menu" })[v] || v;
   function resetTab(t, keepPrep) {
     if (t === "shop") { shopTab = "jars"; marketFocus = null; reqPick = null; keepsFor = null; }
     if (t === "team") { teamTab = "team"; sheetPage = "main"; sheetTab = "stats"; sheetMulti = false; rel = null; }
@@ -3752,6 +3806,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
     { k: "speed", name: "Catch speed", about: "How Auto throws jars", opts: [["normal", "Normal: aims for Perfect"], ["quick", "Quick: throws until done, shows the result"]] },
+  { k: "release", name: "Release extra Blues", about: "After Auto catches a Blue Glumi, it releases it for its keepsake when you already have this many spare Blues of that kind (team, favorites, locked and working Glumis don't count)", opts: [[0, "Never"], [3, "Keep 3 of each kind"], [5, "Keep 5 of each kind"], [10, "Keep 10 of each kind"]] },
   { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet energy"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
@@ -3920,7 +3975,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     $("stage").hidden = !onStage; $("actions").hidden = !onStage; $("page").hidden = onStage;
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${view === "shrine" && ART["bg-star"] ? ART["bg-star"] : ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
-    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "charms" ? pageCharms() : view === "stats" ? pageStats() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "charms" ? pageCharms() : view === "stats" ? pageStats() : view === "log" ? pageLog() : view === "timers" ? pageTimers() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
   }
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
@@ -3932,7 +3987,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     document.querySelectorAll(".skcard").forEach(c => { const need = +c.dataset.cost * 10, ok = BT.me.e >= need; c.disabled = !ok; c.classList.toggle("ready", ok); c.style.setProperty("--p", Math.min(100, BT.me.e / need * 100) + "%"); });
     document.querySelectorAll(".swap").forEach(b => { b.disabled = BT.swapCd > 0; const c = b.querySelector(".cd"); c.hidden = BT.swapCd <= 0; c.textContent = Math.ceil(BT.swapCd); });
   }
-  let toastT; function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 1800); }
+  function logEv(x) { S.log = S.log || []; const L = S.log, last = L[L.length - 1]; if (last && last.x === x && Date.now() - last.t < 2000) return; L.push({ t: Date.now(), x }); if (L.length > 60) L.splice(0, L.length - 60); }
+  let toastT; function toast(msg) { try { if (S.started && msg && !/^Tap again/.test(msg)) logEv(String(msg)); } catch {} const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 1800); }
 
   // ---------- loops ----------
   function frame() { const r = $("ring"); if (r && E && E.type === "wild" && !busy) r.style.transform = `scale(${ringScale()})`; requestAnimationFrame(frame); }
@@ -4033,6 +4089,55 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (e.target.id === "bq") { bq = e.target.value.trim().toLowerCase(); document.querySelectorAll(".book .cell").forEach(c => { c.hidden = !!bq && !(c.dataset.n || "").includes(bq); }); document.querySelectorAll(".bookzone").forEach(z => { z.hidden = !!bq && !z.querySelector(".cell:not([hidden])"); }); }
   });
   document.addEventListener("change", e => { if (e.target.id === "tsort") { S.ui = S.ui || {}; S.ui.sort = e.target.value; save(); render(); } });
+  const HELP = { "view:shop": "Shop: jars, boosts (multipliers and the energy pack), Glumis and Requests.", goreq: "Requests: islanders ask for Glumis and pay moonfruit or energy.",
+    "view:tasks": "Tasks: starter, daily, challenge and lifetime goals, each with a reward.", "view:mail": "Mailbox: gifts that come with game updates.", giftopen: "Daily gift: one reward a day; day 7 is a Purple egg.",
+    gobook: "Book: every Glumi form you have found.", map: "Atlas: zones, their maps and zone rewards.", gorace: "Island Race: win fights for race points; the top places get rewards.",
+    auto: "Auto walks and catches for you, following your Rules.", autocfg: "Rules: how Auto catches, fights, bets and releases.", mult: "Multiplier: energy per step. Higher ones find rarer Glumis and give bigger rewards.",
+    evclaim: "Daily points: catches and fight wins fill these bars; each full bar gives its reward.", eventinfo: "This weekend's event. Events run every Saturday and Sunday.", zstep: "Go to the next or previous zone.",
+    lockmon: "Lock: it can't be sold, released or given away.", favmon: "Favorite: protected like the lock and listed first.", lvlreset: "Reset levels: back to level 1, and you get the leaves and keepsakes back.",
+    "spage:bye": "Sell it for coins or release it for keepsakes.", addteam: "Add it to your team of 3.", den: "Take it out of the team.", lead: "Make it the leader: it fights first.",
+    shield: "Shield: halves the damage you take for 4 seconds. Use it when a boss is charging.", autoskill: "Auto uses skills and the shield for you.", speed: "Fight speed.", retreat: "Give up this fight.",
+    cast: "A skill: tap it when it lights up. It costs fight energy (the yellow bar).", bestteam: "Picks your best 3 Glumis for this fight from the forecast.", lvteam: "Levels up your team with your leaves, lowest level first.",
+    claimall: "Collects every reward that is ready.", charmfor: "Charms give a Glumi extra attack, defense, HP or fight energy.", cmpstart: "Compare this Glumi with another one.",
+    hudGlow: "Energy: every step costs energy. It refills by itself; the cap grows with your Explorer level.", hudCoins: "Coins: for jars, boosts, Glumis and evolving.", hudLeaves: "Leaves: for leveling up Glumis." };
+  let helpT = null, helpEat = false;
+  function helpFor(el) { const a = el.dataset && el.dataset.act; if (a) { if (a === "step") return null; return HELP[a] || HELP[a.split(":")[0]] || null; } return HELP[el.id] || null; }
+  function showHelp(el, text) {
+    let h = $("helpbub"); if (!h) { h = document.createElement("div"); h.id = "helpbub"; document.body.appendChild(h); }
+    const r = el.getBoundingClientRect(); h.textContent = text; h.hidden = false;
+    const top = r.top > 140 ? r.top - 10 : r.bottom + 10; h.style.left = Math.max(12, Math.min(innerWidth - 252, r.left + r.width / 2 - 120)) + "px"; h.style.top = top + "px"; h.classList.toggle("below", r.top <= 140);
+    clearTimeout(showHelp.t); showHelp.t = setTimeout(() => { h.hidden = true; }, 3500);
+  }
+  document.addEventListener("pointerdown", e => {
+    const hb = $("helpbub"); if (hb) hb.hidden = true;
+    const el = e.target.closest("[data-act], #hudGlow, #hudCoins, #hudLeaves"); if (!el) return; const text = helpFor(el); if (!text) return;
+    clearTimeout(helpT); helpT = setTimeout(() => { helpEat = true; setTimeout(() => { helpEat = false; }, 1200); showHelp(el, text); try { navigator.vibrate && S.opt?.vibe !== false && navigator.vibrate(15); } catch {} }, 550);
+  }, true);
+  for (const ev of ["pointerup", "pointercancel", "pointerleave"]) document.addEventListener(ev, () => clearTimeout(helpT), true);
+  document.addEventListener("pointermove", e => { if (e.movementX * e.movementX + e.movementY * e.movementY > 64) clearTimeout(helpT); }, true);
+  document.addEventListener("click", e => { if (helpEat) { helpEat = false; e.stopPropagation(); e.preventDefault(); } }, true);
+  // Q18: a tap on a greyed-out button says why
+  function whyLocked(act) {
+    const [a, arg] = (act || "").split(":"), n = +arg, m = mon(n);
+    if (a === "step") { const M = curM(); return [`Each step needs ${M.m} energy and you have ${S.glow}. Energy refills by itself, or buy an energy pack.`, "goboost", "Energy pack"]; }
+    if ((a === "lvl" || a === "lvlmax") && m) { if (m.lvl >= ascTop(m)) return ["It reached its level limit: ascend it to keep leveling.", null];
+      if (m.lvl >= lvlCap()) return [`Glumis can't pass level ${lvlCap()} yet: raise your Explorer level by walking and catching.`, "view:explore", "Go explore"];
+      return [`The next level costs ${5 + m.lvl * 3} leaves and you have ${S.leaves}. Bushes, herbs, catches and the Orchard give leaves.`, "view:home", "Go Home"]; }
+    if (a === "evolve" && m) { if (m.lvl < EVOLVE_AT) return [`It can evolve at level ${EVOLVE_AT}.`, null]; if (S.fruit < EVOLVE_FRUIT) return [`Evolving needs ${EVOLVE_FRUIT} moonfruit and you have ${S.fruit}. Requests give moonfruit.`, "goreq", "Requests"]; return [`Evolving costs 60 coins and you have ${S.coins}.`, null]; }
+    if (a === "gymd") return [`Beat all three trainers on ${DIFF[n - 1] || "the easier level"} first.`, null];
+    if (/^buy/.test(a)) return [`Not enough coins (you have ${S.coins.toLocaleString("en")}). Chests, trainers, gyms and the Gold Mine give coins.`, null];
+    if (a === "starup") return ["Star up needs star cores of this kind: release a Rainbow of the same kind to get one.", null];
+    if (a === "shield") return ["The shield needs 4 fight energy and can't be used while one is up.", null];
+    if (a === "cast") return ["Not enough fight energy yet: it fills by itself, 1 point a second.", null];
+    return null;
+  }
+  document.addEventListener("pointerup", e => {
+    const b = e.target.closest && e.target.closest("button[disabled][data-act]"); if (!b) return; const w = whyLocked(b.dataset.act); if (!w) return;
+    if (BT && /^(cast|shield)/.test(b.dataset.act)) { toast(w[0]); return; }
+    closePopup(); const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<div class="popbg"></div><div class="popup" role="dialog"><h3>Not yet</h3><p>${w[0]}</p><div class="popbtns"><button class="mb" data-act="nickcancel">OK</button>${w[1] ? `<button class="mb gold" data-act="whygo:${w[1]}">${w[2] || "Take me there"}</button>` : ""}</div></div>`;
+    document.body.appendChild(d);
+  }, true);
   // ---------- input ----------
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
@@ -4043,7 +4148,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (S.auto && E && !BT && (TAKE_OVER.has(a) || (a === "view" && arg === "shop"))) { E.manual = true; autoBar(); }
     if (a !== "release" && a !== "sell") confirmRelease = null;
     if (a === "start") { S = fresh(); S.started = true; S.mailSeen = MAIL.map(m => m.id); keepMon(newMon(n, 5, 1)); save(); render(); initProps(); }
-    else if (a === "settings") { settingsPage = arg || null; view = "menu"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); }
+    else if (a === "settings") { bkSure = false; settingsPage = arg || null; view = "menu"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); }
     else if (a === "close") { view = "explore"; showMap = false; showAuto = false; sheetUid = null; swapIn = null; settingsPage = null; homePlace = null; homePick = false; render(); window.scrollTo(0, 0); }
     else if (a === "goreq") { if (!E && !BT && !busy) { view = "shop"; shopTab = "requests"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); } }
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
@@ -4101,6 +4206,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "awaycollect") { homeTick(); let got = []; for (const k in PLACES) { const n2 = collectPlace(k); if (n2) got.push(`${n2} ${PLACES[k].unit}`); } save(); closePopup(); if (got.length) toast("Collected " + got.join(", ")); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "giftopen") giftPopup();
     else if (a === "lvteam") levelTeam();
+    else if (a === "whygo") { closePopup(); sheetUid = null; const to = b.dataset.act.slice(6); if (to === "goboost") { view = "shop"; shopTab = "boost"; render(); window.scrollTo(0, 0); } else actNow(to); }
+    else if (a === "bkmake") { makeBackup().then(c => { const o = $("bkOut"); if (o) { o.value = c; o.select(); } toast(`Save code ready (${Math.round(c.length / 1024)} KB of text)`); }).catch(() => toast("Couldn't make the code")); }
+    else if (a === "bkcopy") { const o = $("bkOut"); if (!o || !o.value) { toast("Tap Make code first"); return; } o.select(); (navigator.clipboard ? navigator.clipboard.writeText(o.value) : Promise.reject()).then(() => toast("Copied")).catch(() => { try { document.execCommand("copy"); toast("Copied"); } catch { toast("Select the code and copy it"); } }); }
+    else if (a === "bkshare") { const o = $("bkOut"); if (!o || !o.value) { toast("Tap Make code first"); return; } navigator.share({ title: "Glimmer Isle save", text: o.value }).catch(() => {}); }
+    else if (a === "bkload") { const i = $("bkIn"); if (!i || !i.value.trim()) { toast("Paste a save code first"); return; } if (!bkSure) { bkSure = true; render(); const j = $("bkIn"); if (j) j.value = i.value; return; } const code = i.value; bkSure = false;
+      readBackup(code).then(o => { S = migrate(o); S.auto = false; E = null; BT = null; regen(); save(); if (typeof flush === "function" && db && uid) flush(); render(); initProps(); toast("Save loaded"); }).catch(() => { toast("That isn't a working save code"); render(); }); }
     else if (a === "claimall") claimEverything();
     else if (a === "prepslot") prepSwapPopup(n);
     else if (a === "prepswap") { const [i, u] = arg.split("-").map(Number); if (!isAway(u) && !S.team.includes(u)) { if (S.team[i] !== undefined) S.team[i] = u; else S.team.push(u); save(); closePopup(); render(); toast(`${nameOf(mon(u))} is in the team`); } }
@@ -4136,7 +4247,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "charmmerge") { const [k, r] = arg.split("-"), G = charmGroups().find(g => g.k === k && g.r === +r); if (G && G.free.length >= 3 && +r < 2) {
         const gone = G.free.slice(0, 3).map(c => c.id); S.charms = S.charms.filter(c => !gone.includes(c.id)); const nc = addCharm(k, +r + 1); save(); sfx("claim"); toast(`Made a ${CHARM_R[nc.r]} ${CHARM[k].n}!`); render(); } }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
-    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music") S.opt[arg] = S.opt[arg] === false; else S.opt[arg] = !S.opt[arg]; if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
+    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music" || arg === "vibe") S.opt[arg] = S.opt[arg] === false; else S.opt[arg] = !S.opt[arg]; document.body.classList.toggle("bigtext", !!S.opt.big); if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
@@ -4294,7 +4405,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ================= BOOT =================
   const local = migrate(readLocal()); if (local) S = local;
   S.mult = +S.mult || 1; if (!MULTS.some(x => x.m === S.mult)) S.mult = 1;
-  RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM);
+  RM = RM_SYS || !!(S.opt && S.opt.calm); document.body.classList.toggle("calm", RM); document.body.classList.toggle("bigtext", !!(S.opt && S.opt.big));
   S.jars.prism = S.jars.prism || 0; if (S.autoCfg && S.autoCfg.speed === "quick") S.quickCatch = true; if (S.autoCfg) S.autoCfg.speed = S.quickCatch ? "quick" : "normal"; mailSync(); S.auto = false; const awayInfo = { ms: Date.now() - (S.t || Date.now()), glow: -S.glow }; regen(); awayInfo.glow += S.glow; if (S.team.length > slots()) S.team = S.team.slice(0, Math.max(slots(), 1));
   if (S.started && !S.hints && ((S.tasks && S.tasks.total && S.tasks.total.catch) || 0) >= 5) S.hints = Object.fromEntries(HINTS.map(h => [h[0], 1]));
   render(); if (S.started) initProps();
