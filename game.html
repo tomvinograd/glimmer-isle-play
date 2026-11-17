@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794916875;</script>
+<script>window.GAME_BUILD = 1794916997;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1794,15 +1794,15 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   const wantQuick = () => !!S.quickCatch;  // one switch for your taps and for Auto
   async function quickWrap(fn, autoThrow) {  // throw until the end, then show one result card
-    const was = RM, enc = E, list0 = E && E.list, n0 = S.mons.length, j0 = JSON.stringify(S.jars), wild0 = E && E.list ? E.list.length : 0, jarSum = () => Object.values(S.jars).reduce((a, b) => a + b, 0);
+    const was = RM, enc = E, list0 = E && E.list, n0 = S.mons.length, j0 = JSON.stringify(S.jars), wild0 = E && E.list ? E.list.length + (E.waves || []).reduce((a, w) => a + w.length, 0) : 0, jarSum = () => Object.values(S.jars).reduce((a, b) => a + b, 0);
     RM = true; quickNow = true; let tries = 0; document.body.classList.add("quicking"); const qb = document.createElement("div"); qb.className = "qbusy"; qb.innerHTML = `${IC.fast}<span>Throwing…</span>`; $("stage").appendChild(qb); const tStart = performance.now();
-    try { for (let i = 0; i < 80; i++) { const before = jarSum();
+    try { for (let i = 0; i < 400; i++) { const before = jarSum(); fn = E && E.list && E.list.length > 1 ? throwGroup : throwJar;
       if (!autoThrow && fn === throwJar && E && E.type === "wild") { const w = E.list[E.i], j = quickJar(w.q); if (!S.jars[j]) { toast(`Quick catch: out of ${j} jars (used for ${GRADES[w.q].name})`); break; } E.jar = j; }
-      await fn(autoThrow); tries += before - jarSum(); if (!E || E !== enc || E.list !== list0 || !E.list.length || jarSum() >= before || busy) break; } }
+      await fn(autoThrow); tries += before - jarSum(); if (!E || E !== enc || E.type !== "wild" || !E.list.length || jarSum() >= before || busy) break; } }  // all waves
     finally { RM = was; quickNow = false; }
     const rest = 550 - (performance.now() - tStart); if (rest > 0) await new Promise(r => setTimeout(r, rest));
     qb.remove(); document.body.classList.remove("quicking"); render();
-    const caught = S.mons.slice(n0), left = E === enc && E && E.list === list0 ? E.list.length : 0, fled = Math.max(0, wild0 - caught.length - left);
+    const caught = S.mons.slice(n0), left = E === enc && E && E.type === "wild" ? E.list.length + (E.waves || []).reduce((a, w) => a + w.length, 0) : 0, fled = Math.max(0, wild0 - caught.length - left);
     if (tries) await quickResult(caught, fled, tries, left, autoThrow);
   }
   function quickResult(caught, fled, tries, left, autoThrow) {
@@ -1879,7 +1879,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (!E || !E.waves || !E.waves.length) { E = null; save(); render(); return; }
     E.list = E.waves.shift(); E.i = 0; E.treat = false; E.hpFrac = 1; E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900;
     setTimeout(() => { if (E) E.intro = false; }, 1300 + E.list.length * 140);
-    save(); render(); starEntrance(); banner("Next wave!");
+    save(); render(); if (!quickNow) { starEntrance(); banner("Next wave!"); }
   }
   function revealGroup(list) {
     if (quickNow) return Promise.resolve();
