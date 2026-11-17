@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794916997;</script>
+<script>window.GAME_BUILD = 1794917227;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1723,7 +1723,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       else if (r === 1) E = { type: "chest", coins: rnd(5, 10) * M.m, glow: Math.random() < 1 / 12 ? rnd(5, 10) * M.m : 0 };  // coins; a rare glowing chest also gives glow
       else if (r === 2) { const treat = Math.random() < .3; E = { type: "gather", kind: "bush", treat, n: treat ? 1 : rnd(7, 12) * M.m }; }
       else if (r === 3) { autoPause(); const n = rnd(1, Math.min(3, slots() + 1)), foes = []; for (let k = 0; k < n; k++) { const f = newMon(Z.sp[rnd(0, Z.sp.length - 1)], zoneLevel(z), wpick([0, 70, 25, 5, 0])); f.wild = 1; f.hp = maxHp(f); foes.push(f); } E = { type: "rival", name: RIVALS[rnd(0, RIVALS.length - 1)], foes, color: ["#ff8a8a", "#7bd389", "#b48cff", "#ffb627", "#4cc3ff"][rnd(0, 4)] }; }
-      else if (r === 4) { autoPause(); E = { type: "luck", stake: 10 * M.m }; }
+      else if (r === 4) { autoPause(); E = { type: "luck", stake: M.m, cstake: 10 * M.m }; }
       else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(10, 16) * M.m : kind === 1 ? rnd(5, 10) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
       else { E = { type: "gather", kind: "pouch", n: 4 * M.m }; }  // a little coin pouch on the path
     }
@@ -2147,7 +2147,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
     if (E && E.type === "gather") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="gather">${E.kind === "bush" ? "Shake" : E.kind === "pouch" ? "Open" : E.kind === "herb" ? "Pick" : E.kind === "ore" ? "Mine" : "Collect"}</button><button class="round big" data-act="leave">${IC.run}</button></div>`; return; }
     if (E && E.type === "rival") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="rivalgo">${IC.sword.replace("<svg", '<svg width="28" height="28"')} Battle</button><button class="round big" data-act="rivalquick" ${front() ? "" : "disabled"}>${IC.fast.replace("<svg", '<svg width="24" height="24"')} Quick</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div>`; return; }
-    if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo:glow" ${S.glow >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} energy">${IC.glow.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big gold" data-act="luckgo:coins" ${S.coins >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} coins">${IC.coin.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div><p class="hint" style="margin:6px 0 0">Bet energy or coins: get 1 to 2 times it back</p>`; return; }
+    if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo:glow" ${S.glow >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} energy">${IC.glow.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big gold" data-act="luckgo:coins" ${S.coins >= (E.cstake || E.stake) && !busy ? "" : "disabled"} aria-label="Bet ${E.cstake || E.stake} coins">${IC.coin.replace("<svg", '<svg width="24" height="24"')} ${E.cstake || E.stake}</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div><p class="hint" style="margin:6px 0 0">Bet one step of energy, or coins: get 1 to 2 times it back</p>`; return; }
     const M = curM(), next = MULTS.filter(multOpen);
     A.innerHTML = `<div class="dock"><div class="side">${zoneCard()}</div>
       <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Energy per step: ${M.m}">x${M.m}</button><button class="compass" data-act="step" aria-label="Step" ${S.glow >= M.m && !busy ? "" : "disabled"}>${compassSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
@@ -2534,9 +2534,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // the lucky lantern: bet glow or coins, get 1x to 2x back (in the same kind)
   function luckPlay(kind) {
     const res = kind === "coins" ? "coins" : "glow";
-    if (!E || E.type !== "luck" || busy || S[res] < E.stake) return Promise.resolve();
-    busy = true; const el = document.querySelector("#luckActor .spr"), r = 1 + rnd(0, 10) / 10, back = Math.round(E.stake * r);
-    S[res] += back - E.stake; renderActions();
+    const stake = res === "coins" ? (E && (E.cstake || E.stake)) : (E && E.stake);
+    if (!E || E.type !== "luck" || busy || S[res] < stake) return Promise.resolve();
+    busy = true; const el = document.querySelector("#luckActor .spr"), r = 1 + rnd(0, 10) / 10, back = Math.round(stake * r);
+    S[res] += back - stake; renderActions();
     return (el && !RM ? anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(1080deg)" }], { duration: 900, easing: "cubic-bezier(.2,.8,.3,1)" }) : Promise.resolve()).then(() => new Promise(done => {
       const [x, y] = el ? stageXY(el) : [180, 300]; floatText(x, y - 60, `x${r.toFixed(1)} · +${back}`, true); sfx("coin");
       flyIcons(res === "coins" ? IC.coin : IC.glow, 4, x, y, $(res === "coins" ? "hudCoins" : "hudGlow"));
@@ -3586,7 +3587,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       if (E.type === "gather") return void await gatherNode();
       if (E.type === "wild" && E.list.length > 1) { if (E.list.some(w => w.q >= C.treat) && S.treats > 0 && !E.treat) { S.treats--; E.treat = true; } return void await throwGroup(true); }
       if (E.type === "rival") { if (C.rivals === "fight" && front()) await startBattle(E.foes, "rival"); else if (C.rivals === "quick" && front()) await quickRival(true); else { E = null; save(); render(); } return; }
-      if (E.type === "luck") { const k = C.lantern || "glow", res = k === "coins" ? "coins" : "glow"; if (k !== "skip" && S[res] >= E.stake) return void await luckPlay(k); E = null; save(); render(); return; }
+      if (E.type === "luck") { const k = C.lantern || "glow", res = k === "coins" ? "coins" : "glow"; if (k !== "skip" && S[res] >= (res === "coins" ? (E.cstake || E.stake) : E.stake)) return void await luckPlay(k); E = null; save(); render(); return; }
       if (E.type !== "wild") { E = null; save(); render(); return; }
       if (E.boss) { autoOff(); return; }
       const w = E.list[E.i];
