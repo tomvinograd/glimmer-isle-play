@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794873829;</script>
+<script>window.GAME_BUILD = 1794896428;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1667,8 +1667,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     busy = true; S.glow -= M.m; const z = S.zone, Z = ZONES[z]; S.zones[z].steps++; gainX(M.m); track("step"); sfx("step");
     renderActions(); spinNeedle();
     await walk();
-    if (bossReady(z)) {
-      autoOff(true);
+    const bossNow = bossReady(z) && (Math.random() < 1 / 8 || (S.zones[z].bossDry || 0) >= 20);  // can appear once all are caught
+    if (bossReady(z) && !bossNow) S.zones[z].bossDry = (S.zones[z].bossDry || 0) + 1;
+    if (bossNow) {
+      S.zones[z].bossDry = 0; autoOff(true);
       const b = newMon(Z.boss, 1, Math.max(1, wpick(M.grades))); S.seen[key(b.sp, 0)] = 1;
       E = { type: "wild", list: [b], i: 0, treat: false, fought: false, hpFrac: 1, boss: true, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300);
       busy = false; save(); render(); shakeStage(); await banner("Guardian!");
@@ -3319,7 +3321,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     let info = "";
     if (atlasPin !== null) {
       const sp = atlasPin, s0 = SP[sp], boss = s0.tier === 3, has0 = S.caught[key(sp, 0)], has1 = s0.evo && S.caught[key(sp, 1)], known = has0 || S.seen[key(sp, 0)];
-      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Waiting for you on the path" : `Appears once every Glumi here is caught (${caughtIn(z)} of ${Z.sp.length})`) : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
+      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Can appear on the path now" : `Appears once every Glumi here is caught (${caughtIn(z)} of ${Z.sp.length})`) : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
       info = `<div class="card pininfo lzinfo" data-act="atlaspin:${sp}"><div class="${known ? "" : "sil"}">${art(sp, 0, 70)}</div><div style="display:grid;gap:4px"><span class="nmrow">${known ? s0.name : "???"}</span>
         <div class="tags" style="justify-content:flex-start"><span class="tag2"><span class="el" style="background:${EL[s0.el].color}"></span>${EL[s0.el].name}</span><span class="tag2">${TIER[s0.tier].name}</span></div>
         <span class="stats"><span>${status}</span></span>${s0.evo ? `<div class="forms"><span>${has0 ? "\u2713" : "\u25cb"} ${known ? s0.name : "???"}</span><span>\u2192</span><span>${has1 ? "\u2713 " + s0.evo : "\u25cb Evolved form"}</span></div>` : ""}</div></div>`;
