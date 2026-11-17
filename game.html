@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794915403;</script>
+<script>window.GAME_BUILD = 1794915496;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1779,7 +1779,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const base = w.q >= 3 ? RARE_JAR[jarK] * (SP[w.sp].tier === 3 ? .6 : 1) : J.base * TIER[SP[w.sp].tier].catch * GRADES[w.q].catch;
     return Math.min(.98, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1) * (w.q >= 3 ? 1 : timing))); }  // Gold/Rainbow: throw timing doesn't change the chance (star jar = 30%)
   let quickNow = false;
-  const QJ_DEF = { 1: "plain", 2: "bright", 3: "star", 4: "star" }, quickJar = q => ((S.quickJars || {})[Math.max(1, q)] || QJ_DEF[Math.max(1, q)]);
+  const QJ_DEF = { 1: "plain", 2: "bright", 3: "star", 4: "star" }, quickJar = q => { const C = S.autoCfg || {}; return (q >= 3 ? C.high : q === 2 ? C.mid : C.low) || QJ_DEF[Math.max(1, q)]; };  // the Auto rules' jars
   function quickJarPanel() {
     closePopup(); const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<button class="popbg" data-act="closepop" aria-label="Close"></button><div class="popup qjp" role="dialog"><h3>Quick catch jars</h3><p>Which jar quick catch throws at each grade</p>`
@@ -2133,7 +2133,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         <div style="display:grid;justify-items:center;gap:6px">${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>`}
         </div>
         <div class="side"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div></div></div>
-        <div class="jarrow"><button class="round jartype qgear" data-act="quickjars" aria-label="Quick catch jars">${IC.gear}</button><button class="round jartype qchip${S.quickCatch ? " on" : ""}" data-act="quickcatch" aria-label="Quick catch">${IC.fast}<span>Quick</span></button>${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div>`;
+        <div class="jarrow"><button class="round jartype qgear" data-act="autocfg" aria-label="Jar rules (Auto and Quick)">${IC.gear}</button><button class="round jartype qchip${S.quickCatch ? " on" : ""}" data-act="quickcatch" aria-label="Quick catch">${IC.fast}<span>Quick</span></button>${JARS.map(j => `<button class="round jartype ${E.jar === j.k ? "on" : ""}" data-act="jar:${j.k}" ${S.jars[j.k] ? "" : "disabled"} aria-label="${j.k} jar"><span style="width:16px;display:inline-block">${IC.jar(j.c)}</span>${S.jars[j.k] || 0}</button>`).join("")}</div>`;
       return;
     }
     if (E && E.type === "chest") { A.innerHTML = `<p class="hint">Tap the chest</p>`; return; }
@@ -3358,9 +3358,9 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   let autoPick = null;  // the rule whose choices are open, or null for the list
   const AUTO_RULES = [
     { k: "catch", name: "Auto catch", about: "What Auto does when a Glumi appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
-    { k: "low", name: "Jar for Blue", about: "Which jar Auto throws at Blue Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "mid", name: "Jar for Purple", about: "Which jar Auto throws at Purple Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto throws at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"], ["prism", "Prism jar"]] },
+    { k: "low", name: "Jar for Blue", about: "Which jar Auto and Quick catch throw at Blue Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "mid", name: "Jar for Purple", about: "Which jar Auto and Quick catch throw at Purple Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto and Quick catch throw at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"], ["prism", "Prism jar"]] },
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
     { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
@@ -3769,7 +3769,6 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     else if (a === "cfg") { const [k, v] = arg.split("="); S.autoCfg[k] = v === "true" ? true : v === "false" ? false : /^\d+$/.test(v) ? +v : v; autoPick = null; save(); render(); }
     else if (a === "chest") openChest();
     else if (a === "jar") { E.jar = arg; render(); }
-    else if (a === "quickjars") quickJarPanel();
     else if (a === "qjset") { const [q, j] = arg.split("-"); S.quickJars = { ...QJ_DEF, ...(S.quickJars || {}), [q]: j }; save(); quickJarPanel(); }
     else if (a === "quickcatch") { S.quickCatch = !S.quickCatch; save(); renderActions(); toast(S.quickCatch ? "Quick catch on: one tap throws until it is caught or runs away" : "Quick catch off"); }
     else if (a === "throw") { if (E && E.type === "wild" && E.list.length > 1) throwGroup(); else throwJar(); }
