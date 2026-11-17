@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794914102;</script>
+<script>window.GAME_BUILD = 1794914320;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1699,7 +1699,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       // a Glumi about 1 step in 5; after 4 steps without one, the next step brings one
       let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 4) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;  // a Glumi at least every 5 steps
       if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (list.some(w => w.q >= 3)) { busy = false; save(); render(); await banner(GRADES[Math.max(...list.map(w => w.q))].name + "!"); } }
-      else if (r === 1) E = { type: "chest", coins: rnd(5, 10) * M.m, glow: Math.random() < 1 / 12 ? rnd(15, 25) * M.m : 0 };  // coins; a rare glowing chest also gives glow
+      else if (r === 1) E = { type: "chest", coins: rnd(5, 10) * M.m, glow: Math.random() < 1 / 12 ? rnd(5, 10) * M.m : 0 };  // coins; a rare glowing chest also gives glow
       else if (r === 2) { const treat = Math.random() < .3; E = { type: "gather", kind: "bush", treat, n: treat ? 1 : rnd(7, 12) * M.m }; }
       else if (r === 3) { autoPause(); const n = rnd(1, Math.min(3, slots() + 1)), foes = []; for (let k = 0; k < n; k++) { const f = newMon(Z.sp[rnd(0, Z.sp.length - 1)], zoneLevel(z), wpick([0, 70, 25, 5, 0])); f.wild = 1; f.hp = maxHp(f); foes.push(f); } E = { type: "rival", name: RIVALS[rnd(0, RIVALS.length - 1)], foes, color: ["#ff8a8a", "#7bd389", "#b48cff", "#ffb627", "#4cc3ff"][rnd(0, 4)] }; }
       else if (r === 4) { autoPause(); E = { type: "luck", stake: 10 * M.m }; }
@@ -2287,7 +2287,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     const n = i + 1, foes = Array.from({ length: n }, (_, k) => foeMon(Z.sp[(z + i + k) % Z.sp.length], lvl - (n - 1 - k), Math.min(3, Math.max(1, q - (k < n - 1 ? 1 : 0)))));
     if (lead) foes[foes.length - 1] = foeMon(Z.boss, lvl + 1, Math.min(3, q));
     const reward = i === 0 ? { k: "coins", n: 25 * (z + 1) * (d + 1) } : i === 1 ? { k: "bright", n: d + 1 } : { k: "star", n: d + 1 };
-    const energy = { k: "glow", n: (lead ? 30 : 15) * (z + 1) * (d + 1) };
+    const energy = { k: "glow", n: (lead ? 10 : 5) * (z + 1) * (d + 1) };
     return { name: (lead ? "Leader " : "") + TNAMES[(z * 3 + i) % TNAMES.length], color: TCOLORS[(z * 3 + i) % TCOLORS.length], foes, reward, energy, lvl };
   }
   const gymKey = (z, d, i) => `${z}-${d}-${i}`;
