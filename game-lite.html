@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794913898;</script>
+<script>window.GAME_BUILD = 1794914102;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1231,6 +1231,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .mailtx { flex: 1; display: grid; gap: 3px; } .mailtx b { font: 800 15px var(--display); color: var(--brown); } .mailtx small { font-size: 12px; color: #8a6d55; }
   .jarrow { display: flex; justify-content: center; gap: 5px; margin-top: 6px; }
   .jarrow .jartype { min-width: 0; padding: 0 9px; }
+  .jmake { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .jmake button { border: 0; border-radius: 12px; padding: 8px 4px; background: #fff; display: grid; justify-items: center; gap: 1px; box-shadow: 0 2px 8px rgba(91,70,54,.14); color: var(--brown); }
+  .jmake button.on { box-shadow: 0 0 0 3px #f5b23c, 0 2px 8px rgba(91,70,54,.14); background: #fff8e6; }
+  .jmake span { width: 30px; height: 30px; } .jmake span svg, .jmake span img { width: 30px !important; height: 30px; }
+  .jmake b { font: 800 14px var(--display); } .jmake small { font-size: 11px; color: #8a6d55; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2986,7 +2991,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 6, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
     spring: { name: "Energy Spring", res: "glow", unit: "energy", base: 1, els: ["Water", "Spirit"], about: "Collects energy for walking" },
     mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 7, els: ["Fire", "Electric"], about: "Digs up coins" },
-    jars: { name: "Jar Workshop", res: "jars", unit: "plain jars", base: .6, els: ["Earth", "Water"], about: "Blows plain jars for catching" },
+    jars: { name: "Jar Workshop", res: "jars", get unit() { return jarMake() + " jars"; }, base: .6, els: ["Earth", "Water"], about: "Blows jars for catching: plain ones fast, bright and star jars slowly" },
     candy: { name: "Candy Maker", res: "treats", unit: "treats", base: .5, els: ["Fire", "Spirit"], about: "Cooks treats that calm wild Glumis" },
   };
   const HOME_CAP_HOURS = 8, HOME_SLOTS = () => S.xlvl >= 8 ? 3 : 2;
@@ -3032,9 +3037,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (const k in PLACES) if (!S.home[k]) S.home[k] = { w: [], t: Date.now(), store: 0 };
     return S.home;
   }
-  const workerRate = (m, k) => { const P = PLACES[k]; return P.base * (1 + (m.lvl - 1) * .06) * GRADES[m.q].mul * (P.els.includes(EL[SP[m.sp].el].name) ? 1.5 : 1) * (1 + (m.stars || 0) * .1); };
+  const workerRate = (m, k) => { const P = PLACES[k]; return (k === "jars" ? 1 / JAR_SLOW[jarMake()] : 1) * P.base * (1 + (m.lvl - 1) * .06) * GRADES[m.q].mul * (P.els.includes(EL[SP[m.sp].el].name) ? 1.5 : 1) * (1 + (m.stars || 0) * .1); };
   const placeWorkers = k => homeState()[k].w.map(mon).filter(m => m && !S.team.includes(m.uid));
   const placeLvl = k => homeState()[k].lvl || 1, PLACE_MAX = 5, upCost = k => 150 * placeLvl(k) * placeLvl(k);
+  const JAR_SLOW = { plain: 1, bright: 3, star: 10 }, jarMake = () => (S.home && S.home.jars && JAR_SLOW[S.home.jars.make] ? S.home.jars.make : "plain");  // Jar Workshop choice
   const placeRate = k => placeWorkers(k).reduce((a, m) => a + workerRate(m, k), 0) * (1 + .25 * (placeLvl(k) - 1));
   const placeCap = k => Math.max(1, Math.round(placeRate(k) * HOME_CAP_HOURS));
   const workingAt = uid => Object.keys(PLACES).find(k => homeState()[k].w.includes(uid));
@@ -3047,10 +3053,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }
   function collectPlace(k) {
     const p = homeState()[k], n = Math.floor(p.store); if (n < 1) return 0;
-    p.store -= n; const r = PLACES[k].res; if (r === "leaves") S.leaves += n; else if (r === "glow") S.glow += n; else if (r === "treats") S.treats += n; else if (r === "jars") S.jars.plain += n; else S.coins += n;
+    p.store -= n; const r = PLACES[k].res; if (r === "leaves") S.leaves += n; else if (r === "glow") S.glow += n; else if (r === "treats") S.treats += n; else if (r === "jars") S.jars[jarMake()] += n; else S.coins += n;
     return n;
   }
-  const resIcon = k => PLACES[k].res === "leaves" ? IC.leaf : PLACES[k].res === "glow" ? IC.glow : PLACES[k].res === "treats" ? IC.treat : PLACES[k].res === "jars" ? IC.jar(JARS[0].c) : IC.coin;
+  const resIcon = k => PLACES[k].res === "leaves" ? IC.leaf : PLACES[k].res === "glow" ? IC.glow : PLACES[k].res === "treats" ? IC.treat : PLACES[k].res === "jars" ? IC.jar(JARS.find(j => j.k === jarMake()).c) : IC.coin;
   const perHour = v => v >= 10 ? Math.round(v) : Math.round(v * 10) / 10;
   let settingsPage = null;  // null | "main" | "delete"
   function pageSettings() {
@@ -3152,6 +3158,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       return `<div class="sheethead"><button class="mb" data-act="homeplace:" aria-label="Back">‹ Back</button><h3>${P.name}</h3><span></span></div>
         <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} Glumis.</small>
           <span class="reward">${resIcon(k)}<b>${perHour(placeRate(k))}</b>&nbsp;an hour</span></div></div>
+        ${k === "jars" ? `<div class="jmake">${Object.keys(JAR_SLOW).map(j => `<button class="${jarMake() === j ? "on" : ""}" data-act="jarmake:${j}"><span>${IC.jar(JARS.find(x => x.k === j).c)}</span><b>${j[0].toUpperCase() + j.slice(1)}</b><small>${JAR_SLOW[j] === 1 ? "fastest" : JAR_SLOW[j] + "x slower"}</small></button>`).join("")}</div>` : ""}
         <div class="slist"><div class="srow"><span class="ic">${resIcon(k)}</span><span class="txt"><b>${n} ${P.unit} ready</b><small>Holds up to ${placeCap(k)} (${HOME_CAP_HOURS} hours of work)</small></span>
           <button class="price" data-act="collect:${k}" ${n >= 1 ? "" : "disabled"}>Collect</button></div>
           <div class="srow"><span class="ic">${IC.up}</span><span class="txt"><b>Level ${placeLvl(k)}${placeLvl(k) >= PLACE_MAX ? " · max" : ""}</b><small>${placeLvl(k) >= PLACE_MAX ? "Works at full speed" : `Next level works 25% faster`}</small></span>
@@ -3654,6 +3661,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         const r = b.getBoundingClientRect(); Object.values(sum).forEach(([n, ic], i) => setTimeout(() => flyIcons(ic, 5, r.left + r.width / 2, r.top + r.height / 2, null), i * 120));
         sfx("coin"); toast(Object.entries(sum).map(([u, [n]]) => `+${n} ${u}`).join(", ")); save(); render(); return; }
       homePlace = arg || null; homePick = false; expPick = null; render(); window.scrollTo(0, 0); }  // nothing to collect: open the page
+    else if (a === "jarmake") { if (!JAR_SLOW[arg] || jarMake() === arg) return; homeTick(); const old = jarMake(), got = collectPlace("jars");
+      homeState().jars.make = arg; homeState().jars.store = 0; save(); render(); toast(`${got ? `+${got} ${old} jars collected. ` : ""}Now making ${arg} jars`); }
     else if (a === "homepick") { homePick = arg === "1"; render(); window.scrollTo(0, 0); }
     else if (a === "hire") { homeTick(); const p = homeState()[homePlace]; if (p && p.w.length < HOME_SLOTS() && !workingAt(n) && !S.team.includes(n)) { p.w.push(n); homePick = false; save(); render(); toast(`${fname(mon(n).sp, mon(n).evo)} started working`); } }
     else if (a === "fire") { homeTick(); const p = homeState()[homePlace]; if (p) { p.w = p.w.filter(u => u !== n); save(); render(); } }
