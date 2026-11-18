@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795035631;</script>
+<script>window.GAME_BUILD = 1795036163;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Sudoku</title>
+<title>Thinking games</title>
 <style>
 /* Layout: one phone screen, top to bottom: header, the 9x9 board, tools, number pad. Ink on cool paper, a highlighter-yellow selection. */
 :root {
@@ -571,6 +571,21 @@ input { user-select: text; -webkit-user-select: text; }
 .gpick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; } .gpick::-webkit-scrollbar { display: none; }
 .ctip.below { transform: translate(-50%, 16px); }
 .gpick button { flex: none; }
+
+/* game settings, settings button, the extras the settings need */
+.mgbtns { display: grid; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { min-height: calc(var(--tap) - 8px); padding: 6px 14px; border-radius: 12px; background: var(--bg); font-weight: 700; font-size: calc(15px * var(--fs)); border: 2px solid transparent; }
+.chips button.on { background: var(--accent); color: var(--accent-ink); }
+:root[data-contrast="high"] .chips button { border-color: var(--edge); }
+.items.picsonly { grid-template-columns: repeat(3, 1fr); }
+.items.picsonly .item { justify-content: center; }
+.item i.big { font-size: calc(40px * var(--fs)); }
+.sumtyped { min-height: calc(50px * var(--fs)); font-size: calc(38px * var(--fs)); font-weight: 800; font-variant-numeric: tabular-nums; border-bottom: 3px solid var(--line-strong); min-width: 3.5em; text-align: center; }
+.sumtyped.right { color: #1E8A4C; } .sumtyped.wrong { color: var(--err); font-size: calc(26px * var(--fs)); }
+.ngc.bad { color: var(--err); background: var(--err-bg); }
+.wsc.missed { box-shadow: inset 0 0 0 3px var(--err); }
+.wslist span:not(.got):only-child, .wslist span:last-child:not(.got) { color: var(--muted); letter-spacing: 0; }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -1704,6 +1719,14 @@ let mgCur = null, mgTimers = [], mgView = null, mgFit = null, homeView = "hub";
 function mgClear() { mgTimers.forEach(t => clearTimeout(t)); mgTimers = []; mgFit = null; }
 function mgStat(id) { opts.mgs = opts.mgs || {}; return opts.mgs[id] || (opts.mgs[id] = { best: {}, plays: 0, lv: 1 }); }
 const mgRead = id => (opts.mgs || {})[id];
+// each game's own settings (g.settings: [{ key, label, help, opts: [[value, text], ...], def }]); kept in opts.mgset[game id]
+function gset(g, key) {
+  const st = (g.settings || []).find(x => x.key === key), mine = ((opts.mgset || {})[g.id] || {});
+  return key in mine && st && st.opts.some(o => o[0] === mine[key]) ? mine[key] : st ? st.def : undefined;
+}
+function gsetSummary(g) {
+  return (g.settings || []).filter(st => gset(g, st.key) !== st.def).map(st => `${st.label}: <b>${st.opts.find(o => o[0] === gset(g, st.key))[1]}</b>`).join(" · ");
+}
 const BACK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>';
 // one tone (the sequence game's pads), same switch as the other sounds
 function beep(f, dur = .3, vol = .07) {
@@ -1748,7 +1771,7 @@ function drawHub() {
   const tile = g => `<button class="gtile" id="g-${g.id}"><i aria-hidden="true">${g.icon}</i><b>${g.name}</b><small>${line(g)}</small></button>`;
   const dRec = (opts.daily || {})[k], sudLine = dRec && dRec.done ? `Daily puzzle ✓ · ${fmt(dRec.t)}` : "Daily puzzle, 10 levels, races";
   h.innerHTML = `<div class="hin">
-    <div class="htitle hub"><b>Brain games</b><span id="hsub">${sub}</span></div>
+    <div class="htitle hub"><b>Thinking games</b><span id="hsub">${sub}</span></div>
     ${workoutCard()}
     ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue Sudoku</b><small>${G.vs && V ? `Race against ${esc(V.oppName)}` : gameLine(G)}</small></span><i>›</i></button>` : ""}
     <p class="sec">Memory</p><div class="gtiles">${GAMES.filter(g => g.sec === "mem").map(tile).join("")}</div>
@@ -1784,12 +1807,34 @@ function mgIntro() {
         <button id="lvup" aria-label="Harder level"${lv >= g.levels ? " disabled" : ""}>+</button></div>
       <p class="mgsub">${b != null ? `Your best at this level: <b>${g.fmt(b)}</b>` : s && s.plays ? "No score at this level yet." : "Start low and go up a level when it feels easy."}</p>
       ${opts.relaxed ? `<p class="mgsub">Relaxed mode is on: more time to look, no rush.</p>` : ""}
+      ${gsetSummary(g) ? `<p class="mgsub">Your settings: ${gsetSummary(g)}</p>` : ""}
     </div>
-    <button class="bigbtn" id="mgstart">Start</button></div>`;
+    <div class="mgbtns">${g.settings ? `<button class="bigbtn alt" id="mgset">⚙ Settings for this game</button>` : ""}<button class="bigbtn" id="mgstart">Start</button></div></div>`;
   $("mgback").onclick = mgClose;
   $("lvdn").onclick = () => { mgCur.lv = Math.max(1, lv - 1); mgIntro(); };
   $("lvup").onclick = () => { mgCur.lv = Math.min(g.levels, lv + 1); mgIntro(); };
   $("mgstart").onclick = mgPlay;
+  if (g.settings) $("mgset").onclick = mgSettings;
+}
+function mgSettings() {
+  const g = mgCur.g; sheet = "mgset";
+  const draw = () => {
+    const old = layer.querySelector(".sheet"), top = old ? old.scrollTop : 0;
+    layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="${g.name} settings">
+      <h2>${g.icon} ${g.name}</h2>
+      ${g.settings.map(st => `<h3>${st.label}</h3>${st.help ? `<p class="about">${st.help}</p>` : ""}
+        <div class="chips" role="radiogroup" aria-label="${st.label}">${st.opts.map(([v, t], k) => { const on = gset(g, st.key) === v;
+          return `<button role="radio" aria-checked="${on}" class="${on ? "on" : ""}" data-k="${st.key}" data-n="${k}">${t}</button>`; }).join("")}</div>`).join("")}
+      <div class="row2"><button class="big" id="mgsreset">Back to standard</button><button class="big go" data-close>Done</button></div></div>`;
+    layer.querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
+      const st = g.settings.find(x => x.key === b.dataset.k); opts.mgset = opts.mgset || {}; const mine = opts.mgset[g.id] || (opts.mgset[g.id] = {});
+      mine[st.key] = st.opts[+b.dataset.n][0]; save(); sfx("note"); draw();
+    });
+    $("mgsreset").onclick = () => { if (opts.mgset) delete opts.mgset[g.id]; save(); draw(); };
+    layer.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); mgIntro(); });
+    const sh = layer.querySelector(".sheet"); sh.style.animation = old ? "none" : ""; sh.scrollTop = top;
+  };
+  draw();
 }
 function mgPlay() {
   mgClear(); mgView = "play"; const { g, lv } = mgCur; mgStat(g.id).lv = lv; save();
@@ -1800,7 +1845,7 @@ function mgPlay() {
   const token = {}, t0 = Date.now();
   mgCur.token = token;
   const c = {
-    lv, relaxed: !!opts.relaxed, body: $("mgbody"), foot: $("mgfoot"),
+    lv, relaxed: !!opts.relaxed, body: $("mgbody"), foot: $("mgfoot"), set: key => gset(g, key),
     stat: html => { if (mgCur && mgCur.token === token) $("mgstat").innerHTML = html; },
     later: (fn, ms) => { const id = setTimeout(() => { if (mgCur && mgCur.token === token && mgView === "play") fn(); }, ms); mgTimers.push(id); return id; },
     alive: () => !!mgCur && mgCur.token === token && mgView === "play",
@@ -1821,10 +1866,10 @@ function mgDone(res, secs) {
   const { g, lv } = mgCur, s = mgStat(g.id), k = dayKey();
   mgClear(); mgView = "done";
   s.plays++; const prev = s.best[lv];
-  const isBest = prev == null || (g.better === "low" ? res.score < prev : res.score > prev);
+  const isBest = !res.noBest && (prev == null || (g.better === "low" ? res.score < prev : res.score > prev));
   if (isBest) s.best[lv] = res.score;
   if (res.flag) { opts.flags = opts.flags || {}; opts.flags[res.flag] = true; }
-  opts.hist = opts.hist || []; opts.hist.push({ d: k, k: g.id, lv, s: res.score, t: secs });
+  opts.hist = opts.hist || []; if (!res.noBest) opts.hist.push({ d: k, k: g.id, lv, s: res.score, t: secs });
   if (opts.hist.length > 600) opts.hist.splice(0, opts.hist.length - 600);
   const days = new Set(opts.days || []), firstToday = !days.has(k); days.add(k); opts.days = [...days].sort().slice(-400);
   const stk = streakNow(); opts.bestStreak = Math.max(opts.bestStreak || 0, stk);
@@ -1841,7 +1886,7 @@ function mgDone(res, secs) {
     <div class="winhead"><b>${res.title || "Well done!"}</b><span>${g.name} · level ${lv}</span></div>
     <div class="winstats" style="grid-template-columns:repeat(${res.lines.length},1fr)">${res.lines.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join("")}</div>
     ${res.note ? `<p class="about" style="text-align:center">${res.note}</p>` : ""}
-    <p class="best">${isBest ? (prev != null ? `New best! Before: <b>${g.fmt(prev)}</b>` : "Your first score at this level") : `Your best: <b>${g.fmt(prev)}</b>`}</p>
+    <p class="best">${res.noBest ? (prev != null ? `Your best: <b>${g.fmt(prev)}</b>` : "Finish in time to set a best score") : isBest ? (prev != null ? `New best! Before: <b>${g.fmt(prev)}</b>` : "Your first score at this level") : `Your best: <b>${g.fmt(prev)}</b>`}</p>
     ${wkDone ? `<p class="best">💪 <b>Today's workout is done!</b></p>` : ""}
     ${winExtras({ st: stk, firstToday, nb })}
     ${nextW ? `<button class="big go" id="mgnextw">Workout ${w.done.length + 1} of 3: ${MGI[nextW].name} ›</button>` : up ? `<button class="big go" id="mgup">Try level ${lv + 1} ›</button>` : ""}
@@ -1853,6 +1898,13 @@ function mgDone(res, secs) {
 }
 const mgMax = id => { const s = mgRead(id); return s ? Math.max(0, ...Object.values(s.best)) : 0; };
 const gamesPlayed = () => Object.keys(opts.mgs || {}).filter(id => opts.mgs[id].plays > 0).length + (opts.wins > 0 ? 1 : 0);
+function countdown(c, secs, show, out) {
+  if (!secs) return { left: () => null };
+  const end = Date.now() + secs * 1000;
+  const tick = () => { if (!c.alive()) return; const left = Math.max(0, Math.ceil((end - Date.now()) / 1000)); show(left); if (left <= 0) out(); else c.later(tick, 250); };
+  c.later(tick, 0);
+  return { left: () => Math.max(0, Math.ceil((end - Date.now()) / 1000)) };
+}
 // the shared number keypad (Number memory, Quick sums...)
 function keypad(onKey, okLabel = "OK") {
   const k = document.createElement("div"); k.className = "kpad";
@@ -1867,14 +1919,20 @@ function keypad(onKey, okLabel = "OK") {
 const PICS = ["🍎", "🍌", "🍇", "🍓", "🍒", "🍋", "🍉", "🍍", "🥕", "🌽", "🍄", "🌻", "🌵", "🌲", "🐶", "🐱", "🐭", "🐰", "🦊", "🐻", "🐼", "🐸", "🐵", "🐔",
   "🐧", "🐢", "🐟", "🐙", "🦋", "🐝", "⚽", "🏀", "🎈", "🎁", "⭐", "🌙", "⛄", "🔔", "🎸", "🚗", "🚲", "⛵", "🏠", "⏰", "🔑", "📚", "👓", "🎩", "👟", "🍰", "🍕", "🍦", "🍩", "☕"];
 const PAIRS_GRID = [[3, 2], [4, 3], [4, 4], [4, 5], [4, 6], [5, 6], [6, 6]];
+const PIC_SETS = {
+  food: ["🍎", "🍌", "🍇", "🍓", "🍒", "🍋", "🍉", "🍍", "🥕", "🌽", "🍄", "🍰", "🍕", "🍦", "🍩", "☕", "🍅", "🥔", "🧀", "🥚", "🍞", "🥐", "🍯", "🍫", "🍪", "🍑", "🍐", "🍊"],
+  animals: ["🐶", "🐱", "🐭", "🐰", "🦊", "🐻", "🐼", "🐸", "🐵", "🐔", "🐧", "🐢", "🐟", "🐙", "🦋", "🐝", "🐴", "🐮", "🐷", "🐑", "🐘", "🐨", "🦁", "🐯", "🐳", "🐬", "🐌", "🐞"],
+  things: ["⚽", "🏀", "🎈", "🎁", "⭐", "🌙", "⛄", "🔔", "🎸", "🚗", "🚲", "⛵", "🏠", "⏰", "🔑", "📚", "👓", "🎩", "👟", "✏️", "☂️", "📎", "✂️", "💡", "🔋", "🌻", "🌵", "🌲"],
+};
 addGame({
   id: "pairs", name: "Pairs", icon: "🃏", sec: "mem", blurb: "Find the matching cards", levels: 7, better: "low",
   how: "All the cards lie face down. Tap two cards to turn them over. If they match, they stay open. If not, they turn back: remember where they were! Find every pair in as few turns as you can.",
   levelName: l => { const [c, r] = PAIRS_GRID[l - 1]; return `${c * r / 2} pairs`; },
   fmt: s => s + " turns",
   start(c) {
-    const [cols, rows] = PAIRS_GRID[c.lv - 1], n = cols * rows / 2, pics = pickN(PICS, n), deck = shuffle([...pics, ...pics]);
-    let first = -1, second = -1, turns = 0, found = 0;
+    const [cols, rows] = PAIRS_GRID[c.lv - 1], n = cols * rows / 2, pics = pickN(PIC_SETS[c.set("pics")] || PICS, n), deck = shuffle([...pics, ...pics]);
+    const wrong = c.set("wrong"), untilTap = wrong === 0 || (wrong === "auto" && c.relaxed), wrongMs = wrong === "auto" ? 1000 : wrong;
+    let first = -1, second = -1, turns = 0, found = 0, over = false;
     mgCur.peek = () => ({ deck });   // for the tests
     const grid = document.createElement("div"); grid.className = "cards";
     const els = deck.map((p, i) => {
@@ -1882,11 +1940,15 @@ addGame({
       b.innerHTML = `<span class="back" aria-hidden="true"></span><span class="face">${p}</span>`; b.onclick = () => flip(i); grid.appendChild(b); return b;
     });
     c.body.appendChild(grid); fitGrid(grid, cols, rows, c.body, 8, 130);
-    const upd = () => c.stat(`Turns <b>${turns}</b><span>Pairs <b>${found} of ${n}</b></span>`); upd();
+    let clock = { left: () => null };
+    const upd = () => c.stat(`<span>Turns <b>${turns}</b></span><span>Pairs <b>${found} of ${n}</b></span>${clock.left() != null ? `<span>Time <b>${fmt(clock.left())}</b></span>` : ""}`);
+    clock = countdown(c, c.set("timer"), upd, () => { if (over) return; over = true; sfx("lose");
+      c.done({ score: turns, noBest: true, good: false, title: "Time's up!", lines: [[`${found}/${n}`, "Pairs found"], [turns, "Turns"], [fmt(c.set("timer")), "Timer"]] }); });
+    upd();
     const hide = () => { if (first >= 0) els[first].classList.remove("up"); if (second >= 0) els[second].classList.remove("up"); first = second = -1; };
     function flip(i) {
-      if (!c.alive() || els[i].classList.contains("done")) return;
-      if (second >= 0) { if (!c.relaxed) return; const was = [first, second]; hide(); if (was.includes(i)) return; }   // relaxed: the wrong two stay open until your next tap
+      if (!c.alive() || over || els[i].classList.contains("done")) return;
+      if (second >= 0) { if (!untilTap) return; const was = [first, second]; hide(); if (was.includes(i)) return; }   // relaxed: the wrong two stay open until your next tap
       if (els[i].classList.contains("up")) return;
       els[i].classList.add("up"); sfx("note");
       if (first < 0) { first = i; return; }
@@ -1894,15 +1956,15 @@ addGame({
       if (deck[first] === deck[second]) {
         const a = first, b = second; first = second = -1; found++; upd();
         c.later(() => { els[a].classList.add("done"); els[b].classList.add("done"); sfx("group"); }, 250);
-        if (found === n) c.later(() => c.done({
+        if (found === n) { over = true; c.later(() => c.done({
           score: turns, up: turns <= Math.ceil(n * 1.6), flag: n >= 8 && turns <= Math.floor(n * 1.5) ? "sharp" : null,
           title: turns === n ? "Perfect memory!" : "All pairs found!",
           lines: [[turns, "Turns"], [fmt(c.secs()), "Time"], [n, "Pairs"]],
           note: `The fewest possible is ${n} turns.`,
-        }), 900);
+        }), 900); }
         return;
       }
-      upd(); if (!c.relaxed) c.later(hide, 1000);
+      upd(); if (!untilTap) c.later(hide, wrongMs);
     }
   },
 });
@@ -1917,9 +1979,9 @@ addGame({
   levelName: l => { const [n, ms] = SEQ_LV[l - 1]; return `${n} pads · ${ms >= 800 ? "slow" : ms >= 650 ? "medium speed" : "fast"}`; },
   fmt: s => s + (s === 1 ? " step" : " steps"),
   start(c) {
-    const [n, ms0] = SEQ_LV[c.lv - 1], ms = Math.round(c.relaxed ? ms0 * 1.4 : ms0), cols = n === 4 ? 2 : 3, rows = n / cols;
+    const [n, ms0] = SEQ_LV[c.lv - 1], sp = c.set("speed"), ms = sp === "auto" ? Math.round(c.relaxed ? ms0 * 1.4 : ms0) : sp, cols = n === 4 ? 2 : 3, rows = n / cols;
     const seq = [], grid = document.createElement("div"); grid.className = "pads wait";
-    let pos = 0, mode = "watch", best = 0, chances = c.relaxed ? 1 : 0;
+    let pos = 0, mode = "watch", best = 0, chances = c.set("chances") === "auto" ? (c.relaxed ? 1 : 0) : c.set("chances");
     mgCur.peek = () => ({ seq, mode });
     const pads = range(n).map(i => {
       const b = document.createElement("button"); b.className = "spad"; b.style.background = PAD_COL[i]; b.innerHTML = `<span>${i + 1}</span>`; b.setAttribute("aria-label", "Pad " + (i + 1));
@@ -1927,7 +1989,7 @@ addGame({
     });
     c.body.appendChild(grid); fitGrid(grid, cols, rows, c.body, 14, 170);
     const say = (t, cls) => c.stat(`<span class="${cls || ""}">${t}</span><span>Steps <b>${seq.length}</b></span>`);
-    const light = (i, dur) => { pads[i].classList.add("lit"); beep(PAD_F[i], Math.min(.55, dur / 1000)); c.later(() => pads[i].classList.remove("lit"), Math.max(180, dur * .65)); };
+    const light = (i, dur) => { pads[i].classList.add("lit"); if (c.set("tones")) beep(PAD_F[i], Math.min(.55, dur / 1000)); c.later(() => pads[i].classList.remove("lit"), Math.max(180, dur * .65)); };
     function play() {
       mode = "watch"; grid.classList.add("wait"); say("Watch…");
       seq.forEach((p, k) => c.later(() => light(p, ms), 700 + k * ms));
@@ -1964,10 +2026,11 @@ addGame({
   levelName: l => { const [k, ms] = SQ_LV[l - 1]; return `start with ${k} · ${ms >= 1500 ? "long look" : "short look"}`; },
   fmt: s => s + " squares",
   start(c) {
-    let K = SQ_LV[c.lv - 1][0], lives = 3, best = 0, mode = "wait", lit = new Set(), got = new Set(), els = [], grid = null, side = 0;
-    const show = Math.round(SQ_LV[c.lv - 1][1] * (c.relaxed ? 1.7 : 1));
+    const maxLives = c.set("lives"), sh = c.set("show");
+    let K = SQ_LV[c.lv - 1][0], lives = maxLives, best = 0, mode = "wait", lit = new Set(), got = new Set(), els = [], grid = null, side = 0;
+    const show = sh === "auto" ? Math.round(SQ_LV[c.lv - 1][1] * (c.relaxed ? 1.7 : 1)) : sh;   // 0: until you tap Ready
     mgCur.peek = () => ({ lit: [...lit], mode, K });
-    const upd = t => c.stat(`<span>${t}</span><span>Squares <b>${K}</b></span><span class="lives" aria-label="${lives} lives">${"♥".repeat(lives)}${"♡".repeat(3 - lives)}</span>`);
+    const upd = t => c.stat(`<span>${t}</span><span>Squares <b>${K}</b></span><span class="lives" aria-label="${lives} lives">${"♥".repeat(lives)}${"♡".repeat(maxLives - lives)}</span>`);
     function build() {
       side = sqSide(K); c.body.innerHTML = ""; grid = document.createElement("div"); grid.className = "sqs";
       els = range(side * side).map(i => { const b = document.createElement("button"); b.className = "sq"; b.setAttribute("aria-label", "Square " + (i + 1));
@@ -1978,7 +2041,8 @@ addGame({
       if (sqSide(K) !== side) build(); else els.forEach(e => e.className = "sq");
       lit = new Set(pickN(range(side * side), K)); got = new Set(); mode = "watch"; upd("Watch…");
       c.later(() => { lit.forEach(i => els[i].classList.add("lit")); }, 500);
-      c.later(() => { lit.forEach(i => els[i].classList.remove("lit")); mode = "you"; upd("<b>Your turn</b>"); }, 500 + show);
+      const hideNow = () => { if (mode !== "watch") return; c.foot.innerHTML = ""; lit.forEach(i => els[i].classList.remove("lit")); mode = "you"; upd("<b>Your turn</b>"); };
+      if (show) c.later(hideNow, 500 + show); else c.later(() => footBtn(c, "Ready", hideNow), 500);
     }
     function tap(i) {
       if (!c.alive() || mode !== "you" || got.has(i)) return;
@@ -2007,18 +2071,19 @@ addGame({
   levelName: l => { const [n, b] = NUM_LV[l - 1]; return b ? `backwards · start with ${n} digits` : `start with ${n} digits`; },
   fmt: s => s + " digits",
   start(c) {
-    let len = NUM_LV[c.lv - 1][0], strikes = c.relaxed ? 3 : 2, best = 0, cur = "", typed = "", mode = "wait";
+    const tries = c.set("tries") === "auto" ? (c.relaxed ? 3 : 2) : c.set("tries"), shw = c.set("show"), grp = c.set("group");
+    let len = NUM_LV[c.lv - 1][0], strikes = tries, best = 0, cur = "", typed = "", mode = "wait";
     const back = !!NUM_LV[c.lv - 1][1];
     mgCur.peek = () => ({ cur, mode, back });
-    const upd = t => c.stat(`<span>${t}</span><span>Digits <b>${len}</b></span><span class="lives" aria-label="${strikes} tries left">${"♥".repeat(strikes)}</span>`);
+    const upd = t => c.stat(`<span>${t}</span><span>Digits <b>${len}</b></span><span class="lives" aria-label="${strikes} tries left">${"♥".repeat(strikes)}${"♡".repeat(tries - strikes)}</span>`);
     function round() {
       cur = range(len).map(() => randInt(10)).join(""); typed = ""; mode = "look";
-      c.body.innerHTML = `<p class="mgsub">Remember this number</p><div class="digits" id="dg">${cur}</div>`;
+      c.body.innerHTML = `<p class="mgsub">Remember this number</p><div class="digits" id="dg">${grp ? cur.replace(/(\d{3})(?=\d)/g, "$1 ") : cur}</div>`;
       const w = c.body.clientWidth; $("dg").style.setProperty("--dfs", Math.min(64 * (+getComputedStyle(document.documentElement).getPropertyValue("--fs") || 1), Math.floor(w / (len * .78))) + "px");
       c.foot.innerHTML = ""; upd("Look");
       const ask = () => { if (mode === "look") input(); };
-      if (c.relaxed) { const b = document.createElement("button"); b.className = "bigbtn"; b.textContent = "I've got it"; b.onclick = ask; c.foot.appendChild(b); c.later(ask, 30000); }
-      else c.later(ask, 900 + 550 * len);
+      const ms = shw === "auto" ? (c.relaxed ? 0 : 900 + 550 * len) : shw === "short" ? 600 + 350 * len : shw === "long" ? 1600 + 900 * len : 0;
+      if (!ms) footBtn(c, "I've got it", ask); else c.later(ask, ms);
     }
     function input() {
       mode = "type"; c.foot.innerHTML = ""; upd(back ? "<b>Type it backwards</b>" : "<b>Type the number</b>");
@@ -2059,11 +2124,12 @@ const ITEMS = [["🍎", "Apples"], ["🍌", "Bananas"], ["🍇", "Grapes"], ["�
   ["🍒", "Cherries"], ["🥜", "Peanuts"], ["🥑", "Avocados"], ["🌶️", "Chillies"], ["🍑", "Peaches"], ["🍐", "Pears"], ["🍊", "Oranges"], ["🌰", "Chestnuts"], ["🥖", "A baguette"], ["🍝", "Pasta"]];
 const SHOP_N = [3, 4, 5, 6, 7, 8, 10, 12];
 // "Look" time: a bar runs down and "I've got it" goes on early; relaxed mode: no bar, take your time
+// ms 0: no bar, wait for "I've got it"
 function studyTime(c, ms, onDone) {
   let gone = false; const go = () => { if (!gone && c.alive()) { gone = true; onDone(); } };
   const b = document.createElement("button"); b.className = "bigbtn"; b.textContent = "I've got it"; b.onclick = go;
   c.foot.innerHTML = ""; c.foot.appendChild(b);
-  if (!c.relaxed) {
+  if (ms) {
     const bar = document.createElement("div"); bar.className = "studybar"; bar.innerHTML = "<i></i>"; c.foot.insertBefore(bar, b);
     requestAnimationFrame(() => requestAnimationFrame(() => { const i = bar.firstChild; i.style.transitionDuration = ms + "ms"; i.style.width = "0%"; }));
     c.later(go, ms);
@@ -2080,11 +2146,13 @@ addGame({
     let mode = "look";
     mgCur.peek = () => ({ list: list.map(x => x[1]), mix: mix.map(x => x[1]), mode });
     c.stat(`<b>Remember the list</b><span>${n} things</span>`);
-    c.body.innerHTML = `<div class="items">${list.map(([e, w]) => `<div class="item"><i aria-hidden="true">${e}</i>${w}</div>`).join("")}</div>`;
-    studyTime(c, 2500 + n * 1500, pick);
+    const showAs = c.set("show"), look = c.set("look");
+    const itemHtml = (e, w) => showAs === "words" ? w : showAs === "pics" ? `<i class="big" role="img" aria-label="${w}">${e}</i>` : `<i aria-hidden="true">${e}</i>${w}`;
+    c.body.innerHTML = `<div class="items${showAs === "pics" ? " picsonly" : ""}">${list.map(([e, w]) => `<div class="item">${itemHtml(e, w)}</div>`).join("")}</div>`;
+    studyTime(c, look === "auto" ? (c.relaxed ? 0 : 2500 + n * 1500) : look, pick);
     function pick() {
       mode = "pick"; c.stat(`<b>Which were on the list?</b><span>Pick ${n}</span>`);
-      c.body.innerHTML = `<div class="items pick">${mix.map(([e, w], i) => `<button class="item" data-i="${i}" aria-pressed="false"><i aria-hidden="true">${e}</i>${w}</button>`).join("")}</div>`;
+      c.body.innerHTML = `<div class="items pick${showAs === "pics" ? " picsonly" : ""}">${mix.map(([e, w], i) => `<button class="item" data-i="${i}" aria-pressed="false">${itemHtml(e, w)}</button>`).join("")}</div>`;
       const btn = footBtn(c, "Check (0 picked)", check);
       c.body.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
         if (mode !== "pick") return;
@@ -2113,20 +2181,20 @@ addGame({
   id: "changed", name: "What changed?", icon: "🔍", sec: "mem", blurb: "Spot what moved or disappeared", levels: 8, better: "high",
   how: "Look at the things on the table. They hide for a moment, then come back with one change: something new, something gone, or two that swapped places. Tap the square that changed. Eight rounds.",
   levelName: l => { const [k, t] = WC_LV[l - 1]; return `${k} things · ${t === "r" ? "one replaced" : t === "rm" ? "replaced or gone" : "replaced, gone or swapped"}`; },
-  fmt: s => s + " of 8",
+  fmt: s => s + " right",
   start(c) {
-    const [k, types] = WC_LV[c.lv - 1], cols = wcCols(k), rows = k / cols; let round = 0, score = 0, mode = "wait", ans = [];
+    const [k, types] = WC_LV[c.lv - 1], cols = wcCols(k), rows = k / cols, R = c.set("rounds"), look = c.set("look"); let round = 0, score = 0, mode = "wait", ans = [];
     mgCur.peek = () => ({ ans, mode });
     const grid = document.createElement("div"); grid.className = "sqs"; c.body.appendChild(grid);
     const els = range(k).map(i => { const b = document.createElement("button"); b.className = "slot"; b.setAttribute("aria-label", "Square " + (i + 1)); b.onclick = () => tap(i); grid.appendChild(b); return b; });
     c.body.dataset.reserve = 90;   // room for the look bar and button underneath
     fitGrid(grid, cols, rows, c.body, 10, 130);
-    const upd = t => c.stat(`<span>${t}</span><span>Round <b>${round} of 8</b></span><span>Right <b>${score}</b></span>`);
+    const upd = t => c.stat(`<span>${t}</span><span>Round <b>${round} of ${R}</b></span><span>Right <b>${score}</b></span>`);
     function next() {
       round++; mode = "look"; upd("<b>Look</b>");
       const things = pickN(PICS, k + 1), now = things.slice(0, k);
       els.forEach((e, i) => { e.className = "slot"; e.textContent = now[i]; });
-      studyTime(c, 1500 + k * 450, () => {
+      studyTime(c, look === "auto" ? (c.relaxed ? 0 : 1500 + k * 450) : look, () => {
         c.foot.innerHTML = ""; mode = "hide"; els.forEach(e => e.textContent = ""); upd("…");
         const t = types[randInt(types.length)], a = randInt(k);
         if (t === "r") { now[a] = things[k]; ans = [a]; }
@@ -2140,8 +2208,8 @@ addGame({
       mode = "wait"; const ok = ans.includes(i);
       if (ok) { score++; sfx("group"); } else { sfx("err"); buzz(60); els[i].classList.add("wrong"); }
       ans.forEach(a => els[a].classList.add("right")); upd(ok ? "Right!" : "That one changed");
-      c.later(() => round < 8 ? next() : c.done({ score, up: score >= 7, good: score > 0, title: score === 8 ? "Nothing gets past you!" : score >= 6 ? "Sharp eyes!" : "Well played!",
-        lines: [[`${score}/8`, "Right"], [k, "Things"], [fmt(c.secs()), "Time"]] }), 1400);
+      c.later(() => round < R ? next() : c.done({ score, up: score >= R - 1, good: score > 0, title: score === R ? "Nothing gets past you!" : score >= R * .75 ? "Sharp eyes!" : "Well played!",
+        lines: [[`${score}/${R}`, "Right"], [k, "Things"], [fmt(c.secs()), "Time"]] }), 1400);
     }
     next();
   },
@@ -2152,11 +2220,11 @@ const NB_LV = [[1, 3000], [1, 2400], [1, 1900], [2, 3200], [2, 2600], [2, 2100],
 const NB_SYM = ["🍎", "⭐", "🐟", "🌙", "🔔", "🚗"];
 addGame({
   id: "nback", name: "Same as before?", icon: "🔁", sec: "mem", blurb: "Is this picture the same as before?", levels: 8, better: "high",
-  how: "Pictures appear one at a time. For each one, answer: is it the same as the picture before? On harder levels you compare it with the picture two or three before. Twenty pictures.",
+  how: "Pictures appear one at a time. For each one, answer: is it the same as the picture before? On harder levels you compare it with the picture two or three before.",
   levelName: l => { const [n, ms] = NB_LV[l - 1]; return `${n === 1 ? "the one before" : n === 2 ? "two before" : "three before"} · ${ms >= 3000 ? "slow" : ms >= 2300 ? "medium" : "quick"}`; },
   fmt: s => s + "%",
   start(c) {
-    const [n, ms] = NB_LV[c.lv - 1], total = 20 + n, seq = [];
+    const [n, ms0] = NB_LV[c.lv - 1], pace = c.set("pace"), wait = pace === 0 || (pace === "auto" && c.relaxed), ms = pace === "auto" || pace === 0 ? ms0 : pace, total = c.set("count") + n, seq = [];
     for (let i = 0; i < total; i++) seq.push(i >= n && Math.random() < .35 ? seq[i - n] : NB_SYM[randInt(NB_SYM.length)]);
     let i = -1, right = 0, asked = 0, answered = true;
     mgCur.peek = () => ({ i, n, same: i >= n && seq[i] === seq[i - n], answered });
@@ -2172,13 +2240,13 @@ addGame({
       const card = $("nbc"); card.textContent = seq[i]; card.className = "nbcard"; void card.offsetWidth; card.classList.add("pop");
       answered = i < n; $("nbq").innerHTML = i < n ? "Remember this one" : `Same as <b>${ask}</b>?`;
       $("nbyes").disabled = $("nbno").disabled = i < n; upd();
-      if (i < n || !c.relaxed) c.later(next, i < n ? 1600 : ms);
+      if (i < n || !wait) c.later(next, i < n ? 1600 : ms);
     }
     function feedback(ok) { const card = $("nbc"); card.classList.add(ok ? "right" : "wrong"); if (ok) sfx("tap"); else { sfx("err"); buzz(50); } }
     function answer(yes) {
       if (!c.alive() || answered || i < n) return;
       answered = true; asked++; const ok = yes === (seq[i] === seq[i - n]); if (ok) right++; feedback(ok); upd();
-      if (c.relaxed) c.later(next, 600);
+      if (wait) c.later(next, 600);
     }
     function finish() {
       const pct = Math.round(right / Math.max(1, asked) * 100);
@@ -2239,9 +2307,13 @@ addGame({
     mgCur.peek = () => ({ mode, answer: mode === "q" ? qs[qi][1] : null, text: st.text });
     c.stat(`<b>Read the story</b>`);
     c.body.innerHTML = `<div class="story">${st.text}</div>`;
-    footBtn(c, "I've read it", () => { mode = "q"; c.foot.innerHTML = ""; ask(); });
+    const toQ = () => { if (mode !== "read") return; mode = "q"; c.foot.innerHTML = ""; ask(); };
+    footBtn(c, "I've read it", toQ);
+    const lim = c.set("read");
+    if (lim) { const bar = document.createElement("div"); bar.className = "studybar"; bar.innerHTML = "<i></i>"; c.foot.insertBefore(bar, c.foot.firstChild);
+      requestAnimationFrame(() => requestAnimationFrame(() => { const i = bar.firstChild; i.style.transitionDuration = lim + "s"; i.style.width = "0%"; })); c.later(toQ, lim * 1000); }
     function ask() {
-      const [q, a, pool] = qs[qi], wrong = pickN([...new Set(pool)].filter(x => x !== a), 3), choices = shuffle([a, ...wrong]);
+      const [q, a, pool] = qs[qi], wrong = pickN([...new Set(pool)].filter(x => x !== a), c.set("choices") - 1), choices = shuffle([a, ...wrong]);
       c.stat(`<span>Question <b>${qi + 1} of ${qs.length}</b></span><span>Right <b>${right}</b></span>`);
       c.body.innerHTML = `<p class="qtext">${q}</p><div class="opts">${choices.map((x, i) => `<button data-i="${i}">${x}</button>`).join("")}</div>`;
       c.body.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
@@ -2290,37 +2362,50 @@ function qsChoices(a) {
   return shuffle([...s]);
 }
 addGame({
-  id: "sums", name: "Quick sums", icon: "➕", sec: "think", blurb: "Mental arithmetic, four answers to pick from", levels: 8, better: "high",
-  how: "Work out the sum in your head and tap the right answer. You have one minute to get as many right as you can. In relaxed mode there's no clock: fifteen sums at your own pace.",
+  id: "sums", name: "Quick sums", icon: "➕", sec: "think", blurb: "Mental arithmetic against the clock", levels: 8, better: "high",
+  how: "Work out the sum in your head and give the answer: pick it from four, or type it (Settings). With the clock on, get as many right as you can before it runs out. Without the clock: fifteen sums at your own pace.",
   levelName: l => QS_LV[l - 1],
   fmt: s => s + " right",
   start(c) {
-    const total = 15, secs = 60; let right = 0, wrong = 0, n = 0, cur = null, mode = "q", end = Date.now() + secs * 1000;
-    mgCur.peek = () => ({ a: cur && cur.a, mode });
-    c.body.innerHTML = `<div class="sumq" id="sq"></div><div class="opts sumopts" id="so"></div>`;
-    if (!c.relaxed) { c.foot.innerHTML = `<div class="studybar"><i id="qbar"></i></div>`; requestAnimationFrame(() => requestAnimationFrame(() => { const b = $("qbar"); if (b) { b.style.transitionDuration = secs + "s"; b.style.width = "0%"; } })); }
-    const upd = () => c.stat(`${c.relaxed ? `<span>Sum <b>${n} of ${total}</b></span>` : `<span>Time <b>${Math.max(0, Math.ceil((end - Date.now()) / 1000))} s</b></span>`}<span>Right <b>${right}</b></span>`);
-    const tick = () => { if (!c.alive() || mode === "over") return; upd(); if (!c.relaxed && Date.now() >= end) finish(); else c.later(tick, 250); };
+    const ck = c.set("clock"), secs = ck === "auto" ? (c.relaxed ? 0 : 60) : ck, total = 15, typing = c.set("answer") === "type";
+    let right = 0, wrong = 0, n = 0, cur = null, mode = "q", typed = "";
+    mgCur.peek = () => ({ a: cur && cur.a, mode, typing });
+    c.body.innerHTML = `<div class="sumq" id="sq"></div>${typing ? `<div class="sumtyped" id="st"></div>` : `<div class="opts sumopts" id="so"></div>`}`;
+    if (typing) c.body.appendChild(keypad(key, "OK"));
+    let clock = { left: () => null };
+    const upd = () => c.stat(`${secs ? `<span>Time <b>${fmt(clock.left() == null ? secs : clock.left())}</b></span>` : `<span>Sum <b>${n} of ${total}</b></span>`}<span>Right <b>${right}</b></span>`);
+    if (secs) {
+      c.foot.innerHTML = `<div class="studybar"><i id="qbar"></i></div>`;
+      requestAnimationFrame(() => requestAnimationFrame(() => { const b = $("qbar"); if (b) { b.style.transitionDuration = secs + "s"; b.style.width = "0%"; } }));
+      clock = countdown(c, secs, upd, finish);
+    }
     function ask() {
-      if (c.relaxed && n >= total) return finish();
-      n++; cur = qsMake(c.lv); mode = "q"; const ch = qsChoices(cur.a);
+      if (!secs && n >= total) return finish();
+      n++; cur = qsMake(c.lv); mode = "q"; typed = "";
       $("sq").textContent = cur.q + " = ?";
-      $("so").innerHTML = ch.map(v => `<button data-v="${v}">${v}</button>`).join("");
-      $("so").querySelectorAll("button").forEach(b => b.onclick = () => pickAns(b, +b.dataset.v));
+      if (typing) $("st").textContent = "";
+      else { $("so").innerHTML = qsChoices(cur.a).map(v => `<button data-v="${v}">${v}</button>`).join(""); $("so").querySelectorAll("button").forEach(b => b.onclick = () => answer(+b.dataset.v, b)); }
       upd();
     }
-    function pickAns(b, v) {
-      if (!c.alive() || mode !== "q") return; mode = "wait";
-      if (v === cur.a) { right++; sfx("tap"); b.classList.add("right"); c.later(ask, 250); }
-      else { wrong++; sfx("err"); buzz(50); b.classList.add("wrong"); $("so").querySelectorAll("button").forEach(x => { if (+x.dataset.v === cur.a) x.classList.add("right"); }); c.later(ask, 1100); }
-      upd();
+    function key(k) {
+      if (!c.alive() || mode !== "q") return;
+      if (k === "del") typed = typed.slice(0, -1); else if (k === "ok") { if (typed) answer(+typed); return; } else if (typed.length < 5) { typed += k; sfx("note"); }
+      $("st").textContent = typed;
+    }
+    function answer(v, b) {
+      if (!c.alive() || mode !== "q") return; mode = "wait"; const ok = v === cur.a;
+      if (ok) { right++; sfx("tap"); } else { wrong++; sfx("err"); buzz(50); }
+      if (b) { b.classList.add(ok ? "right" : "wrong"); if (!ok) $("so").querySelectorAll("button").forEach(x => { if (+x.dataset.v === cur.a) x.classList.add("right"); }); }
+      else { const t = $("st"); t.className = "sumtyped " + (ok ? "right" : "wrong"); t.textContent = ok ? `${v} ✓` : `${v} ✕  →  ${cur.a}`; }
+      upd(); c.later(() => { const t = $("st"); if (t) t.className = "sumtyped"; ask(); }, ok ? 350 : 1300);
     }
     function finish() {
       if (mode === "over") return; mode = "over";
-      c.done({ score: right, up: c.relaxed ? right >= 14 : right >= 20, good: right > 0, title: right >= (c.relaxed ? 14 : 20) ? "Lightning fast!" : "Well done!",
-        lines: [[right, "Right"], [wrong, "Wrong"], c.relaxed ? [fmt(c.secs()), "Time"] : ["1 min", "Clock"]] });
+      const goal = secs ? Math.round(secs / 3) : total - 1;
+      c.done({ score: right, up: right >= goal, good: right > 0, title: right >= goal ? "Lightning fast!" : "Well done!",
+        lines: [[right, "Right"], [wrong, "Wrong"], secs ? [fmt(secs), "Clock"] : [fmt(c.secs()), "Time"]] });
     }
-    ask(); tick();
+    ask(); upd();
   },
 });
 
@@ -2339,24 +2424,24 @@ const AN_LV = [[4], [5], [6], [7], [8], [5, 6, 7, 8]];
 const sortLetters = w => [...w].sort().join("");
 addGame({
   id: "anagram", name: "Anagrams", icon: "🔤", sec: "think", blurb: "Unscramble the letters into a word", levels: 6, better: "high",
-  how: "The letters of a word are mixed up. Tap them in the right order to spell the word. Tap ⌫ to take a letter back. Stuck? “Hint” shows the next letter, “Skip” moves on. Six words.",
+  how: "The letters of a word are mixed up. Tap them in the right order to spell the word. Tap ⌫ to take a letter back. Stuck? “Hint” shows the next letter, “Skip” moves on.",
   levelName: l => AN_LV[l - 1].length > 1 ? "mixed, 5 to 8 letters" : `${AN_LV[l - 1][0]}-letter words`,
-  fmt: s => s + " of 6",
+  fmt: s => s + " solved",
   start(c) {
-    const lens = AN_LV[c.lv - 1], words = range(6).map(() => null);
-    const used = new Set(); for (let i = 0; i < 6; i++) { let w; do { w = pick1(WORDS[pick1(lens)]); } while (used.has(w)); used.add(w); words[i] = w; }
+    const lens = AN_LV[c.lv - 1], W = c.set("count"), hintsOn = !!c.set("hints"), words = [], used = new Set();
+    while (words.length < W) { const w = pick1(WORDS[pick1(lens)]); if (!used.has(w)) { used.add(w); words.push(w); } }
     let wi = -1, word = "", tiles = [], typed = [], solved = 0, hints = 0, mode = "wait";
     mgCur.peek = () => ({ word, mode, letters: tiles.map(t => t.ch) });
-    const upd = () => c.stat(`<span>Word <b>${wi + 1} of 6</b></span><span>Solved <b>${solved}</b></span>`);
+    const upd = () => c.stat(`<span>Word <b>${wi + 1} of ${W}</b></span><span>Solved <b>${solved}</b></span>`);
     function next() {
-      wi++; if (wi >= 6) return c.done({ score: solved, up: solved >= 5, good: solved > 0, title: solved === 6 ? "Word wizard!" : solved >= 4 ? "Well spelled!" : "Keep practising!",
-        lines: [[`${solved}/6`, "Solved"], [hints, "Hints"], [fmt(c.secs()), "Time"]] });
+      wi++; if (wi >= W) return c.done({ score: solved, up: solved >= W - 1, good: solved > 0, title: solved === W ? "Word wizard!" : solved >= W * .66 ? "Well spelled!" : "Keep practising!",
+        lines: [[`${solved}/${W}`, "Solved"], [hints, "Hints"], [fmt(c.secs()), "Time"]] });
       word = words[wi]; typed = []; mode = "type";
       let mix; do { mix = shuffle([...word]); } while (mix.join("") === word);
       tiles = mix.map((ch, i) => ({ ch, i, used: false }));
       c.body.innerHTML = `<div class="anslots" id="ans"></div><div class="antiles" id="til"></div><p class="mgmsg" id="amsg"></p>`;
-      c.foot.innerHTML = `<div class="yn three"><button class="bigbtn alt" id="adel" aria-label="Take a letter back">⌫</button><button class="bigbtn alt" id="ahint">Hint</button><button class="bigbtn alt" id="askip">Skip</button></div>`;
-      $("adel").onclick = del; $("ahint").onclick = hint; $("askip").onclick = skip;
+      c.foot.innerHTML = `<div class="yn${hintsOn ? " three" : ""}"><button class="bigbtn alt" id="adel" aria-label="Take a letter back">⌫</button>${hintsOn ? `<button class="bigbtn alt" id="ahint">Hint</button>` : ""}<button class="bigbtn alt" id="askip">Skip</button></div>`;
+      $("adel").onclick = del; if (hintsOn) $("ahint").onclick = hint; $("askip").onclick = skip;
       draw(); upd();
     }
     function draw() {
@@ -2434,15 +2519,20 @@ addGame({
   fmt: s => fmt(s),
   start(c) {
     const [size, n, nd] = WS_LV[c.lv - 1], P = wsMake(size, n, nd);
-    let first = -1, found = new Set(), mode = "play";
+    let first = -1, found = new Set(), mode = "play"; const showList = !!c.set("list");
     mgCur.peek = () => ({ placed: P.placed, size, mode });
     c.body.innerHTML = `<div class="wsgrid" id="wsg"></div><div class="wslist" id="wsl"></div>`;
     const grid = $("wsg");
     const els = P.g.map((ch, i) => { const b = document.createElement("button"); b.className = "wsc"; b.textContent = ch; b.setAttribute("aria-label", `Row ${Math.floor(i / size) + 1}, letter ${ch}`); b.onclick = () => tap(i); grid.appendChild(b); return b; });
     c.body.dataset.reserve = 110;
     fitGrid(grid, size, size, c.body, 3, 64);
-    const list = () => { $("wsl").innerHTML = P.placed.map(p => `<span class="${found.has(p.w) ? "got" : ""}">${p.w}</span>`).join(""); };
-    const upd = () => c.stat(`<span>Theme <b>${P.theme}</b></span><span>Found <b>${found.size} of ${n}</b></span>`);
+    const list = () => { $("wsl").innerHTML = showList ? P.placed.map(p => `<span class="${found.has(p.w) ? "got" : ""}">${p.w}</span>`).join("")
+      : P.placed.filter(p => found.has(p.w)).map(p => `<span class="got">${p.w}</span>`).join("") + `<span>${n - found.size} hidden word${n - found.size === 1 ? "" : "s"} to find</span>`; };
+    let clock = { left: () => null };
+    const upd = () => c.stat(`<span>Theme <b>${P.theme}</b></span><span>Found <b>${found.size} of ${n}</b></span>${clock.left() != null ? `<span>Time <b>${fmt(clock.left())}</b></span>` : ""}`);
+    clock = countdown(c, c.set("timer"), upd, () => { if (mode !== "play") return; mode = "over"; sfx("lose");
+      P.placed.forEach(p => { if (!found.has(p.w)) p.cells.forEach(ci => els[ci].classList.add("missed")); });
+      c.later(() => c.done({ score: 0, noBest: true, good: false, title: "Time's up!", lines: [[`${found.size}/${n}`, "Words found"], [P.theme, "Theme"]] }), 1800); });
     list(); upd();
     function tap(i) {
       if (!c.alive() || mode !== "play") return;
@@ -2513,7 +2603,7 @@ addGame({
   fmt: s => fmt(s),
   start(c) {
     const [n, dens] = NG_LV[c.lv - 1], P = ngMake(n, dens), cells = new Array(n * n).fill(0);   // 0 empty, 1 filled, 2 crossed
-    let mark = 1, mode = "play";
+    let mark = 1, mode = "play", slips = 0; const showMist = !!c.set("mist"), autoX = !!c.set("autox");
     mgCur.peek = () => ({ sol: P.sol, n, mode });
     const rw = Math.max(...P.rows.map(x => x.length)), ch = Math.max(...P.cols.map(x => x.length));
     const grid = document.createElement("div"); grid.className = "ngrid";
@@ -2532,15 +2622,23 @@ addGame({
     fit(); requestAnimationFrame(fit); mgFit = fit;
     c.foot.innerHTML = `<div class="seg two ngmode" role="radiogroup" aria-label="What a tap does"><button class="on" data-m="1" role="radio" aria-checked="true">■ Fill</button><button data-m="2" role="radio" aria-checked="false">✕ Mark empty</button></div>`;
     c.foot.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { mark = +b.dataset.m; c.foot.querySelectorAll("[data-m]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); });
-    const upd = () => c.stat(`<span>Filled <b>${cells.filter(v => v === 1).length} of ${P.sol.filter(v => v).length}</b></span><span>${n}×${n}</span>`);
+    const upd = () => c.stat(`<span>Filled <b>${cells.filter(v => v === 1).length} of ${P.sol.filter(v => v).length}</b></span><span>${n}×${n}</span>${showMist ? `<span>Mistakes <b>${slips}</b></span>` : ""}`);
     upd();
     function tap(i) {
       if (!c.alive() || mode !== "play") return;
+      if (showMist && mark === 1 && cells[i] !== 1 && !P.sol[i]) {   // "show mistakes": a wrong fill becomes a red ✕ straight away
+        slips++; cells[i] = 2; els[i].classList.add("x", "bad"); sfx("err"); buzz(50); upd(); return;
+      }
       cells[i] = cells[i] === mark ? 0 : mark; const b = els[i];
-      b.classList.toggle("f", cells[i] === 1); b.classList.toggle("x", cells[i] === 2); sfx(cells[i] === 1 ? "tap" : "note");
+      b.classList.toggle("f", cells[i] === 1); b.classList.toggle("x", cells[i] === 2); b.classList.remove("bad"); sfx(cells[i] === 1 ? "tap" : "note");
       const r = Math.floor(i / n), col = i % n;
-      grid.querySelectorAll(".r" + r).forEach(e => e.classList.toggle("done", String(ngClues(range(n).map(k => cells[r * n + k] === 1 ? 1 : 0))) === String(P.rows[r])));
-      grid.querySelectorAll(".c" + col).forEach(e => e.classList.toggle("done", String(ngClues(range(n).map(k => cells[k * n + col] === 1 ? 1 : 0))) === String(P.cols[col])));
+      const rowDone = String(ngClues(range(n).map(k => cells[r * n + k] === 1 ? 1 : 0))) === String(P.rows[r]), colDone = String(ngClues(range(n).map(k => cells[k * n + col] === 1 ? 1 : 0))) === String(P.cols[col]);
+      grid.querySelectorAll(".r" + r).forEach(e => e.classList.toggle("done", rowDone));
+      grid.querySelectorAll(".c" + col).forEach(e => e.classList.toggle("done", colDone));
+      if (autoX) {   // a finished line: the rest of its squares get a ✕
+        if (rowDone) for (let k = 0; k < n; k++) if (!cells[r * n + k]) { cells[r * n + k] = 2; els[r * n + k].classList.add("x"); }
+        if (colDone) for (let k = 0; k < n; k++) if (!cells[k * n + col]) { cells[k * n + col] = 2; els[k * n + col].classList.add("x"); }
+      }
       upd();
       if (P.sol.every((v, k) => (cells[k] === 1) === !!v)) {
         mode = "over"; els.forEach(e => { e.classList.remove("x"); e.classList.add("won"); }); sfx("group");
@@ -2600,7 +2698,7 @@ addGame({
   fmt: s => fmt(s),
   start(c) {
     const [n, maxCage] = NC_LV[c.lv - 1], P = ncMake(n, maxCage), vals = new Array(n * n).fill(0);
-    let sel = -1, mode = "play";
+    let sel = -1, mode = "play"; const showClash = !!c.set("clash"), showCage = !!c.set("cage");
     mgCur.peek = () => ({ sol: P.sol, n, mode });
     const grid = document.createElement("div"); grid.className = "ncg";
     const labelAt = new Map(P.cages.map(k => [Math.min(...k.cells), k.sum]));
@@ -2620,8 +2718,8 @@ addGame({
       els.forEach((b, i) => {
         const r = Math.floor(i / n), col = i % n, v = vals[i];
         let clash = false; if (v) for (let j = 0; j < n; j++) { if (j !== col && vals[r * n + j] === v) clash = true; if (j !== r && vals[j * n + col] === v) clash = true; }
-        b.classList.toggle("sel", i === sel); b.classList.toggle("peer", sel >= 0 && i !== sel && (P.cage[i] === P.cage[sel]));
-        b.classList.toggle("same", !!sv && v === sv && i !== sel); b.classList.toggle("clash", clash);
+        b.classList.toggle("sel", i === sel); b.classList.toggle("peer", showCage && sel >= 0 && i !== sel && (P.cage[i] === P.cage[sel]));
+        b.classList.toggle("same", !!sv && v === sv && i !== sel); b.classList.toggle("clash", showClash && clash);
         b.querySelector("b").textContent = v || "";
       });
       c.stat(`<span>Filled <b>${vals.filter(v => v).length} of ${n * n}</b></span><span>${n}×${n}</span>`);
@@ -2635,6 +2733,65 @@ addGame({
     draw();
   },
 });
+
+
+/* ---------- each game's settings (the intro page: "Settings for this game") ---------- */
+const STD = ["auto", "Standard"];
+MGI.pairs.settings = [
+  { key: "timer", label: "Timer", help: "Find every pair before the time runs out.", opts: [[0, "Off"], [60, "1 min"], [120, "2 min"], [180, "3 min"], [300, "5 min"]], def: 0 },
+  { key: "wrong", label: "A wrong pair stays open", opts: [[600, "Short"], ["auto", "1 second"], [2000, "2 seconds"], [0, "Until my next tap"]], def: "auto" },
+  { key: "pics", label: "Pictures", opts: [["mix", "Mixed"], ["food", "Food"], ["animals", "Animals"], ["things", "Things"]], def: "mix" },
+];
+MGI.seq.settings = [
+  { key: "speed", label: "Speed", opts: [["auto", "By level"], [1050, "Slow"], [750, "Medium"], [500, "Fast"]], def: "auto" },
+  { key: "chances", label: "Second chances", help: "After a mistake, watch the same sequence again.", opts: [STD, [0, "None"], [1, "1"], [2, "2"], [3, "3"]], def: "auto" },
+  { key: "tones", label: "Pad sounds", opts: [[1, "On"], [0, "Off"]], def: 1 },
+];
+MGI.squares.settings = [
+  { key: "show", label: "How long the squares show", opts: [["auto", "By level"], [1000, "1 second"], [2000, "2 seconds"], [3000, "3 seconds"], [5000, "5 seconds"], [0, "Until I tap Ready"]], def: "auto" },
+  { key: "lives", label: "Lives", opts: [[1, "1"], [3, "3"], [5, "5"]], def: 3 },
+];
+MGI.numbers.settings = [
+  { key: "show", label: "How long the number shows", opts: [STD, ["short", "Short"], ["long", "Long"], [0, "Until I'm ready"]], def: "auto" },
+  { key: "tries", label: "Tries", opts: [STD, [1, "1"], [2, "2"], [3, "3"], [5, "5"]], def: "auto" },
+  { key: "group", label: "Show digits in groups of three", help: "For example 123 456 instead of 123456.", opts: [[0, "No"], [1, "Yes"]], def: 0 },
+];
+MGI.shop.settings = [
+  { key: "look", label: "Time to look at the list", opts: [STD, [10000, "10 s"], [20000, "20 s"], [40000, "40 s"], [0, "Until I'm ready"]], def: "auto" },
+  { key: "show", label: "Show the items as", opts: [["both", "Pictures and words"], ["words", "Words only"], ["pics", "Pictures only"]], def: "both" },
+];
+MGI.changed.settings = [
+  { key: "look", label: "Time to look", opts: [STD, [3000, "3 s"], [6000, "6 s"], [10000, "10 s"], [0, "Until I'm ready"]], def: "auto" },
+  { key: "rounds", label: "Rounds", opts: [[5, "5"], [8, "8"], [12, "12"]], def: 8 },
+];
+MGI.nback.settings = [
+  { key: "pace", label: "Speed", opts: [["auto", "By level"], [3500, "Slow"], [2500, "Medium"], [1800, "Fast"], [0, "Wait for my answer"]], def: "auto" },
+  { key: "count", label: "Pictures in a game", opts: [[20, "20"], [30, "30"], [40, "40"]], def: 20 },
+];
+MGI.story.settings = [
+  { key: "choices", label: "Answers to choose from", opts: [[3, "3"], [4, "4"], [5, "5"]], def: 4 },
+  { key: "read", label: "Reading time", opts: [[0, "No limit"], [20, "20 s"], [40, "40 s"], [60, "1 min"]], def: 0 },
+];
+MGI.sums.settings = [
+  { key: "clock", label: "Clock", opts: [STD, [60, "1 min"], [120, "2 min"], [180, "3 min"], [0, "No clock (15 sums)"]], def: "auto" },
+  { key: "answer", label: "How to answer", opts: [["pick", "Pick from 4"], ["type", "Type it"]], def: "pick" },
+];
+MGI.anagram.settings = [
+  { key: "count", label: "Words in a game", opts: [[4, "4"], [6, "6"], [10, "10"]], def: 6 },
+  { key: "hints", label: "Hint button", opts: [[1, "On"], [0, "Off"]], def: 1 },
+];
+MGI.words.settings = [
+  { key: "timer", label: "Timer", opts: [[0, "Off"], [180, "3 min"], [300, "5 min"], [600, "10 min"]], def: 0 },
+  { key: "list", label: "Word list", help: "Hidden: you know the theme and how many words, not which ones.", opts: [[1, "Show"], [0, "Hide (harder)"]], def: 1 },
+];
+MGI.nonogram.settings = [
+  { key: "mist", label: "Show mistakes", help: "A square filled by mistake turns into a red ✕ straight away.", opts: [[0, "No"], [1, "Yes"]], def: 0 },
+  { key: "autox", label: "Cross out finished lines", help: "When a line matches its numbers, its other squares get a ✕.", opts: [[1, "Yes"], [0, "No"]], def: 1 },
+];
+MGI.cages.settings = [
+  { key: "clash", label: "Same number twice in a line shows red", opts: [[1, "Yes"], [0, "No"]], def: 1 },
+  { key: "cage", label: "Shade the cage of the selected square", opts: [[1, "Yes"], [0, "No"]], def: 1 },
+];
 /* ==== GAMES JS END ==== */
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
@@ -2722,7 +2879,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Daily workout: three short games a day, at the top of the menu. Stats now cover every game, and there are 3 new badges.";   // change with each update
+const NEWS = "Now called Thinking games. Every game has its own settings: tap a game, then “Settings for this game”.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
