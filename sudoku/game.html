@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795031472;</script>
+<script>window.GAME_BUILD = 1795032567;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -175,6 +175,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .news div { flex: 1; display: grid; gap: 2px; font-size: 13px; } .news b { font-size: 15px; }
 .news button { padding: 8px 12px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
 @keyframes newsin { from { transform: translate(-50%, 30px); opacity: 0; } }
+.news.attop { bottom: auto; top: calc(12px + env(safe-area-inset-top, 0px)); }   /* a sheet is open: never cover its buttons */
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-height: 640px) { .newbtn { display: none; } .app { gap: 8px; } .wrap { gap: 8px; } }
 
@@ -324,6 +325,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 :root[data-contrast="high"] .cdbox { border: 2px solid var(--edge); }
 .cover .cd { font-size: 80px; line-height: 1; font-weight: 800; color: var(--accent); }
 .lvchip { white-space: nowrap; min-width: 0; } #lvname { overflow: hidden; text-overflow: ellipsis; max-width: 7.5em; }
+.top { gap: 8px; } .timer { min-width: 44px; }
+@media (max-width: 400px) { #lvnum { display: none; } }   /* narrow phones: the level name is enough */
 .cover small { color: var(--muted); font-weight: 700; font-size: 15px; }
 .tool.off { opacity: .35; }
 input { user-select: text; -webkit-user-select: text; }
@@ -346,6 +349,57 @@ input { user-select: text; -webkit-user-select: text; }
 .vsres small { color: var(--muted); font-weight: 700; font-size: 12px; }
 .vsres small.who { color: var(--ink); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 :root[data-contrast="high"] .vsres div { border: 2px solid var(--edge); }
+
+/* start page rows, stats & badges page, daily times, confetti */
+.hrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hbtn.sm { padding: 12px 14px; } .hbtn.sm b { font-size: 16px; }
+.hbtn .ok { color: #1E8A4C; font-weight: 800; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hbtn .ok { color: #6EE69A; } }
+:root[data-theme="dark"] .hbtn .ok { color: #6EE69A; }
+.hbtn.go .ok { color: var(--accent-ink); }
+#statpage { z-index: 16; }
+.phead { display: flex; align-items: center; gap: 10px; } .phead b { font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+.pback { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--paper); box-shadow: 0 1px 2px var(--shade); flex: none; }
+.pback svg { width: 20px; height: 20px; }
+.seg.two { grid-template-columns: 1fr 1fr; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tiles div { background: var(--paper); border-radius: 14px; padding: 10px 4px; text-align: center; display: grid; gap: 2px; box-shadow: 0 1px 3px var(--shade); min-width: 0; }
+.tiles b { font-size: 20px; font-variant-numeric: tabular-nums; } .tiles small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.lvchips { display: flex; gap: 6px; flex-wrap: wrap; }
+.lvchips button { padding: 7px 12px; border-radius: 999px; background: var(--paper); font-weight: 700; font-size: 13px; color: var(--muted); box-shadow: 0 1px 2px var(--shade); }
+.lvchips button.on { background: var(--accent); color: var(--accent-ink); }
+.chart { position: relative; background: var(--paper); border-radius: 16px; padding: 12px 10px 8px; box-shadow: 0 1px 3px var(--shade); }
+.chart .ct { margin: 0 0 2px 4px; font-size: 15px; font-weight: 800; } .chart .cs { margin: 0 0 6px 4px; color: var(--muted); font-size: 12px; font-weight: 600; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: manipulation; }
+.chart .ax { font: 600 11px var(--font); fill: var(--muted); }
+.chart .gl { stroke: var(--line); stroke-width: 1; }
+.chart .ln { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dt { fill: var(--accent); stroke: var(--paper); stroke-width: 2; }
+.chart .dt.on { stroke: var(--ink); }
+.chart .lab { font: 700 11px var(--font); fill: var(--ink); }
+.chart .hit { fill: transparent; cursor: pointer; }
+.ctip { position: absolute; transform: translate(-50%, calc(-100% - 10px)); background: var(--ink); color: var(--bg); border-radius: 10px; padding: 6px 9px; font-size: 12px; font-weight: 800; white-space: nowrap; pointer-events: none; z-index: 2; }
+.ctip small { display: block; font-weight: 600; opacity: .85; font-size: 11px; }
+.list { display: grid; gap: 6px; }
+.drow { display: grid; grid-template-columns: 1.8em minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 12px; border-radius: 12px; background: var(--paper); font-weight: 700; box-shadow: 0 1px 2px var(--shade); }
+.sheet .drow { background: var(--bg); box-shadow: none; }
+.drow > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drow b { font-variant-numeric: tabular-nums; } .drow small { color: var(--muted); font-weight: 600; display: block; font-size: 12px; }
+.drow.me { box-shadow: inset 0 0 0 2px var(--accent); }
+.drow .rk { color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; }
+.hint2 { margin: 0; color: var(--muted); font-size: 13px; font-weight: 600; text-align: center; }
+.badges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.badge { background: var(--paper); border-radius: 14px; padding: 10px 6px; text-align: center; display: grid; gap: 3px; box-shadow: 0 1px 3px var(--shade); align-content: start; }
+.badge i { font-style: normal; font-size: 30px; line-height: 1.15; } .badge b { font-size: 13px; line-height: 1.2; }
+.badge small { font-size: 11px; color: var(--muted); font-weight: 600; line-height: 1.25; }
+.badge.off i { filter: grayscale(1); opacity: .3; } .badge.off b { color: var(--muted); }
+.nbadges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.nbadges span { padding: 6px 12px; border-radius: 999px; background: var(--sel); color: var(--ink); font-weight: 800; font-size: 13px; }
+.sec { margin: 4px 0 -4px; font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 35; }
+:root[data-contrast="high"] .tiles div, :root[data-contrast="high"] .chart, :root[data-contrast="high"] .badge, :root[data-contrast="high"] .drow,
+:root[data-contrast="high"] .lvchips button, :root[data-contrast="high"] .pback { border: 2px solid var(--edge); }
+:root[data-contrast="high"] .tiles small, :root[data-contrast="high"] .badge small, :root[data-contrast="high"] .drow small { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -372,6 +426,7 @@ input { user-select: text; -webkit-user-select: text; }
   <button class="newbtn" id="newbtn">New game</button>
 </div></div>
 <div class="home" id="home" hidden></div>
+<div class="home" id="statpage" hidden></div>
 <div id="layer"></div>
 
 <script>
@@ -399,7 +454,11 @@ for (let i = 0; i < 81; i++) { PEERS[i] = []; for (let j = 0; j < 81; j++) if (j
 const UNITS = [];
 for (let k = 0; k < 9; k++) { UNITS.push([...Array(81).keys()].filter(i => ROW[i] === k)); UNITS.push([...Array(81).keys()].filter(i => COL[i] === k)); UNITS.push([...Array(81).keys()].filter(i => BOX[i] === k)); }
 const pop = m => { let n = 0; while (m) { m &= m - 1; n++; } return n; };
-const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+// rnd: Math.random, or a seeded generator while the daily puzzle is made (same date = same puzzle on every phone)
+let rnd = Math.random;
+const seeded = a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const hashStr = x => { let h = 2166136261; for (const c of x) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
 // Count solutions up to `limit`; `random` fills a grid in random order (used to make a full solution).
 function search(cells, limit, random) {
@@ -473,9 +532,28 @@ function makePuzzle(lv) {
   });
 }
 
+/* ---------- the daily puzzle ---------- */
+// One puzzle a day, the same on every phone: made from the date with a seeded generator and a fixed number of tries
+// (never a time limit, which would differ between phones). Easy on Monday, harder each day, Expert on Sunday.
+// Keep this generator unchanged, or phones on different game versions would get different daily puzzles.
+const DAILY_LV = [8, 2, 3, 4, 5, 6, 7];   // Sunday .. Saturday
+const WEEKDAY = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const dayKey = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const keyDate = k => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+const addDays = (k, n) => { const d = keyDate(k); d.setDate(d.getDate() + n); return dayKey(d); };
+const dailyLevel = k => DAILY_LV[keyDate(k).getDay()];
+const dayLabel = k => k === dayKey() ? "Today" : k === addDays(dayKey(), -1) ? "Yesterday" : keyDate(k).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+function makeDaily(k) {
+  const lv = dailyLevel(k), L = LEVELS[lv - 1], was = rnd; let best = null;
+  rnd = seeded(hashStr("tvsudoku-daily-" + k));
+  try { for (let n = 0; n < 200 && !(best && best.score === 0); n++) { const r = tryPuzzle(L); if (!best || r.score < best.score) best = r; } }
+  finally { rnd = was; }
+  return Object.assign({ lv }, best);
+}
+
 /* ---------- state ---------- */
 const KEY = "sudoku.save.v1";
-let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0, ucolor: "printed", hl: "blue", size: "normal" };
+let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0, ucolor: "printed", hl: "blue", size: "normal", sound: true };
 let homeOn = true;   // the start page is shown when the app opens
 // Look: "auto" follows the phone's light/dark setting; "light" / "dark" are fixed (the phone's own top and bottom bars keep the phone's setting).
 const darkQuery = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
@@ -541,7 +619,7 @@ function render() {
   pad.classList.toggle("notes-on", notesMode);
   $("notes").classList.toggle("on", notesMode); $("notesbadge").textContent = notesMode ? "ON" : "OFF";
   const vs = !!(G.vs && V);
-  $("lvname").textContent = vs ? "vs " + V.oppName : LEVELS[G.level - 1].name; $("lvnum").textContent = vs ? "" : G.level + "/10";   // a race: just the name (the level is in the sheet behind the chip)
+  $("lvname").textContent = vs ? "vs " + V.oppName : G.daily ? "Daily" : LEVELS[G.level - 1].name; $("lvnum").textContent = vs ? "" : G.level + "/10";   // a race: just the name (the level is in the sheet behind the chip)
   $("mis").textContent = G.mistakes; $("hin").textContent = G.hints; $("giv").textContent = G.clues;
   $("mis").parentNode.hidden = !opts.mistakes;
   $("hint").classList.toggle("off", vs);
@@ -560,11 +638,12 @@ const snap = () => { G.hist.push({ c: G.cells.slice(), n: G.notes.slice() }); if
 function clearPeerNotes(i, d) { const m = ~(1 << (d - 1)); for (const j of PEERS[i]) G.notes[j] &= m; }
 function enter(d) {
   if (!G || G.done || paused || counting() || sel < 0 || G.givens[sel]) return;
-  if (notesMode) { if (G.cells[sel]) return; snap(); G.notes[sel] ^= 1 << (d - 1); render(); save(); return; }
+  if (notesMode) { if (G.cells[sel]) return; snap(); G.notes[sel] ^= 1 << (d - 1); sfx("note"); render(); save(); return; }
   if (G.cells[sel] === d) return;
   snap(); G.cells[sel] = d; G.notes[sel] = 0; clearPeerNotes(sel, d); lastPop = sel; const at = sel;
   if (d === G.sol[at]) setTimeout(() => flashDone(at), 0);
   if (d !== G.sol[sel]) { G.mistakes++; if (opts.mistakes) buzz(60); }
+  sfx(d !== G.sol[at] && opts.mistakes ? "err" : "tap");   // with mistakes hidden, a wrong number sounds like any other
   checkWin(); render(); save();
 }
 // light up each row, column and box that the number at `i` just finished correctly
@@ -575,7 +654,7 @@ function flashDone(i) {
   for (const g of groups) if (g.every(j => G.cells[j] === G.sol[j])) { any = true;
     g.forEach(j => { const el = cellEls[j]; el.classList.remove("flash"); void el.offsetWidth; el.style.animationDelay = (Math.abs(ROW[j] - ROW[i]) + Math.abs(COL[j] - COL[i])) * 40 + "ms"; el.classList.add("flash");
       setTimeout(() => { el.classList.remove("flash"); el.style.animationDelay = ""; }, 1100); }); }
-  if (any) buzz(25);
+  if (any) { buzz(25); sfx("group"); }
 }
 function erase() { if (!G || G.done || paused || counting() || sel < 0 || G.givens[sel] || (!G.cells[sel] && !G.notes[sel])) return; snap(); G.cells[sel] = 0; G.notes[sel] = 0; render(); save(); }
 function undo() { if (!G || G.done || paused || counting() || !G.hist.length) return; const h = G.hist.pop(); G.cells = h.c; G.notes = h.n; render(); save(); }
@@ -584,7 +663,7 @@ function hint() {
   if (G.vs) { toast("No hints when you play a friend."); return; }
   let i = sel >= 0 && !G.givens[sel] && G.cells[sel] !== G.sol[sel] ? sel : -1;
   if (i < 0) { const open = []; for (let k = 0; k < 81; k++) if (G.cells[k] !== G.sol[k]) open.push(k); if (!open.length) return; i = open[Math.floor(Math.random() * open.length)]; }
-  snap(); G.cells[i] = G.sol[i]; G.notes[i] = 0; clearPeerNotes(i, G.sol[i]); G.hints++; sel = i; lastPop = i;
+  snap(); G.cells[i] = G.sol[i]; G.notes[i] = 0; clearPeerNotes(i, G.sol[i]); G.hints++; sel = i; lastPop = i; sfx("hint");
   checkWin(); render(); save();
 }
 function checkWin() {
@@ -592,15 +671,145 @@ function checkWin() {
   if (G.vs && V) {   // a race: tell the friend, then the first "done" in the relay's list wins
     G.done = true; sel = -1; const ms = Date.now() - V.startAt; G.t = Math.max(0, Math.floor(ms / 1000)); buzz([40, 60, 40]);
     vsPost({ t: "done", r: G.vs, ms, m: G.mistakes }); vAnimDone = false;
+    const rr = recordSolve("race"); rr.nb.forEach((id, k) => setTimeout(() => badgeToast(id), 2500 + k * 800));
     board.classList.add("won"); cellEls.forEach((el, i) => el.style.animationDelay = ((ROW[i] + COL[i]) * 35) + "ms");
     setTimeout(() => { board.classList.remove("won"); cellEls.forEach(el => el.style.animationDelay = ""); vAnimDone = true; vsSync(); }, 900);
     return;
   }
-  G.done = true; sel = -1; opts.wins = (opts.wins || 0) + 1; buzz([40, 60, 40]);
-  const b = opts.best[G.level], isBest = !b || G.t < b;
-  if (isBest) opts.best[G.level] = G.t;
+  G.done = true; sel = -1; buzz([40, 60, 40]);
+  const r = recordSolve(G.daily ? "daily" : "solo");
+  sfx(r.isBest && r.prev ? "best" : "win");
   board.classList.add("won"); cellEls.forEach((el, i) => el.style.animationDelay = ((ROW[i] + COL[i]) * 35) + "ms");
-  setTimeout(() => { board.classList.remove("won"); cellEls.forEach(el => el.style.animationDelay = ""); openWin(isBest, b); }, 900);
+  setTimeout(() => { board.classList.remove("won"); cellEls.forEach(el => el.style.animationDelay = ""); openWin(r); confetti(r.isBest || r.nb.length > 0 || !!G.daily);
+    if (r.nb.length) setTimeout(() => sfx("badge"), 800); }, 900);
+}
+
+/* ---------- what a solve adds up to: best times, history, streak, daily, badges ---------- */
+function recordSolve(kind) {
+  const k = dayKey(), lv = G.level;
+  opts.wins = (opts.wins || 0) + 1;
+  const prev = opts.best[lv], isBest = kind !== "race" && (!prev || G.t < prev);   // a race runs on the real clock: not a best time
+  if (isBest) opts.best[lv] = G.t;
+  opts.hist = opts.hist || []; opts.hist.push({ d: k, lv, t: G.t, m: G.mistakes, h: G.hints, k: kind });
+  if (opts.hist.length > 600) opts.hist.splice(0, opts.hist.length - 600);
+  const days = new Set(opts.days || []), firstToday = !days.has(k); days.add(k); opts.days = [...days].sort().slice(-400);
+  const st = streakNow(); opts.bestStreak = Math.max(opts.bestStreak || 0, st);
+  if (G.daily) {
+    opts.daily = opts.daily || {};
+    if (!(opts.daily[G.daily] || {}).done) opts.dailyWins = (opts.dailyWins || 0) + 1;
+    opts.daily[G.daily] = { done: true, t: G.t, m: G.mistakes, h: G.hints };
+    for (const d of Object.keys(opts.daily)) if (d < addDays(k, -60)) delete opts.daily[d];
+    dailyPost(G.daily);
+  }
+  const nb = checkBadges({ kind, lv, t: G.t, m: G.mistakes, h: G.hints });
+  save();
+  return { isBest, prev, st, firstToday, nb };
+}
+// days in a row with at least one puzzle solved (today still counts as "kept" until midnight)
+function streakNow() {
+  const set = new Set(opts.days || []); let k = dayKey(), n = 0;
+  if (!set.has(k)) k = addDays(k, -1);
+  while (set.has(k)) { n++; k = addDays(k, -1); }
+  return n;
+}
+
+/* ---------- badges ---------- */
+const BADGES = [
+  ["first", "🎉", "First solve", "Solve any puzzle"],
+  ["ten", "🔟", "Ten down", "Solve 10 puzzles"],
+  ["fifty", "🏅", "Fifty", "Solve 50 puzzles"],
+  ["hundred", "💯", "Hundred", "Solve 100 puzzles"],
+  ["clean", "✨", "Clean sheet", "Medium or harder with no mistakes"],
+  ["alone", "🧠", "On your own", "Hard or harder with no hints"],
+  ["quick", "⚡", "Quick", "Easy or harder in under 4 minutes"],
+  ["speedy", "🚀", "Speedy", "Medium or harder in under 8 minutes"],
+  ["hard", "🥜", "Hard nut", "Solve a Hard puzzle"],
+  ["expert", "🎓", "Expert", "Solve an Expert puzzle"],
+  ["master", "👑", "Master", "Solve a Master puzzle"],
+  ["extreme", "🌋", "Extreme!", "Solve an Extreme puzzle"],
+  ["flawless", "💎", "Flawless", "Expert or harder: no mistakes, no hints"],
+  ["daily", "📅", "Daily player", "Solve a daily puzzle"],
+  ["daily7", "🗓️", "Seven dailies", "Solve 7 daily puzzles"],
+  ["streak3", "🔥", "On a roll", "3 days in a row"],
+  ["streak7", "🔥", "One week", "7 days in a row"],
+  ["streak30", "🏆", "One month", "30 days in a row"],
+  ["race", "🤝", "First race", "Win a race against a friend"],
+  ["race10", "🥇", "Champion", "Win 10 races"],
+  ["owl", "🦉", "Night owl", "Solve one between midnight and 5 am"],
+  ["early", "🐦", "Early bird", "Solve one between 5 and 7 am"],
+];
+const badgeOf = id => BADGES.find(b => b[0] === id);
+// c: the solve that just happened (null when only counters changed, e.g. a race result arrived)
+function checkBadges(c) {
+  const have = opts.badges || (opts.badges = {}), hr = new Date().getHours(), got = [];
+  const top = Math.max(0, c ? c.lv : 0, ...Object.keys(opts.best || {}).map(Number));
+  const want = {
+    first: opts.wins >= 1, ten: opts.wins >= 10, fifty: opts.wins >= 50, hundred: opts.wins >= 100,
+    clean: c && c.lv >= 4 && c.m === 0, alone: c && c.lv >= 6 && c.h === 0, quick: c && c.lv >= 2 && c.t < 240, speedy: c && c.lv >= 4 && c.t < 480,
+    hard: top >= 6, expert: top >= 8, master: top >= 9, extreme: top >= 10, flawless: c && c.lv >= 8 && c.m === 0 && c.h === 0,
+    daily: (opts.dailyWins || 0) >= 1, daily7: (opts.dailyWins || 0) >= 7,
+    streak3: (opts.bestStreak || 0) >= 3, streak7: (opts.bestStreak || 0) >= 7, streak30: (opts.bestStreak || 0) >= 30,
+    race: (opts.vsWins || 0) >= 1, race10: (opts.vsWins || 0) >= 10,
+    owl: c && hr < 5, early: c && hr >= 5 && hr < 7,
+  };
+  for (const [id] of BADGES) if (want[id] && !have[id]) { have[id] = dayKey(); got.push(id); }
+  return got;
+}
+const badgeChip = id => { const b = badgeOf(id); return `<span>${b[1]} ${b[2]}</span>`; };
+function badgeToast(id) { const b = badgeOf(id); toast(`<b>${b[1]} New badge: ${b[2]}</b><br>${b[3]}`); sfx("badge"); }
+
+/* ---------- sounds: tiny tones made on the phone (no sound files); Settings has a switch ---------- */
+let actx = null;
+function audio() {
+  if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+  if (actx.state === "suspended") actx.resume().catch(() => {});
+  return actx;
+}
+addEventListener("pointerdown", () => { if (opts.sound !== false) audio(); }, true);   // phones start sound only after a tap
+let sfxCount = 0;
+function sfx(kind) {
+  if (opts.sound === false) return;
+  const a = audio(); if (!a) return; sfxCount++;
+  const t = a.currentTime;
+  const tone = (f, at, dur, vol = .07, type = "sine") => {
+    const o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0, t + at); g.gain.linearRampToValueAtTime(vol, t + at + .012); g.gain.exponentialRampToValueAtTime(.0001, t + at + dur);
+    o.connect(g); g.connect(a.destination); o.start(t + at); o.stop(t + at + dur + .03);
+  };
+  const seq = (fs, gap, dur, vol) => fs.forEach((f, k) => tone(f, k * gap, dur, vol));
+  if (kind === "tap") tone(620, 0, .07, .05);
+  else if (kind === "note") tone(940, 0, .05, .03);
+  else if (kind === "err") { tone(220, 0, .2, .07, "triangle"); tone(196, .07, .22, .05, "triangle"); }
+  else if (kind === "group") seq([523, 659, 784], .07, .2, .06);
+  else if (kind === "hint") seq([784, 1047], .06, .18, .05);
+  else if (kind === "win") seq([523, 659, 784, 1047], .11, .4, .07);
+  else if (kind === "best") { seq([523, 659, 784, 1047, 1319], .1, .45, .07); tone(1568, .55, .6, .04); }
+  else if (kind === "lose") seq([523, 466, 392], .14, .35, .06);
+  else if (kind === "badge") { tone(988, 0, .15, .06); tone(1319, .1, .35, .06); }
+  else if (kind === "go") tone(880, 0, .3, .07);
+}
+
+/* ---------- confetti on a win (none when the phone asks for less motion) ---------- */
+function confetti(big) {
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = document.createElement("canvas"); c.className = "confetti"; document.body.appendChild(c);
+  const dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight; c.width = W * dpr; c.height = H * dpr;
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  const cs = getComputedStyle(document.documentElement), cols = ["--accent", "--opp", "--sel", "--user"].map(v => cs.getPropertyValue(v).trim()).concat(["#2FB86B", "#E0457B", "#F5B700"]);
+  const P = [], N = big ? 170 : 90;
+  for (let n = 0; n < N; n++) {
+    const side = big ? (n % 2 ? 1 : -1) : 0, ang = big ? -Math.PI / 2 + side * (.35 + Math.random() * .5) : -Math.PI / 2 + (Math.random() - .5) * 1.6, sp = 8 + Math.random() * (big ? 9 : 6);
+    P.push({ x: big ? W / 2 - side * W * .45 : W / 2 + (Math.random() - .5) * 60, y: big ? H * .9 : H * .42, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+      r: Math.random() * 6.3, vr: (Math.random() - .5) * .35, w: 6 + Math.random() * 6, h: 4 + Math.random() * 4, c: cols[n % cols.length] });
+  }
+  const t0 = performance.now(), dur = big ? 3600 : 2500;
+  (function f(now) {
+    const e = now - t0; x.clearRect(0, 0, W, H);
+    x.globalAlpha = Math.max(0, Math.min(1, (dur - e) / (dur * .35)));
+    for (const q of P) { q.vy += .26; q.vx *= .985; q.vy *= .99; q.x += q.vx; q.y += q.vy; q.r += q.vr;
+      x.save(); x.translate(q.x, q.y); x.rotate(q.r); x.fillStyle = q.c; x.fillRect(-q.w / 2, -q.h / 2, q.w, q.h * Math.abs(Math.cos(q.r * 1.7)) + 1); x.restore(); }
+    if (e < dur) requestAnimationFrame(f); else c.remove();
+  })(t0);
 }
 
 /* ---------- sheets ---------- */
@@ -639,44 +848,230 @@ function startGame(lv) {
   opts.level = lv; sheet = "making";
   layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Making a ${LEVELS[lv - 1].name} puzzle…</div></div>`;
   setTimeout(() => makePuzzle(lv).then(r => {
+    shelve("solo");
     G = { level: lv, givens: r.p, sol: r.sol, cells: r.p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: r.givens };
     sel = -1; notesMode = false; paused = false; dropFocus(); closeSheet(); hideHome(); render(); save(); refitSoon();
   }), 60);
 }
-function openWin(isBest, prev) {
+function openWin(r) {
+  if (G.daily) return openDailyDone(G.daily, r);
+  const isBest = r.isBest, prev = r.prev;
   sheet = "win"; save();
   layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Solved">
     <div class="winhead"><b>Solved!</b><span>${LEVELS[G.level - 1].name} · level ${G.level} of 10</span></div>
     <div class="winstats"><div><b>${fmt(G.t)}</b><small>Time</small></div><div><b>${G.mistakes}</b><small>Mistakes</small></div><div><b>${G.hints}</b><small>Hints</small></div></div>
     <p class="best">${isBest ? (prev ? `New best time! Before: <b>${fmt(prev)}</b>` : "Your first win at this level") : `Your best: <b>${fmt(opts.best[G.level])}</b>`}</p>
+    ${winExtras(r)}
     <div class="row2"><button class="big" id="chg">Change level</button><button class="big go" id="again">Play again</button></div></div>`;
   $("again").onclick = () => startGame(G.level);
   $("chg").onclick = openNew;
 }
 
 
+// streak and new badges under a result
+function winExtras(r) {
+  return `${r.st ? `<p class="best">🔥 <b>${r.st}-day streak</b>${r.firstToday && r.st > 1 ? " · kept going today" : r.st === 1 ? " · come back tomorrow for 2" : ""}</p>` : ""}
+    ${r.nb.length ? `<div class="nbadges">${r.nb.map(badgeChip).join("")}</div>` : ""}`;
+}
+
+/* ---------- daily puzzle: start, result, friends' times ---------- */
+function openDaily() {
+  const k = dayKey(), rec = (opts.daily || {})[k];
+  if (rec && rec.done) return openDailyDone(k);
+  if (G && G.daily === k && !G.done) { paused = false; hideHome(); render(); return; }
+  if (opts.shelf && opts.shelf.daily === k && !opts.shelf.done) return useShelf();
+  if (V) vsStop(true);
+  sheet = "making";
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Getting today's puzzle…</div></div>`;
+  setTimeout(() => {
+    const r = makeDaily(k);
+    shelve("daily");
+    G = { level: r.lv, givens: r.p, sol: r.sol, cells: r.p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: r.givens, daily: k };
+    sel = -1; notesMode = false; paused = false; dropFocus(); closeSheet(); hideHome(); render(); save(); refitSoon();
+  }, 60);
+}
+function openDailyDone(k, r) {
+  const rec = (opts.daily || {})[k] || {}, lv = dailyLevel(k);
+  sheet = "daily";
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Daily puzzle">
+    <div class="winhead"><b>${r ? "Daily puzzle solved!" : "Daily puzzle ✓"}</b><span>${WEEKDAY[keyDate(k).getDay()]} · ${LEVELS[lv - 1].name}</span></div>
+    <div class="winstats"><div><b>${fmt(rec.t || 0)}</b><small>Time</small></div><div><b>${rec.m | 0}</b><small>Mistakes</small></div><div><b>${rec.h | 0}</b><small>Hints</small></div></div>
+    ${r ? winExtras(r) : ""}
+    <p class="sec">Today's times</p>
+    <div class="list" id="dboard">${dboardHtml(k)}</div>
+    ${opts.name ? "" : `<label class="fld"><span>Your name, so friends know which time is yours</span><input id="dname" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Your name"></label>`}
+    <p class="hint2">A new puzzle every day at midnight: easy on Monday, harder each day, Expert on Sunday.</p>
+    <div class="row2"><button class="big go" data-close>Done</button></div></div>`;
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (r) showHome(); else if (homeOn) showHome(); });
+  const dn = $("dname"); if (dn) dn.onchange = () => { opts.name = dn.value.trim().slice(0, 14); save(); if (opts.name) dailyPost(k); };
+  dailyFetch(k);
+}
+const DAILY_TOPIC = k => RELAY + "tvsudoku-daily-" + k;
+function dboardHtml(k) {
+  const me = myId(), rows = Object.entries((opts.dboard || {})[k] || {}).map(([id, x]) => Object.assign({ id }, x));
+  const mine = (opts.daily || {})[k];
+  if (mine && mine.done && !rows.some(x => x.id === me)) rows.push({ id: me, n: opts.name, s: mine.t, m: mine.m, h: mine.h });
+  rows.sort((a, b) => a.s - b.s);
+  if (!rows.length) return `<p class="hint2">No times yet.</p>`;
+  const extra = x => [x.m ? `${x.m} mistake${x.m === 1 ? "" : "s"}` : "", x.h ? `${x.h} hint${x.h === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ");
+  return rows.map((x, i) => `<div class="drow${x.id === me ? " me" : ""}"><span class="rk">${i + 1}</span><span>${x.id === me ? "You" : esc(x.n || "Player")}${extra(x) ? `<small>${extra(x)}</small>` : ""}</span><b>${fmt(x.s | 0)}</b></div>`).join("")
+    + (rows.length === 1 ? `<p class="hint2">Friends who play today's puzzle show up here.</p>` : "");
+}
+// everyone's result for the day goes to one relay topic; each phone keeps what it has seen (the relay forgets after ~12 hours,
+// so a phone whose own result is no longer there posts it again, once per opening)
+const dailyReposted = {};
+async function dailyPost(k) {
+  const mine = (opts.daily || {})[k]; if (!mine || !mine.done) return;
+  const body = JSON.stringify({ t: "daily", from: myId(), name: opts.name || "", s: mine.t, m: mine.m | 0, h: mine.h | 0 });
+  try { await fetch(DAILY_TOPIC(k), { method: "POST", body }); } catch (e) {}
+  setTimeout(() => dailyFetch(k, true), 800);
+}
+async function dailyFetch(k, noRepost) {
+  let txt = "";
+  try { const r = await fetch(DAILY_TOPIC(k) + "/json?poll=1&since=all", { cache: "no-store" }); if (!r.ok) return; txt = await r.text(); } catch (e) { return; }
+  const b = opts.dboard || (opts.dboard = {}), day = b[k] || (b[k] = {}), me = myId(); let seenMe = false;
+  for (const l of txt.split("\n")) {
+    if (!l.trim()) continue;
+    try { const m = JSON.parse(l); if (m.event !== "message") continue; const o = JSON.parse(m.message);
+      if (o.t !== "daily" || !o.from || !(o.s >= 0)) continue; if (o.from === me) seenMe = true;
+      day[o.from] = { n: String(o.name || "").slice(0, 14), s: o.s | 0, m: o.m | 0, h: o.h | 0 }; } catch (e) {}
+  }
+  for (const d of Object.keys(b)) if (d < addDays(dayKey(), -2)) delete b[d];
+  save();
+  if (!seenMe && !noRepost && !dailyReposted[k] && ((opts.daily || {})[k] || {}).done) { dailyReposted[k] = true; dailyPost(k); }
+  const el = $("dboard"); if (el && sheet === "daily") el.innerHTML = dboardHtml(k);
+}
+
+/* ---------- two games at once: a daily or race doesn't throw away the game you were playing ---------- */
+function shelve(kind) {   // kind: what is about to replace G ("solo" | "daily" | "race")
+  if (!G || G.done || G.vs) return;
+  if (kind === "solo" && !G.daily) return;   // a new game on your own replaces the old one, as always
+  if (kind === "daily" && G.daily === dayKey()) return;
+  opts.shelf = G;
+}
+function useShelf() {
+  const s = opts.shelf; if (!s) return;
+  opts.shelf = G && !G.done && !G.vs ? G : null;
+  G = s; sel = -1; notesMode = false; paused = false; hideHome(); render(); save(); refitSoon();
+}
+const gameLine = g => g.daily ? `Daily puzzle · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled` : `${LEVELS[g.level - 1].name} · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled`;
+
+/* ---------- stats & badges page ---------- */
+let statOn = false, statTab = "stats", statLv = 0;
+function openStats(tab) {
+  if (tab) statTab = tab;
+  const p = $("statpage"), hist = opts.hist || [];
+  const lvs = [...new Set(hist.map(h => h.lv))].sort((a, b) => a - b);
+  if (!lvs.includes(statLv)) { const cnt = {}; hist.forEach(h => cnt[h.lv] = (cnt[h.lv] || 0) + 1); statLv = lvs.sort((a, b) => cnt[b] - cnt[a])[0] || 0; lvs.sort((a, b) => a - b); }
+  const earned = BADGES.filter(b => (opts.badges || {})[b[0]]).length;
+  p.innerHTML = `<div class="hin">
+    <div class="phead"><button class="pback" id="stback" aria-label="Back to the start page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><b>Stats & badges</b></div>
+    <div class="seg two" role="tablist"><button role="tab" aria-selected="${statTab === "stats"}" class="${statTab === "stats" ? "on" : ""}" data-tab="stats">Stats</button><button role="tab" aria-selected="${statTab === "badges"}" class="${statTab === "badges" ? "on" : ""}" data-tab="badges">Badges ${earned}/${BADGES.length}</button></div>
+    ${statTab === "stats" ? statsHtml(lvs) : badgesHtml()}
+  </div>`;
+  p.hidden = false; statOn = true;
+  $("stback").onclick = closeStats;
+  p.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { openStats(b.dataset.tab); p.scrollTop = 0; });
+  p.querySelectorAll("[data-slv]").forEach(b => b.onclick = () => { statLv = +b.dataset.slv; const y = p.scrollTop; openStats(); p.scrollTop = y; });
+  const ch = p.querySelector(".chart");
+  if (ch) ch.querySelectorAll(".hit").forEach(h => h.addEventListener("pointerdown", e => { e.preventDefault(); chartTip(ch, +h.dataset.i); }));
+}
+function closeStats() { statOn = false; $("statpage").hidden = true; $("statpage").innerHTML = ""; }
+const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+function statsHtml(lvs) {
+  const hist = opts.hist || [], st = streakNow();
+  const tiles = `<div class="tiles">
+    <div><b>${opts.wins || 0}</b><small>Solved</small></div>
+    <div><b>${st ? "🔥 " + st : 0}</b><small>Day streak</small></div>
+    <div><b>${opts.bestStreak || 0}</b><small>Best streak</small></div>
+    <div><b>${opts.dailyWins || 0}</b><small>Daily puzzles</small></div>
+    <div><b>${opts.vsWins || 0}–${opts.vsLosses || 0}</b><small>Races won–lost</small></div>
+    <div><b>${Object.keys(opts.best || {}).length}</b><small>Levels solved</small></div></div>`;
+  if (!hist.length) {
+    const recs = LEVELS.map((L, k) => opts.best[k + 1] ? `<div class="drow"><span class="rk">${k + 1}</span><span>${L.name}</span><b>${fmt(opts.best[k + 1])}</b></div>` : "").join("");
+    return tiles + `<p class="hint2">Solve a puzzle and your times show up here, level by level.</p>` + (recs ? `<p class="sec">Best times</p><div class="list">${recs}</div>` : "");
+  }
+  const rows = hist.filter(h => h.lv === statLv), last = rows.slice(-30), ts = rows.map(h => h.t);
+  const lvTiles = `<div class="tiles">
+    <div><b>${fmt(Math.min(...ts))}</b><small>Best</small></div>
+    <div><b>${fmt(Math.round(avg(ts)))}</b><small>Average</small></div>
+    <div><b>${fmt(Math.round(avg(ts.slice(-5))))}</b><small>Last ${Math.min(5, ts.length)}</small></div>
+    <div><b>${rows.length}</b><small>Solved</small></div>
+    <div><b>${avg(rows.map(h => h.m)).toFixed(1)}</b><small>Mistakes, avg</small></div>
+    <div><b>${avg(rows.map(h => h.h)).toFixed(1)}</b><small>Hints, avg</small></div></div>`;
+  const recent = hist.slice(-8).reverse().map(h => `<div class="drow"><span class="rk">${h.k === "daily" ? "📅" : h.k === "race" ? "🤝" : "🧩"}</span><span>${LEVELS[h.lv - 1].name}<small>${dayLabel(h.d)}${h.k === "daily" ? " · daily" : h.k === "race" ? " · race" : ""}${h.m ? ` · ${h.m} mistake${h.m === 1 ? "" : "s"}` : ""}${h.h ? ` · ${h.h} hint${h.h === 1 ? "" : "s"}` : ""}</small></span><b>${fmt(h.t)}</b></div>`).join("");
+  return tiles
+    + `<p class="sec">Level</p><div class="lvchips">${lvs.map(l => `<button data-slv="${l}" class="${l === statLv ? "on" : ""}">${LEVELS[l - 1].name}</button>`).join("")}</div>`
+    + lvTiles + chartHtml(last)
+    + `<p class="sec">Recent solves</p><div class="list">${recent}</div>`;
+}
+// your times at one level, oldest on the left: one line, one colour, tap a dot for its numbers
+function chartHtml(rows) {
+  const n = rows.length, W = 320, H = 168, L = 42, R = 14, T = 18, B = 20;
+  const maxT = Math.max(...rows.map(r => r.t), 1);
+  const step = [15, 30, 60, 120, 300, 600, 900, 1200, 1800, 3600, 7200, 14400].find(x => maxT * 1.1 / x <= 4) || 14400;
+  const top = Math.max(step, Math.ceil(maxT * 1.1 / step) * step);
+  const X = i => n === 1 ? L + (W - L - R) / 2 : L + i * (W - L - R) / (n - 1), Y = t => T + (H - T - B) * (1 - t / top);
+  let g = "";
+  for (let v = 0; v <= top; v += step) g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${fmt(v)}</text>`;
+  const bi = rows.reduce((b, r, i) => r.t < rows[b].t ? i : b, 0);
+  const pts = rows.map((r, i) => `${X(i).toFixed(1)},${Y(r.t).toFixed(1)}`).join(" ");
+  const dots = rows.map((r, i) => `<circle class="dt" data-d="${i}" cx="${X(i)}" cy="${Y(r.t)}" r="4.5"/>`).join("");
+  const hits = rows.map((r, i) => `<circle class="hit" data-i="${i}" cx="${X(i)}" cy="${Y(r.t)}" r="14"/>`).join("");
+  const bx = Math.min(W - R - 16, Math.max(L + 16, X(bi)));
+  const lab = n > 1 ? `<text class="lab" x="${bx}" y="${Y(rows[bi].t) - 10}" text-anchor="middle">best</text>` : "";
+  const xl = `<text class="ax" x="${L}" y="${H - 4}">${n > 1 ? "older" : ""}</text><text class="ax" x="${W - R}" y="${H - 4}" text-anchor="end">latest</text>`;
+  chartRows = rows;
+  return `<div class="chart"><p class="ct">${LEVELS[statLv - 1].name}: your times</p><p class="cs">${n > 1 ? `Your last ${n} solves, oldest on the left. Tap a dot.` : "One solve so far. Tap the dot."}</p>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Your times at ${LEVELS[statLv - 1].name}: best ${fmt(rows[bi].t)}, latest ${fmt(rows[n - 1].t)}">${g}${n > 1 ? `<polyline class="ln" points="${pts}"/>` : ""}${dots}${lab}${xl}${hits}</svg></div>`;
+}
+let chartRows = [];
+function chartTip(ch, i) {
+  const r = chartRows[i]; if (!r) return;
+  ch.querySelectorAll(".dt").forEach(d => d.classList.toggle("on", +d.dataset.d === i));
+  const dot = ch.querySelector(`.dt[data-d="${i}"]`).getBoundingClientRect(), box = ch.getBoundingClientRect();
+  let tip = ch.querySelector(".ctip"); if (!tip) { tip = document.createElement("div"); tip.className = "ctip"; ch.appendChild(tip); }
+  tip.innerHTML = `${fmt(r.t)}<small>${dayLabel(r.d)}${r.k === "daily" ? " · daily" : r.k === "race" ? " · race" : ""} · ${r.m} mistake${r.m === 1 ? "" : "s"}${r.h ? ` · ${r.h} hint${r.h === 1 ? "" : "s"}` : ""}</small>`;
+  const half = 70, cx = Math.min(box.width - half, Math.max(half, dot.left + dot.width / 2 - box.left));
+  tip.style.left = cx + "px"; tip.style.top = (dot.top - box.top) + "px";
+}
+function badgesHtml() {
+  const have = opts.badges || {};
+  return `<p class="hint2">${BADGES.filter(b => have[b[0]]).length} of ${BADGES.length} earned</p><div class="badges">${BADGES.map(([id, ic, name, how]) =>
+    `<div class="badge${have[id] ? "" : " off"}"><i aria-hidden="true">${ic}</i><b>${name}</b><small>${how}${have[id] ? `<br>✓ ${dayLabel(have[id])}` : ""}</small></div>`).join("")}</div>`;
+}
+
 /* ---------- start page ---------- */
 function showHome() {
   homeOn = true; setResume(false); save();
   const h = $("home"), live = G && !G.done;
   const filled = live ? G.cells.filter(v => v).length : 0;
-  const recs = LEVELS.map((L, k) => opts.best[k + 1] ? `<span>${L.name} <b>${fmt(opts.best[k + 1])}</b></span>` : "").join("")
-    + (opts.vsWins || opts.vsLosses ? `<span>Against friends <b>${opts.vsWins || 0} won · ${opts.vsLosses || 0} lost</b></span>` : "");
   const vsLive = live && G.vs && V;
+  const k = dayKey(), dRec = (opts.daily || {})[k], dDone = !!(dRec && dRec.done), dLv = dailyLevel(k);
+  const dLive = (G && G.daily === k && !G.done) || (opts.shelf && opts.shelf.daily === k && !opts.shelf.done);
+  const shelf = opts.shelf && !opts.shelf.done && !vsLive && !(opts.shelf.daily === k) ? opts.shelf : null;
+  const st = streakNow(), today = (opts.days || []).includes(k);
+  const sub = st ? `🔥 ${st}-day streak${today ? " · solved today ✓" : " · solve one today to keep it"}` : opts.wins ? `${opts.wins} puzzle${opts.wins > 1 ? "s" : ""} solved · solve one today to start a streak` : "Ten levels, from Beginner to Extreme";
+  const goDaily = !live && !dDone, earned = BADGES.filter(b => (opts.badges || {})[b[0]]).length;
   h.innerHTML = `<div class="hin">
     <div class="hart" aria-hidden="true"><span>5</span><span class="e">.</span><span class="u">3</span><span class="e">.</span><span class="y">7</span><span>1</span><span class="u">8</span><span>2</span><span class="e">.</span></div>
-    <div class="htitle"><b>Sudoku</b><span>${opts.wins ? `${opts.wins} puzzle${opts.wins > 1 ? "s" : ""} solved` : "Ten levels, from Beginner to Extreme"}</span></div>
+    <div class="htitle"><b>Sudoku</b><span id="hsub">${sub}</span></div>
     <div class="hbtns">
-      ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue</b><small>${vsLive ? `Race against ${esc(V.oppName)} · ${vsCorrect()} of ${81 - G.clues} done` : `${LEVELS[G.level - 1].name} · ${fmt(G.t)} · ${filled} of 81 filled`}</small></span><i>›</i></button>` : ""}
-      <button class="hbtn${live ? "" : " go"}" id="hnew"><span><b>New game</b><small>Pick how hard: level 1 to 10</small></span><i>›</i></button>
+      ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue</b><small>${vsLive ? `Race against ${esc(V.oppName)} · ${vsCorrect()} of ${81 - G.clues} done` : gameLine(G)}</small></span><i>›</i></button>` : ""}
+      ${shelf ? `<button class="hbtn" id="hshelf"><span><b>Continue the other game</b><small>${gameLine(shelf)}</small></span><i>›</i></button>` : ""}
+      <button class="hbtn${goDaily ? " go" : ""}" id="hdaily"><span><b>Daily puzzle${dDone ? ` <span class="ok">✓</span>` : ""}</b><small>${dDone ? `Solved in ${fmt(dRec.t)} · see today's times` : `${WEEKDAY[keyDate(k).getDay()]} · ${LEVELS[dLv - 1].name}${dLive && !(G && G.daily === k && !G.done) ? " · continue" : " · new every day"}`}</small></span><i>›</i></button>
+      <button class="hbtn${live || goDaily ? "" : " go"}" id="hnew"><span><b>New game</b><small>Pick how hard: level 1 to 10</small></span><i>›</i></button>
       <button class="hbtn" id="hvs"><span><b>Play a friend</b><small>Same puzzle on two phones · first to finish wins</small></span><i>›</i></button>
-      <button class="hbtn" id="hset"><span><b>Settings</b><small>Board size, colours, light or dark</small></span><i>›</i></button>
+      <div class="hrow"><button class="hbtn sm" id="hstats"><span><b>Stats & badges</b><small>${earned} of ${BADGES.length} badges</small></span></button>
+        <button class="hbtn sm" id="hset"><span><b>Settings</b><small>Size, colours, sound</small></span></button></div>
     </div>
-    ${recs ? `<div class="hrec"><h3>Best times</h3><div class="hrecs">${recs}</div></div>` : ""}
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
   if (live) $("hcont").onclick = () => { paused = false; hideHome(); render(); };
   $("hnew").onclick = openNew;
+  $("hdaily").onclick = openDaily;
+  if (shelf) $("hshelf").onclick = useShelf;
+  $("hstats").onclick = () => openStats("stats");
   $("hvs").onclick = () => openVsMenu();
   $("hset").onclick = openSettings;
 }
@@ -712,6 +1107,7 @@ function drawSettings() {
   const sw = (id, on, label) => `<div class="opt"><span>${label}</span><button class="sw${on ? " on" : ""}" id="${id}" role="switch" aria-checked="${!!on}" aria-label="${label}"></button></div>`;
   layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Settings">
     <h2>Settings</h2>
+    <label class="fld"><span>Your name (friends see it in races and daily times)</span><input id="setname" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Your name" value="${esc(opts.name || "")}"></label>
     <h3>Board size</h3><div class="sizes" role="radiogroup" aria-label="Board size">${[["normal", "Normal", 18], ["large", "Large", 24], ["xl", "Extra large", 30]]
       .map(([k, t, px]) => `<button role="radio" aria-checked="${opts.size === k}" class="${opts.size === k ? "on" : ""}" data-size-pick="${k}"><b style="font-size:${px}px">7</b><small>${t}</small></button>`).join("")}</div>
     <h3>Look</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${seg("theme-pick", [["auto", "Phone", ic('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>')], ["light", "Light", ic('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>')], ["dark", "Dark", ic('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>')]], opts.theme || "auto")}</div>
@@ -722,6 +1118,7 @@ function drawSettings() {
       .map(([k, t]) => `<button role="radio" aria-checked="${opts.hl === k}" class="${opts.hl === k ? "on" : ""}" data-hl-pick="${k}"><i data-hlc="${k}">4</i><small>${t}</small></button>`).join("")}</div>
     ${sw("optsame", opts.same, "Highlight the same numbers")}
     ${sw("optmis", opts.mistakes, "Show mistakes in red")}
+    ${sw("optsnd", opts.sound !== false, "Sounds")}
     <div class="row2"><button class="big go" data-close>Done</button></div></div>`;
   const re = () => { applyTheme(); save(); render(); drawSettings(); };
   const L = layer;
@@ -732,6 +1129,8 @@ function drawSettings() {
   $("hcsw").onclick = () => { opts.hc = !opts.hc; re(); };
   $("optsame").onclick = () => { opts.same = !opts.same; re(); };
   $("optmis").onclick = () => { opts.mistakes = !opts.mistakes; re(); };
+  $("optsnd").onclick = () => { opts.sound = opts.sound === false; re(); if (opts.sound) sfx("tap"); };
+  const nm = $("setname"); nm.oninput = () => { opts.name = nm.value.trim().slice(0, 14); save(); };
   L.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (homeOn) showHome(); });
   // each sample shows its own colour in the current look
   const root = document.documentElement, cs = () => getComputedStyle(root);
@@ -757,7 +1156,7 @@ let vlog = [], vseen = new Set(), vlast = "", ves = null, vready = false, vconn 
 let vpTimer = 0, vpSent = "", vpLast = 0, vFullTold = false;
 
 function toast(html) {
-  const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
+  const n = document.createElement("div"); n.className = "news" + (sheet ? " attop" : ""); n.setAttribute("role", "status");
   n.innerHTML = `<div><span>${html}</span></div><button>OK</button>`;
   n.querySelector("button").onclick = () => n.remove(); document.body.appendChild(n); setTimeout(() => n.remove(), 7000);
 }
@@ -872,8 +1271,9 @@ function vsCur(x) {
   if (x.dones[V.opp]) { V.oppC = 81 - G.clues; V.oppM = x.dones[V.opp].m | 0; }
   if (x.done) {
     const iWon = x.done.from === V.me;
-    if (V.told.counted !== r) { V.told.counted = r; if (iWon) opts.vsWins = (opts.vsWins || 0) + 1; else opts.vsLosses = (opts.vsLosses || 0) + 1; save(); }
-    if (G.done && vAnimDone) { if (V.told.end !== r && vsFree()) { V.told.end = r; save(); openVsEnd(); } }
+    if (V.told.counted !== r) { V.told.counted = r; if (iWon) opts.vsWins = (opts.vsWins || 0) + 1; else opts.vsLosses = (opts.vsLosses || 0) + 1;
+      checkBadges(null).forEach((id, k) => setTimeout(() => badgeToast(id), 2500 + k * 800)); save(); }
+    if (G.done && vAnimDone) { if (V.told.end !== r && vsFree()) { V.told.end = r; save(); openVsEnd(); if (iWon) { confetti(true); sfx("win"); } else sfx("lose"); } }
     else if (!G.done && !iWon && V.told.lost !== r && vsFree()) { V.told.lost = r; save(); openVsLost(); }
   } else if (G.done && vAnimDone && !sheet) openVsChk();
   if (x.left[V.opp] && V.told.left !== r) {
@@ -905,11 +1305,12 @@ function vsBegin(r, x) {
   Object.assign(V, { round: r, opp: them.from, oppName: (them.name || "Your friend").slice(0, 14), oppC: 0, oppM: 0, oppGone: false,
     joining: false, myStart: 0, goSent: 0, cancelled: 0, declined: 0, startAt: Date.now() + 3500, told: {} });
   const p = [...s.p].map(Number);
+  shelve("race");
   G = { level: s.lv, givens: p, sol: [...s.s].map(Number), cells: p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: p.filter(v => v).length, vs: r };
   sel = -1; notesMode = false; paused = false; vpSent = ""; vAnimDone = true;
   dropFocus(); closeSheet(); hideHome(); save(); buzz(30); vsCount(); refitSoon();
 }
-function vsCount() { render(); if (counting()) setTimeout(vsCount, 200); else if (G && G.vs) { buzz(40); refitSoon(); } }
+function vsCount() { render(); if (counting()) setTimeout(vsCount, 200); else if (G && G.vs) { buzz(40); sfx("go"); refitSoon(); } }
 
 function renderVs() {
   const on = !!(G && G.vs && V && V.round === G.vs), bar = $("vsbar");
@@ -1083,6 +1484,8 @@ const tickId = setInterval(() => {
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
 window.appBack = () => {
+  if (sheet === "daily") { closeSheet(); if (homeOn) showHome(); return true; }
+  if (statOn && !sheet) { closeStats(); return true; }
   if (sheet === "new" && newMode !== "solo") { $("newback").click(); return true; }
   if (sheet === "vs" || sheet === "vslost" || sheet === "vsleave") { closeSheet(); return true; }
   if (sheet === "vsjoin") { $("vsback").click(); return true; }
@@ -1136,16 +1539,19 @@ const vsTimer = setInterval(() => { if (V && vready && (!ves || ves.readyState =
 // for the tap tests
 window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode() { return notesMode; }, get paused() { return paused; }, get sheet() { return sheet; },
   get opts() { return opts; }, get homeOn() { return homeOn; }, get V() { return V; }, get vlog() { return vlog; }, get vnet() { return vnet; },
-  startGame, showHome, enter, render, checkUpdate, vsRounds, setSel(i) { sel = i; } };
+  get statOn() { return statOn; }, get sfxCount() { return sfxCount; },
+  startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Fixed: a Large or Extra large board keeps its size when a race starts. Play a friend is on the start page.";   // change with each update
+const NEWS = "New: a daily puzzle, streaks, 22 badges, Stats, sounds and confetti. Sounds can be switched off in Settings.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
 if (V && !V.told) V.told = {};
 if (G && G.vs && (!V || V.round !== G.vs)) delete G.vs;
 if (G && G.done && !G.vs) G = null;
+if (opts.shelf && opts.shelf.done) opts.shelf = null;
+if (!opts.badges) { opts.badges = {}; checkBadges(null); }   // first time with badges: earn what earlier play already shows, quietly
 applyTheme();
 fitBoard();
 let resume = false; try { resume = sessionStorage.getItem("sudoku.resume") === "1"; } catch (e) {}
