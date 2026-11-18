@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795010617;</script>
+<script>window.GAME_BUILD = 1795011061;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1508,6 +1508,12 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
 .gfoot .capw { flex: none !important; width: 58px !important; }
 .gfoot .ground.big { width: 50px !important; height: 50px !important; min-width: 0 !important; flex: none !important; border-radius: 50% !important; }
 .geditteam { flex: 1 1 auto !important; min-width: 0; white-space: nowrap; }
+
+/* the dial fills the hero's whole face (face 126 px across; dial circle is 82% of its box) */
+#actions .compass.hero .cface { width: 150px !important; height: 150px !important; margin: 0 !important; left: calc(50% - 75px) !important; top: calc(50% - 75px) !important; right: auto !important; bottom: auto !important; }
+#actions .compass.hero .cneedle-wrap { width: 116px !important; height: 116px !important; margin: 0 !important; left: calc(50% - 58px) !important; top: calc(50% - 58px) !important; right: auto !important; bottom: auto !important; }
+#actions .compass.hero .needle { width: 116px !important; height: 116px !important; }
+#actions .compass.hero .chero { left: calc(50% - 120.8px) !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
