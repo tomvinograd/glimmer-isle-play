@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795026701;</script>
+<script>window.GAME_BUILD = 1795026930;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -132,6 +132,14 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .best b { color: var(--ink); }
 .board.won .c { animation: wave .5s ease-out both; }
 @keyframes wave { 40% { background: var(--sel); } }
+.c.flash { animation: flash .6s ease-out both; }
+@keyframes flash { 30% { background: var(--sel); transform: scale(1.08); } }
+/* what's new note after an update */
+.news { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30; width: min(440px, calc(100% - 32px));
+  background: var(--ink); color: var(--bg); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; box-shadow: 0 6px 20px var(--shade); animation: newsin .35s cubic-bezier(.2,1,.4,1); }
+.news div { flex: 1; display: grid; gap: 2px; font-size: 13px; } .news b { font-size: 15px; }
+.news button { padding: 8px 12px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
+@keyframes newsin { from { transform: translate(-50%, 30px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-height: 640px) { .newbtn { display: none; } .app { gap: 8px; } .wrap { gap: 8px; } }
 </style>
@@ -294,6 +302,7 @@ function render() {
     if (v) cls += given ? " given" : " user";
     if (v && !given && opts.mistakes && v !== G.sol[i]) cls += " err";
     if (i === lastPop) cls += " pop";
+    if (el.classList.contains("flash")) cls += " flash";
     el.className = cls;
     if (v) el.textContent = v;
     else if (G.notes[i]) { let h = '<div class="notes">'; for (let d = 1; d <= 9; d++) h += `<span${opts.same && sv === d ? ' class="hl"' : ""}>${G.notes[i] & (1 << (d - 1)) ? d : ""}</span>`; el.innerHTML = h + "</div>"; }
@@ -323,9 +332,20 @@ function enter(d) {
   if (!G || G.done || paused || sel < 0 || G.givens[sel]) return;
   if (notesMode) { if (G.cells[sel]) return; snap(); G.notes[sel] ^= 1 << (d - 1); render(); save(); return; }
   if (G.cells[sel] === d) return;
-  snap(); G.cells[sel] = d; G.notes[sel] = 0; clearPeerNotes(sel, d); lastPop = sel;
+  snap(); G.cells[sel] = d; G.notes[sel] = 0; clearPeerNotes(sel, d); lastPop = sel; const at = sel;
+  if (d === G.sol[at]) setTimeout(() => flashDone(at), 0);
   if (d !== G.sol[sel]) { G.mistakes++; if (opts.mistakes) buzz(60); }
   checkWin(); render(); save();
+}
+// light up each row, column and box that the number at `i` just finished correctly
+function flashDone(i) {
+  const groups = [[...Array(81).keys()].filter(j => ROW[j] === ROW[i]), [...Array(81).keys()].filter(j => COL[j] === COL[i]), [...Array(81).keys()].filter(j => BOX[j] === BOX[i])];
+  if (G.cells.every((v, j) => v === G.sol[j])) return;   // the whole board has its own finish
+  let any = false;
+  for (const g of groups) if (g.every(j => G.cells[j] === G.sol[j])) { any = true;
+    g.forEach(j => { const el = cellEls[j]; el.classList.remove("flash"); void el.offsetWidth; el.style.animationDelay = (Math.abs(ROW[j] - ROW[i]) + Math.abs(COL[j] - COL[i])) * 40 + "ms"; el.classList.add("flash");
+      setTimeout(() => { el.classList.remove("flash"); el.style.animationDelay = ""; }, 1100); }); }
+  if (any) buzz(25);
 }
 function erase() { if (!G || G.done || paused || sel < 0 || G.givens[sel] || (!G.cells[sel] && !G.notes[sel])) return; snap(); G.cells[sel] = 0; G.notes[sel] = 0; render(); save(); }
 function undo() { if (!G || G.done || paused || !G.hist.length) return; const h = G.hist.pop(); G.cells = h.c; G.notes = h.n; render(); save(); }
@@ -416,8 +436,18 @@ window.appBack = () => { if (sheet === "new" && G && !G.done) { closeSheet(); re
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
 /* ---------- start ---------- */
+const NEWS = "Finished rows, columns and boxes now light up.";   // change with each update
+let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (G) render(); else startGame(opts.level || 4);
+if (window.GAME_BUILD) {
+  if (hadSave && opts.seenBuild !== window.GAME_BUILD) {
+    const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
+    n.innerHTML = `<div><b>Updated!</b><span>${NEWS}</span></div><button>Nice</button>`;
+    n.querySelector("button").onclick = () => n.remove(); document.body.appendChild(n); setTimeout(() => n.remove(), 9000);
+  }
+  opts.seenBuild = window.GAME_BUILD; save();
+}
 </script>
 </body>
 </html>
