@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795008537;</script>
+<script>window.GAME_BUILD = 1795009073;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1376,6 +1376,74 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 @keyframes flapR { 0%, 100% { transform: rotate(5deg); } 55% { transform: rotate(-13deg) scaleY(.95); } }
 @keyframes rigBob { 0%, 100% { transform: translateY(-3%); } 55% { transform: translateY(2%); } }
 
+
+/* ---- main screen polish A (18 Nov) ---- */
+:root { --ink: #5a3a22; --ol: 3px; }
+.ol, .hud .pill.res, .sil, .sit, .evtrack b, .evtime, .xbadge span, nav button, .zcard .zn, .rsub {
+  -webkit-text-stroke: var(--ol) var(--ink); paint-order: stroke fill; }
+/* top counters: dark capsule, big icon over the left edge, big outlined number */
+.hud .pill.res { background: rgba(70,45,30,.55) !important; border-radius: 10px !important; padding: 2px 12px 2px 26px !important; min-height: 30px !important;
+  font: 800 18px/1 var(--display) !important; color: #fff !important; text-shadow: none !important; position: relative; box-shadow: inset 0 2px 0 rgba(255,255,255,.12) !important; }
+.hud .pill.res > svg:first-child { position: absolute; left: -10px; top: 50%; transform: translateY(-50%); width: 32px !important; height: 32px !important;
+  filter: drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 2px 3px rgba(0,0,0,.25)) !important; }
+.hud .pill.res small { -webkit-text-stroke: 2px var(--ink); color: #fff; opacity: .9; font-size: 13px; }
+.hud .rescol { margin-left: 10px; }
+.rsub { color: #fff !important; font: 800 11px var(--display) !important; --ol: 2.5px; text-shadow: none !important; }
+/* level badge: gold ring with a fat outlined number */
+.xbadge { width: 46px !important; height: 46px !important; box-shadow: 0 0 0 3px var(--ink), 0 3px 6px rgba(0,0,0,.3) !important; }
+.xbadge span { width: 36px !important; height: 36px !important; background: linear-gradient(#ffe9a8, #f5b23c) !important; color: #fff !important; font: 800 18px var(--display); --ol: 3px; }
+.xbar { width: 52px !important; height: 9px !important; border-radius: 5px !important; background: rgba(70,45,30,.55) !important; box-shadow: 0 0 0 2px var(--ink) !important; }
+/* side icons: no white boxes; bigger icons with a dark outline glow, outlined labels */
+.sico { width: 66px; }
+.sic { background: none !important; box-shadow: none !important; width: 52px !important; height: 52px !important; }
+.sic svg, .sic img { width: 44px !important; height: 44px !important; filter: drop-shadow(0 0 0 var(--ink)) drop-shadow(1.5px 0 0 var(--ink)) drop-shadow(-1.5px 0 0 var(--ink)) drop-shadow(0 1.5px 0 var(--ink)) drop-shadow(0 -1.5px 0 var(--ink)) drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+.sil { background: none !important; box-shadow: none !important; color: #fff !important; font: 800 14px/16px var(--display) !important; padding: 0 !important; --ol: 3.5px; }
+.sit { background: none !important; color: #fff !important; font: 800 12px/14px var(--display) !important; --ol: 3px; }
+.sico:active .sic { transform: translateY(2px) scale(.94); }
+/* event bars: thicker, outlined, framed */
+.evtrack { height: 24px !important; border-radius: 7px !important; box-shadow: 0 0 0 2.5px var(--ink), inset 0 2px 0 rgba(0,0,0,.15) !important; background: rgba(70,45,30,.6) !important; }
+.evtrack b { font: 800 14px/24px var(--display) !important; text-shadow: none !important; --ol: 3px; }
+.evi, .evr { width: 38px !important; height: 38px !important; box-shadow: 0 0 0 2.5px var(--ink), 0 3px 5px rgba(0,0,0,.25) !important; }
+.evi svg, .evr svg { width: 22px !important; height: 22px !important; }
+.evtime { background: rgba(70,45,30,.55) !important; font-size: 12px !important; --ol: 2.5px; }
+/* softer background so the buttons stand out */
+#bg .bgimg { filter: saturate(.82) brightness(1.04) contrast(.94); }
+#bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(255,252,240,.18), rgba(255,252,240,0) 45%, rgba(255,250,235,.12)); }
+/* the compass: the hero of the screen */
+#actions .compass:not([data-act="throw"]):not([data-act="view:shop"]) { transform: scale(1.22); transform-origin: 50% 85%; }
+/* bottom tabs: chunky tiles, each its own colour, thick dark frame, outlined labels */
+nav { padding: 6px 6px 8px !important; background: linear-gradient(#7a5638, #5a3a22) !important; border-top: 3px solid #3d2716 !important; }
+nav .tabs { gap: 6px !important; }
+nav button:not(.navwide):not(.navx) { border-radius: 10px !important; height: 62px !important; color: #fff !important; font: 800 13px var(--display) !important; --ol: 3px;
+  box-shadow: inset 0 3px 0 rgba(255,255,255,.35), inset 0 -4px 0 rgba(0,0,0,.18), 0 0 0 2.5px #3d2716 !important; border: 0 !important; }
+nav button[data-act="view:menu"] { background: linear-gradient(#b9a493, #8d7462) !important; }
+nav button[data-act="view:team"] { background: linear-gradient(#a6e08f, #5fb24f) !important; }
+nav button[data-act="view:shop"] { background: linear-gradient(#9fd4ff, #4f9be0) !important; }
+nav button[data-act="view:arena"] { background: linear-gradient(#ffb09a, #e4614a) !important; }
+nav button:not(.navwide) svg, nav button:not(.navwide) img { width: 30px !important; height: 30px !important; filter: drop-shadow(0 2px 0 rgba(61,39,22,.7)) !important; }
+nav .navwide { border-radius: 10px !important; box-shadow: 0 0 0 2.5px #3d2716, inset 0 3px 0 rgba(255,255,255,.3) !important; }
+nav .navwide span { font: 800 20px var(--display) !important; color: #fff !important; --ol: 3.5px; -webkit-text-stroke: var(--ol) var(--ink); paint-order: stroke fill; }
+nav button:disabled { opacity: .45 !important; filter: grayscale(.5); }
+/* zone card name */
+.zcard .zn { color: #fff !important; font-size: 15px !important; --ol: 3px; }
+
+/* polish A fixes: fit the top bar on a phone, keep labels inside, restyle the dock buttons */
+.hud .pill.res { padding: 2px 9px 2px 21px !important; font-size: 16px !important; min-height: 28px !important; }
+.hud .pill.res > svg:first-child { left: -9px; width: 28px !important; height: 28px !important; }
+.hud .rescol { margin-left: 7px; }
+.hud .gbar { width: 34px !important; height: 7px !important; margin-left: 5px; box-shadow: 0 0 0 1.5px var(--ink); }
+.hud .xprof { margin-right: 6px; }
+.sidecol.r .sico { width: 60px; }
+.sidecol.r .sil, .sidecol.r .sit { white-space: nowrap; font-size: 13px !important; }
+.sidecol.r { right: 4px; }
+#actions .capw .round { background: linear-gradient(#fffaf0, #f3e3c8) !important; box-shadow: 0 0 0 2.5px var(--ink), inset 0 -3px 0 rgba(0,0,0,.12), 0 3px 5px rgba(0,0,0,.25) !important; border: 0 !important; border-radius: 10px !important; }
+#actions .cap { color: #fff !important; font-size: 14px !important; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+#actions .pill.cost, #actions .mult, #actions [data-act="mult"] { -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; color: #fff !important; }
+
+.zarrows { top: 62% !important; }
+
+nav button.navx { border-radius: 10px !important; height: 62px !important; color: #fff !important; font: 800 13px var(--display) !important; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; background: linear-gradient(#f3e3c8, #d9bf9c) !important; box-shadow: inset 0 3px 0 rgba(255,255,255,.4), inset 0 -4px 0 rgba(0,0,0,.18), 0 0 0 2.5px #3d2716 !important; border: 0 !important; }
+nav button.navx svg { width: 26px !important; height: 26px !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2449,12 +2517,13 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     return `<div class="hud"><span class="xprof"><span class="xbadge" style="--p:${Math.round(S.xxp / xNeed() * 100)}" aria-label="Explorer level"><span>${S.xlvl}</span></span><span class="xbar"><i style="width:${Math.round(S.xxp / xNeed() * 100)}%"></i></span></span>
       <span class="grow"></span>
       <span class="rescol"><span class="pill res glowpill" id="hudGlow">${IC.glow}<span><span id="glowNum">${S.glow}</span><small>/${glowCap()}</small></span><span class="gbar"><i id="glowBar" style="width:${Math.min(100, S.glow / glowCap() * 100)}%"></i></span></span><small class="rsub" id="glowNext">${glowNextText()}</small></span>
-      <span class="rescol"><span class="pill res" id="hudCoins">${IC.coin}${S.coins}</span>${gainAge < 1600 ? `<small class="cgain" style="animation-delay:-${Math.round(gainAge)}ms">+${coinGain.n}</small>` : ""}</span>
-      <span class="rescol"><span class="pill res" id="hudLeaves">${IC.leaf}${S.leaves}</span></span></div>
+      <span class="rescol"><span class="pill res" id="hudCoins">${IC.coin}${shortNum(S.coins)}</span>${gainAge < 1600 ? `<small class="cgain" style="animation-delay:-${Math.round(gainAge)}ms">+${coinGain.n}</small>` : ""}</span>
+      <span class="rescol"><span class="pill res" id="hudLeaves">${IC.leaf}${shortNum(S.leaves)}</span></span></div>
       ${E ? "" : sideIcons()}
       <div class="zarrows">${zArrow(-1)}${zArrow(1)}</div>
       <div class="ztop"><div class="evbars">${evBar("catch")}${evBar("fight")}<span class="evtime">${CLOCK}${mmss(nextMidnight() - Date.now())}</span>${(() => { const ev = eventNow(); return ev ? `<button class="evchip" data-act="eventinfo">${IC.star}${ev.name} · ${mmss(ev.end - Date.now())}</button>` : ""; })()}</div></div>`;
   }
+  const shortNum = n => n >= 1e9 ? (n / 1e9).toFixed(n < 1e10 ? 2 : 1) + "B" : n >= 1e6 ? (n / 1e6).toFixed(n < 1e7 ? 2 : 1) + "M" : n >= 1e5 ? Math.floor(n / 1e3) + "K" : String(n);  // top bar counters stay short
   const mmss = ms => { const t = Math.max(1, Math.ceil(ms / 1000)); return t >= 86400 ? `${Math.floor(t / 86400)}d ${Math.floor(t % 86400 / 3600)}h` : t >= 3600 ? `${Math.floor(t / 3600)}h ${Math.floor(t % 3600 / 60)}m` : `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
   function sideIcons() {  // shortcut columns on both sides of the walk screen
     const reqs = Array.isArray(S.requests) ? S.requests : [], nowMs = Date.now();
