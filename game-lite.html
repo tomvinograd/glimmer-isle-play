@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794946621;</script>
+<script>window.GAME_BUILD = 1794985122;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1359,9 +1359,14 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 /* ---- effects kit + moving parts ---- */
 #pfx { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9000; }
 .lvpop { position: fixed; z-index: 9001; pointer-events: none; transform: translate(-50%, -50%); font: 900 30px var(--display); color: #ffd34d; -webkit-text-stroke: 2px #8a4b10; paint-order: stroke fill; text-shadow: 0 3px 0 #8a4b10, 0 0 18px rgba(255, 210, 80, .8); white-space: nowrap; }
-.rig { position: relative; display: block; animation: rigBob 1.5s ease-in-out var(--rd, 0s) infinite; }
-.rig img { display: block; width: 100%; height: auto; }
-.rig .rp { position: absolute; left: 0; top: 0; animation: 1.5s ease-in-out var(--rd, 0s) infinite; }
+.rig { position: relative; display: block; }
+.rig.bob { animation: rigBob 1.5s ease-in-out var(--rd, 0s) infinite; }
+.rig img { display: block; height: auto; }
+.rig .rb { width: 100%; }
+.rig .rp { position: absolute; animation: 1.5s ease-in-out infinite; }
+.rig.still .rp, .rig.still { animation: none !important; }
+.rig .rp-ear { animation-name: rigEar; animation-timing-function: ease-out; }
+@keyframes rigEar { 0%, 84%, 100% { transform: rotate(0); } 87% { transform: rotate(var(--a)); } 90% { transform: rotate(calc(var(--a) * -.4)); } 93% { transform: rotate(calc(var(--a) * .6)); } 96% { transform: rotate(0); } }
 .rig .rp-l { animation-name: flapL; }
 .rig .rp-r { animation-name: flapR; }
 .rig .rp-sw { animation-name: rigSwing; }
@@ -1371,9 +1376,6 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 @keyframes flapR { 0%, 100% { transform: rotate(5deg); } 55% { transform: rotate(-13deg) scaleY(.95); } }
 @keyframes rigBob { 0%, 100% { transform: translateY(-3%); } 55% { transform: translateY(2%); } }
 
-/* ---- living mesh ---- */
-.mesh-host { position: relative; display: block; }
-.meshcv { position: absolute; pointer-events: none; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1634,19 +1636,20 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const EGG_ART = { 1: "egg-blue", 2: "egg-purple", 3: "egg-gold" };
   const DRAGON_SLOTS = [2, 14, 20];  // the dragon families keep their drawn dragons until their art exists
   // moving parts: a sprite cut into layers (tools/make_rig.py); parts sit behind the body and swing around a pivot
-  const RIGS = {  // parts: pivot (ox, oy) in the sprite's pixels; side l/r = wing flap, otherwise a swing of a degrees every t s, d s later
-    "34-0": { w: 512, h: 270, parts: [{ k: "wl", ox: 195, oy: 115, side: "l" }, { k: "wr", ox: 318, oy: 115, side: "r" }] },
-    "22-0": { w: 512, h: 479, parts: [{ k: "fl", ox: 128, oy: 285, a: 6, t: 2.4, d: 0 }, { k: "fr", ox: 312, oy: 300, a: -6, t: 2.4, d: 0 }, { k: "tl", ox: 284, oy: 404, a: 8, t: 1.6, d: .4 }] },
-    "32-0": { w: 285, h: 512, parts: [{ k: "tl", ox: 165, oy: 470, a: 5, t: 2.6, d: 0 }, { k: "fn", ox: 70, oy: 296, a: 6, t: 1.2, d: .3 }] },
-    "21-0": { w: 512, h: 470, parts: [{ k: "tl", ox: 402, oy: 322, a: 7, t: 1.8, d: 0 }, { k: "fl", ox: 62, oy: 300, a: 8, t: 2, d: .5 }, { k: "bl", ox: 132, oy: 380, a: 7, t: 2, d: 0 }, { k: "br", ox: 386, oy: 386, a: -7, t: 2, d: 1 }] },
-  };
-  function rigArt(k, size) {
-    const R = RIGS[k], d = (performance.now() / 1000 % 1.5).toFixed(2);
-    return `<div class="rig" style="width:${Math.round(size * .82)}px;--rd:-${d}s">${R.parts.map(p => `<img class="rp rp-${p.side || "sw"}" src="${ART["rig-" + k + "-" + p.k]}" alt="" draggable="false" style="transform-origin:${(p.ox / R.w * 100).toFixed(1)}% ${(p.oy / R.h * 100).toFixed(1)}%${p.side ? "" : `;--a:${p.a}deg;animation-duration:${p.t}s;animation-delay:-${((performance.now() / 1000 + p.d) % p.t).toFixed(2)}s`}">`).join("")}<img class="rb" src="${ART["rig-" + k + "-body"]}" alt="" draggable="false"></div>`;
+  // moving parts (tools/make_rig2.py + rigs_data.py): only parts move, the body stays still (Tom 18 Nov)
+  const RIGS = /*RIGS_START*/{"00-0":{"w":376,"h":512,"parts":[{"k":"hat","x":75,"y":4,"w":219,"h":147,"ox":175,"oy":112,"a":4,"kind":"hat","d":0},{"k":"el","x":46,"y":90,"w":72,"h":91,"ox":70,"oy":140,"a":8,"kind":"ear","d":0},{"k":"er","x":261,"y":87,"w":71,"h":93,"ox":305,"oy":140,"a":-8,"kind":"ear","d":0.4}]},"00-1":{"w":356,"h":512,"parts":[{"k":"hat","x":105,"y":3,"w":143,"h":143,"ox":180,"oy":110,"a":5,"kind":"hat","d":0},{"k":"el","x":43,"y":111,"w":72,"h":72,"ox":70,"oy":140,"a":8,"kind":"ear","d":0},{"k":"er","x":250,"y":111,"w":64,"h":69,"ox":300,"oy":140,"a":-8,"kind":"ear","d":0.4}]},"01-0":{"w":482,"h":512,"parts":[{"k":"hat","x":106,"y":9,"w":184,"h":122,"ox":185,"oy":95,"a":7,"kind":"hat","d":0}]},"01-1":{"w":491,"h":512,"parts":[{"k":"hat","x":128,"y":16,"w":204,"h":135,"ox":235,"oy":112,"a":7,"kind":"hat","d":0}]},"02-0":{"w":394,"h":512,"parts":[{"k":"wr","x":225,"y":165,"w":118,"h":156,"ox":258,"oy":250,"a":12,"kind":"wing","d":0},{"k":"wl","x":4,"y":175,"w":72,"h":110,"ox":40,"oy":230,"a":-12,"kind":"wing","d":0},{"k":"tl","x":235,"y":315,"w":103,"h":126,"ox":265,"oy":380,"a":8,"kind":"tail","d":0}]},"02-1":{"w":389,"h":512,"parts":[{"k":"wr","x":222,"y":150,"w":121,"h":161,"ox":255,"oy":235,"a":12,"kind":"wing","d":0},{"k":"wl","x":4,"y":201,"w":57,"h":81,"ox":30,"oy":225,"a":-12,"kind":"wing","d":0},{"k":"tl","x":248,"y":301,"w":137,"h":150,"ox":280,"oy":385,"a":8,"kind":"tail","d":0}]},"03-0":{"w":444,"h":512,"parts":[{"k":"gl","x":4,"y":37,"w":82,"h":168,"ox":52,"oy":120,"a":8,"kind":"fin","d":0},{"k":"gr","x":320,"y":39,"w":104,"h":173,"ox":352,"oy":120,"a":-8,"kind":"fin","d":0},{"k":"tl","x":305,"y":290,"w":134,"h":159,"ox":338,"oy":385,"a":8,"kind":"tail","d":0}]},"03-1":{"w":505,"h":512,"parts":[{"k":"gl","x":3,"y":37,"w":132,"h":297,"ox":105,"oy":170,"a":5,"kind":"fin","d":0},{"k":"gr","x":365,"y":5,"w":137,"h":327,"ox":400,"oy":170,"a":-5,"kind":"fin","d":0},{"k":"tl","x":325,"y":310,"w":154,"h":132,"ox":365,"oy":385,"a":8,"kind":"tail","d":0}]},"04-0":{"w":401,"h":512,"parts":[{"k":"tl","x":272,"y":301,"w":126,"h":111,"ox":292,"oy":350,"a":10,"kind":"tail","d":0}]},"04-1":{"w":399,"h":512,"parts":[{"k":"tl","x":260,"y":311,"w":135,"h":92,"ox":300,"oy":345,"a":10,"kind":"tail","d":0}]},"05-0":{"w":454,"h":512,"parts":[{"k":"hat","x":325,"y":82,"w":124,"h":134,"ox":365,"oy":170,"a":8,"kind":"hat","d":0}]},"05-1":{"w":382,"h":512,"parts":[{"k":"hat","x":164,"y":4,"w":214,"h":267,"ox":300,"oy":200,"a":4,"kind":"hat","d":0}]},"06-0":{"w":361,"h":512,"parts":[{"k":"hat","x":142,"y":3,"w":88,"h":90,"ox":175,"oy":58,"a":12,"kind":"hat","d":0}]},"06-1":{"w":430,"h":512,"parts":[{"k":"hat","x":167,"y":3,"w":228,"h":168,"ox":285,"oy":125,"a":5,"kind":"hat","d":0},{"k":"ar","x":342,"y":206,"w":84,"h":216,"ox":374,"oy":300,"a":7,"kind":"arm","d":0},{"k":"al","x":3,"y":245,"w":78,"h":153,"ox":45,"oy":300,"a":-7,"kind":"arm","d":0.6}]},"07-0":{"w":471,"h":512,"parts":[{"k":"tl","x":300,"y":141,"w":168,"h":307,"ox":335,"oy":420,"a":6,"kind":"tail","d":0},{"k":"el","x":23,"y":3,"w":109,"h":113,"ox":70,"oy":80,"a":7,"kind":"ear","d":0},{"k":"er","x":233,"y":8,"w":117,"h":108,"ox":305,"oy":80,"a":-7,"kind":"ear","d":0.5}]},"07-1":{"w":499,"h":512,"parts":[{"k":"tl","x":3,"y":97,"w":214,"h":294,"ox":165,"oy":320,"a":6,"kind":"tail","d":0},{"k":"el","x":207,"y":8,"w":109,"h":163,"ox":245,"oy":135,"a":7,"kind":"ear","d":0},{"k":"er","x":379,"y":3,"w":116,"h":168,"ox":430,"oy":135,"a":-7,"kind":"ear","d":0.5}]},"08-0":{"w":435,"h":512,"parts":[{"k":"er","x":325,"y":50,"w":97,"h":116,"ox":375,"oy":125,"a":-9,"kind":"ear","d":0}]},"08-1":{"w":431,"h":512,"parts":[{"k":"hat","x":90,"y":3,"w":256,"h":72,"ox":205,"oy":45,"a":3,"kind":"hat","d":0},{"k":"er","x":288,"y":60,"w":118,"h":131,"ox":335,"oy":150,"a":-9,"kind":"ear","d":0}]},"09-0":{"w":465,"h":512,"parts":[{"k":"el","x":70,"y":12,"w":111,"h":143,"ox":120,"oy":40,"a":7,"kind":"ear","d":0},{"k":"er","x":290,"y":8,"w":171,"h":146,"ox":340,"oy":40,"a":-7,"kind":"ear","d":0.4},{"k":"tl","x":4,"y":298,"w":117,"h":113,"ox":85,"oy":350,"a":10,"kind":"tail","d":0}]},"09-1":{"w":500,"h":512,"parts":[{"k":"tl","x":4,"y":114,"w":124,"h":252,"ox":110,"oy":320,"a":6,"kind":"tail","d":0},{"k":"el","x":105,"y":9,"w":121,"h":156,"ox":175,"oy":35,"a":7,"kind":"ear","d":0},{"k":"er","x":355,"y":9,"w":141,"h":147,"ox":400,"oy":40,"a":-7,"kind":"ear","d":0.4}]},"10-0":{"w":486,"h":512,"parts":[{"k":"tl","x":4,"y":361,"w":167,"h":98,"ox":125,"oy":420,"a":9,"kind":"tail","d":0},{"k":"el","x":119,"y":10,"w":77,"h":112,"ox":135,"oy":90,"a":7,"kind":"ear","d":0},{"k":"er","x":257,"y":16,"w":114,"h":95,"ox":305,"oy":75,"a":-7,"kind":"ear","d":0.4}]},"10-1":{"w":512,"h":436,"parts":[{"k":"wl","x":4,"y":86,"w":177,"h":200,"ox":160,"oy":130,"a":8,"kind":"wing","d":0},{"k":"wr","x":318,"y":13,"w":188,"h":301,"ox":362,"oy":130,"a":-8,"kind":"wing","d":0},{"k":"tl","x":35,"y":230,"w":156,"h":133,"ox":155,"oy":300,"a":9,"kind":"tail","d":0}]},"11-0":{"w":414,"h":512,"parts":[{"k":"hat","x":143,"y":3,"w":107,"h":123,"ox":192,"oy":92,"a":7,"kind":"hat","d":0}]},"11-1":{"w":407,"h":512,"parts":[{"k":"hat","x":189,"y":3,"w":114,"h":143,"ox":247,"oy":110,"a":6,"kind":"hat","d":0}]},"12-0":{"w":438,"h":512,"parts":[{"k":"tl","x":11,"y":290,"w":135,"h":179,"ox":100,"oy":390,"a":9,"kind":"tail","d":0},{"k":"er","x":268,"y":9,"w":123,"h":107,"ox":320,"oy":80,"a":-8,"kind":"ear","d":0}]},"12-1":{"w":455,"h":512,"parts":[{"k":"tl","x":6,"y":325,"w":150,"h":146,"ox":110,"oy":400,"a":9,"kind":"tail","d":0},{"k":"er","x":351,"y":32,"w":96,"h":90,"ox":400,"oy":85,"a":-8,"kind":"ear","d":0}]},"13-0":{"w":452,"h":512,"parts":[{"k":"el","x":4,"y":99,"w":142,"h":129,"ox":100,"oy":130,"a":7,"kind":"ear","d":0},{"k":"er","x":305,"y":78,"w":143,"h":156,"ox":345,"oy":130,"a":-7,"kind":"ear","d":0.4},{"k":"hat","x":222,"y":4,"w":118,"h":122,"ox":280,"oy":90,"a":4,"kind":"hat","d":0},{"k":"tl","x":31,"y":358,"w":74,"h":74,"ox":70,"oy":380,"a":9,"kind":"tail","d":0}]},"13-1":{"w":408,"h":512,"parts":[{"k":"el","x":4,"y":118,"w":87,"h":104,"ox":55,"oy":160,"a":7,"kind":"ear","d":0},{"k":"er","x":270,"y":130,"w":53,"h":59,"ox":305,"oy":150,"a":-7,"kind":"ear","d":0.4},{"k":"hat","x":71,"y":4,"w":100,"h":122,"ox":105,"oy":92,"a":4,"kind":"hat","d":0},{"k":"tl","x":305,"y":226,"w":78,"h":105,"ox":345,"oy":290,"a":10,"kind":"tail","d":0}]},"14-0":{"w":512,"h":436,"parts":[{"k":"tl","x":350,"y":147,"w":158,"h":149,"ox":390,"oy":215,"a":7,"kind":"tail","d":0}]},"14-1":{"w":512,"h":457,"parts":[{"k":"tl","x":365,"y":172,"w":142,"h":157,"ox":400,"oy":250,"a":7,"kind":"tail","d":0}]},"15-0":{"w":468,"h":512,"parts":[{"k":"tl","x":288,"y":270,"w":88,"h":174,"ox":320,"oy":390,"a":9,"kind":"tail","d":0},{"k":"al","x":5,"y":220,"w":76,"h":176,"ox":45,"oy":300,"a":-7,"kind":"arm","d":0}]},"15-1":{"w":396,"h":512,"parts":[{"k":"hat","x":77,"y":4,"w":230,"h":152,"ox":180,"oy":120,"a":3,"kind":"hat","d":0},{"k":"ar","x":320,"y":270,"w":72,"h":161,"ox":352,"oy":300,"a":7,"kind":"arm","d":0}]},"16-0":{"w":491,"h":512,"parts":[{"k":"tl","x":372,"y":293,"w":113,"h":174,"ox":404,"oy":400,"a":9,"kind":"tail","d":0},{"k":"fl","x":5,"y":165,"w":96,"h":150,"ox":65,"oy":240,"a":-9,"kind":"fin","d":0}]},"16-1":{"w":512,"h":300,"parts":[{"k":"tl","x":5,"y":17,"w":283,"h":251,"ox":230,"oy":130,"a":5,"kind":"tail","d":0}]},"17-0":{"w":483,"h":512,"parts":[{"k":"el","x":5,"y":109,"w":106,"h":137,"ox":65,"oy":175,"a":8,"kind":"ear","d":0},{"k":"tl","x":385,"y":231,"w":92,"h":125,"ox":417,"oy":295,"a":10,"kind":"tail","d":0}]},"17-1":{"w":476,"h":512,"parts":[{"k":"el","x":4,"y":130,"w":92,"h":119,"ox":55,"oy":185,"a":8,"kind":"ear","d":0}]},"18-0":{"w":489,"h":512,"parts":[{"k":"hat","x":32,"y":4,"w":181,"h":197,"ox":140,"oy":160,"a":3,"kind":"hat","d":0},{"k":"ar","x":338,"y":139,"w":146,"h":197,"ox":372,"oy":280,"a":9,"kind":"fin","d":0}]},"19-0":{"w":451,"h":512,"parts":[{"k":"ar","x":375,"y":305,"w":72,"h":96,"ox":415,"oy":370,"a":9,"kind":"arm","d":0},{"k":"er","x":333,"y":125,"w":77,"h":89,"ox":385,"oy":175,"a":-9,"kind":"ear","d":0}]},"20-0":{"w":409,"h":512,"parts":[{"k":"al","x":4,"y":249,"w":87,"h":120,"ox":50,"oy":300,"a":-9,"kind":"arm","d":0},{"k":"tl","x":290,"y":301,"w":114,"h":148,"ox":322,"oy":380,"a":8,"kind":"tail","d":0},{"k":"hat","x":128,"y":5,"w":118,"h":86,"ox":175,"oy":58,"a":6,"kind":"hat","d":0}]},"21-0":{"w":512,"h":470,"parts":[{"k":"tl","x":370,"y":268,"w":138,"h":106,"ox":402,"oy":322,"a":8,"kind":"tail","d":0},{"k":"fl","x":4,"y":255,"w":91,"h":107,"ox":62,"oy":300,"a":-10,"kind":"fin","d":0},{"k":"bl","x":84,"y":348,"w":112,"h":103,"ox":132,"oy":380,"a":8,"kind":"fin","d":0},{"k":"br","x":336,"y":348,"w":96,"h":76,"ox":386,"oy":386,"a":-8,"kind":"fin","d":1}]},"22-0":{"w":512,"h":479,"parts":[{"k":"fl","x":4,"y":157,"w":164,"h":228,"ox":128,"oy":285,"a":7,"kind":"fin","d":0},{"k":"fr","x":280,"y":220,"w":228,"h":204,"ox":312,"oy":300,"a":-7,"kind":"fin","d":0},{"k":"tl","x":198,"y":366,"w":168,"h":109,"ox":284,"oy":404,"a":10,"kind":"tail","d":0}]},"23-0":{"w":411,"h":512,"parts":[{"k":"tla","x":26,"y":312,"w":132,"h":196,"ox":110,"oy":345,"a":5,"kind":"tent","d":0},{"k":"tlb","x":270,"y":308,"w":122,"h":178,"ox":305,"oy":345,"a":-5,"kind":"tent","d":0.5},{"k":"tlc","x":135,"y":425,"w":165,"h":83,"ox":210,"oy":455,"a":4,"kind":"tent","d":1},{"k":"hat","x":203,"y":4,"w":98,"h":72,"ox":258,"oy":40,"a":9,"kind":"hat","d":0}]},"23-1":{"w":302,"h":512,"parts":[{"k":"tla","x":4,"y":294,"w":137,"h":214,"ox":95,"oy":330,"a":5,"kind":"tent","d":0},{"k":"tlb","x":185,"y":296,"w":98,"h":173,"ox":220,"oy":330,"a":-5,"kind":"tent","d":0.5},{"k":"ar","x":215,"y":201,"w":83,"h":124,"ox":248,"oy":270,"a":-8,"kind":"arm","d":0},{"k":"hat","x":24,"y":4,"w":139,"h":112,"ox":85,"oy":80,"a":5,"kind":"hat","d":0}]},"24-0":{"w":446,"h":512,"parts":[{"k":"tl","x":335,"y":224,"w":108,"h":177,"ox":368,"oy":310,"a":9,"kind":"tail","d":0},{"k":"hat","x":82,"y":5,"w":104,"h":111,"ox":120,"oy":85,"a":8,"kind":"hat","d":0}]},"24-1":{"w":419,"h":512,"parts":[{"k":"tl","x":315,"y":242,"w":101,"h":184,"ox":348,"oy":340,"a":9,"kind":"tail","d":0},{"k":"hat","x":40,"y":5,"w":170,"h":176,"ox":115,"oy":150,"a":4,"kind":"hat","d":0}]},"25-0":{"w":512,"h":471,"parts":[{"k":"hat","x":395,"y":142,"w":112,"h":154,"ox":432,"oy":215,"a":8,"kind":"hat","d":0},{"k":"al","x":5,"y":185,"w":106,"h":146,"ox":70,"oy":260,"a":-9,"kind":"arm","d":0}]},"25-1":{"w":512,"h":389,"parts":[{"k":"hat","x":383,"y":4,"w":125,"h":167,"ox":420,"oy":120,"a":6,"kind":"hat","d":0},{"k":"al","x":4,"y":150,"w":102,"h":125,"ox":65,"oy":215,"a":-9,"kind":"arm","d":0}]},"26-0":{"w":389,"h":512,"parts":[{"k":"hat","x":166,"y":3,"w":97,"h":93,"ox":210,"oy":62,"a":8,"kind":"hat","d":0},{"k":"el","x":3,"y":23,"w":137,"h":135,"ox":90,"oy":110,"a":5,"kind":"ear","d":0},{"k":"er","x":265,"y":14,"w":121,"h":142,"ox":300,"oy":110,"a":-5,"kind":"ear","d":0.4}]},"26-1":{"w":398,"h":512,"parts":[{"k":"al","x":3,"y":250,"w":138,"h":211,"ox":90,"oy":310,"a":-6,"kind":"arm","d":0},{"k":"ar","x":290,"y":240,"w":87,"h":198,"ox":322,"oy":300,"a":6,"kind":"arm","d":0.6}]},"27-0":{"w":453,"h":512,"parts":[{"k":"tl","x":315,"y":160,"w":124,"h":171,"ox":350,"oy":280,"a":6,"kind":"tail","d":0},{"k":"al","x":21,"y":210,"w":85,"h":133,"ox":65,"oy":280,"a":-9,"kind":"arm","d":0}]},"27-1":{"w":432,"h":512,"parts":[{"k":"hat","x":4,"y":4,"w":267,"h":319,"ox":130,"oy":260,"a":3,"kind":"hat","d":0}]},"28-0":{"w":482,"h":512,"parts":[{"k":"hat","x":305,"y":50,"w":129,"h":146,"ox":370,"oy":150,"a":8,"kind":"hat","d":0},{"k":"el","x":16,"y":7,"w":105,"h":99,"ox":60,"oy":65,"a":7,"kind":"ear","d":0}]},"28-1":{"w":512,"h":418,"parts":[{"k":"hat","x":118,"y":4,"w":214,"h":127,"ox":230,"oy":95,"a":4,"kind":"hat","d":0}]},"29-0":{"w":404,"h":512,"parts":[{"k":"tl","x":5,"y":318,"w":146,"h":164,"ox":100,"oy":400,"a":8,"kind":"tail","d":0},{"k":"el","x":71,"y":11,"w":100,"h":105,"ox":110,"oy":75,"a":7,"kind":"ear","d":0},{"k":"er","x":240,"y":4,"w":127,"h":112,"ox":300,"oy":75,"a":-7,"kind":"ear","d":0.4}]},"29-1":{"w":461,"h":512,"parts":[{"k":"bl","x":15,"y":94,"w":81,"h":107,"ox":55,"oy":120,"a":10,"kind":"arm","d":0},{"k":"br","x":320,"y":29,"w":106,"h":122,"ox":360,"oy":70,"a":-10,"kind":"arm","d":0.7}]},"30-0":{"w":512,"h":479,"parts":[{"k":"wl","x":5,"y":243,"w":126,"h":115,"ox":90,"oy":290,"a":-12,"kind":"wing","d":0},{"k":"hat","x":231,"y":5,"w":122,"h":71,"ox":290,"oy":40,"a":9,"kind":"hat","d":0}]},"30-1":{"w":501,"h":512,"parts":[{"k":"tl","x":4,"y":184,"w":257,"h":279,"ox":215,"oy":270,"a":6,"kind":"tail","d":0}]},"31-0":{"w":475,"h":512,"parts":[{"k":"al","x":5,"y":203,"w":106,"h":142,"ox":65,"oy":265,"a":-9,"kind":"arm","d":0},{"k":"ar","x":400,"y":248,"w":70,"h":135,"ox":432,"oy":300,"a":9,"kind":"arm","d":0.6},{"k":"el","x":67,"y":6,"w":79,"h":113,"ox":90,"oy":80,"a":6,"kind":"ear","d":0},{"k":"er","x":330,"y":11,"w":117,"h":115,"ox":385,"oy":80,"a":-6,"kind":"ear","d":0.4}]},"31-1":{"w":505,"h":512,"parts":[{"k":"al","x":5,"y":196,"w":96,"h":107,"ox":60,"oy":220,"a":-9,"kind":"arm","d":0},{"k":"el","x":75,"y":26,"w":78,"h":74,"ox":95,"oy":60,"a":6,"kind":"ear","d":0}]},"32-0":{"w":285,"h":512,"parts":[{"k":"tl","x":120,"y":356,"w":161,"h":152,"ox":165,"oy":470,"a":6,"kind":"tail","d":0},{"k":"fn","x":27,"y":238,"w":76,"h":127,"ox":70,"oy":296,"a":10,"kind":"fin","d":0}]},"33-0":{"w":479,"h":512,"parts":[{"k":"al","x":4,"y":232,"w":115,"h":119,"ox":85,"oy":260,"a":-7,"kind":"arm","d":0},{"k":"ar","x":360,"y":240,"w":115,"h":221,"ox":400,"oy":300,"a":5,"kind":"arm","d":0.6},{"k":"hat","x":127,"y":4,"w":278,"h":207,"ox":240,"oy":170,"a":2,"kind":"hat","d":0}]},"34-0":{"w":512,"h":270,"bob":1,"parts":[{"k":"wl","x":0,"y":0,"w":512,"h":270,"ox":195,"oy":115,"kind":"flapL","a":0,"d":0},{"k":"wr","x":0,"y":0,"w":512,"h":270,"ox":318,"oy":115,"kind":"flapR","a":0,"d":0}]}}/*RIGS_END*/;
+  const RIG_T = { tail: 1.9, fin: 2.3, wing: 1.3, arm: 2.8, tent: 2.5, hat: 3.6, ear: 5, flapL: 1.5, flapR: 1.5 };
+  function rigArt(k, size, still) {
+    const R = RIGS[k], now = performance.now() / 1000, seed = (parseInt(k) * 0.37) % 1;
+    const parts = R.parts.map(p => {
+      const t = RIG_T[p.kind] || 2.2, del = ((now + p.d + seed * t) % t).toFixed(2), cls = p.kind === "flapL" || p.kind === "flapR" ? p.kind : p.kind === "ear" ? "ear" : "sw";
+      return `<img class="rp rp-${cls}" src="${ART["rig-" + k + "-" + p.k]}" alt="" draggable="false" style="left:${(p.x / R.w * 100).toFixed(2)}%;top:${(p.y / R.h * 100).toFixed(2)}%;width:${(p.w / R.w * 100).toFixed(2)}%;transform-origin:${((p.ox - p.x) / p.w * 100).toFixed(1)}% ${((p.oy - p.y) / p.h * 100).toFixed(1)}%;--a:${p.a}deg;animation-duration:${t}s;animation-delay:-${del}s">`;
+    }).join("");
+    return `<div class="rig${R.bob ? " bob" : ""}${still ? " still" : ""}" style="width:${Math.round(size * .82)}px;--rd:-${(now % 1.5).toFixed(2)}s">${parts}<img class="rb" src="${ART["rig-" + k + "-body"]}" alt="" draggable="false"></div>`;
   }
   function art(sp, evo, size = 76) {
     const k = String(sp).padStart(2, "0") + "-" + (evo ? 1 : 0);
-    if (ART[k]) { if (size >= 70 && RIGS[k] && ART["rig-" + k + "-body"]) return rigArt(k, size); return `<img src="${ART[k]}" alt="" width="${Math.round(size * .82)}" style="height:auto;display:block" draggable="false">`; }
+    if (ART[k]) { if (RIGS[k] && ART["rig-" + k + "-body"] && size >= 70) return rigArt(k, size); return `<img src="${ART[k]}" alt="" width="${Math.round(size * .82)}" style="height:auto;display:block" draggable="false">`; }
     if (DRAGON_SLOTS.includes(sp)) return dragonArt(sp, evo, size);
     return blobArt(sp, evo, size);
   }
@@ -1721,65 +1724,12 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   function fxReward(kind) { if (moOff()) return; const fresh = performance.now() - PFX.tt < 1500, x = fresh ? PFX.tx : innerWidth / 2, y = fresh ? PFX.ty : innerHeight * .45;
     if (kind === "coin") { fxCoins(x, y, 5); fxBurst(x, y, 6, GOLDS, 140); return; }
     fxBurst(x, y, 16, GOLDS, 240); fxCoins(x, y, 7); fxRing(x, y, "#ffd34d", 70, .5, 0, 5); }
-  // ---------- living mesh: every big Glumi picture bends a little (head, sides, top), drawn as a grid of triangles ----------
-  const MESH = { on: false, last: 0, N: 6, P: .14 };
-  const mss = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
-  function meshDef(u, v, t, w, h) {  // how far grid point (u, v) moves at time t; u, v from 0 to 1 over the picture
-    const wh = mss(.62, .2, v), ang = .055 * Math.sin(t * 1.3) * wh, x = (u - .5) * w, y = (v - .58) * h;  // head tilts on the neck
-    let dx = x * Math.cos(ang) - y * Math.sin(ang) - x, dy = x * Math.sin(ang) + y * Math.cos(ang) - y;
-    dy -= .018 * h * Math.sin(t * 2.6) * wh;  // head bob
-    const left = u < .5, ws = mss(.22, .45, Math.abs(u - .5)) * mss(.25, .45, v) * mss(.88, .62, v), ph = t * 2.2 + (left ? 0 : Math.PI);
-    dy += .035 * h * Math.sin(ph) * ws; dx += (left ? -1 : 1) * .012 * w * Math.sin(ph) * ws;  // sides (arms, fins, wings) wave in turn
-    dx += .022 * w * Math.sin(t * 2 + u * 4) * mss(.28, 0, v);  // top (ears, tufts, flames, crowns) sways
-    const keep = 1 - mss(.76, .97, v); return [dx * keep, dy * keep];  // feet stay planted
-  }
-  function meshTri(cx, img, s0, s1, s2, d0, d1, d2) {
-    const mx = (d0[0] + d1[0] + d2[0]) / 3, my = (d0[1] + d1[1] + d2[1]) / 3;
-    const g = p => { const ex = p[0] - mx, ey = p[1] - my, L = Math.hypot(ex, ey) || 1; return [p[0] + ex / L * .8, p[1] + ey / L * .8]; };  // grow a hair so no seams show
-    const e0 = g(d0), e1 = g(d1), e2 = g(d2);
-    const [x0, y0] = s0, [x1, y1] = s1, [x2, y2] = s2, [u0, v0] = d0, [u1, v1] = d1, [u2, v2] = d2;
-    const dl = x0 * y1 + y0 * x2 + x1 * y2 - y1 * x2 - y0 * x1 - x0 * y2; if (!dl) return;
-    const a = (u0 * y1 + y0 * u2 + u1 * y2 - y1 * u2 - y0 * u1 - u0 * y2) / dl, c = (x0 * u1 + u0 * x2 + x1 * u2 - u1 * x2 - u0 * x1 - x0 * u2) / dl,
-      e = (x0 * y1 * u2 + y0 * u1 * x2 + u0 * x1 * y2 - u0 * y1 * x2 - y0 * x1 * u2 - x0 * u1 * y2) / dl,
-      b = (v0 * y1 + y0 * v2 + v1 * y2 - y1 * v2 - y0 * v1 - v0 * y2) / dl, d = (x0 * v1 + v0 * x2 + x1 * v2 - v1 * x2 - v0 * x1 - x0 * v2) / dl,
-      f = (x0 * y1 * v2 + y0 * v1 * x2 + v0 * x1 * y2 - v0 * y1 * x2 - y0 * x1 * v2 - x0 * v1 * y2) / dl;
-    const sx = Math.max(0, Math.floor(Math.min(x0, x1, x2)) - 1), sy = Math.max(0, Math.floor(Math.min(y0, y1, y2)) - 1),
-      sw = Math.min(img.naturalWidth - sx, Math.ceil(Math.max(x0, x1, x2)) + 2 - sx), sh = Math.min(img.naturalHeight - sy, Math.ceil(Math.max(y0, y1, y2)) + 2 - sy);
-    cx.save(); cx.beginPath(); cx.moveTo(e0[0], e0[1]); cx.lineTo(e1[0], e1[1]); cx.lineTo(e2[0], e2[1]); cx.closePath(); cx.clip();
-    cx.transform(a, b, c, d, e, f); cx.drawImage(img, sx, sy, sw, sh, sx, sy, sw, sh); cx.restore();
-  }
-  function meshDraw(host, t) {
-    const img = host.querySelector("img"), off = moOff();
-    if (!img || !img.complete || !img.naturalWidth || off) { if (off && host.cv) { host.cv.remove(); host.cv = null; if (img) img.style.visibility = ""; } return; }
-    const w = img.clientWidth, h = img.clientHeight; if (!w || !h) return;
-    const P = MESH.P, dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(w * (1 + 2 * P)), H = Math.round(h * (1 + 2 * P));
-    let cv = host.cv; if (!cv || !cv.isConnected) { cv = host.cv = document.createElement("canvas"); cv.className = "meshcv"; host.appendChild(cv); }
-    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + "px"; cv.style.height = H + "px"; cv.style.left = -(w * P) + "px"; cv.style.top = -(h * P) + "px"; }
-    const cx = cv.getContext("2d"); cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, W, H); cx.imageSmoothingQuality = "high";
-    const N = MESH.N, iw = img.naturalWidth, ih = img.naturalHeight, ox = w * P, oy = h * P, tt = t + (+host.dataset.seed || 0), V = [], S2 = [];
-    for (let j = 0; j <= N; j++) for (let i = 0; i <= N; i++) { const u = i / N, v = j / N, [dx, dy] = meshDef(u, v, tt, w, h); V.push([ox + u * w + dx, oy + v * h + dy]); S2.push([u * iw, v * ih]); }
-    const k = w / iw;  // source pixels -> picture size: transform maps source straight into the canvas
-    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-      const a = j * (N + 1) + i, b = a + 1, c = a + N + 1, d = c + 1;
-      meshTri(cx, img, S2[a], S2[b], S2[c], V[a], V[b], V[c]); meshTri(cx, img, S2[b], S2[d], S2[c], V[b], V[d], V[c]);
-    }
-    img.style.visibility = "hidden";
-  }
-  function meshTick(now) {
-    const hosts = document.querySelectorAll(".mesh-host");
-    if (!hosts.length) { MESH.on = false; return; }
-    if (!document.hidden && now - MESH.last >= 33) { MESH.last = now; for (const hst of hosts) try { meshDraw(hst, now / 1000); } catch {} }
-    requestAnimationFrame(meshTick);
-  }
-  setInterval(() => { if (!MESH.on && document.querySelector(".mesh-host")) { MESH.on = true; requestAnimationFrame(meshTick); } }, 400);
   // ---------- motion kit: idle, fidgets, battle moves, catch, evolve ----------
   const MO_EL_T = { ember: 2.6, tide: 4.2, leaf: 4.6, spark: 3, stone: 5, shade: 4 };
   function live(sp, evo, size, o = {}) {
     const el = SP[sp].el, t = (MO_EL_T[el] || 4) * (.9 + (sp % 5) * .05), seed = o.seed != null ? o.seed : sp;
     const d = ((performance.now() / 1000 + seed * .618 * t) % t).toFixed(2);  // phase follows the clock: a redraw doesn't restart it
-    const ak = String(sp).padStart(2, "0") + "-" + (evo ? 1 : 0), meshy = size >= 115 && ART[ak] && !RIGS[ak];
-    const pic = meshy ? `<div class="mesh-host" data-seed="${(seed * 1.7 % 6).toFixed(2)}">${art(sp, evo, size)}</div>` : art(sp, evo, size);
-    const inner = o.flip ? `<div style="transform:scaleX(-1)">${pic}</div>` : pic;
+    const inner = o.flip ? `<div style="transform:scaleX(-1)">${art(sp, evo, size)}</div>` : art(sp, evo, size);
     return `<div class="mo-f${o.cls ? " " + o.cls : ""}"${o.tap ? ' data-mo="tap"' : ""}><div class="mo el-${el}" style="animation-duration:${t.toFixed(2)}s;animation-delay:-${d}s">${inner}</div></div>`;
   }
   const moOff = () => RM || (typeof quickNow !== "undefined" && quickNow) || document.hidden;
