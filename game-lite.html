@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795009419;</script>
+<script>window.GAME_BUILD = 1795009679;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1458,6 +1458,56 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
 #actions .dock .side { position: relative; z-index: 3; }
 
 #actions { background: linear-gradient(rgba(255,248,236,0) 0, rgba(255,248,236,0) 38%, rgba(255,248,236,.55) 70%, rgba(255,248,236,.8)) !important; }  /* softer, lower fade: the side icons above stay clear */
+
+/* ---- Glumis page: trading cards (18 Nov) ---- */
+.gtab { justify-self: start; margin: -4px 0 2px; padding: 4px 16px 6px; border-radius: 10px 10px 10px 2px; background: linear-gradient(#a6e08f, #5fb24f); box-shadow: 0 0 0 2.5px var(--ink), inset 0 3px 0 rgba(255,255,255,.35);
+  font: 800 22px var(--display); color: #fff; -webkit-text-stroke: 3.5px var(--ink); paint-order: stroke fill; }
+.gtool { display: flex; align-items: center; gap: 8px; }
+.gcount { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 6px; border-radius: 10px; background: rgba(70,45,30,.62); color: #fff; font: 800 16px var(--display); -webkit-text-stroke: 2.5px var(--ink); paint-order: stroke fill; }
+.gcount svg { width: 24px; height: 24px; }
+.gsort { height: 36px; border-radius: 10px; border: 0; padding: 0 10px; font: 800 14px var(--display); color: var(--ink); background: #fff8ec; box-shadow: 0 0 0 2.5px var(--ink); }
+.ground { position: relative; width: 38px; height: 38px; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center; color: var(--ink); background: linear-gradient(#fffaf0, #f0dfc3); box-shadow: 0 0 0 2.5px var(--ink), inset 0 -3px 0 rgba(0,0,0,.12); }
+.ground svg { width: 20px; height: 20px; }
+.ground.on { background: linear-gradient(#ffe08a, #f5b23c); }
+.ground.big { width: 50px; height: 50px; background: linear-gradient(#8d6a4c, #5a3a22); color: #fff; }
+.ground.big svg { width: 28px; height: 28px; }
+.gdot { position: absolute; top: -2px; right: -2px; width: 11px; height: 11px; border-radius: 50%; background: #ff5a4f; box-shadow: 0 0 0 2px #fff; }
+.gsearch { width: 100%; height: 38px; border-radius: 10px; border: 0; padding: 0 12px; font: 700 15px var(--body); box-shadow: 0 0 0 2.5px var(--ink); background: #fffdf8; }
+.tcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 2px 2px 86px; }
+.tcard { position: relative; aspect-ratio: 3 / 4; border: 0; padding: 0; border-radius: 12px; overflow: hidden; isolation: isolate;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--ec) 35%, #fff), color-mix(in srgb, var(--ec) 75%, #4a3020));
+  box-shadow: 0 0 0 3px var(--gc), 0 0 0 5px #fff, 0 0 0 7px rgba(90,58,34,.55), 0 4px 8px rgba(40,25,10,.3); margin: 7px 4px 4px; }
+.tcard .tpat { position: absolute; inset: 0; z-index: -1; opacity: .22; background:
+  repeating-linear-gradient(45deg, rgba(255,255,255,.9) 0 1.5px, transparent 1.5px 13px), repeating-linear-gradient(-45deg, rgba(255,255,255,.9) 0 1.5px, transparent 1.5px 13px); }
+.tcard.q4 { box-shadow: 0 0 0 3px transparent, 0 0 0 5px #fff, 0 0 0 7px rgba(90,58,34,.55), 0 4px 8px rgba(40,25,10,.3); }
+.tcard.q4::after { content: ""; position: absolute; inset: 0; border-radius: 12px; padding: 3px; z-index: 3; pointer-events: none;
+  background: conic-gradient(from var(--ra, 0deg), #ff6b6b, #ffd34d, #5fcf6a, #3fb6f0, #9b7bf0, #ff6b6b);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: rbspin 4s linear infinite; }
+@property --ra { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes rbspin { to { --ra: 360deg; } }
+.tcard .tart { position: absolute; left: 0; right: 0; top: 10%; bottom: 14%; display: grid; place-items: center; }
+.tcard .tart img, .tcard .tart svg { width: 96% !important; height: auto; max-height: 100%; object-fit: contain; filter: drop-shadow(0 3px 2px rgba(40,25,10,.35)); }
+.tcard .tpow { position: absolute; top: 4px; left: 4px; z-index: 2; min-width: 30px; height: 30px; padding: 0 4px; display: grid; place-items: center; border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #fff6d8, #f5d27a); box-shadow: 0 0 0 2px var(--ink); font: 800 12px var(--display); color: var(--ink); }
+.tcard .trib { position: absolute; top: 5px; right: 0; z-index: 2; padding: 1px 8px 2px 10px; border-radius: 8px 0 0 8px; background: #e8574a; font: 800 12px var(--display); color: #fff; -webkit-text-stroke: 2.5px #8a2a20; paint-order: stroke fill; }
+.tcard .trib.lead { background: #f5a623; -webkit-text-stroke-color: #8a5208; }
+.tcard .trib.new { background: #4f9be0; -webkit-text-stroke-color: #1f4f80; }
+.tcard .tfoot { position: absolute; left: 5px; right: 5px; bottom: 4px; z-index: 2; display: flex; align-items: center; gap: 4px; }
+.tcard .tel { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--ink); }
+.tcard .tfav { color: #ff5a7a; font-size: 14px; -webkit-text-stroke: 1.5px #fff; }
+.tcard .tlock svg { width: 13px; height: 13px; color: #fff; }
+.tcard .tlv { margin-left: auto; font: 800 16px var(--display); color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+.tcard .tstars { position: absolute; left: 0; right: 0; bottom: 22px; z-index: 2; text-align: center; font-size: 12px; letter-spacing: -1px; color: #ffd34d; -webkit-text-stroke: 1.5px #8a5208; paint-order: stroke fill; }
+.tcard:active { transform: scale(.96); }
+.gfoot { position: sticky; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 4; display: flex; align-items: flex-end; gap: 10px; padding: 10px 4px 4px; margin: -80px -4px 0;
+  background: linear-gradient(rgba(255,248,236,0), rgba(255,248,236,.95) 40%); }
+.geditteam { flex: 1; height: 54px; border: 0; border-radius: 12px; background: linear-gradient(#a8f0ec, #4fc6c0); box-shadow: 0 0 0 3px var(--ink), inset 0 4px 0 rgba(255,255,255,.4), inset 0 -5px 0 rgba(0,0,0,.15);
+  font: 800 22px var(--display); color: #fff; -webkit-text-stroke: 3.5px var(--ink); paint-order: stroke fill; }
+.gfoot .cap { color: #fff; font-size: 12px; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+
+.gfoot .capw { flex: none !important; width: 58px !important; }
+.gfoot .ground.big { width: 50px !important; height: 50px !important; min-width: 0 !important; flex: none !important; border-radius: 50% !important; }
+.geditteam { flex: 1 1 auto !important; min-width: 0; white-space: nowrap; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3515,8 +3565,13 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
     if (!m) return `<button class="slot empty${swapIn ? " swapping" : ""}" data-act="pickslot:${i}"><span class="plus">+</span><span class="cap">${swapIn ? "Put here" : "Empty spot"}</span></button>`;
     return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${live(m.sp, m.evo, 78, { seed: i })}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
   }
-  function monTile(m) {
-    return `<button class="tile q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c}">${S.team.includes(m.uid) ? `<span class="intag">In team</span>` : ""}${m.fav ? '<span class="favtag">\u2665</span>' : ""}${m.isNew ? '<span class="newdot">New</span>' : ""}${art(m.sp, m.evo, 66)}<span class="nm">${m.nick || fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
+  function monTile(m) {  // a trading card (Tom 18 Nov)
+    const s = SP[m.sp], tag = S.team[0] === m.uid ? "Leader" : S.team.includes(m.uid) ? "Team" : m.isNew ? "New" : (typeof workingAt === "function" && workingAt(m.uid)) ? "Working" : (typeof isAway === "function" && isAway(m.uid)) ? "Away" : "";
+    return `<button class="tcard q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c};--ec:${EL[s.el].color}" aria-label="${nameOf(m)}, level ${m.lvl}">
+      <span class="tpat"></span><span class="tpow" title="Power">${monPower(m)}</span>${tag ? `<span class="trib${tag === "Leader" ? " lead" : tag === "New" ? " new" : ""}">${tag}</span>` : ""}
+      <span class="tart">${art(m.sp, m.evo, 99)}</span>
+      <span class="tfoot"><span class="tel" style="background:${EL[s.el].color}"></span>${m.fav ? '<span class="tfav">\u2665</span>' : ""}${m.lock ? `<span class="tlock">${IC.lock || ""}</span>` : ""}<span class="tlv">Lv.${m.lvl}</span></span>
+      ${m.stars ? `<span class="tstars">${"\u2605".repeat(m.stars)}</span>` : ""}</button>`;
   }
   let tq = "", bq = "", tEl = null, tQ = null, tSpare = false, cmpA = null;
   const SORTS = [["best", "Best first"], ["level", "Level"], ["power", "Power"], ["grade", "Grade"], ["element", "Element"], ["newest", "Newest"], ["name", "Name"]];
@@ -3529,12 +3584,22 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
     return S.mons.filter(m => (!tEl || SP[m.sp].el === tEl) && (tQ === null || m.q === tQ) && (!tSpare || isSpare(m)) && (!q || nameOf(m).toLowerCase().includes(q) || fname(m.sp, m.evo).toLowerCase().includes(q))).sort(cmp);
   }
   const tilesHTML = () => { const L = listMons(); return L.length ? L.map(monTile).join("") : `<p class="hint" style="grid-column:1/-1">No Glumis match.</p>`; };
+  let tSearch = false, teamSub = "list";  // teamSub: list | edit | filter
+  const filtersOn = () => !!tEl || tQ !== null || tSpare;
   function listControls() {
-    const by = (S.ui && S.ui.sort) || "best";
-    return `<div class="lctl"><input id="tq" type="search" placeholder="Search by name" value="${tq.replace(/"/g, "&quot;")}" autocomplete="off"><select id="tsort" aria-label="Sort">${SORTS.map(([k, n]) => `<option value="${k}"${by === k ? " selected" : ""}>${n}</option>`).join("")}</select></div>
-      <div class="lchips">${ELK.map(k => `<button class="lchip${tEl === k ? " on" : ""}" data-act="tel:${k}" aria-label="${EL[k].name}" style="--c:${EL[k].color}"><i></i>${EL[k].name}</button>`).join("")}
-        ${[1, 2, 3, 4].map(q => `<button class="lchip${tQ === q ? " on" : ""}" data-act="tq:${q}" style="--c:${GRADES[q].c}"><i></i>${GRADES[q].name}</button>`).join("")}
-        <button class="lchip${tSpare ? " on" : ""}" data-act="tspare" style="--c:#8a6d55">Spares only</button></div>`;
+    const by = (S.ui && S.ui.sort) || "best", n = listMons().length;
+    return `<div class="gtool"><span class="gcount">${TABI.team}<span id="tcount">${n === S.mons.length ? n : `${n} of ${S.mons.length}`}</span></span><span class="grow"></span>
+        <select id="tsort" class="gsort" aria-label="Sort">${SORTS.map(([k, nm]) => `<option value="${k}"${by === k ? " selected" : ""}>${nm}</option>`).join("")}</select>
+        <button class="ground${tSearch || tq ? " on" : ""}" data-act="tsearch" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></button>
+        <button class="ground${filtersOn() ? " on" : ""}" data-act="tsub:filter" aria-label="Filter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>${filtersOn() ? '<em class="gdot"></em>' : ""}</button></div>
+      ${tSearch || tq ? `<input id="tq" class="gsearch" type="search" placeholder="Search by name" value="${tq.replace(/"/g, "&quot;")}" autocomplete="off">` : ""}`;
+  }
+  function filterPage() {
+    return `<div class="sheethead"><button class="mb" data-act="tsub:list" aria-label="Back">\u2039 Back</button><h3>Filter</h3><span></span></div>
+      <h3 class="grouph">Element</h3><div class="lchips">${ELK.map(k => `<button class="lchip${tEl === k ? " on" : ""}" data-act="tel:${k}" style="--c:${EL[k].color}"><i></i>${EL[k].name}</button>`).join("")}</div>
+      <h3 class="grouph">Grade</h3><div class="lchips">${[1, 2, 3, 4].map(q => `<button class="lchip${tQ === q ? " on" : ""}" data-act="tq:${q}" style="--c:${GRADES[q].c}"><i></i>${GRADES[q].name}</button>`).join("")}</div>
+      <h3 class="grouph">Other</h3><div class="lchips"><button class="lchip${tSpare ? " on" : ""}" data-act="tspare" style="--c:#8a6d55">Spares only</button></div>
+      <div class="row" style="gap:8px;margin-top:6px"><button class="mb" data-act="tclear" ${filtersOn() ? "" : "disabled"}>Clear all</button><button class="mb gold" data-act="tsub:list">Show ${listMons().length} Glumis</button></div>`;
   }
   function actNow(act) { const f = document.createElement("button"); f.dataset.act = act; f.hidden = true; document.body.appendChild(f); f.click(); f.remove(); }  // run a button's action
   function levelTeam() {  // Q7: always the lowest level team Glumi next, while leaves last
@@ -3592,18 +3657,18 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
     document.body.appendChild(d);
   }
   function pageTeam() {
-    const inTeam = m => S.team.includes(m.uid) ? 1 : 0;
-    const pick = swapIn ? mon(swapIn) : null;
-    return `<div class="head"><h2>My team</h2><span class="pill">${IC.leaf}${S.leaves}</span><span class="pill">${IC.fruit}${S.fruit}</span></div>
-      ${pick ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a spot for <b>${fname(pick.sp, pick.evo)}</b></span><button class="mb" data-act="cancelswap">Cancel</button></div>`
-             : `<p class="hint" style="text-align:left;margin:0">Up to 3 Glumis walk with you. The leader fights first. Tap a Glumi to see it, level it up or add it to your team.</p>`}
+    const pick = swapIn ? mon(swapIn) : null, sheet = sheetUid && mon(sheetUid) ? creatureSheet(mon(sheetUid)) : "";
+    if (teamSub === "filter") return filterPage() + sheet;
+    if (teamSub === "edit" || pick) return `<div class="sheethead"><button class="mb" data-act="tsub:list" aria-label="Back">\u2039 Back</button><h3>My team</h3><span class="row" style="gap:6px"><span class="pill">${IC.leaf}${S.leaves}</span></span></div>
+      ${pick ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a spot for <b>${fname(pick.sp, pick.evo)}</b></span><button class="mb" data-act="cancelswap">Cancel</button></div>` : ""}
       <div class="slots">${[0, 1, 2].map(teamSlot).join("")}</div>
-      <button class="mb lvteam" data-act="lvteam">${IC.leaf}<span><b>Level up team</b><small>Uses your leaves, lowest level first</small></span></button>
+      <button class="mb lvteam" data-act="lvteam">${IC.leaf}<span><b>Level up team</b><small>Uses your leaves, lowest level first</small></span></button>${sheet}`;
+    return `${listControls()}
       ${cmpA && mon(cmpA) ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a Glumi to compare with <b>${nameOf(mon(cmpA))}</b></span><button class="mb" data-act="cmpcancel">Cancel</button></div>` : ""}
-      <h3>My Glumis \u00B7 <span id="tcount">${listMons().length === S.mons.length ? S.mons.length : `${listMons().length} of ${S.mons.length}`}</span></h3>
-      ${listControls()}
-      <div class="tiles" id="tilesBox">${tilesHTML()}</div>
-      ${sheetUid && mon(sheetUid) ? creatureSheet(mon(sheetUid)) : ""}`;
+      <div class="tcards" id="tilesBox">${tilesHTML()}</div>
+      <div class="gfoot"><button class="geditteam" data-act="tsub:edit">Edit Team</button>
+        <span class="capw"><button class="ground big" data-act="lvteam" aria-label="Level up team">${IC.up}</button><span class="cap">Level up</span></span>
+        <span class="capw"><button class="ground big" data-act="trelease" aria-label="Release">${IC.glow}</button><span class="cap">Release</span></span></div>${sheet}`;
   }
   function creatureSheet(m) {
     const s = SP[m.sp], inTeam = S.team.includes(m.uid), lead = S.team[0] === m.uid, cost = 5 + m.lvl * 3, atAsc = m.lvl >= ascTop(m), capped = atAsc || m.lvl >= lvlCap();
@@ -4605,6 +4670,11 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
     else if (a === "tel") { tEl = tEl === arg ? null : arg; render(); }
     else if (a === "tq") { tQ = tQ === n ? null : n; render(); }
     else if (a === "tspare") { tSpare = !tSpare; render(); }
+    else if (a === "tsub") { teamSub = arg; if (arg !== "edit") swapIn = null; render(); $("page") && ($("page").scrollTop = 0); }
+    else if (a === "tsearch") { tSearch = !(tSearch || tq); if (!tSearch) tq = ""; render(); if (tSearch) setTimeout(() => { const i = $("tq"); if (i) i.focus(); }, 30); }
+    else if (a === "tclear") { tEl = null; tQ = null; tSpare = false; render(); }
+    else if (a === "trelease") { const sp = Object.entries(S.mons.filter(isSpare).reduce((o, m) => (o[m.sp] = (o[m.sp] || 0) + 1, o), {})).sort((x, y) => y[1] - x[1])[0];  // the kind you have most spares of
+      if (sp) { const m = S.mons.find(x => x.sp === +sp[0] && isSpare(x)); openRelease(+sp[0], null, 0, m && m.uid); } else toast("No spare Glumis: team, working, locked and favourite ones are kept"); }
     else if (a === "cmpstart") { cmpA = n; sheetUid = null; view = "team"; render(); toast("Now tap the Glumi to compare with"); }
     else if (a === "cmpcancel") { cmpA = null; render(); }
     else if (a === "cmpswap") { const [ua, ub] = arg.split("-").map(Number), i = S.team.indexOf(ua); if (i >= 0 && !S.team.includes(ub) && !isAway(ub)) { S.team[i] = ub; save(); closePopup(); render(); toast(`${nameOf(mon(ub))} joined the team`); } }
@@ -4635,6 +4705,7 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
     else if (a === "view") {
+      if (arg === "team") teamSub = "list";  // the Glumis tab always opens on the collection
       const from = tabOf(showMap ? "atlas" : view), to = tabOf(arg), keepPrep = to === "arena" && from === "team" && arenaSub === "prep";
       if (from !== to) resetTab(to, keepPrep);
       if (arg !== "shrine") shrineSure = false;
