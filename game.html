@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795016528;</script>
+<script>window.GAME_BUILD = 1795016830;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1570,9 +1570,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 
 /* Level Up picker (18 Nov) */
 .lvbg { position: fixed; inset: 0; z-index: 60; border: 0; background: rgba(40,28,18,.55); }
-.lvpop { position: fixed; z-index: 61; left: 50%; top: 50%; transform: translate(-50%,-50%); width: min(340px, calc(100vw - 32px)); background: #f8ead6; border-radius: 22px;
+.lvpick { position: fixed; z-index: 61; left: 50%; top: 50%; transform: translate(-50%,-50%); width: min(340px, calc(100vw - 32px)); background: #f8ead6; border-radius: 22px;
   box-shadow: 0 0 0 4px #c9a27c, 0 0 0 7px #fff4e3, 0 12px 30px rgba(0,0,0,.35); padding: 0 16px 44px; display: grid; gap: 12px; animation: lvin .28s cubic-bezier(.3,1.4,.5,1); }
-.lvpop.still { animation: none; }
+.lvpick.still { animation: none; }
 @keyframes lvin { from { transform: translate(-50%,-50%) scale(.8); opacity: 0; } }
 .lvhead { margin: 0 -16px; padding: 12px; border-radius: 22px 22px 0 0; background: #efd9bb; text-align: center; font: 800 24px var(--display); color: #fff; -webkit-text-stroke: 4px var(--ink, #5a3a22); paint-order: stroke fill; }
 .lvfromto { display: flex; align-items: center; justify-content: space-around; }
@@ -1605,6 +1605,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .lhelp { margin: 0; background: #f3e7d6; border-radius: 10px; padding: 8px 10px; }
 .lgo { position: sticky; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 4; padding-top: 4px; }
 .lgo .pbig { width: 100%; justify-content: center; text-align: center; box-shadow: 0 4px 12px rgba(91,70,54,.3); }
+
+.lvgo:disabled { filter: none; opacity: 1; background: #c9c2b8; }
+.lvgo.keep { background: linear-gradient(#ffe08a, #f5b23c); font-size: 20px; }
+.lvpick, .lvbg { -webkit-tap-highlight-color: transparent; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3762,14 +3766,14 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function lvPopup(m) {
     const top = lvTop(m), p = lvPlan(m, lvTo), s = SP[m.sp];
     const row = (ic, have, need, label) => `<div class="lvr${have < need ? " short" : ""}"><span class="lvi">${ic}</span><span class="lvn"><b>${have.toLocaleString("en-US")}</b> / ${need.toLocaleString("en-US")}</span>${label ? `<small>${label}</small>` : ""}</div>`;
-    return `<button class="lvbg" data-act="lvpclose" aria-label="Close"></button><div class="lvpop${lvShown ? " still" : ""}" role="dialog" aria-label="Level up">
+    return `<button class="lvbg" data-act="lvpclose" aria-label="Close"></button><div class="lvpick${lvShown ? " still" : ""}" role="dialog" aria-label="Level up">
       <div class="lvhead">Level Up</div>
       <div class="lvfromto"><div><small>Level</small><span class="lvc">${m.lvl}</span></div><i class="lvarrow">\u00BB</i><div><small>Level</small><span class="lvc to">${lvTo}</span></div></div>
       <div class="lvreq"><b>Required</b>${row(IC.leaf, S.leaves, p.leaves)}${p.keeps ? row(IC.keepsake || IC.heart || IC.star, p.have, p.keeps, `${s.name} keepsakes${S.shards ? " + star shards" : ""} \u00B7 ascends ${p.ascs}\u00D7`) : ""}</div>
       <div class="lvstep"><button data-act="lvpstep:-10" ${lvTo - 10 > m.lvl ? "" : "disabled"}>-10</button><button class="lvpm" data-act="lvpstep:-1" ${lvTo - 1 > m.lvl ? "" : "disabled"}>\u2212</button>
         <span class="lvplus">+${lvTo - m.lvl}</span><button class="lvpm" data-act="lvpstep:1" ${lvTo < top ? "" : "disabled"}>+</button><button data-act="lvpstep:10" ${lvTo < top ? "" : "disabled"}>+10</button></div>
       ${lvTo >= top && top < (MAX_ASC + 1) * ASC_EVERY ? `<p class="lvnote">Level ${top} is the top for now: raise your Explorer level to go higher</p>` : ""}
-      <button class="lvgo" data-act="lvpgo" ${p.ok && lvTo > m.lvl ? "" : "disabled"}>Level Up</button></div>`;
+      ${p.ok || S.leaves < p.leaves ? `<button class="lvgo" data-act="lvpgo" ${p.ok ? "" : "disabled"}>${p.ok ? "Level Up" : "Not enough leaves"}</button>` : `<button class="lvgo keep" data-act="lvpkeep">Get keepsakes</button>`}</div>`;
   }
   function levelsAffordable(m) { let n = 0, lv = m.lvl, leaves = S.leaves; const top = Math.min(lvlCap(), ascTop(m)); while (lv < top && leaves >= 5 + lv * 3 && n < 99) { leaves -= 5 + lv * 3; lv++; n++; } return n; }
   function levelsCost(m, n) { let c = 0; for (let k = 0; k < n; k++) c += 5 + (m.lvl + k) * 3; return c; }
@@ -4751,6 +4755,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function whyLocked(act) {
     const [a, arg] = (act || "").split(":"), n = +arg, m = mon(n);
     if (a === "step") { const M = curM(); return [`Each step needs ${M.m} energy and you have ${S.glow}. Energy refills by itself, or buy an energy pack.`, "goboost", "Energy pack"]; }
+    if (a === "lvpopen" && m) return [m.lvl >= (MAX_ASC + 1) * ASC_EVERY ? "It reached the highest level." : `Level ${lvlCap()} is the highest for now: raise your Explorer level (now ${S.xlvl}) to go higher.`, null];
     if ((a === "lvl" || a === "lvlmax") && m) { if (m.lvl >= ascTop(m)) return ["It reached its level limit: ascend it to keep leveling.", null];
       if (m.lvl >= lvlCap()) return [`Glumis can't pass level ${lvlCap()} yet: raise your Explorer level by walking and catching.`, "view:explore", "Go explore"];
       return [`The next level costs ${5 + m.lvl * 3} leaves and you have ${S.leaves}. Bushes, herbs, catches and the Orchard give leaves.`, "view:home", "Go Home"]; }
@@ -4775,6 +4780,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const res = document.querySelector(".result"); if (res) { res.click(); return true; }
     if (document.querySelector(".popwrap")) { if (document.querySelector(".popup.gift, .popup.away")) actNow("awayclose"); else closePopup(); return true; }
     if (BT) { toast("Tap Give up to leave the fight"); return true; }
+    if (lvPick) { lvPick = null; render(); return true; }
     if (sheetUid) { sheetUid = null; render(); return true; }
     if (cmpA) { cmpA = null; render(); return true; }
     if (showAuto) { showAuto = false; autoPick = null; render(); return true; }
@@ -4864,6 +4870,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
     else if (a === "lvpopen") { const m = mon(n); if (m) { lvPick = n; lvShown = false; lvTo = Math.max(m.lvl + 1, lvBest(m)); lvTo = Math.min(lvTo, lvTop(m)); render(); lvShown = true; } }
     else if (a === "ladhelp") { ladHelp = !ladHelp; render(); }
+    else if (a === "lvpkeep") { const m = mon(lvPick); if (m) { const p = lvPlan(m, lvTo); lvPick = null; render(); goForKeepsakes(m, Math.max(1, p.keeps - p.have)); } }
     else if (a === "lvpclose") { lvPick = null; render(); }
     else if (a === "lvpstep") { const m = mon(lvPick); if (m) { lvTo = Math.max(m.lvl + 1, Math.min(lvTop(m), lvTo + n)); render(); } }
     else if (a === "lvpgo") { const m = mon(lvPick); if (m) { const p = lvPlan(m, lvTo); if (p.ok && lvTo > m.lvl) {
