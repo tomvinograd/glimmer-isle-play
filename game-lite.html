@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794990610;</script>
+<script>window.GAME_BUILD = 1794990754;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1644,7 +1644,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     for (const img of imgs) {
       const k = img.dataset.pk, src = ART[k + "-" + pose]; if (!src) continue;
       clearTimeout(img._pt0); clearTimeout(img._pt);
-      img._pt0 = setTimeout(() => { img.src = src; img._pose = pose; img._pt = setTimeout(() => { img.src = ART[k]; img._pose = null; }, ms); }, delay);
+      img._pt0 = setTimeout(() => { img.src = src; img.style.transform = "scale(1.5)"; img._pose = pose; img._pt = setTimeout(() => { img.src = ART[k]; img.style.transform = ""; img._pose = null; }, ms); }, delay);  // poses have 25% room on every side (prepare_art POSE_PAD)
     }
   }
   setInterval(() => {  // blink now and then, each Glumi on its own rhythm
