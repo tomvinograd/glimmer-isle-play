@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795009073;</script>
+<script>window.GAME_BUILD = 1795009419;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1445,6 +1445,19 @@ nav button:disabled { opacity: .45 !important; filter: grayscale(.5); }
 
 nav button.navx { border-radius: 10px !important; height: 62px !important; color: #fff !important; font: 800 13px var(--display) !important; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; background: linear-gradient(#f3e3c8, #d9bf9c) !important; box-shadow: inset 0 3px 0 rgba(255,255,255,.4), inset 0 -4px 0 rgba(0,0,0,.18), 0 0 0 2.5px #3d2716 !important; border: 0 !important; }
 nav button.navx svg { width: 26px !important; height: 26px !important; }
+
+/* compass hero (18 Nov): paws holding the compass; the live dial sits on the picture's empty face (centre 49% / 48.5%, face 48% of its width) */
+#actions .compass.hero { transform: none !important; background: none !important; box-shadow: none !important; }
+#actions .compass.hero .chero { position: absolute; width: 250px; left: calc(50% - 122.5px); top: calc(50% - 125px); z-index: -2; pointer-events: none; filter: drop-shadow(0 6px 10px rgba(60,40,20,.3)); }
+#actions .compass.hero .cbezel, #actions .compass.hero .cshine { display: none !important; }
+#actions .compass.hero .cface { width: 112px !important; height: 112px !important; }
+#actions .compass.hero .cneedle-wrap, #actions .compass.hero .needle { width: 100px !important; height: 100px !important; }
+#actions .compass.hero .cglow { inset: -30px; opacity: .55; }
+#actions .compass.hero:active { transform: translateY(3px) !important; }
+#actions .compass.hero .cost { bottom: 6px; z-index: 2; }
+#actions .dock .side { position: relative; z-index: 3; }
+
+#actions { background: linear-gradient(rgba(255,248,236,0) 0, rgba(255,248,236,0) 38%, rgba(255,248,236,.55) 70%, rgba(255,248,236,.8)) !important; }  /* softer, lower fade: the side icons above stay clear */
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2599,7 +2612,7 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
     if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo:glow" ${S.glow >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} energy">${IC.glow.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big gold" data-act="luckgo:coins" ${S.coins >= (E.cstake || E.stake) && !busy ? "" : "disabled"} aria-label="Bet ${E.cstake || E.stake} coins">${IC.coin.replace("<svg", '<svg width="24" height="24"')} ${E.cstake || E.stake}</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div><p class="hint" style="margin:6px 0 0">Bet one step of energy, or coins: get 1 to 2 times it back</p>`; return; }
     const M = curM(), next = MULTS.filter(multOpen);
     A.innerHTML = `<div class="dock"><div class="side">${zoneCard()}</div>
-      <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Energy per step: ${M.m}">x${M.m}</button><button class="compass" data-act="step" aria-label="Step" ${S.glow >= M.m && !busy ? "" : "disabled"}>${compassSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
+      <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Energy per step: ${M.m}">x${M.m}</button><button class="compass${ART["ui-compass-hero"] ? " hero" : ""}" data-act="step" aria-label="Step" ${S.glow >= M.m && !busy ? "" : "disabled"}>${ART["ui-compass-hero"] ? `<img class="chero" src="${ART["ui-compass-hero"]}" alt="" draggable="false">` : ""}${compassSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
       <div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round ${S.auto ? "on" : ""}" data-act="auto" aria-label="Auto walk">${IC.auto}</button><span class="cap">Auto</span></div><div class="capw"><button class="round jartype" data-act="autocfg" aria-label="Auto rules">${IC.gear}</button><span class="cap">Rules</span></div></div></div>
       ${S.auto && S.autoCfg.catch ? `<p class="hint">Auto catch on${autoStat.caught ? ` · ${autoStat.caught} caught` : ""}</p>` : ""}
       ${S.zones[0].steps === 0 ? `<p class="hint">Tap the compass to walk · hold it for Auto</p>` : next.length < MULTS.length ? "" : ""}`;
