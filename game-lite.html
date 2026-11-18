@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794992624;</script>
+<script>window.GAME_BUILD = 1794992966;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1639,6 +1639,17 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // moving parts: a sprite cut into layers (tools/make_rig.py); parts sit behind the body and swing around a pivot
   // ---------- poses: whole pictures of the same Glumi (blink, happy, attack, hurt) swapped in for a moment (Tom 18 Nov) ----------
   const POSE_KINDS = ["blink", "happy", "attack", "hurt"];
+  // idle animations made from AI videos (tools/vid_batch.py) live on the update site, one file per Glumi; the phone keeps them after the first download
+  const CLIPS = /*CLIPS_START*/{"00-0":68114}/*CLIPS_END*/, CLIP_BASE = "https://tomvinograd.github.io/glimmer-isle-play/clips/", CLIP_OK = new Set(), CLIP_BUSY = new Set();
+  const clipUrl = k => CLIP_BASE + k + "-idle.webp?v=" + CLIPS[k];
+  function clipLoad(k) {
+    if (CLIP_OK.has(k) || CLIP_BUSY.has(k)) return; CLIP_BUSY.add(k);
+    const im = new Image();
+    im.onload = () => { CLIP_BUSY.delete(k); CLIP_OK.add(k);
+      for (const el of document.querySelectorAll(`img[data-clip="${k}"]`)) { el.src = im.src; el.dataset.anim = "1"; el.dataset.pk = k; el.style.transform = "scale(1.5)"; el.removeAttribute("data-clip"); } };
+    im.onerror = () => { CLIP_BUSY.delete(k); setTimeout(() => {}, 0); };  // offline: the still picture stays; tried again next time it is drawn
+    im.src = clipUrl(k);
+  }
   function poseShow(root, pose, ms, delay = 0) {  // the pose fades in over the picture (with a small squash) and fades out again: no hard cut
     if (!root || (typeof moOff === "function" && moOff())) return;
     const imgs = root.matches && root.matches("img[data-pk]") ? [root] : [...root.querySelectorAll("img[data-pk]")];
@@ -1670,7 +1681,11 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   }, 200);
   function art(sp, evo, size = 76) {
     const k = String(sp).padStart(2, "0") + "-" + (evo ? 1 : 0);
-    if (ART[k + "-idle"] && size >= 100 && !(typeof moOff === "function" && moOff())) return `<img src="${ART[k + "-idle"]}" data-pk="${k}" data-anim="1" alt="" width="${Math.round(size * .82)}" style="height:auto;display:block;transform:scale(1.5)" draggable="false">`;  // a video-made idle animation (frames 25% larger on each side)
+    if (CLIPS[k] && size >= 100 && !(typeof moOff === "function" && moOff())) {  // a video-made idle animation, downloaded the first time it is needed
+      const u = clipUrl(k), st = ART[k] ? `<img src="${ART[k]}"${POSE_KINDS.some(p => ART[k + "-" + p]) ? ` data-pk="${k}"` : ""} alt="" width="${Math.round(size * .82)}" style="height:auto;display:block" draggable="false">` : "";
+      if (CLIP_OK.has(k)) return `<img src="${u}" data-pk="${k}" data-anim="1" alt="" width="${Math.round(size * .82)}" style="height:auto;display:block;transform:scale(1.5)" draggable="false">`;
+      clipLoad(k); return st.replace("<img ", `<img data-clip="${k}" `);
+    }
     if (ART[k]) { return `<img src="${ART[k]}"${POSE_KINDS.some(p => ART[k + "-" + p]) ? ` data-pk="${k}"` : ""} alt="" width="${Math.round(size * .82)}" style="height:auto;display:block" draggable="false">`; }
     if (DRAGON_SLOTS.includes(sp)) return dragonArt(sp, evo, size);
     return blobArt(sp, evo, size);
