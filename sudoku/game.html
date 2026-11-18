@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795028021;</script>
+<script>window.GAME_BUILD = 1795028432;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -85,7 +85,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .tool.on svg { color: var(--accent); }
 .pad { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; }
 .num { display: grid; justify-items: center; padding: 6px 0 5px; border-radius: 12px; background: var(--btn); box-shadow: 0 1px 2px var(--shade); }
-.num b { font-size: clamp(22px, 6.6vw, 30px); font-weight: 600; line-height: 1.1; color: var(--accent); }
+.num b { font-size: clamp(22px, 6.6vw, 30px); font-weight: 600; line-height: 1.1; color: var(--user); }   /* the keypad uses the colour of your numbers */
 .num small { font-size: 11px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
 .num:active { background: var(--btn-press); }
 .num.gone { visibility: hidden; }
@@ -140,17 +140,17 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .mark { display: flex; align-items: center; gap: 4px; }
 .mark svg { width: 18px; height: 18px; color: var(--muted); }
 .home { position: fixed; inset: 0; z-index: 15; background: var(--bg); display: flex; flex-direction: column; align-items: center; overflow-y: auto;
-  padding-block: calc(28px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-bottom, 0px));
+  padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-bottom, 0px));
   padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
 .home[hidden] { display: none; }
-.hin { width: 100%; max-width: 420px; flex: 1; display: flex; flex-direction: column; gap: 18px; }
-.hart { align-self: center; margin-top: 4vh; width: min(200px, 52vw); aspect-ratio: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; transform: rotate(-4deg); }
-.hart span { border-radius: 12px; background: var(--paper); box-shadow: 0 2px 6px var(--shade); display: grid; place-items: center; font-size: clamp(26px, 8vw, 38px); font-weight: 700; color: var(--ink); }
+.hin { width: 100%; max-width: 420px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.hart { align-self: center; margin-top: 0; width: min(150px, 40vw); aspect-ratio: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; transform: rotate(-4deg); }
+.hart span { border-radius: 10px; background: var(--paper); box-shadow: 0 2px 6px var(--shade); display: grid; place-items: center; font-size: clamp(22px, 6.4vw, 30px); font-weight: 700; color: var(--ink); }
 .hart span.u { color: var(--user); } .hart span.y { background: var(--sel); } .hart span.e { color: transparent; }
 .hart span:nth-child(odd) { animation: bob 3.2s ease-in-out infinite; } .hart span:nth-child(3n) { animation-delay: -1.1s; }
 @keyframes bob { 50% { transform: translateY(-3px); } }
 .htitle { text-align: center; display: grid; gap: 4px; }
-.htitle b { font-size: 44px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.htitle b { font-size: 38px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
 .htitle span { color: var(--muted); font-weight: 600; }
 .hbtns { display: grid; gap: 10px; margin-top: 6px; }
 .hbtn { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: left; }
@@ -207,6 +207,44 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 :root[data-contrast="high"] .tool.on .badge { background: var(--accent); color: var(--accent-ink); }
 :root[data-contrast="high"] .sw { border: 2px solid var(--edge); }
 :root[data-contrast="high"] .news { border: 2px solid var(--bg); }
+
+/* colour of the numbers you enter (start page: Your numbers). printed = the same colour as the printed numbers, lighter weight */
+:root[data-ucolor="printed"] { --user: var(--ink) !important; }
+:root[data-ucolor="printed"] .c.user { font-weight: 400 !important; }
+:root[data-contrast="high"] .c.given { font-weight: 800; }
+:root[data-ucolor="blue"] { --user: #1F4FB0; }
+@media (prefers-color-scheme: dark) { :root[data-ucolor="blue"]:not([data-theme="light"]) { --user: #9DBBFF; } }
+:root[data-ucolor="blue"][data-theme="dark"] { --user: #9DBBFF; }
+:root[data-contrast="high"][data-ucolor="blue"] { --user: #0033AA; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"][data-ucolor="blue"]:not([data-theme="light"]) { --user: #A8DCFF; } }
+:root[data-contrast="high"][data-ucolor="blue"][data-theme="dark"] { --user: #A8DCFF; }
+:root[data-ucolor="green"] { --user: #076630; }
+@media (prefers-color-scheme: dark) { :root[data-ucolor="green"]:not([data-theme="light"]) { --user: #6EE69A; } }
+:root[data-ucolor="green"][data-theme="dark"] { --user: #6EE69A; }
+:root[data-contrast="high"][data-ucolor="green"] { --user: #004A1E; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"][data-ucolor="green"]:not([data-theme="light"]) { --user: #7DFFAA; } }
+:root[data-contrast="high"][data-ucolor="green"][data-theme="dark"] { --user: #7DFFAA; }
+:root[data-ucolor="purple"] { --user: #7B2FBF; }
+@media (prefers-color-scheme: dark) { :root[data-ucolor="purple"]:not([data-theme="light"]) { --user: #D3A6FF; } }
+:root[data-ucolor="purple"][data-theme="dark"] { --user: #D3A6FF; }
+:root[data-contrast="high"][data-ucolor="purple"] { --user: #5A1496; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"][data-ucolor="purple"]:not([data-theme="light"]) { --user: #E2C2FF; } }
+:root[data-contrast="high"][data-ucolor="purple"][data-theme="dark"] { --user: #E2C2FF; }
+.ucol { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ucol button { display: grid; justify-items: center; gap: 2px; padding: 8px 2px 6px; border-radius: 12px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); border: 2px solid transparent; }
+.ucol button b { font-size: 26px; line-height: 1.1; font-weight: 500; }
+.ucol button small { font-size: 12px; font-weight: 700; color: var(--muted); }
+.ucol button.on { border-color: var(--accent); } .ucol button.on small { color: var(--ink); }
+:root[data-contrast="high"] .ucol button { border-color: var(--edge); } :root[data-contrast="high"] .ucol button.on { box-shadow: 0 0 0 3px var(--accent); }
+/* "new version ready" banner (the game looks for updates by itself, also mid-game) */
+.upd { position: fixed; left: 50%; top: calc(10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 40; width: min(460px, calc(100% - 24px));
+  background: var(--ink); color: var(--bg); border-radius: 16px; padding: 10px 10px 10px 14px; display: flex; gap: 8px; align-items: center; box-shadow: 0 6px 20px var(--shade); animation: updin .35s cubic-bezier(.2,1,.4,1); }
+.upd div { flex: 1; display: grid; gap: 1px; font-size: 13px; min-width: 0; } .upd b { font-size: 15px; }
+.upd button { padding: 9px 12px; border-radius: 10px; font-weight: 800; }
+.upd .later { color: var(--bg); opacity: .8; } .upd .go { background: var(--accent); color: var(--accent-ink); }
+.upd button:disabled { opacity: .5; }
+:root[data-contrast="high"] .upd { border: 2px solid var(--bg); }
+@keyframes updin { from { transform: translate(-50%, -30px); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -234,6 +272,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 <div id="layer"></div>
 
 <script>
+(() => {
 "use strict";
 /* ---------- difficulty ---------- */
 // clues: how many numbers are given; singles: must be solvable by simple steps only; tough: must NOT be.
@@ -333,7 +372,7 @@ function makePuzzle(lv) {
 
 /* ---------- state ---------- */
 const KEY = "sudoku.save.v1";
-let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0 };
+let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0, ucolor: "printed" };
 let homeOn = true;   // the start page is shown when the app opens
 // Look: "auto" follows the phone's light/dark setting; "light" / "dark" are fixed (the phone's own top and bottom bars keep the phone's setting).
 const darkQuery = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
@@ -341,6 +380,7 @@ function applyTheme() {
   const t = opts.theme || "auto", root = document.documentElement;
   if (t === "auto") delete root.dataset.theme; else root.dataset.theme = t;
   if (opts.hc) root.dataset.contrast = "high"; else delete root.dataset.contrast;
+  root.dataset.ucolor = opts.ucolor || "printed";
 }
 if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", applyTheme);
 let sel = -1, notesMode = false, paused = false, sheet = null, pickLv = 4, lastPop = -1;
@@ -494,7 +534,7 @@ function openWin(isBest, prev) {
 
 /* ---------- start page ---------- */
 function showHome() {
-  homeOn = true; save();
+  homeOn = true; setResume(false); save();
   const h = $("home"), live = G && !G.done;
   const filled = live ? G.cells.filter(v => v).length : 0;
   const recs = LEVELS.map((L, k) => opts.best[k + 1] ? `<span>${L.name} <b>${fmt(opts.best[k + 1])}</b></span>` : "").join("");
@@ -508,6 +548,8 @@ function showHome() {
     ${recs ? `<div class="hrec"><h3>Best times</h3><div class="hrecs">${recs}</div></div>` : ""}
     <div class="hlook"><h3>Look</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${[["auto", "Phone", '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'], ["light", "Light", '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>'], ["dark", "Dark", '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>']]
       .map(([k, t, ic]) => `<button role="radio" aria-checked="${(opts.theme || "auto") === k}" class="${(opts.theme || "auto") === k ? "on" : ""}" data-theme-pick="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${t}</button>`).join("")}</div>
+      <h3>Your numbers</h3><div class="ucol" role="radiogroup" aria-label="Colour of the numbers you enter">${[["printed", "Printed"], ["blue", "Blue"], ["green", "Green"], ["purple", "Purple"]]
+        .map(([k, t]) => `<button role="radio" aria-checked="${opts.ucolor === k}" class="${opts.ucolor === k ? "on" : ""}" data-ucolor-pick="${k}"><b data-uc="${k}">7</b><small>${t}</small></button>`).join("")}</div>
       <div class="opt hcrow"><span>High contrast</span><button class="sw${opts.hc ? " on" : ""}" id="hcsw" role="switch" aria-checked="${!!opts.hc}" aria-label="High contrast"></button></div></div>
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
@@ -515,8 +557,14 @@ function showHome() {
   $("hnew").onclick = openNew;
   h.querySelectorAll("[data-theme-pick]").forEach(b => b.onclick = () => { opts.theme = b.dataset.themePick; applyTheme(); save(); showHome(); });
   $("hcsw").onclick = () => { opts.hc = !opts.hc; applyTheme(); save(); showHome(); };
+  h.querySelectorAll("[data-ucolor-pick]").forEach(b => b.onclick = () => { opts.ucolor = b.dataset.ucolorPick; applyTheme(); save(); showHome(); });
+  // each sample "7" shows its own colour in the current look
+  h.querySelectorAll("[data-uc]").forEach(el => { const root = document.documentElement, was = root.dataset.ucolor; root.dataset.ucolor = el.dataset.uc;
+    el.style.color = getComputedStyle(root).getPropertyValue("--user").trim() || "inherit"; root.dataset.ucolor = was; });
 }
-function hideHome() { homeOn = false; $("home").hidden = true; }
+function hideHome() { homeOn = false; $("home").hidden = true; setResume(true); }
+// while a game is on screen, a reload in the same app session (an update) goes straight back into it
+function setResume(on) { try { if (on) sessionStorage.setItem("sudoku.resume", "1"); else sessionStorage.removeItem("sudoku.resume"); } catch (e) {} }
 
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
@@ -532,19 +580,64 @@ document.addEventListener("keydown", e => {
   else if ((e.ctrlKey || e.metaKey) && e.key === "z") undo();
   else if (e.key.startsWith("Arrow")) { if (sel < 0) sel = 40; else { const dr = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0, dc = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0; sel = ((ROW[sel] + dr + 9) % 9) * 9 + (COL[sel] + dc + 9) % 9; } render(); e.preventDefault(); }
 });
-setInterval(() => { if (G && !G.done && !paused && !sheet && !homeOn && document.visibilityState === "visible") { G.t++; $("timer").textContent = fmt(G.t); if (G.t % 5 === 0) save(); } }, 1000);
+const tickId = setInterval(() => { if (G && !G.done && !paused && !sheet && !homeOn && document.visibilityState === "visible") { G.t++; $("timer").textContent = fmt(G.t); if (G.t % 5 === 0) save(); } }, 1000);
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
 window.appBack = () => { if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
+/* ---------- updates, also mid-game ---------- */
+// Every few minutes (and when the app comes back) the game asks the update site for a newer version. If there is one,
+// a banner offers it; Update swaps the new game in on the spot and returns to the same puzzle (it is saved first).
+// The app itself also downloads it, so the next opening uses it too.
+const SITE = window.SUDOKU_SITE || "https://tomvinograd.github.io/glimmer-isle-play/sudoku/";
+let updLater = 0, updBusy = false;
+async function checkUpdate() {
+  if (!window.GAME_BUILD || updBusy || document.querySelector(".upd")) return;
+  try {
+    const r = await fetch(SITE + "version.txt?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return;
+    const v = parseInt((await r.text()).trim(), 10);
+    if (v > window.GAME_BUILD && v !== updLater) showUpd(v);
+  } catch (e) {}
+}
+function showUpd(v) {
+  const b = document.createElement("div"); b.className = "upd"; b.setAttribute("role", "status");
+  b.innerHTML = `<div><b>New version ready</b><span>Update now: your game stays where it is.</span></div><button class="later">Later</button><button class="go">Update</button>`;
+  b.querySelector(".later").onclick = () => { updLater = v; b.remove(); };
+  b.querySelector(".go").onclick = () => applyUpd(v, b);
+  document.body.appendChild(b);
+}
+async function applyUpd(v, b) {
+  if (updBusy || sheet === "making") return;
+  updBusy = true; b.querySelector("span").textContent = "Updating..."; b.querySelectorAll("button").forEach(x => x.disabled = true);
+  try {
+    save();
+    if (location.protocol !== "file:") { location.reload(); return; }   // opened from the website: just reload
+    const r = await fetch(SITE + "game.html?v=" + v, { cache: "no-store" }), html = await r.text();
+    if (!r.ok || !html.includes("window.GAME_BUILD = " + v + ";")) throw new Error("bad download");
+    clearInterval(tickId); clearInterval(updTimer); if (darkQuery && darkQuery.removeEventListener) darkQuery.removeEventListener("change", applyTheme);
+    document.open(); document.write(html); document.close();   // the new game takes over this page (same saved game)
+  } catch (e) {
+    updBusy = false; b.querySelector("span").textContent = "Couldn't update right now. It tries again later.";
+    setTimeout(() => b.remove(), 4000);
+  }
+}
+const updTimer = setInterval(checkUpdate, 3 * 60 * 1000);
+setTimeout(checkUpdate, 15000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
+// for the tap tests
+window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode() { return notesMode; }, get paused() { return paused; }, get sheet() { return sheet; },
+  get opts() { return opts; }, get homeOn() { return homeOn; }, startGame, showHome, enter, render, checkUpdate, setSel(i) { sel = i; } };
+
 /* ---------- start ---------- */
-const NEWS = "High contrast: switch it on under Look, on the start page.";   // change with each update
+const NEWS = "Your numbers now look like the printed ones (pick a colour on the start page). Updates show up mid-game too.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 applyTheme();
+let resume = false; try { resume = sessionStorage.getItem("sudoku.resume") === "1"; } catch (e) {}
 if (G) render();
-showHome();
+if (G && !G.done && resume) { paused = false; hideHome(); render(); } else showHome();
 if (window.GAME_BUILD) {
   if (hadSave && opts.seenBuild !== window.GAME_BUILD) {
     const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
@@ -553,6 +646,7 @@ if (window.GAME_BUILD) {
   }
   opts.seenBuild = window.GAME_BUILD; save();
 }
+})();
 </script>
 </body>
 </html>
