@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794991043;</script>
+<script>window.GAME_BUILD = 1794991202;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1331,6 +1331,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .qbusy { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 30; display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 20px; background: rgba(255,250,240,.95); color: var(--brown); font: 800 15px var(--display); box-shadow: 0 4px 14px rgba(40,25,10,.3); }
   .qbusy svg { width: 18px; height: 18px; animation: qspin .5s linear infinite; } @keyframes qspin { to { transform: rotate(360deg); } }
 
+.poseov { position: absolute; pointer-events: none; height: auto; opacity: 0; transform: scale(1.5); }
 /* ---- motion kit ---- */
 .mo-f { display: inline-block; transform-origin: 50% 100%; }
 .mo { display: block; transform-origin: 50% 100%; animation: mo-breathe 4s ease-in-out infinite; will-change: transform; }
@@ -1638,13 +1639,25 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // moving parts: a sprite cut into layers (tools/make_rig.py); parts sit behind the body and swing around a pivot
   // ---------- poses: whole pictures of the same Glumi (blink, happy, attack, hurt) swapped in for a moment (Tom 18 Nov) ----------
   const POSE_KINDS = ["blink", "happy", "attack", "hurt"];
-  function poseShow(root, pose, ms, delay = 0) {
+  function poseShow(root, pose, ms, delay = 0) {  // the pose fades in over the picture (with a small squash) and fades out again: no hard cut
     if (!root || (typeof moOff === "function" && moOff())) return;
     const imgs = root.matches && root.matches("img[data-pk]") ? [root] : [...root.querySelectorAll("img[data-pk]")];
     for (const img of imgs) {
       const k = img.dataset.pk, src = ART[k + "-" + pose]; if (!src) continue;
       clearTimeout(img._pt0); clearTimeout(img._pt);
-      img._pt0 = setTimeout(() => { img.src = src; img.style.transform = "scale(1.5)"; img._pose = pose; img._pt = setTimeout(() => { img.src = ART[k]; img.style.transform = ""; img._pose = null; }, ms); }, delay);  // poses have 25% room on every side (prepare_art POSE_PAD)
+      img._pt0 = setTimeout(() => {
+        let ov = img._ov; if (!ov || !ov.isConnected) { ov = img._ov = document.createElement("img"); ov.className = "poseov"; ov.alt = ""; ov.draggable = false; img.after(ov); if (getComputedStyle(img.parentElement).position === "static") img.parentElement.style.position = "relative"; }  // place it against the picture's own parent
+        ov.style.left = img.offsetLeft + "px"; ov.style.top = img.offsetTop + "px"; ov.style.width = img.offsetWidth + "px";
+        const f = pose === "blink" ? 45 : 110, S = "scale(1.5)";
+        ov.src = src; img._pose = pose;
+        ov.animate([{ opacity: 0, transform: S + (pose === "blink" ? "" : " scale(1.05,.95)") }, { opacity: 1, transform: S }], { duration: f, easing: "ease-out", fill: "forwards" });
+        img.animate([{ opacity: 1 }, { opacity: 0 }], { duration: f, fill: "forwards" });
+        img._pt = setTimeout(() => {
+          ov.animate([{ opacity: 1, transform: S }, { opacity: 0, transform: S + (pose === "blink" ? "" : " scale(.97,1.03)") }], { duration: f, easing: "ease-in", fill: "forwards" });
+          img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: f, fill: "forwards" });
+          setTimeout(() => { img._pose = null; }, f);
+        }, ms);
+      }, delay);
     }
   }
   setInterval(() => {  // blink now and then, each Glumi on its own rhythm
