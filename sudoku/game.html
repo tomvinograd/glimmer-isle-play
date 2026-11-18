@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795034971;</script>
+<script>window.GAME_BUILD = 1795035631;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -558,6 +558,19 @@ input { user-select: text; -webkit-user-select: text; }
 .ncc.clash b { color: var(--err); }
 .ncc.won { animation: wave .5s ease-out both; }
 .nkp button { font-size: calc(28px * var(--fs)); }
+
+/* daily workout card on the menu; game picker on the stats page */
+.wcard { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); }
+.wtop { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; } .wtop b { font-size: calc(18px * var(--fs)); font-weight: 800; } .wtop small { color: var(--muted); font-weight: 700; }
+.wlist { display: flex; flex-wrap: wrap; gap: 6px; }
+.wlist span { padding: 6px 10px; border-radius: 999px; background: var(--bg); font-weight: 700; font-size: calc(14px * var(--fs)); }
+.wlist span.ok { background: var(--same); }
+.wcard .hbtn { box-shadow: none; }
+.wcard .hbtn:not(.go) { background: var(--bg); }
+:root[data-contrast="high"] .wcard { border: 2px solid var(--edge); }
+.gpick { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; } .gpick::-webkit-scrollbar { display: none; }
+.ctip.below { transform: translate(-50%, 16px); }
+.gpick button { flex: none; }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -902,6 +915,9 @@ const BADGES = [
   ["sq10", "🦅", "Eagle eye", "Remember 10 squares"],
   ["digits9", "🔟", "Number whiz", "Remember 9 digits"],
   ["story", "📖", "Good listener", "Story level 4+: every question right"],
+  ["workout", "💪", "Workout", "Finish a daily workout"],
+  ["workout7", "🏋️", "Workout week", "Finish 7 daily workouts"],
+  ["allgames", "🌟", "All-rounder", "Play every game"],
   ["early", "🐦", "Early bird", "Solve one between 5 and 7 am"],
 ];
 const badgeOf = id => BADGES.find(b => b[0] === id);
@@ -918,6 +934,7 @@ function checkBadges(c) {
     race: (opts.vsWins || 0) >= 1, race10: (opts.vsWins || 0) >= 10,
     owl: c && hr < 5, early: c && hr >= 5 && hr < 7,
     explorer: gamesPlayed() >= 5, sharp: !!(opts.flags || {}).sharp, seq10: !!(opts.flags || {}).seq10, sq10: !!(opts.flags || {}).sq10, digits9: !!(opts.flags || {}).digits9, story: !!(opts.flags || {}).story,
+    workout: (opts.workouts || 0) >= 1, workout7: (opts.workouts || 0) >= 7, allgames: GAMES.every(g => (mgRead(g.id) || {}).plays) && opts.wins > 0,
   };
   for (const [id] of BADGES) if (want[id] && !have[id]) { have[id] = dayKey(); got.push(id); }
   return got;
@@ -1124,7 +1141,7 @@ function useShelf() {
 const gameLine = g => g.daily ? `Daily puzzle · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled` : `${LEVELS[g.level - 1].name} · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled`;
 
 /* ---------- stats & badges page ---------- */
-let statOn = false, statTab = "stats", statLv = 0;
+let statOn = false, statTab = "stats", statLv = 0, statGame = "sudoku", statMgLv = 0;
 function openStats(tab) {
   if (tab) statTab = tab;
   const p = $("statpage"), hist = (opts.hist || []).filter(isSud);
@@ -1134,14 +1151,44 @@ function openStats(tab) {
   p.innerHTML = `<div class="hin">
     <div class="phead"><button class="pback" id="stback" aria-label="Back to the start page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><b>Stats & badges</b></div>
     <div class="seg two" role="tablist"><button role="tab" aria-selected="${statTab === "stats"}" class="${statTab === "stats" ? "on" : ""}" data-tab="stats">Stats</button><button role="tab" aria-selected="${statTab === "badges"}" class="${statTab === "badges" ? "on" : ""}" data-tab="badges">Badges ${earned}/${BADGES.length}</button></div>
-    ${statTab === "stats" ? statsHtml(lvs) : badgesHtml()}
+    ${statTab === "stats" ? gamePicker() + (statGame === "sudoku" || !MGI[statGame] ? statsHtml(lvs) : mgStatsHtml(MGI[statGame])) : badgesHtml()}
   </div>`;
   p.hidden = false; statOn = true;
   $("stback").onclick = closeStats;
   p.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { openStats(b.dataset.tab); p.scrollTop = 0; });
   p.querySelectorAll("[data-slv]").forEach(b => b.onclick = () => { statLv = +b.dataset.slv; const y = p.scrollTop; openStats(); p.scrollTop = y; });
+  p.querySelectorAll("[data-mlv]").forEach(b => b.onclick = () => { statMgLv = +b.dataset.mlv; const y = p.scrollTop; openStats(); p.scrollTop = y; });
+  p.querySelectorAll("[data-sg]").forEach(b => b.onclick = () => { statGame = b.dataset.sg; statMgLv = 0; openStats(); });
   const ch = p.querySelector(".chart");
   if (ch) ch.querySelectorAll(".hit").forEach(h => h.addEventListener("pointerdown", e => { e.preventDefault(); chartTip(ch, +h.dataset.i); }));
+}
+// which game's stats: Sudoku plus every game played at least once
+function gamePicker() {
+  const played = GAMES.filter(g => (mgRead(g.id) || {}).plays);
+  if (!played.length) return "";
+  return `<div class="lvchips gpick" role="tablist" aria-label="Game">${[["sudoku", "🔢 Sudoku"], ...played.map(g => [g.id, `${g.icon} ${g.name}`])].map(([id, t]) =>
+    `<button role="tab" aria-selected="${statGame === id}" data-sg="${id}" class="${statGame === id ? "on" : ""}">${t}</button>`).join("")}</div>`;
+}
+function mgStatsHtml(g) {
+  const s = mgRead(g.id) || { best: {}, plays: 0, lv: 1 }, rows = (opts.hist || []).filter(h => h.k === g.id);
+  const lvs = [...new Set(rows.map(h => h.lv))].sort((a, b) => a - b);
+  if (!lvs.includes(statMgLv)) statMgLv = lvs.includes(s.lv) ? s.lv : lvs[lvs.length - 1] || 1;
+  const lr = rows.filter(h => h.lv === statMgLv), sc = lr.map(h => h.s), isTime = g.fmt === fmt || ["words", "nonogram", "cages"].includes(g.id);
+  const shown = v => isTime ? fmt(Math.round(v)) : (Math.round(v * 10) / 10);
+  const tiles = `<div class="tiles">
+    <div><b>${s.plays}</b><small>Played</small></div>
+    <div><b>${s.lv}</b><small>Level now</small></div>
+    <div><b>${fmt(rows.reduce((a, h) => a + (h.t || 0), 0))}</b><small>Time played</small></div>
+    <div><b>${s.best[statMgLv] != null ? shown(s.best[statMgLv]) : "–"}</b><small>Best</small></div>
+    <div><b>${sc.length ? shown(avg(sc)) : "–"}</b><small>Average</small></div>
+    <div><b>${sc.length ? shown(avg(sc.slice(-5))) : "–"}</b><small>Last ${Math.min(5, sc.length)}</small></div></div>`;
+  if (!rows.length) return tiles + `<p class="hint2">Play ${g.name} and your scores show up here.</p>`;
+  const recent = rows.slice(-8).reverse().map(h => `<div class="drow"><span class="rk">${h.lv}</span><span>Level ${h.lv}<small>${dayLabel(h.d)} · ${fmt(h.t || 0)} played</small></span><b>${g.fmt(h.s)}</b></div>`).join("");
+  return tiles
+    + `<p class="sec">Level</p><div class="lvchips">${lvs.map(l => `<button data-mlv="${l}" class="${l === statMgLv ? "on" : ""}">Level ${l}</button>`).join("")}</div>`
+    + (lr.length ? chartHtml(lr.slice(-30), { val: r => r.s, fmt: g.fmt, low: g.better === "low", time: isTime, title: `${g.name}, level ${statMgLv}`, what: "games",
+        tip: r => `${dayLabel(r.d)} · ${fmt(r.t || 0)} played` }) : "")
+    + `<p class="sec">Recent games</p><div class="list">${recent}</div>`;
 }
 function closeStats() { statOn = false; $("statpage").hidden = true; $("statpage").innerHTML = ""; }
 const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
@@ -1174,34 +1221,39 @@ function statsHtml(lvs) {
     + `<p class="sec">Recent solves</p><div class="list">${recent}</div>`;
 }
 // your times at one level, oldest on the left: one line, one colour, tap a dot for its numbers
-function chartHtml(rows) {
+// o: val (the number to plot, default the time), fmt, low (lower is better), time (an axis of times), title, what, tip(row)
+function chartHtml(rows, o = {}) {
+  const val = o.val || (r => r.t), fv = o.fmt || fmt, low = o.low !== false, isTime = o.time !== false;
   const n = rows.length, W = 320, H = 168, L = 42, R = 14, T = 18, B = 20;
-  const maxT = Math.max(...rows.map(r => r.t), 1);
-  const step = [15, 30, 60, 120, 300, 600, 900, 1200, 1800, 3600, 7200, 14400].find(x => maxT * 1.1 / x <= 4) || 14400;
+  const maxT = Math.max(...rows.map(val), 1);
+  const steps = isTime ? [15, 30, 60, 120, 300, 600, 900, 1200, 1800, 3600, 7200, 14400] : [1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000];
+  const step = steps.find(x => maxT * 1.1 / x <= 4) || steps[steps.length - 1];
   const top = Math.max(step, Math.ceil(maxT * 1.1 / step) * step);
   const X = i => n === 1 ? L + (W - L - R) / 2 : L + i * (W - L - R) / (n - 1), Y = t => T + (H - T - B) * (1 - t / top);
   let g = "";
-  for (let v = 0; v <= top; v += step) g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${fmt(v)}</text>`;
-  const bi = rows.reduce((b, r, i) => r.t < rows[b].t ? i : b, 0);
-  const pts = rows.map((r, i) => `${X(i).toFixed(1)},${Y(r.t).toFixed(1)}`).join(" ");
-  const dots = rows.map((r, i) => `<circle class="dt" data-d="${i}" cx="${X(i)}" cy="${Y(r.t)}" r="4.5"/>`).join("");
-  const hits = rows.map((r, i) => `<circle class="hit" data-i="${i}" cx="${X(i)}" cy="${Y(r.t)}" r="14"/>`).join("");
+  for (let v = 0; v <= top; v += step) g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${isTime ? fmt(v) : v}</text>`;
+  const bi = rows.reduce((b, r, i) => (low ? val(r) < val(rows[b]) : val(r) > val(rows[b])) ? i : b, 0);
+  const pts = rows.map((r, i) => `${X(i).toFixed(1)},${Y(val(r)).toFixed(1)}`).join(" ");
+  const dots = rows.map((r, i) => `<circle class="dt" data-d="${i}" cx="${X(i)}" cy="${Y(val(r))}" r="4.5"/>`).join("");
+  const hits = rows.map((r, i) => `<circle class="hit" data-i="${i}" cx="${X(i)}" cy="${Y(val(r))}" r="14"/>`).join("");
   const bx = Math.min(W - R - 16, Math.max(L + 16, X(bi)));
-  const lab = n > 1 ? `<text class="lab" x="${bx}" y="${Y(rows[bi].t) - 10}" text-anchor="middle">best</text>` : "";
+  const lab = n > 1 ? `<text class="lab" x="${bx}" y="${Y(val(rows[bi])) - 10}" text-anchor="middle">best</text>` : "";
   const xl = `<text class="ax" x="${L}" y="${H - 4}">${n > 1 ? "older" : ""}</text><text class="ax" x="${W - R}" y="${H - 4}" text-anchor="end">latest</text>`;
-  chartRows = rows;
-  return `<div class="chart"><p class="ct">${LEVELS[statLv - 1].name}: your times</p><p class="cs">${n > 1 ? `Your last ${n} solves, oldest on the left. Tap a dot.` : "One solve so far. Tap the dot."}</p>
-    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Your times at ${LEVELS[statLv - 1].name}: best ${fmt(rows[bi].t)}, latest ${fmt(rows[n - 1].t)}">${g}${n > 1 ? `<polyline class="ln" points="${pts}"/>` : ""}${dots}${lab}${xl}${hits}</svg></div>`;
+  chartRows = rows; chartOpt = { val, fv, tip: o.tip };
+  const title = o.title || `${LEVELS[statLv - 1].name}: your times`, what = o.what || "solves";
+  return `<div class="chart"><p class="ct">${title}</p><p class="cs">${n > 1 ? `Your last ${n} ${what}, oldest on the left. Tap a dot.` : `Just one so far. Tap the dot.`}</p>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${title}: best ${fv(val(rows[bi]))}, latest ${fv(val(rows[n - 1]))}">${g}${n > 1 ? `<polyline class="ln" points="${pts}"/>` : ""}${dots}${lab}${xl}${hits}</svg></div>`;
 }
-let chartRows = [];
+let chartRows = [], chartOpt = { val: r => r.t, fv: fmt };
 function chartTip(ch, i) {
   const r = chartRows[i]; if (!r) return;
   ch.querySelectorAll(".dt").forEach(d => d.classList.toggle("on", +d.dataset.d === i));
   const dot = ch.querySelector(`.dt[data-d="${i}"]`).getBoundingClientRect(), box = ch.getBoundingClientRect();
   let tip = ch.querySelector(".ctip"); if (!tip) { tip = document.createElement("div"); tip.className = "ctip"; ch.appendChild(tip); }
-  tip.innerHTML = `${fmt(r.t)}<small>${dayLabel(r.d)}${r.k === "daily" ? " · daily" : r.k === "race" ? " · race" : ""} · ${r.m} mistake${r.m === 1 ? "" : "s"}${r.h ? ` · ${r.h} hint${r.h === 1 ? "" : "s"}` : ""}</small>`;
+  tip.innerHTML = chartOpt.tip ? `${chartOpt.fv(chartOpt.val(r))}<small>${chartOpt.tip(r)}</small>` : `${fmt(r.t)}<small>${dayLabel(r.d)}${r.k === "daily" ? " · daily" : r.k === "race" ? " · race" : ""} · ${r.m} mistake${r.m === 1 ? "" : "s"}${r.h ? ` · ${r.h} hint${r.h === 1 ? "" : "s"}` : ""}</small>`;
   const half = 70, cx = Math.min(box.width - half, Math.max(half, dot.left + dot.width / 2 - box.left));
-  tip.style.left = cx + "px"; tip.style.top = (dot.top - box.top) + "px";
+  const top = dot.top - box.top; tip.classList.toggle("below", top < 110);   // near the top: show it under the dot, never over the title
+  tip.style.left = cx + "px"; tip.style.top = (top + (top < 110 ? dot.height : 0)) + "px";
 }
 function badgesHtml() {
   const have = opts.badges || {};
@@ -1673,6 +1725,20 @@ function fitGrid(grid, cols, rows, box, gap = 8, maxCell = 150) {
 }
 addEventListener("resize", () => mgFit && mgFit());
 
+/* the daily workout: three short games a day, the same three for everyone (from the date): two memory games and a puzzle */
+function workoutToday() {
+  const k = dayKey(); if (opts.wk && opts.wk.d === k && opts.wk.ids.every(id => MGI[id])) return opts.wk;
+  const was = rnd; rnd = seeded(hashStr("tvsudoku-workout-" + k));
+  let ids; try { ids = [...shuffle(GAMES.filter(g => g.sec === "mem").map(g => g.id)).slice(0, 2), shuffle(GAMES.filter(g => g.sec === "think").map(g => g.id))[0]]; } finally { rnd = was; }
+  opts.wk = { d: k, ids, done: [] }; return opts.wk;
+}
+function workoutCard() {
+  const w = workoutToday(), done = w.ids.filter(id => w.done.includes(id)).length, next = w.ids.find(id => !w.done.includes(id)), all = !next;
+  return `<div class="wcard"><div class="wtop"><b>Today's workout</b><small>${done} of 3 done</small></div>
+    <div class="wlist">${w.ids.map(id => `<span class="${w.done.includes(id) ? "ok" : ""}">${MGI[id].icon} ${MGI[id].name}${w.done.includes(id) ? " ✓" : ""}</span>`).join("")}</div>
+    <button class="hbtn${all ? "" : " go"}" id="hwork"><span><b>${all ? "Workout done ✓" : done ? `Next: ${MGI[next].name}` : "Start the workout"}</b><small>${all ? "A new one tomorrow" : "Three short games, a few minutes"}</small></span><i>›</i></button></div>`;
+}
+
 /* the menu */
 function drawHub() {
   const h = $("home"), st = streakNow(), k = dayKey(), today = (opts.days || []).includes(k), live = G && !G.done;
@@ -1683,6 +1749,7 @@ function drawHub() {
   const dRec = (opts.daily || {})[k], sudLine = dRec && dRec.done ? `Daily puzzle ✓ · ${fmt(dRec.t)}` : "Daily puzzle, 10 levels, races";
   h.innerHTML = `<div class="hin">
     <div class="htitle hub"><b>Brain games</b><span id="hsub">${sub}</span></div>
+    ${workoutCard()}
     ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue Sudoku</b><small>${G.vs && V ? `Race against ${esc(V.oppName)}` : gameLine(G)}</small></span><i>›</i></button>` : ""}
     <p class="sec">Memory</p><div class="gtiles">${GAMES.filter(g => g.sec === "mem").map(tile).join("")}</div>
     <p class="sec">Puzzles</p><div class="gtiles"><button class="gtile" id="g-sudoku"><i aria-hidden="true">🔢</i><b>Sudoku</b><small>${sudLine}</small></button>${GAMES.filter(g => g.sec === "think").map(tile).join("")}</div>
@@ -1693,15 +1760,16 @@ function drawHub() {
   if (live) $("hcont").onclick = () => { paused = false; homeView = "sudoku"; hideHome(); render(); };
   $("g-sudoku").onclick = () => { homeView = "sudoku"; showHome(); h.scrollTop = 0; };
   GAMES.forEach(g => $("g-" + g.id).onclick = () => mgOpen(g.id));
+  $("hwork").onclick = () => { const w = workoutToday(), next = w.ids.find(id => !w.done.includes(id)); if (next) mgOpen(next, { workout: true }); else toast("Today's workout is done. A new one tomorrow!"); };
   $("hstats").onclick = () => openStats("stats");
   $("hset").onclick = openSettings;
 }
 
 /* one game: intro, play, result */
 function mgHead(title, extra) { return `<div class="mghead"><button class="pback" id="mgback" aria-label="Back">${BACK_SVG}</button><b class="t">${title}</b>${extra || ""}</div>`; }
-function mgOpen(id) {
+function mgOpen(id, o) {
   const g = MGI[id]; if (!g) return;
-  mgClear(); mgCur = { g, lv: Math.min(g.levels, (mgRead(id) || {}).lv || 1) };
+  mgClear(); mgCur = { g, lv: Math.min(g.levels, (mgRead(id) || {}).lv || 1), workout: !!(o && o.workout) };
   mgEl.hidden = false; mgIntro();
 }
 function mgIntro() {
@@ -1760,10 +1828,13 @@ function mgDone(res, secs) {
   if (opts.hist.length > 600) opts.hist.splice(0, opts.hist.length - 600);
   const days = new Set(opts.days || []), firstToday = !days.has(k); days.add(k); opts.days = [...days].sort().slice(-400);
   const stk = streakNow(); opts.bestStreak = Math.max(opts.bestStreak || 0, stk);
+  const w = workoutToday(); let wkDone = false;
+  if (w.ids.includes(g.id) && !w.done.includes(g.id)) { w.done.push(g.id); if (w.done.length === w.ids.length) { opts.workouts = (opts.workouts || 0) + 1; wkDone = true; } }
+  const nextW = mgCur.workout ? w.ids.find(id => !w.done.includes(id)) : null;
   const nb = checkBadges(null); save();
-  const up = !!res.up && lv < g.levels, good = res.good !== false;
+  const up = !!res.up && lv < g.levels && !nextW, good = res.good !== false;
   sfx(isBest && prev != null ? "best" : good ? "win" : "lose");
-  if (good) confetti(isBest && prev != null);
+  if (good || wkDone) confetti((isBest && prev != null) || wkDone);
   if (nb.length) setTimeout(() => sfx("badge"), 800);
   sheet = "mgres";
   layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Result">
@@ -1771,12 +1842,14 @@ function mgDone(res, secs) {
     <div class="winstats" style="grid-template-columns:repeat(${res.lines.length},1fr)">${res.lines.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join("")}</div>
     ${res.note ? `<p class="about" style="text-align:center">${res.note}</p>` : ""}
     <p class="best">${isBest ? (prev != null ? `New best! Before: <b>${g.fmt(prev)}</b>` : "Your first score at this level") : `Your best: <b>${g.fmt(prev)}</b>`}</p>
+    ${wkDone ? `<p class="best">💪 <b>Today's workout is done!</b></p>` : ""}
     ${winExtras({ st: stk, firstToday, nb })}
-    ${up ? `<button class="big go" id="mgup">Try level ${lv + 1} ›</button>` : ""}
-    <div class="row2"><button class="big" id="mgmenu">All games</button><button class="big${up ? "" : " go"}" id="mgagain">Play again</button></div></div>`;
+    ${nextW ? `<button class="big go" id="mgnextw">Workout ${w.done.length + 1} of 3: ${MGI[nextW].name} ›</button>` : up ? `<button class="big go" id="mgup">Try level ${lv + 1} ›</button>` : ""}
+    <div class="row2"><button class="big" id="mgmenu">All games</button><button class="big${up || nextW ? "" : " go"}" id="mgagain">Play again</button></div></div>`;
   $("mgmenu").onclick = () => { closeSheet(); mgClose(); };
   $("mgagain").onclick = () => { closeSheet(); mgPlay(); };
   if (up) $("mgup").onclick = () => { closeSheet(); mgCur.lv = lv + 1; mgPlay(); };
+  if (nextW) $("mgnextw").onclick = () => { closeSheet(); mgOpen(nextW, { workout: true }); };
 }
 const mgMax = id => { const s = mgRead(id); return s ? Math.max(0, ...Object.values(s.best)) : 0; };
 const gamesPlayed = () => Object.keys(opts.mgs || {}).filter(id => opts.mgs[id].plays > 0).length + (opts.wins > 0 ? 1 : 0);
@@ -2645,11 +2718,11 @@ const vsTimer = setInterval(() => { if (V && vready && (!ves || ves.readyState =
 window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode() { return notesMode; }, get paused() { return paused; }, get sheet() { return sheet; },
   get opts() { return opts; }, get homeOn() { return homeOn; }, get V() { return V; }, get vlog() { return vlog; }, get vnet() { return vnet; },
   get statOn() { return statOn; }, get sfxCount() { return sfxCount; },
-  get mgView() { return mgView; }, get mgCur() { return mgCur; }, mgOpen, MGI, set homeView(v) { homeView = v; },
+  get mgView() { return mgView; }, workoutToday, get mgCur() { return mgCur; }, mgOpen, MGI, set homeView(v) { homeView = v; },
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "New puzzles: Picture logic and Number cages. Every puzzle has one answer, no guessing needed.";   // change with each update
+const NEWS = "Daily workout: three short games a day, at the top of the menu. Stats now cover every game, and there are 3 new badges.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
