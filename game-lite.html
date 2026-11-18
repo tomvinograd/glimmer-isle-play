@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795012601;</script>
+<script>window.GAME_BUILD = 1795016166;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1568,6 +1568,37 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   background: linear-gradient(90deg, transparent, var(--tc) 18%, var(--tc) 82%, transparent); box-shadow: 0 0 0 3px rgba(255,255,255,.6) inset; }
 .vsban .vsl { font: 900 44px/1 var(--display); color: #ffd34d; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; transform: skewX(12deg); }
 .vsban .vsn { font: 800 26px/1 var(--display); color: #fff; -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; transform: skewX(12deg); }
+
+/* Level Up picker (18 Nov) */
+.lvbg { position: fixed; inset: 0; z-index: 60; border: 0; background: rgba(40,28,18,.55); }
+.lvpop { position: fixed; z-index: 61; left: 50%; top: 50%; transform: translate(-50%,-50%); width: min(340px, calc(100vw - 32px)); background: #f8ead6; border-radius: 22px;
+  box-shadow: 0 0 0 4px #c9a27c, 0 0 0 7px #fff4e3, 0 12px 30px rgba(0,0,0,.35); padding: 0 16px 44px; display: grid; gap: 12px; animation: lvin .28s cubic-bezier(.3,1.4,.5,1); }
+.lvpop.still { animation: none; }
+@keyframes lvin { from { transform: translate(-50%,-50%) scale(.8); opacity: 0; } }
+.lvhead { margin: 0 -16px; padding: 12px; border-radius: 22px 22px 0 0; background: #efd9bb; text-align: center; font: 800 24px var(--display); color: #fff; -webkit-text-stroke: 4px var(--ink, #5a3a22); paint-order: stroke fill; }
+.lvfromto { display: flex; align-items: center; justify-content: space-around; }
+.lvfromto > div { display: grid; justify-items: center; gap: 4px; }
+.lvfromto small { font: 800 15px var(--display); color: var(--ink, #5a3a22); }
+.lvc { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(#efe0cb 55%, #e3cdb0 56%, #e3cdb0 64%, #efe0cb 65%); font: 800 34px var(--display); color: #fff; -webkit-text-stroke: 5px var(--ink, #5a3a22); paint-order: stroke fill; }
+.lvc.to { font-size: 44px; }
+.lvarrow { font: 900 40px/1 var(--display); font-style: normal; color: #ffd34d; -webkit-text-stroke: 3px var(--ink, #5a3a22); paint-order: stroke fill; }
+.lvreq { display: grid; gap: 7px; background: #ecd8bd; border-radius: 14px; padding: 10px; }
+.lvreq > b { text-align: center; font: 800 14px var(--display); color: var(--ink, #5a3a22); }
+.lvr { display: grid; grid-template-columns: 40px 1fr; align-items: center; background: #fbefdf; border-radius: 10px; padding: 5px 10px; min-height: 40px; }
+.lvr small { grid-column: 2; text-align: center; font: 700 11px var(--display); color: #8a6d55; margin-top: -2px; }
+.lvi svg { width: 30px; height: 30px; }
+.lvn { text-align: center; font: 800 18px var(--display); color: var(--ink, #5a3a22); }
+.lvr.short .lvn b { color: #e0503a; }
+.lvstep { display: flex; align-items: center; gap: 6px; }
+.lvstep button { border: 0; width: 46px; height: 46px; border-radius: 50%; flex: none; background: #8a6247; color: #fff; font: 800 16px var(--display); box-shadow: 0 3px 0 #5a3a22; }
+.lvstep .lvpm { font-size: 28px; line-height: 1; background: #6e4c34; }
+.lvstep button:disabled { opacity: .4; }
+.lvstep button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #5a3a22; }
+.lvplus { flex: 1; height: 34px; border-radius: 17px; background: #9a7a62; display: grid; place-items: center; font: 800 20px var(--display); color: #fff; -webkit-text-stroke: 3px var(--ink, #5a3a22); paint-order: stroke fill; }
+.lvnote { margin: -4px 0 0; text-align: center; font: 700 12px var(--display); color: #8a6d55; }
+.lvgo { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%); width: 72%; height: 54px; border: 0; border-radius: 27px; background: #86ddd9; box-shadow: 0 0 0 4px #fff, 0 4px 0 4px #c9a27c;
+  font: 800 22px var(--display); color: #fff; -webkit-text-stroke: 4px var(--ink, #5a3a22); paint-order: stroke fill; }
+.lvgo:disabled { filter: grayscale(.8); opacity: .75; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3712,6 +3743,27 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return `<div class="card mon${inTeam && i === 0 ? " lead" : ""}">${art(m.sp, m.evo, 76)}<div class="info"><div class="nmrow">${fname(m.sp, m.evo)}${gChip(m.q)}<span class="el" style="background:${EL[s.el].color}"></span></div><div class="stats"><span>Lv ${m.lvl}</span><span>HP ${maxHp(m)}</span><span>ATK ${atk(m)}</span><span>DEF ${def(m)}</span></div><div class="mini-btns">${b.join("")}</div></div></div>`;
   }
   let sheetTab = "stats", sheetMulti = false, sheetShown = null;  // sheetShown: the Glumi whose page is already on screen
+  let lvPick = null, lvTo = 0, lvShown = false;  // the Level Up picker: which Glumi, which level
+  const lvTop = m => Math.min(lvlCap(), (MAX_ASC + 1) * ASC_EVERY);
+  function lvPlan(m, to) {  // what reaching level `to` costs: leaves, plus keepsakes for each ascension on the way
+    let leaves = 0, keeps = 0, ascs = 0, a = ascOf(m);
+    for (let l = m.lvl; l < to; l++) { while (l >= (a + 1) * ASC_EVERY && a < MAX_ASC) { keeps += ASC_COST[a]; a++; ascs++; } leaves += 5 + l * 3; }
+    const own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
+    return { leaves, keeps, ascs, own, have, ok: S.leaves >= leaves && have >= keeps };
+  }
+  function lvBest(m) { let to = m.lvl; while (to < lvTop(m) && lvPlan(m, to + 1).ok) to++; return to; }
+  function lvPopup(m) {
+    const top = lvTop(m), p = lvPlan(m, lvTo), s = SP[m.sp];
+    const row = (ic, have, need, label) => `<div class="lvr${have < need ? " short" : ""}"><span class="lvi">${ic}</span><span class="lvn"><b>${have.toLocaleString("en-US")}</b> / ${need.toLocaleString("en-US")}</span>${label ? `<small>${label}</small>` : ""}</div>`;
+    return `<button class="lvbg" data-act="lvpclose" aria-label="Close"></button><div class="lvpop${lvShown ? " still" : ""}" role="dialog" aria-label="Level up">
+      <div class="lvhead">Level Up</div>
+      <div class="lvfromto"><div><small>Level</small><span class="lvc">${m.lvl}</span></div><i class="lvarrow">\u00BB</i><div><small>Level</small><span class="lvc to">${lvTo}</span></div></div>
+      <div class="lvreq"><b>Required</b>${row(IC.leaf, S.leaves, p.leaves)}${p.keeps ? row(IC.keepsake || IC.heart || IC.star, p.have, p.keeps, `${s.name} keepsakes${S.shards ? " + star shards" : ""} \u00B7 ascends ${p.ascs}\u00D7`) : ""}</div>
+      <div class="lvstep"><button data-act="lvpstep:-10" ${lvTo - 10 > m.lvl ? "" : "disabled"}>-10</button><button class="lvpm" data-act="lvpstep:-1" ${lvTo - 1 > m.lvl ? "" : "disabled"}>\u2212</button>
+        <span class="lvplus">+${lvTo - m.lvl}</span><button class="lvpm" data-act="lvpstep:1" ${lvTo < top ? "" : "disabled"}>+</button><button data-act="lvpstep:10" ${lvTo < top ? "" : "disabled"}>+10</button></div>
+      ${lvTo >= top && top < (MAX_ASC + 1) * ASC_EVERY ? `<p class="lvnote">Level ${top} is the top for now: raise your Explorer level to go higher</p>` : ""}
+      <button class="lvgo" data-act="lvpgo" ${p.ok && lvTo > m.lvl ? "" : "disabled"}>Level Up</button></div>`;
+  }
   function levelsAffordable(m) { let n = 0, lv = m.lvl, leaves = S.leaves; const top = Math.min(lvlCap(), ascTop(m)); while (lv < top && leaves >= 5 + lv * 3 && n < 99) { leaves -= 5 + lv * 3; lv++; n++; } return n; }
   function levelsCost(m, n) { let c = 0; for (let k = 0; k < n; k++) c += 5 + (m.lvl + k) * 3; return c; }
   const teamOrder = () => [...S.mons].sort((x, y) => S.team.includes(y.uid) - S.team.includes(x.uid) || y.q - x.q || y.lvl - x.lvl);
@@ -3891,7 +3943,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
            ${charmRow(m)}<button class="gcharm cmpbtn" data-act="cmpstart:${m.uid}"><span class="gci"><svg viewBox="0 0 24 24" fill="none" stroke="#8a6d55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span><span class="gct"><b>Compare</b><small>Side by side with another Glumi</small></span><i>\u203A</i></button><div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
              ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
              ${bigBtn}
-             <button class="gx${multi ? " on" : ""}" data-act="sheetmulti" aria-label="Level up as many times as you can" ${lvlN > 1 && !(atAsc && ascOf(m) < MAX_ASC) ? "" : "disabled"}>\u2303\u2303</button></div>`;
+             <button class="gx" data-act="lvpopen:${m.uid}" aria-label="Level up to any level" ${m.lvl < lvTop(m) ? "" : "disabled"}>\u2303\u2303</button></div>`;
       body = `<div class="gcard q${m.q}" style="--gc:${GRADES[m.q].c}">
           <span class="gpow">${power}</span><b class="gname">${m.nick || fname(m.sp, m.evo)}<button class="gnick" data-act="nickopen:${m.uid}" aria-label="Rename"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button></b>${where ? `<span class="gwhere">${where}</span>` : ""}
           <span class="gtags"><span class="gel" style="background:${EL[s.el].color}">${EL[s.el].name}</span>${gChip(m.q)}</span>
@@ -3912,7 +3964,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const mainPg = !["level", "stars", "bye"].includes(sheetPage) || (sheetPage === "bye" && inTeam);
     return `<button class="sheetbg" data-act="closesheet" aria-label="Close"></button><div class="sheet${mainPg ? " cardpage" : ""}${sheetShown === m.uid ? " still" : ""}" role="dialog" aria-label="${fname(m.sp, m.evo)}">
       ${body}
-      ${mainPg ? `<button class="gclose" data-act="closesheet" aria-label="Close">✕</button>` : `<button class="mb" data-act="closesheet" style="justify-self:center;min-width:120px">Close</button>`}</div>`;
+      ${mainPg ? `<button class="gclose" data-act="closesheet" aria-label="Close">✕</button>` : `<button class="mb" data-act="closesheet" style="justify-self:center;min-width:120px">Close</button>`}</div>${lvPick === m.uid ? lvPopup(m) : ""}`;
   }
   function pageBook() {
     const total = SP.reduce((n, s) => n + (s.evo ? 2 : 1), 0), got = Object.keys(S.caught).length;
@@ -4803,6 +4855,16 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       if (Object.keys(sum).length) { sfx("claim"); save(); toast("Got " + Object.entries(sum).map(([k, n]) => `${n} ${RW[k][1]}${n > 1 && !RW[k][1].endsWith("s") && k !== "glow" ? "s" : ""}`).join(", ")); render(); } }
     else if (a === "sheettab") { sheetTab = arg; render(); }
     else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
+    else if (a === "lvpopen") { const m = mon(n); if (m) { lvPick = n; lvShown = false; lvTo = Math.max(m.lvl + 1, lvBest(m)); lvTo = Math.min(lvTo, lvTop(m)); render(); lvShown = true; } }
+    else if (a === "lvpclose") { lvPick = null; render(); }
+    else if (a === "lvpstep") { const m = mon(lvPick); if (m) { lvTo = Math.max(m.lvl + 1, Math.min(lvTop(m), lvTo + n)); render(); } }
+    else if (a === "lvpgo") { const m = mon(lvPick); if (m) { const p = lvPlan(m, lvTo); if (p.ok && lvTo > m.lvl) {
+      let a2 = ascOf(m);
+      for (let l = m.lvl; l < lvTo; l++) { while (l >= (a2 + 1) * ASC_EVERY && a2 < MAX_ASC) { const need = ASC_COST[a2], own = S.keepsakes[m.sp] || 0, fromOwn = Math.min(own, need);
+          S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); a2++; m.asc = a2; }
+        track("lvl"); }
+      const k = lvTo - m.lvl; S.leaves -= p.leaves; m.lvl = lvTo; m.hp = maxHp(m); lvPick = null; sfx("up"); save(); render(); moHero();
+      toast(`${fname(m.sp, m.evo)}: +${k} level${k > 1 ? "s" : ""}${p.ascs ? `, ascended ${p.ascs}\u00D7` : ""}`); if (p.ascs) setTimeout(() => fxPower("Ascended!"), 400); } } }
     else if (a === "sheetnav") { const L = teamOrder(), i = L.findIndex(x => x.uid === sheetUid); if (L.length) { sheetUid = L[(i + n + L.length) % L.length].uid; sheetPage = "main"; render(); } }
     else if (a === "lockmon") { const m = mon(n); if (m) { m.lock = !(m.lock || m.fav); save(); toast(m.lock ? "Locked: it can't be sold or released" : "Unlocked"); render(); } }
     else if (a === "lvlmax") { const m = mon(n); if (m) { const k = levelsAffordable(m); if (k) { S.leaves -= levelsCost(m, k); m.lvl += k; m.hp = maxHp(m); for (let j = 0; j < k; j++) track("lvl"); sfx("up"); save(); toast(`+${k} levels`); render(); moHero(); } } }
@@ -4981,7 +5043,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     }
     else if (a === "sheet") { sheetTab = "stats"; if (swapIn) return; if (cmpA && cmpA !== n) { const A = cmpA; cmpA = null; compareOpen(A, n); render(); return; } { const mm = mon(n); if (mm && mm.isNew) { delete mm.isNew; save(); } } sheetUid = n; sheetPage = "main"; confirmRelease = null; render(); }
     else if (a === "spage") { sheetPage = arg; confirmRelease = null; render(); const sh = document.querySelector(".sheet"); if (sh) sh.scrollTop = 0; }
-    else if (a === "closesheet") { sheetUid = null; sheetPage = "main"; render(); }
+    else if (a === "closesheet") { sheetUid = null; sheetPage = "main"; lvPick = null; render(); }
     else if (a === "addteam") { sheetUid = null; if (S.team.length < slots()) { S.team.push(n); save(); toast("Added to your team"); } else { swapIn = n; } render(); window.scrollTo(0, 0); }
     else if (a === "pickslot") { if (swapIn) { S.team.push(swapIn); swapIn = null; save(); toast("Added to your team"); render(); } else toast("Tap a Glumi below, then Add to team"); }
     else if (a === "swapto") { if (swapIn) { S.team[n] = swapIn; swapIn = null; save(); toast("Team updated"); render(); } }
