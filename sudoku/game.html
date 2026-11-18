@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795026930;</script>
+<script>window.GAME_BUILD = 1795027108;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -134,6 +134,34 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 @keyframes wave { 40% { background: var(--sel); } }
 .c.flash { animation: flash .6s ease-out both; }
 @keyframes flash { 30% { background: var(--sel); transform: scale(1.08); } }
+
+/* start page */
+.mark { display: flex; align-items: center; gap: 4px; }
+.mark svg { width: 18px; height: 18px; color: var(--muted); }
+.home { position: fixed; inset: 0; z-index: 15; background: var(--bg); display: flex; flex-direction: column; align-items: center; overflow-y: auto;
+  padding-block: calc(28px + env(safe-area-inset-top, 0px)) calc(20px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.home[hidden] { display: none; }
+.hin { width: 100%; max-width: 420px; flex: 1; display: flex; flex-direction: column; gap: 18px; }
+.hart { align-self: center; margin-top: 4vh; width: min(200px, 52vw); aspect-ratio: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; transform: rotate(-4deg); }
+.hart span { border-radius: 12px; background: var(--paper); box-shadow: 0 2px 6px var(--shade); display: grid; place-items: center; font-size: clamp(26px, 8vw, 38px); font-weight: 700; color: var(--ink); }
+.hart span.u { color: var(--user); } .hart span.y { background: var(--sel); } .hart span.e { color: transparent; }
+.hart span:nth-child(odd) { animation: bob 3.2s ease-in-out infinite; } .hart span:nth-child(3n) { animation-delay: -1.1s; }
+@keyframes bob { 50% { transform: translateY(-3px); } }
+.htitle { text-align: center; display: grid; gap: 4px; }
+.htitle b { font-size: 44px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.htitle span { color: var(--muted); font-weight: 600; }
+.hbtns { display: grid; gap: 10px; margin-top: 6px; }
+.hbtn { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: left; }
+.hbtn > span { flex: 1; display: grid; gap: 1px; } .hbtn b { font-size: 18px; font-weight: 800; } .hbtn small { color: var(--muted); font-weight: 600; font-size: 13px; }
+.hbtn i { font-style: normal; font-size: 22px; color: var(--muted); }
+.hbtn.go { background: var(--accent); color: var(--accent-ink); } .hbtn.go small, .hbtn.go i { color: var(--accent-ink); opacity: .85; }
+.hbtn:active { transform: translateY(1px); }
+.hrec { display: grid; gap: 8px; } .hrec h3 { margin: 0; font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.hrecs { display: flex; flex-wrap: wrap; gap: 6px; }
+.hrecs span { padding: 6px 10px; border-radius: 999px; background: var(--paper); font-size: 13px; font-weight: 600; color: var(--muted); }
+.hrecs span b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.hfoot { margin-top: auto; text-align: center; color: var(--muted); font-size: 12px; font-weight: 600; }
 /* what's new note after an update */
 .news { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30; width: min(440px, calc(100% - 32px));
   background: var(--ink); color: var(--bg); border-radius: 16px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; box-shadow: 0 6px 20px var(--shade); animation: newsin .35s cubic-bezier(.2,1,.4,1); }
@@ -147,7 +175,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 <body>
 <div class="app"><div class="wrap" id="wrap">
   <div class="top">
-    <span class="mark">Sudoku</span>
+    <button class="mark" id="homebtn" aria-label="Start page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Sudoku</button>
     <button class="lvchip" id="lvchip" aria-label="Change difficulty"><span id="lvname">Medium</span><small id="lvnum">4/10</small>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
     <span class="sp"></span>
@@ -165,6 +193,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
   <div class="pad" id="pad"></div>
   <button class="newbtn" id="newbtn">New game</button>
 </div></div>
+<div class="home" id="home" hidden></div>
 <div id="layer"></div>
 
 <script>
@@ -267,7 +296,8 @@ function makePuzzle(lv) {
 
 /* ---------- state ---------- */
 const KEY = "sudoku.save.v1";
-let G = null, opts = { mistakes: true, same: true, level: 4, best: {} };
+let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0 };
+let homeOn = true;   // the start page is shown when the app opens
 let sel = -1, notesMode = false, paused = false, sheet = null, pickLv = 4, lastPop = -1;
 const load = () => { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) { if (s.opts) opts = Object.assign(opts, s.opts); if (s.game && !s.game.done) G = s.game; } } catch (e) {} };
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ opts, game: G && Object.assign({}, G, { hist: G.hist.slice(-60) }) })); } catch (e) {} };
@@ -358,7 +388,7 @@ function hint() {
 }
 function checkWin() {
   for (let i = 0; i < 81; i++) if (G.cells[i] !== G.sol[i]) return;
-  G.done = true; sel = -1; buzz([40, 60, 40]);
+  G.done = true; sel = -1; opts.wins = (opts.wins || 0) + 1; buzz([40, 60, 40]);
   const b = opts.best[G.level], isBest = !b || G.t < b;
   if (isBest) opts.best[G.level] = G.t;
   board.classList.add("won"); cellEls.forEach((el, i) => el.style.animationDelay = ((ROW[i] + COL[i]) * 35) + "ms");
@@ -383,7 +413,7 @@ function drawNew() {
     <p class="about">About <b>${L.clues} numbers given</b> out of 81. ${L.singles ? "Every step can be found by looking at one row, column or box." : L.tough ? "Needs advanced techniques: some steps can't be seen from a single row, column or box." : "Some steps may need advanced techniques."}${best ? ` Your best: <b>${fmt(best)}</b>.` : ""}</p>
     <div class="opt"><span>Show mistakes in red</span><button class="sw${opts.mistakes ? " on" : ""}" id="optmis" role="switch" aria-checked="${opts.mistakes}" aria-label="Show mistakes in red"></button></div>
     <div class="opt"><span>Highlight the same numbers</span><button class="sw${opts.same ? " on" : ""}" id="optsame" role="switch" aria-checked="${opts.same}" aria-label="Highlight the same numbers"></button></div>
-    <div class="row2">${G && !G.done ? `<button class="big" data-close>Keep playing</button>` : ""}<button class="big go" id="startbtn">Start ${L.name}</button></div><p class="ver">${verLabel()}</p></div>`;
+    <div class="row2">${homeOn ? `<button class="big" data-close>Back</button>` : G && !G.done ? `<button class="big" data-close>Keep playing</button>` : ""}<button class="big go" id="startbtn">Start ${L.name}</button></div><p class="ver">${verLabel()}</p></div>`;
   $("lvrange").oninput = e => { pickLv = +e.target.value; drawNew(); $("lvrange").focus(); };
   layer.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => { pickLv = +b.dataset.lv; drawNew(); });
   $("optmis").onclick = () => { opts.mistakes = !opts.mistakes; save(); render(); drawNew(); };
@@ -402,7 +432,7 @@ function startGame(lv) {
   layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Making a ${LEVELS[lv - 1].name} puzzle…</div></div>`;
   setTimeout(() => makePuzzle(lv).then(r => {
     G = { level: lv, givens: r.p, sol: r.sol, cells: r.p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: r.givens };
-    sel = -1; notesMode = false; paused = false; closeSheet(); render(); save();
+    sel = -1; notesMode = false; paused = false; closeSheet(); hideHome(); render(); save();
   }), 60);
 }
 function openWin(isBest, prev) {
@@ -416,30 +446,54 @@ function openWin(isBest, prev) {
   $("chg").onclick = openNew;
 }
 
+
+/* ---------- start page ---------- */
+function showHome() {
+  homeOn = true; save();
+  const h = $("home"), live = G && !G.done;
+  const filled = live ? G.cells.filter(v => v).length : 0;
+  const recs = LEVELS.map((L, k) => opts.best[k + 1] ? `<span>${L.name} <b>${fmt(opts.best[k + 1])}</b></span>` : "").join("");
+  h.innerHTML = `<div class="hin">
+    <div class="hart" aria-hidden="true"><span>5</span><span class="e">.</span><span class="u">3</span><span class="e">.</span><span class="y">7</span><span>1</span><span class="u">8</span><span>2</span><span class="e">.</span></div>
+    <div class="htitle"><b>Sudoku</b><span>${opts.wins ? `${opts.wins} puzzle${opts.wins > 1 ? "s" : ""} solved` : "Ten levels, from Beginner to Extreme"}</span></div>
+    <div class="hbtns">
+      ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue</b><small>${LEVELS[G.level - 1].name} · ${fmt(G.t)} · ${filled} of 81 filled</small></span><i>›</i></button>` : ""}
+      <button class="hbtn${live ? "" : " go"}" id="hnew"><span><b>New game</b><small>Pick how hard: level 1 to 10</small></span><i>›</i></button>
+    </div>
+    ${recs ? `<div class="hrec"><h3>Best times</h3><div class="hrecs">${recs}</div></div>` : ""}
+    <p class="hfoot">${verLabel()}</p></div>`;
+  h.hidden = false;
+  if (live) $("hcont").onclick = () => { paused = false; hideHome(); render(); };
+  $("hnew").onclick = openNew;
+}
+function hideHome() { homeOn = false; $("home").hidden = true; }
+
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
 $("notes").onclick = () => { notesMode = !notesMode; render(); };
 $("pausebtn").onclick = () => { if (G && !G.done) { paused = !paused; render(); } };
-$("lvchip").onclick = openNew; $("newbtn").onclick = openNew;
+$("homebtn").onclick = showHome; $("lvchip").onclick = openNew; $("newbtn").onclick = openNew;
 document.addEventListener("keydown", e => {
   if (sheet) { if (e.key === "Escape" && sheet === "new") closeSheet(); return; }
+  if (homeOn) return;
   if (e.key >= "1" && e.key <= "9") enter(+e.key);
   else if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") erase();
   else if (e.key === "n" || e.key === "N") { notesMode = !notesMode; render(); }
   else if ((e.ctrlKey || e.metaKey) && e.key === "z") undo();
   else if (e.key.startsWith("Arrow")) { if (sel < 0) sel = 40; else { const dr = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0, dc = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0; sel = ((ROW[sel] + dr + 9) % 9) * 9 + (COL[sel] + dc + 9) % 9; } render(); e.preventDefault(); }
 });
-setInterval(() => { if (G && !G.done && !paused && !sheet && document.visibilityState === "visible") { G.t++; $("timer").textContent = fmt(G.t); if (G.t % 5 === 0) save(); } }, 1000);
+setInterval(() => { if (G && !G.done && !paused && !sheet && !homeOn && document.visibilityState === "visible") { G.t++; $("timer").textContent = fmt(G.t); if (G.t % 5 === 0) save(); } }, 1000);
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
-window.appBack = () => { if (sheet === "new" && G && !G.done) { closeSheet(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } return false; };
+window.appBack = () => { if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
 /* ---------- start ---------- */
-const NEWS = "Finished rows, columns and boxes now light up.";   // change with each update
+const NEWS = "A start page: continue your puzzle or pick a new one, and see your best times.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
-if (G) render(); else startGame(opts.level || 4);
+if (G) render();
+showHome();
 if (window.GAME_BUILD) {
   if (hadSave && opts.seenBuild !== window.GAME_BUILD) {
     const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
