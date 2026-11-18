@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795028837;</script>
+<script>window.GAME_BUILD = 1795030535;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -302,6 +302,50 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 :root[data-size="large"] .tool svg, :root[data-size="xl"] .tool svg { width: 28px; height: 28px; }
 :root[data-size="large"] .tool, :root[data-size="xl"] .tool { font-size: 13px; padding: 8px 0; }
 :root[data-size="xl"] .stats { font-size: 14px; }
+
+/* play a friend: two progress bars (you, your friend), the code, the result */
+:root { --opp: #C25E00; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --opp: #FF9F43; } }
+:root[data-theme="dark"] { --opp: #FF9F43; }
+:root[data-contrast="high"] { --opp: #8A3B00; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"]:not([data-theme="light"]) { --opp: #FFB366; } }
+:root[data-contrast="high"][data-theme="dark"] { --opp: #FFB366; }
+.vsbar { display: grid; gap: 5px; margin-top: -4px; }
+.vsrow { display: grid; grid-template-columns: minmax(0, 8.5em) 1fr 3.4em; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; }
+.vsn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vsn small { color: var(--muted); font-weight: 600; } .vsn small.off { color: var(--err); }
+.trk { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.trk i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width .5s ease-out; }
+.vsrow.them .trk i { background: var(--opp); }
+.vsrow b { text-align: right; font-variant-numeric: tabular-nums; }
+:root[data-contrast="high"] .trk { background: var(--paper); border: 1.5px solid var(--edge); }
+:root[data-contrast="high"] .vsn small { color: var(--ink); }
+.cdbox { display: grid; justify-items: center; gap: 6px; padding: 16px 22px; border-radius: 18px; background: var(--paper); box-shadow: 0 4px 16px var(--shade); }
+:root[data-contrast="high"] .cdbox { border: 2px solid var(--edge); }
+.cover .cd { font-size: 80px; line-height: 1; font-weight: 800; color: var(--accent); }
+.lvchip { white-space: nowrap; min-width: 0; } #lvname { overflow: hidden; text-overflow: ellipsis; max-width: 7.5em; }
+.cover small { color: var(--muted); font-weight: 700; font-size: 15px; }
+.tool.off { opacity: .35; }
+input { user-select: text; -webkit-user-select: text; }
+.fld { display: grid; gap: 6px; font-weight: 700; font-size: 14px; color: var(--muted); }
+.fld input, .codein { font: inherit; font-size: 17px; font-weight: 600; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 11px 12px; width: 100%; }
+.codein { text-align: center; font-size: 32px; font-weight: 800; letter-spacing: .3em; text-transform: uppercase; padding: 8px 0 8px .3em; }
+.codein::placeholder { letter-spacing: .1em; }
+.fld input::placeholder, .codein::placeholder { color: var(--muted); opacity: .75; }
+.fld input:focus, .codein:focus { border-color: var(--accent); }
+:root[data-contrast="high"] .fld input, :root[data-contrast="high"] .codein { border-color: var(--edge); }
+.code { text-align: center; font-size: 46px; font-weight: 800; letter-spacing: .25em; padding: 8px 0 8px .25em; border-radius: 16px; background: var(--bg); user-select: text; -webkit-user-select: text; }
+:root[data-contrast="high"] .code { border: 2px solid var(--edge); }
+.vsmsg { margin: -6px 0 0; min-height: 1.4em; text-align: center; font-weight: 700; color: var(--muted); }
+.vsmsg.bad { color: var(--err); }
+.waitrow { display: flex; justify-content: center; } .waitrow .spin { width: 26px; height: 26px; border-width: 3px; }
+.vsres { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vsres div { background: var(--bg); border-radius: 14px; padding: 10px 6px; text-align: center; display: grid; gap: 2px; min-width: 0; }
+.vsres div.win { box-shadow: inset 0 0 0 2.5px var(--accent); }
+.vsres b { font-size: 22px; font-variant-numeric: tabular-nums; }
+.vsres small { color: var(--muted); font-weight: 700; font-size: 12px; }
+.vsres small.who { color: var(--ink); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root[data-contrast="high"] .vsres div { border: 2px solid var(--edge); }
 </style>
 </head>
 <body>
@@ -314,7 +358,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
     <span class="timer" id="timer">0:00</span>
     <button class="icbtn" id="pausebtn" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
   </div>
-  <div class="stats"><span>Mistakes <b id="mis">0</b></span><span>Hints <b id="hin">0</b></span><span><b id="giv">0</b> numbers given</span></div>
+  <div class="stats" id="stats"><span>Mistakes <b id="mis">0</b></span><span>Hints <b id="hin">0</b></span><span><b id="giv">0</b> numbers given</span></div>
+  <div class="vsbar" id="vsbar" hidden></div>
   <div class="boardbox" id="boardbox"><div class="board" id="board"></div><div class="cover" id="cover" hidden></div></div>
   <div class="tools">
     <button class="tool" id="undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo</button>
@@ -444,9 +489,11 @@ function applyTheme() {
   if (typeof fitBoard === "function") requestAnimationFrame(fitBoard);
 }
 if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", applyTheme);
-let sel = -1, notesMode = false, paused = false, sheet = null, pickLv = 4, lastPop = -1;
-const load = () => { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) { if (s.opts) opts = Object.assign(opts, s.opts); if (s.game && !s.game.done) G = s.game; } } catch (e) {} };
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ opts, game: G && Object.assign({}, G, { hist: G.hist.slice(-60) }) })); } catch (e) {} };
+let sel = -1, notesMode = false, paused = false, sheet = null, pickLv = 4, lastPop = -1, newMode = "solo";
+let V = null;   // the game against a friend (saved): code, my id, round on the board, the friend's id/name/progress, what was already shown
+const load = () => { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) { if (s.opts) opts = Object.assign(opts, s.opts); if (s.game && (!s.game.done || s.game.vs)) G = s.game; if (s.vs) V = s.vs; } } catch (e) {} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ opts, game: G && Object.assign({}, G, { hist: G.hist.slice(-60) }), vs: V })); } catch (e) {} if (typeof vsProgress === "function") vsProgress(); };
+const counting = () => !!(G && G.vs && V && V.round === G.vs && V.startAt > Date.now());   // the 3-2-1 before a race
 const $ = id => document.getElementById(id);
 const fmt = s => { const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); };
 const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
@@ -457,7 +504,7 @@ for (let i = 0; i < 81; i++) {
   const d = document.createElement("div");
   d.className = "c" + (COL[i] === 2 || COL[i] === 5 ? " br" : "") + (ROW[i] === 2 || ROW[i] === 5 ? " bb" : "") + (COL[i] === 8 ? " r9" : "") + (ROW[i] === 8 ? " b9" : "");
   d.dataset.base = d.className; d.setAttribute("role", "button");
-  d.addEventListener("pointerdown", e => { e.preventDefault(); if (!G || paused || G.done) return; sel = i; render(); });
+  d.addEventListener("pointerdown", e => { e.preventDefault(); if (!G || paused || G.done || counting()) return; sel = i; render(); });
   board.appendChild(d); cellEls.push(d);
 }
 const pad = $("pad");
@@ -493,22 +540,26 @@ function render() {
   [...pad.querySelectorAll(".num:not(.padx)")].forEach((b, k) => { b.querySelector("small").textContent = left[k + 1]; b.classList.toggle("gone", left[k + 1] === 0); });
   pad.classList.toggle("notes-on", notesMode);
   $("notes").classList.toggle("on", notesMode); $("notesbadge").textContent = notesMode ? "ON" : "OFF";
-  $("lvname").textContent = LEVELS[G.level - 1].name; $("lvnum").textContent = G.level + "/10";
+  const vs = !!(G.vs && V);
+  $("lvname").textContent = vs ? "vs " + V.oppName : LEVELS[G.level - 1].name; $("lvnum").textContent = vs ? "" : G.level + "/10";   // a race: just the name (the level is in the sheet behind the chip)
   $("mis").textContent = G.mistakes; $("hin").textContent = G.hints; $("giv").textContent = G.clues;
   $("mis").parentNode.hidden = !opts.mistakes;
+  $("hint").classList.toggle("off", vs);
   $("timer").textContent = fmt(G.t);
-  board.classList.toggle("paused", paused);
+  const cd = counting();
+  board.classList.toggle("paused", paused || cd);
   const cover = $("cover");
-  cover.hidden = !paused;
-  if (paused) cover.innerHTML = `<b>Paused</b><button class="newbtn" id="resume">Continue</button>`;
-  if (paused) $("resume").onclick = () => { paused = false; render(); };
+  cover.hidden = !(paused || cd);
+  if (cd) cover.innerHTML = `<div class="cdbox"><small>Against ${esc(V.oppName)}</small><b class="cd">${Math.max(1, Math.ceil((V.startAt - Date.now()) / 1000))}</b><small>Same puzzle · first to finish wins</small></div>`;
+  else if (paused) { cover.innerHTML = `<b>Paused</b>${vs ? "<small>The race goes on: the clock keeps running</small>" : ""}<button class="newbtn" id="resume">Continue</button>`; $("resume").onclick = () => { paused = false; render(); }; }
+  renderVs();
 }
 
 /* ---------- moves ---------- */
 const snap = () => { G.hist.push({ c: G.cells.slice(), n: G.notes.slice() }); if (G.hist.length > 300) G.hist.shift(); };
 function clearPeerNotes(i, d) { const m = ~(1 << (d - 1)); for (const j of PEERS[i]) G.notes[j] &= m; }
 function enter(d) {
-  if (!G || G.done || paused || sel < 0 || G.givens[sel]) return;
+  if (!G || G.done || paused || counting() || sel < 0 || G.givens[sel]) return;
   if (notesMode) { if (G.cells[sel]) return; snap(); G.notes[sel] ^= 1 << (d - 1); render(); save(); return; }
   if (G.cells[sel] === d) return;
   snap(); G.cells[sel] = d; G.notes[sel] = 0; clearPeerNotes(sel, d); lastPop = sel; const at = sel;
@@ -526,10 +577,11 @@ function flashDone(i) {
       setTimeout(() => { el.classList.remove("flash"); el.style.animationDelay = ""; }, 1100); }); }
   if (any) buzz(25);
 }
-function erase() { if (!G || G.done || paused || sel < 0 || G.givens[sel] || (!G.cells[sel] && !G.notes[sel])) return; snap(); G.cells[sel] = 0; G.notes[sel] = 0; render(); save(); }
-function undo() { if (!G || G.done || paused || !G.hist.length) return; const h = G.hist.pop(); G.cells = h.c; G.notes = h.n; render(); save(); }
+function erase() { if (!G || G.done || paused || counting() || sel < 0 || G.givens[sel] || (!G.cells[sel] && !G.notes[sel])) return; snap(); G.cells[sel] = 0; G.notes[sel] = 0; render(); save(); }
+function undo() { if (!G || G.done || paused || counting() || !G.hist.length) return; const h = G.hist.pop(); G.cells = h.c; G.notes = h.n; render(); save(); }
 function hint() {
   if (!G || G.done || paused) return;
+  if (G.vs) { toast("No hints when you play a friend."); return; }
   let i = sel >= 0 && !G.givens[sel] && G.cells[sel] !== G.sol[sel] ? sel : -1;
   if (i < 0) { const open = []; for (let k = 0; k < 81; k++) if (G.cells[k] !== G.sol[k]) open.push(k); if (!open.length) return; i = open[Math.floor(Math.random() * open.length)]; }
   snap(); G.cells[i] = G.sol[i]; G.notes[i] = 0; clearPeerNotes(i, G.sol[i]); G.hints++; sel = i; lastPop = i;
@@ -537,6 +589,13 @@ function hint() {
 }
 function checkWin() {
   for (let i = 0; i < 81; i++) if (G.cells[i] !== G.sol[i]) return;
+  if (G.vs && V) {   // a race: tell the friend, then the first "done" in the relay's list wins
+    G.done = true; sel = -1; const ms = Date.now() - V.startAt; G.t = Math.max(0, Math.floor(ms / 1000)); buzz([40, 60, 40]);
+    vsPost({ t: "done", r: G.vs, ms, m: G.mistakes }); vAnimDone = false;
+    board.classList.add("won"); cellEls.forEach((el, i) => el.style.animationDelay = ((ROW[i] + COL[i]) * 35) + "ms");
+    setTimeout(() => { board.classList.remove("won"); cellEls.forEach(el => el.style.animationDelay = ""); vAnimDone = true; vsSync(); }, 900);
+    return;
+  }
   G.done = true; sel = -1; opts.wins = (opts.wins || 0) + 1; buzz([40, 60, 40]);
   const b = opts.best[G.level], isBest = !b || G.t < b;
   if (isBest) opts.best[G.level] = G.t;
@@ -548,22 +607,25 @@ function checkWin() {
 const layer = $("layer");
 function closeSheet() { sheet = null; layer.innerHTML = ""; }
 function openNew() {
-  sheet = "new"; pickLv = G ? G.level : opts.level; drawNew();
+  sheet = "new"; newMode = "solo"; pickLv = G ? G.level : opts.level; drawNew();
 }
 function drawNew() {
   const L = LEVELS[pickLv - 1], best = opts.best[pickLv];
   const presets = [[1, "Beginner"], [2, "Easy"], [4, "Medium"], [6, "Hard"], [8, "Expert"], [10, "Extreme"]];
-  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="New game">
-    <h2>New game</h2>
+  const solo = newMode === "solo", title = newMode === "vs" ? "Play a friend" : newMode === "re" ? "Rematch" : "New game";
+  const go = newMode === "vs" ? `Make a ${L.name} game` : newMode === "re" ? `Ask for ${L.name}` : `Start ${L.name}`;
+  layer.innerHTML = `<div class="scrim"${solo ? " data-close" : ""}></div><div class="sheet" role="dialog" aria-label="${title}">
+    <h2>${title}</h2>
     <div class="lvbig"><b>${L.name}</b><small>Level ${pickLv} of 10</small></div>
     <input class="range" id="lvrange" type="range" min="1" max="10" step="1" value="${pickLv}" aria-label="Difficulty">
     <div class="ticks">${LEVELS.map((_, k) => `<span>${k + 1}</span>`).join("")}</div>
     <div class="presets">${presets.map(([n, t]) => `<button data-lv="${n}" class="${n === pickLv ? "on" : ""}">${t}</button>`).join("")}</div>
     <p class="about">About <b>${L.clues} numbers given</b> out of 81. ${L.singles ? "Every step can be found by looking at one row, column or box." : L.tough ? "Needs advanced techniques: some steps can't be seen from a single row, column or box." : "Some steps may need advanced techniques."}${best ? ` Your best: <b>${fmt(best)}</b>.` : ""}</p>
-    <div class="row2">${homeOn ? `<button class="big" data-close>Back</button>` : G && !G.done ? `<button class="big" data-close>Keep playing</button>` : ""}<button class="big go" id="startbtn">Start ${L.name}</button></div><p class="ver">${verLabel()}</p></div>`;
+    <div class="row2">${!solo ? `<button class="big" id="newback">Back</button>` : homeOn ? `<button class="big" data-close>Back</button>` : G && !G.done ? `<button class="big" data-close>Keep playing</button>` : ""}<button class="big go" id="startbtn">${go}</button></div>${solo ? `<p class="ver">${verLabel()}</p>` : ""}</div>`;
   $("lvrange").oninput = e => { pickLv = +e.target.value; drawNew(); $("lvrange").focus(); };
   layer.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => { pickLv = +b.dataset.lv; drawNew(); });
-  $("startbtn").onclick = () => startGame(pickLv);
+  $("startbtn").onclick = () => newMode === "vs" ? vsMake(pickLv) : newMode === "re" ? vsRematch(pickLv) : startGame(pickLv);
+  if (!solo) $("newback").onclick = () => newMode === "vs" ? openVsMenu() : G && G.done ? openVsEnd() : closeSheet();
   layer.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
 }
 // "Version 1.1 · game of 18 Nov, 21:05": the app's version (from the app) and when this game was published
@@ -573,6 +635,7 @@ function verLabel() {
   return [app ? "Version " + app : "", when ? "game of " + when : ""].filter(Boolean).join(" · ");
 }
 function startGame(lv) {
+  if (V) vsStop(true);   // a game on your own ends the game against a friend
   opts.level = lv; sheet = "making";
   layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Making a ${LEVELS[lv - 1].name} puzzle…</div></div>`;
   setTimeout(() => makePuzzle(lv).then(r => {
@@ -597,13 +660,16 @@ function showHome() {
   homeOn = true; setResume(false); save();
   const h = $("home"), live = G && !G.done;
   const filled = live ? G.cells.filter(v => v).length : 0;
-  const recs = LEVELS.map((L, k) => opts.best[k + 1] ? `<span>${L.name} <b>${fmt(opts.best[k + 1])}</b></span>` : "").join("");
+  const recs = LEVELS.map((L, k) => opts.best[k + 1] ? `<span>${L.name} <b>${fmt(opts.best[k + 1])}</b></span>` : "").join("")
+    + (opts.vsWins || opts.vsLosses ? `<span>Against friends <b>${opts.vsWins || 0} won · ${opts.vsLosses || 0} lost</b></span>` : "");
+  const vsLive = live && G.vs && V;
   h.innerHTML = `<div class="hin">
     <div class="hart" aria-hidden="true"><span>5</span><span class="e">.</span><span class="u">3</span><span class="e">.</span><span class="y">7</span><span>1</span><span class="u">8</span><span>2</span><span class="e">.</span></div>
     <div class="htitle"><b>Sudoku</b><span>${opts.wins ? `${opts.wins} puzzle${opts.wins > 1 ? "s" : ""} solved` : "Ten levels, from Beginner to Extreme"}</span></div>
     <div class="hbtns">
-      ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue</b><small>${LEVELS[G.level - 1].name} · ${fmt(G.t)} · ${filled} of 81 filled</small></span><i>›</i></button>` : ""}
+      ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue</b><small>${vsLive ? `Race against ${esc(V.oppName)} · ${vsCorrect()} of ${81 - G.clues} done` : `${LEVELS[G.level - 1].name} · ${fmt(G.t)} · ${filled} of 81 filled`}</small></span><i>›</i></button>` : ""}
       <button class="hbtn${live ? "" : " go"}" id="hnew"><span><b>New game</b><small>Pick how hard: level 1 to 10</small></span><i>›</i></button>
+      <button class="hbtn" id="hvs"><span><b>Play a friend</b><small>Same puzzle on two phones · first to finish wins</small></span><i>›</i></button>
       <button class="hbtn" id="hset"><span><b>Settings</b><small>Board size, colours, light or dark</small></span><i>›</i></button>
     </div>
     ${recs ? `<div class="hrec"><h3>Best times</h3><div class="hrecs">${recs}</div></div>` : ""}
@@ -611,6 +677,7 @@ function showHome() {
   h.hidden = false;
   if (live) $("hcont").onclick = () => { paused = false; hideHome(); render(); };
   $("hnew").onclick = openNew;
+  $("hvs").onclick = () => openVsMenu();
   $("hset").onclick = openSettings;
 }
 function hideHome() { homeOn = false; $("home").hidden = true; setResume(true); }
@@ -664,13 +731,335 @@ function drawSettings() {
   const sh = L.querySelector(".sheet"); sh.style.animation = old ? "none" : ""; sh.scrollTop = top;
 }
 
+/* ---------- play a friend (two phones) ---------- */
+// Both phones post small messages to a free public relay (ntfy.sh), under a topic made from the game code: the puzzle ("start"),
+// "go" (the friend joined or said yes to a rematch), progress (at most every 15 s: the relay allows about 250 messages a day
+// per internet connection), "done", "leave", "cancel", "no". Both phones read the same messages in the same order, so
+// "the first 'done' in the list wins" gives both the same result. Everything is worked out again from the list after a reload.
+const RELAY = window.SUDOKU_RELAY || "https://ntfy.sh/";
+const VS_GAP = window.SUDOKU_VS_GAP || 15000;
+const CODE_ABC = "ACDEFHJKMNPRTUVWXY3479";   // no look-alikes (0/O, 1/I/L, 2/Z, 5/S, 6/G, 8/B)
+const topicOf = c => RELAY + "tvsudoku-" + c;
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0) + ";");
+const rid = (n, abc) => { let s = ""; for (let k = 0; k < n; k++) s += abc[Math.floor(Math.random() * abc.length)]; return s; };
+const myId = () => opts.pid || (opts.pid = rid(10, "abcdefghijkmnpqrstuvwxyz23456789"));
+const vsCorrect = () => G ? G.cells.reduce((n, v, i) => n + (!G.givens[i] && v === G.sol[i] ? 1 : 0), 0) : 0;
+let vlog = [], vseen = new Set(), vlast = "", ves = null, vready = false, vconn = false, vnet = true, vAnimDone = true, vBarOn = false;
+let vpTimer = 0, vpSent = "", vpLast = 0, vFullTold = false;
+
+function toast(html) {
+  const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
+  n.innerHTML = `<div><span>${html}</span></div><button>OK</button>`;
+  n.querySelector("button").onclick = () => n.remove(); document.body.appendChild(n); setTimeout(() => n.remove(), 7000);
+}
+async function vsPost(o, v = V, tries = 4) {
+  if (!v) return false;
+  const body = JSON.stringify(Object.assign({ from: v.me, name: v.name }, o));
+  for (let k = 0; k < tries; k++) {
+    try {
+      const r = await fetch(topicOf(v.code), { method: "POST", body });
+      if (r.ok) { if (v === V) vsNet(true); return true; }
+      if (r.status === 429 && v === V && !vFullTold) { vFullTold = true; toast("The free relay is full for this internet connection today (about 250 messages a day). Try another connection, or play again tomorrow."); }
+    } catch (e) { if (v === V) vsNet(false); }
+    if (k < tries - 1) await new Promise(res => setTimeout(res, 2000 * (k + 1)));
+  }
+  return false;
+}
+function vsNet(ok) { if (vnet !== ok) { vnet = ok; renderVs(); } }
+function vsTake(m) {
+  if (!m || m.event !== "message" || !m.id || vseen.has(m.id)) return false;
+  vseen.add(m.id); vlast = m.id;
+  let o; try { o = JSON.parse(m.message); } catch (e) { return false; }
+  if (!o || typeof o !== "object" || !o.t || !o.from) return false;
+  vlog.push(o); return true;
+}
+async function vsPoll() {
+  const v = V; if (!v) return false;
+  const r = await fetch(topicOf(v.code) + "/json?poll=1&since=" + (vlast || "all"), { cache: "no-store" });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const txt = await r.text(); if (v !== V) return false;
+  let any = false;
+  for (const l of txt.split("\n")) if (l.trim()) { try { any = vsTake(JSON.parse(l)) || any; } catch (e) {} }
+  vsNet(true); return any;
+}
+// read everything the relay has for this code, then listen for new messages
+async function vsConnect() {
+  const v = V; if (!v || vconn) return;
+  vconn = true; if (ves) { ves.close(); ves = null; }
+  try { await vsPoll(); }
+  catch (e) {
+    vconn = false; if (v !== V) return;
+    if (V.joining) return vsFail("Couldn't reach the internet. Check the connection and try again.");
+    vsNet(false); setTimeout(() => { if (V === v && !ves) vsConnect(); }, 5000); return;
+  }
+  vconn = false; if (v !== V) return;
+  vready = true;
+  const es = new EventSource(topicOf(v.code) + "/sse?since=" + (vlast || "all"));
+  ves = es;
+  es.onopen = () => { if (ves === es) vsNet(true); };
+  es.onmessage = e => { if (ves !== es) return; let m; try { m = JSON.parse(e.data); } catch (x) { return; } if (vsTake(m)) vsSync(); };
+  es.onerror = () => { if (ves !== es) return; vsNet(false); if (es.readyState === 2) { ves = null; setTimeout(() => { if (V === v && !ves) vsConnect(); }, 4000); } };
+  vsSync();
+}
+function vsCatchUp() {
+  if (!V || !vready) return;
+  if (!ves || ves.readyState === 2) { vsConnect(); return; }
+  vsPoll().then(any => { if (any) vsSync(); }).catch(() => vsNet(false));
+}
+function vsStop(leave) {
+  if (!V) return;
+  if (leave && V.round) vsPost({ t: "leave", r: V.round }, V, 1);
+  else if (leave && V.myStart) vsPost({ t: "cancel", r: V.myStart }, V, 1);
+  if (ves) ves.close();
+  ves = null; clearTimeout(vpTimer); vpTimer = 0; V = null; vlog = []; vseen = new Set(); vlast = ""; vready = false; vnet = true;
+  if (G && G.vs) { delete G.vs; if (G.done) G = null; }
+  save(); renderVs();
+}
+// my progress, at most every VS_GAP ms (the relay counts every message)
+function vsProgress() {
+  if (!G || !G.vs || !V || V.round !== G.vs || G.done || vpTimer) return;
+  if (vsCorrect() + "/" + G.mistakes === vpSent) return;
+  vpTimer = setTimeout(() => {
+    vpTimer = 0; if (!G || !G.vs || !V || G.done) return;
+    const c = vsCorrect(), key = c + "/" + G.mistakes; if (key === vpSent) return;
+    vpSent = key; vpLast = Date.now(); vsPost({ t: "p", r: G.vs, c, m: G.mistakes }, V, 2);
+  }, Math.max(0, vpLast + VS_GAP - Date.now()));
+}
+
+// the message list, sorted into rounds. The first "start" of a round is its puzzle; the first "go" by someone else makes the
+// two players; only their messages count after that.
+function vsRounds() {
+  const R = {};
+  for (const o of vlog) {
+    const r = o.r | 0; if (r < 1) continue;
+    const x = R[r] || (R[r] = { start: null, go: null, done: null, dones: {}, p: {}, left: {}, cancel: false, no: null });
+    if (o.t === "start") { if (!x.start && /^[0-9]{81}$/.test(o.p) && /^[1-9]{81}$/.test(o.s) && o.lv >= 1 && o.lv <= 10) x.start = o; continue; }
+    if (!x.start) continue;
+    if (o.t === "cancel") { if (o.from === x.start.from && !x.go) x.cancel = true; continue; }
+    if (o.t === "no") { if (!x.go && !x.no && o.from !== x.start.from) x.no = o; continue; }
+    if (o.t === "go") { if (!x.go && !x.cancel && !x.no && o.from !== x.start.from) x.go = o; continue; }
+    if (!x.go || (o.from !== x.start.from && o.from !== x.go.from)) continue;
+    if (o.t === "p") x.p[o.from] = o;
+    else if (o.t === "done") { if (!x.done) x.done = o; if (!x.dones[o.from]) x.dones[o.from] = o; }
+    else if (o.t === "leave") x.left[o.from] = o;
+  }
+  for (const k in R) if (!R[k].start) delete R[k];
+  return R;
+}
+// a sheet the race may replace: nothing, or something that isn't about this game
+const vsFree = () => !sheet || sheet === "vschk" || sheet === "settings" || (sheet === "new" && newMode === "solo");
+function vsSync() {
+  if (!V || !vready) return;
+  const R = vsRounds(), top = Math.max(0, ...Object.keys(R).map(Number));
+  if (!top) { if (V.joining) vsFail("No game with this code. Check the letters with your friend."); return; }
+  if (V.round && R[V.round]) vsCur(R[V.round]);
+  if (V && top > V.round) vsNext(top, R[top]);
+  renderVs();
+}
+// the round on my board: the friend's progress, who finished first, the friend leaving
+function vsCur(x) {
+  const r = V.round; if (!G || G.vs !== r) return;
+  const p = x.p[V.opp]; if (p) { V.oppC = p.c | 0; V.oppM = p.m | 0; }
+  if (x.dones[V.opp]) { V.oppC = 81 - G.clues; V.oppM = x.dones[V.opp].m | 0; }
+  if (x.done) {
+    const iWon = x.done.from === V.me;
+    if (V.told.counted !== r) { V.told.counted = r; if (iWon) opts.vsWins = (opts.vsWins || 0) + 1; else opts.vsLosses = (opts.vsLosses || 0) + 1; save(); }
+    if (G.done && vAnimDone) { if (V.told.end !== r && vsFree()) { V.told.end = r; save(); openVsEnd(); } }
+    else if (!G.done && !iWon && V.told.lost !== r && vsFree()) { V.told.lost = r; save(); openVsLost(); }
+  } else if (G.done && vAnimDone && !sheet) openVsChk();
+  if (x.left[V.opp] && V.told.left !== r) {
+    V.told.left = r; V.oppGone = true; save();
+    if (!G.done) { const n = V.oppName; vsStop(false); render(); toast(`${esc(n)} left the game. You can finish this puzzle on your own.`); }
+    else if (sheet === "vsend") openVsEnd();
+  }
+}
+// a newer round than the one on my board: my friend joined, a rematch was asked for or accepted
+function vsNext(top, x) {
+  const s = x.start, me = V.me;
+  if (s.from === me) {
+    if (x.go) return vsBegin(top, x);
+    if (x.no) { if (V.told.no !== top) { V.told.no = top; V.myStart = 0; save(); if (sheet === "vswait") openVsEnd(); toast(`${esc(x.no.name)} doesn't want a rematch now.`); } return; }
+    if (!x.cancel && V.cancelled !== top && sheet !== "vswait" && sheet !== "making") { V.myStart = top; V.waitLv = s.lv; openVsWait(); }
+    return;
+  }
+  if (x.go) { if (x.go.from === me) return vsBegin(top, x); if (V.joining) vsFail("This game already has two players."); return; }
+  if (x.cancel || x.no) { if (V.joining) vsFail("Your friend cancelled this game."); else if (sheet === "vsinvite") { if (G && G.done) openVsEnd(); else closeSheet(); } return; }
+  if (V.joining || V.myStart === top) {   // joining: say go straight away; both asked for a rematch at once: theirs came first, take it
+    if (V.goSent !== top) { V.goSent = top; save(); vsPost({ t: "go", r: top }); }
+    if (V.joining) { const m = $("vsmsg"); if (m) m.textContent = "Found it! Starting…"; }
+    return;
+  }
+  if (top === V.round + 1 && s.from === V.opp && V.declined !== top && V.goSent !== top && sheet !== "vsinvite" && sheet !== "making") openVsInvite(s, top);
+}
+function vsBegin(r, x) {
+  const s = x.start, them = s.from === V.me ? x.go : s;
+  Object.assign(V, { round: r, opp: them.from, oppName: (them.name || "Your friend").slice(0, 14), oppC: 0, oppM: 0, oppGone: false,
+    joining: false, myStart: 0, goSent: 0, cancelled: 0, declined: 0, startAt: Date.now() + 3500, told: {} });
+  const p = [...s.p].map(Number);
+  G = { level: s.lv, givens: p, sol: [...s.s].map(Number), cells: p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: p.filter(v => v).length, vs: r };
+  sel = -1; notesMode = false; paused = false; vpSent = ""; vAnimDone = true;
+  closeSheet(); hideHome(); save(); buzz(30); vsCount();
+}
+function vsCount() { render(); if (counting()) setTimeout(vsCount, 200); else if (G && G.vs) buzz(40); }
+
+function renderVs() {
+  const on = !!(G && G.vs && V && V.round === G.vs), bar = $("vsbar");
+  bar.hidden = !on; $("stats").hidden = on;
+  if (on !== vBarOn) { vBarOn = on; requestAnimationFrame(fitBoard); }
+  if (!on) return;
+  const tot = 81 - G.clues, mine = vsCorrect(), them = Math.min(tot, V.oppC || 0);
+  const row = (cls, name, n, extra) => `<div class="vsrow ${cls}"><span class="vsn">${name}${extra}</span><span class="trk"><i style="width:${Math.round(n / tot * 100)}%"></i></span><b>${n >= tot ? "Done" : n + "/" + tot}</b></div>`;
+  bar.innerHTML = row("me", "You", mine, opts.mistakes && G.mistakes ? ` <small>· ${G.mistakes} wrong</small>` : "")
+    + row("them", esc(V.oppName), them, !vnet ? ` <small class="off">· no connection</small>` : V.oppGone ? " <small>· left</small>" : "");
+}
+
+/* sheets of the game against a friend */
+function openVsMenu() {
+  sheet = "vs";
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Play a friend">
+    <h2>Play a friend</h2>
+    <p class="about">You both get the same puzzle, each on your own phone, and see how far the other has got. <b>The first to finish wins.</b> No hints. Needs internet.</p>
+    <label class="fld"><span>Your name</span><input id="vsname" maxlength="14" autocomplete="off" spellcheck="false" value="${esc(opts.name || "")}" placeholder="So your friend knows it's you"></label>
+    ${V && G && G.vs && !G.done ? `<p class="about">You're in a race against <b>${esc(V.oppName)}</b>: making or joining a new game leaves it.</p>` : ""}
+    <div class="hbtns"><button class="hbtn go" id="vsmake"><span><b>Make a game</b><small>You get a code to give your friend</small></span><i>›</i></button>
+      <button class="hbtn" id="vsjoin"><span><b>Join a game</b><small>Type the code your friend got</small></span><i>›</i></button></div>
+    <div class="row2"><button class="big" data-close>Back</button></div></div>`;
+  const nm = $("vsname"); nm.oninput = () => { opts.name = nm.value.trim().slice(0, 14); save(); };
+  $("vsmake").onclick = () => { newMode = "vs"; sheet = "new"; pickLv = opts.level; drawNew(); };
+  $("vsjoin").onclick = () => openVsJoin();
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
+}
+async function vsMake(lv) {
+  if (V) vsStop(true);
+  opts.level = lv; sheet = "making";
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Making a ${LEVELS[lv - 1].name} puzzle…</div></div>`;
+  await new Promise(res => setTimeout(res, 60));
+  const pz = await makePuzzle(lv);
+  V = { code: rid(5, CODE_ABC), me: myId(), name: opts.name || "Your friend", round: 0, myStart: 1, waitLv: lv, told: {} };
+  save();
+  const ok = await vsPost({ t: "start", r: 1, lv, p: pz.p.join(""), s: pz.sol.join("") }, V, 2);
+  if (!V || sheet !== "making") return;
+  if (!ok) { vsStop(false); openVsMenu(); toast("Couldn't reach the internet. Check the connection and try again."); return; }
+  openVsWait(); vsConnect();
+}
+function openVsWait() {
+  sheet = "vswait"; const re = V.round > 0, L = LEVELS[(V.waitLv || 1) - 1];
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Waiting">
+    ${re ? `<h2>Waiting for ${esc(V.oppName)}</h2><p class="about">You asked for a <b>${L.name}</b> rematch. It starts as soon as ${esc(V.oppName)} says yes.</p>`
+      : `<h2>Waiting for your friend</h2><div class="code" id="vscodebig">${V.code}</div>
+        <p class="about">Give your friend this code. On their phone: <b>Play a friend</b>, then <b>Join a game</b>. The race starts when they join. Level: <b>${L.name}</b>.</p>`}
+    <div class="waitrow"><div class="spin"></div></div>
+    <div class="row2"><button class="big" id="vscancel">Cancel</button>${re ? "" : `<button class="big go" id="vscopy">Copy code</button>`}</div></div>`;
+  $("vscancel").onclick = vsCancel;
+  if (!re) $("vscopy").onclick = () => { copyText(V.code); $("vscopy").textContent = "Copied"; };
+}
+function vsCancel() {
+  if (!V) { closeSheet(); return; }
+  const r = V.myStart || V.round + 1; V.cancelled = r; V.myStart = 0; save(); vsPost({ t: "cancel", r });
+  if (V.round > 0) openVsEnd(); else { vsStop(false); closeSheet(); if (homeOn) showHome(); }
+}
+function copyText(t) {
+  try { if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(t); return; } } catch (e) {}
+  const a = document.createElement("textarea"); a.value = t; a.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(a); a.select();
+  try { document.execCommand("copy"); } catch (e) {} a.remove();
+}
+function openVsJoin(msg, keep) {
+  sheet = "vsjoin";
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Join a game">
+    <h2>Join a game</h2><p class="about">Type the code shown on your friend's phone.</p>
+    <input class="codein" id="vscode" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Game code" placeholder="CODE" value="${esc(keep || "")}">
+    <p class="vsmsg${msg ? " bad" : ""}" id="vsmsg" role="status">${msg ? esc(msg) : ""}</p>
+    <div class="row2"><button class="big" id="vsback">Back</button><button class="big go" id="vsgo">Join</button></div></div>`;
+  const ci = $("vscode");
+  ci.oninput = () => { const v = ci.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5); if (v !== ci.value) ci.value = v; };
+  ci.onkeydown = e => { if (e.key === "Enter") $("vsgo").click(); };
+  $("vsgo").onclick = () => {
+    const c = ci.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (c.length !== 5) { const m = $("vsmsg"); m.className = "vsmsg bad"; m.textContent = "The code has 5 letters and numbers."; return; }
+    vsJoin(c);
+  };
+  $("vsback").onclick = () => { if (V && V.joining) vsStop(false); openVsMenu(); };
+}
+function vsJoin(c) {
+  if (V) vsStop(!V.joining);
+  V = { code: c, me: myId(), name: opts.name || "Your friend", round: 0, joining: true, told: {} };
+  save(); const m = $("vsmsg"); m.className = "vsmsg"; m.textContent = "Looking for the game…"; $("vsgo").disabled = true;
+  vsConnect();
+}
+function vsFail(msg) { const c = V && V.code; vsStop(false); openVsJoin(msg, c); }
+function openVsInvite(s, r) {
+  sheet = "vsinvite";
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Rematch">
+    <h2>${esc(V.oppName)} wants a rematch</h2>
+    <p class="about">A <b>${LEVELS[s.lv - 1].name}</b> puzzle (level ${s.lv} of 10).${G && G.vs && !G.done ? " Saying yes ends this puzzle." : ""}</p>
+    <p class="vsmsg" id="vsmsg" role="status"></p>
+    <div class="row2"><button class="big" id="vsno">No thanks</button><button class="big go" id="vsyes">Play</button></div></div>`;
+  $("vsyes").onclick = () => { V.goSent = r; save(); vsPost({ t: "go", r }); $("vsmsg").textContent = "Starting…"; $("vsyes").disabled = $("vsno").disabled = true; };
+  $("vsno").onclick = () => { V.declined = r; save(); vsPost({ t: "no", r }); if (G && G.done) openVsEnd(); else closeSheet(); };
+}
+function openVsLost() {
+  const x = vsRounds()[V.round], d = x && x.done; if (!d) return;
+  sheet = "vslost";
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Your friend finished">
+    <div class="winhead"><b>${esc(V.oppName)} finished first</b><span>in ${fmt(Math.floor((d.ms || 0) / 1000))} · ${d.m | 0} mistake${(d.m | 0) === 1 ? "" : "s"}</span></div>
+    <p class="about">Keep going to finish the puzzle and get your own time, or ask for a rematch.</p>
+    <div class="row2"><button class="big" id="vsre">Rematch</button><button class="big go" data-close>Keep playing</button></div></div>`;
+  $("vsre").onclick = vsAskRe;
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
+}
+function openVsChk() {
+  sheet = "vschk";
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Solved"><div class="winhead"><b>Solved!</b><span>in ${fmt(G.t)}</span></div>
+    <div class="making"><div class="spin"></div>Checking who was first…</div></div>`;
+}
+function openVsEnd() {
+  if (!V || !G) return;
+  const x = vsRounds()[V.round]; if (!x || !x.done) { closeSheet(); return; }
+  sheet = "vsend";
+  const iWon = x.done.from === V.me, mine = x.dones[V.me], theirs = x.dones[V.opp], tot = 81 - G.clues;
+  const col = (who, d, sec, c, m, won) => `<div class="${won ? "win" : ""}"><small class="who">${who}${won ? " 🏆" : ""}</small><b>${d || sec != null ? fmt(d ? Math.floor(d.ms / 1000) : sec) : c + "/" + tot}</b><small>${d || sec != null ? "" : "filled · "}${m} mistake${m === 1 ? "" : "s"}</small></div>`;
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Result">
+    <div class="winhead"><b>${iWon ? "You won!" : esc(V.oppName) + " won"}</b><span>${LEVELS[G.level - 1].name} · against ${esc(V.oppName)}</span></div>
+    <div class="vsres">${col("You", mine, G.done ? G.t : null, vsCorrect(), mine ? mine.m | 0 : G.mistakes, iWon)}${col(esc(V.oppName), theirs, null, Math.min(tot, V.oppC || 0), theirs ? theirs.m | 0 : V.oppM || 0, !iWon)}</div>
+    <p class="best">Against friends: <b>${opts.vsWins || 0}</b> won · <b>${opts.vsLosses || 0}</b> lost</p>
+    ${V.oppGone ? `<p class="about" style="text-align:center">${esc(V.oppName)} has left the game.</p>` : ""}
+    <div class="row2"><button class="big" id="vshome">Start page</button>${V.oppGone ? "" : `<button class="big go" id="vsre">Rematch</button>`}</div></div>`;
+  $("vshome").onclick = () => { vsStop(true); closeSheet(); showHome(); };
+  if (!V.oppGone) $("vsre").onclick = vsAskRe;
+}
+function vsAskRe() { newMode = "re"; sheet = "new"; pickLv = G ? G.level : opts.level; drawNew(); }
+async function vsRematch(lv) {
+  if (!V) return;
+  const r = V.round + 1; opts.level = lv; sheet = "making";
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Making a ${LEVELS[lv - 1].name} puzzle…</div></div>`;
+  await new Promise(res => setTimeout(res, 60));
+  const pz = await makePuzzle(lv);
+  if (!V || sheet !== "making") return;
+  V.myStart = r; V.waitLv = lv; save();
+  const x = vsRounds()[r];
+  if (x && x.start && x.start.from !== V.me) { vsSync(); return; }   // my friend asked first: take their puzzle
+  openVsWait();
+  vsPost({ t: "start", r, lv, p: pz.p.join(""), s: pz.sol.join("") });
+}
+function openVsLeave() {
+  if (G.done) { openVsEnd(); return; }
+  sheet = "vsleave";
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Race">
+    <h2>Racing ${esc(V.oppName)}</h2>
+    <p class="about">${LEVELS[G.level - 1].name}, level ${G.level} of 10. If you leave, you can still finish this puzzle on your own, but the race ends.</p>
+    <div class="row2"><button class="big" id="vsleave">Leave the race</button><button class="big go" data-close>Keep playing</button></div></div>`;
+  $("vsleave").onclick = () => { vsStop(true); closeSheet(); render(); };
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
+}
+
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
 $("notes").onclick = () => { notesMode = !notesMode; render(); };
 $("pausebtn").onclick = () => { if (G && !G.done) { paused = !paused; render(); } };
-$("homebtn").onclick = showHome; $("setbtn").onclick = openSettings; $("lvchip").onclick = openNew; $("newbtn").onclick = openNew;
+$("homebtn").onclick = showHome; $("setbtn").onclick = openSettings; $("newbtn").onclick = openNew;
+$("lvchip").onclick = () => G && G.vs && V ? openVsLeave() : openNew();
 document.addEventListener("keydown", e => {
-  if (sheet) { if (e.key === "Escape" && (sheet === "new" || sheet === "settings")) closeSheet(); return; }
+  if (sheet) { if (e.key === "Escape") window.appBack(); return; }
   if (homeOn) return;
   if (e.key >= "1" && e.key <= "9") enter(+e.key);
   else if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") erase();
@@ -678,10 +1067,20 @@ document.addEventListener("keydown", e => {
   else if ((e.ctrlKey || e.metaKey) && e.key === "z") undo();
   else if (e.key.startsWith("Arrow")) { if (sel < 0) sel = 40; else { const dr = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0, dc = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0; sel = ((ROW[sel] + dr + 9) % 9) * 9 + (COL[sel] + dc + 9) % 9; } render(); e.preventDefault(); }
 });
-const tickId = setInterval(() => { if (G && !G.done && !paused && !sheet && !homeOn && document.visibilityState === "visible") { G.t++; $("timer").textContent = fmt(G.t); if (G.t % 5 === 0) save(); } }, 1000);
+const tickId = setInterval(() => {
+  if (G && G.vs && V && !G.done) {   // a race runs on the real clock, also while paused or on the start page
+    const t = Math.max(0, Math.floor((Date.now() - V.startAt) / 1000)); if (t !== G.t) { G.t = t; $("timer").textContent = fmt(t); if (t % 5 === 0) save(); } return; }
+  if (G && !G.done && !paused && !sheet && !homeOn && document.visibilityState === "visible") { G.t++; $("timer").textContent = fmt(G.t); if (G.t % 5 === 0) save(); } }, 1000);
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
-window.appBack = () => { if (sheet === "settings") { closeSheet(); if (homeOn) showHome(); return true; } if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
+window.appBack = () => {
+  if (sheet === "new" && newMode !== "solo") { $("newback").click(); return true; }
+  if (sheet === "vs" || sheet === "vslost" || sheet === "vsleave") { closeSheet(); return true; }
+  if (sheet === "vsjoin") { $("vsback").click(); return true; }
+  if (sheet === "vsinvite") { $("vsno").click(); return true; }
+  if (sheet === "vsend") { closeSheet(); showHome(); return true; }   // still connected: a rematch from the friend can still come
+  if (sheet === "vswait" || sheet === "vschk" || sheet === "making") return true;
+  if (sheet === "settings") { closeSheet(); if (homeOn) showHome(); return true; } if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
 /* ---------- updates, also mid-game ---------- */
@@ -714,7 +1113,7 @@ async function applyUpd(v, b) {
     if (location.protocol !== "file:") { location.reload(); return; }   // opened from the website: just reload
     const r = await fetch(SITE + "game.html?v=" + v, { cache: "no-store" }), html = await r.text();
     if (!r.ok || !html.includes("window.GAME_BUILD = " + v + ";")) throw new Error("bad download");
-    clearInterval(tickId); clearInterval(updTimer); if (darkQuery && darkQuery.removeEventListener) darkQuery.removeEventListener("change", applyTheme);
+    clearInterval(tickId); clearInterval(updTimer); clearInterval(vsTimer); if (ves) ves.close(); ves = null; if (darkQuery && darkQuery.removeEventListener) darkQuery.removeEventListener("change", applyTheme);
     document.open(); document.write(html); document.close();   // the new game takes over this page (same saved game)
   } catch (e) {
     updBusy = false; b.querySelector("span").textContent = "Couldn't update right now. It tries again later.";
@@ -723,20 +1122,27 @@ async function applyUpd(v, b) {
 }
 const updTimer = setInterval(checkUpdate, 3 * 60 * 1000);
 setTimeout(checkUpdate, 15000);
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") { checkUpdate(); vsCatchUp(); } });
+const vsTimer = setInterval(() => { if (V && vready && (!ves || ves.readyState === 2)) vsConnect(); }, 20000);   // the race connection comes back by itself
 // for the tap tests
 window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode() { return notesMode; }, get paused() { return paused; }, get sheet() { return sheet; },
-  get opts() { return opts; }, get homeOn() { return homeOn; }, startGame, showHome, enter, render, checkUpdate, setSel(i) { sel = i; } };
+  get opts() { return opts; }, get homeOn() { return homeOn; }, get V() { return V; }, get vlog() { return vlog; }, get vnet() { return vnet; },
+  startGame, showHome, enter, render, checkUpdate, vsRounds, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Settings: a bigger board, and your own highlight colour. Tap Settings next to Hint.";   // change with each update
+const NEWS = "Play a friend: the same puzzle on two phones, first to finish wins. Tap Play a friend on the start page.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
+if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
+if (V && !V.told) V.told = {};
+if (G && G.vs && (!V || V.round !== G.vs)) delete G.vs;
+if (G && G.done && !G.vs) G = null;
 applyTheme();
 fitBoard();
 let resume = false; try { resume = sessionStorage.getItem("sudoku.resume") === "1"; } catch (e) {}
 if (G) render();
 if (G && !G.done && resume) { paused = false; hideHome(); render(); } else showHome();
+if (V) { vsConnect(); if (counting()) vsCount(); }
 if (window.GAME_BUILD) {
   if (hadSave && opts.seenBuild !== window.GAME_BUILD) {
     const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
