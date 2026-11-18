@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795016166;</script>
+<script>window.GAME_BUILD = 1795016528;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1599,6 +1599,13 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .lvgo { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%); width: 72%; height: 54px; border: 0; border-radius: 27px; background: #86ddd9; box-shadow: 0 0 0 4px #fff, 0 4px 0 4px #c9a27c;
   font: 800 22px var(--display); color: #fff; -webkit-text-stroke: 4px var(--ink, #5a3a22); paint-order: stroke fill; }
 .lvgo:disabled { filter: grayscale(.8); opacity: .75; }
+
+/* Ladder fits without scrolling (18 Nov) */
+.lteam { padding: 6px 10px; } .lteam .pmons { flex-wrap: nowrap; gap: 5px; } .lteam .pmon { width: auto; flex: 1; min-width: 0; padding: 2px 0; }
+.lhelpb { min-width: 40px; font: 800 18px var(--display); } .lhelpb.on { background: #ffd79a; }
+.lhelp { margin: 0; background: #f3e7d6; border-radius: 10px; padding: 8px 10px; }
+.lgo { position: sticky; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 4; padding-top: 4px; }
+.lgo .pbig { width: 100%; justify-content: center; text-align: center; box-shadow: 0 4px 12px rgba(91,70,54,.3); }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3365,14 +3372,14 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       const L = ladderState(), nextR = DRANKS.find(r => r[0] > L.pts), weekEnd = (weekId() + 1) * 7 * 86400000 + 4 * 86400000;
       const nodes = LADDER_MS.map((need, k) => { const got = k < L.claimed, can = false;
         return `<button class="lnode${got ? " done" : can ? " claim" : ""}" data-act="ladclaim" ${can ? "" : "disabled"} aria-label="${need} week points">${got ? "\u2713" : RW[LADDER_REW[k].k][0]}<small>${need}</small></button>`; }).join("");
-      return `${back("hub")}<h3>Ladder</h3><span></span></div>
+      return `${back("hub")}<h3>Ladder</h3><button class="mb lhelpb${ladHelp ? " on" : ""}" data-act="ladhelp" aria-label="How points work">?</button></div>
         <div class="ltrack"><span class="lwins"><b>${L.lp}</b><small>week<br>points</small></span><div class="lline"><i style="width:${ladderFill(L.lp)}%"></i></div><div class="lnodes">${nodes}</div></div>
         <div class="lstreak${(S.ladStreak || 0) > 1 ? " hot" : ""}"><b>${S.ladStreak || 0}</b><span>${(S.ladStreak || 0) === 1 ? "win" : "wins"} in a row</span><small>Next win: +${streakWin((S.ladStreak || 0) + 1)} week points</small></div>
         <div class="lrank"><span class="drank pic">${tierBadge(ladderTier(L.pts), 54)}</span><div><b>${duelRank(L.pts)}</b><small>Rank ${L.pts}${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
         <div class="ltiers">${DRANKS.map((r, i) => `<span class="${i < ladderTier(L.pts) ? "past" : i === ladderTier(L.pts) ? "cur" : "next"}">${tierBadge(i, i === ladderTier(L.pts) ? 34 : 26)}<small>${r[1]}</small></span>`).join("")}</div>
-        <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 52)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
-        <p class="hint" style="margin:0">Every match gives week points for this week's rewards: a win ${LADDER_WIN}, plus ${STREAK_STEP} for each win in a row before it (up to +${STREAK_STEP * (STREAK_MAX - 1)}); a loss ${LADDER_LOSS} and ends the streak. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but less Rank.</p>
-        <button class="mb gold pbig" data-act="laddergo">Match</button>`;
+        <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 40)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
+        ${ladHelp ? `<p class="hint lhelp">Every match gives week points for this week's rewards: a win ${LADDER_WIN}, plus ${STREAK_STEP} for each win in a row before it (up to +${STREAK_STEP * (STREAK_MAX - 1)}); a loss ${LADDER_LOSS} and ends the streak. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but less Rank.</p>` : ""}
+        <div class="lgo"><button class="mb gold pbig" data-act="laddergo">Match</button></div>`;
     }
     if (arenaSub === "tower") {
       const f = (S.tower || 0) + 1, side = x => x % 2 ? "l" : "r";
@@ -3743,6 +3750,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return `<div class="card mon${inTeam && i === 0 ? " lead" : ""}">${art(m.sp, m.evo, 76)}<div class="info"><div class="nmrow">${fname(m.sp, m.evo)}${gChip(m.q)}<span class="el" style="background:${EL[s.el].color}"></span></div><div class="stats"><span>Lv ${m.lvl}</span><span>HP ${maxHp(m)}</span><span>ATK ${atk(m)}</span><span>DEF ${def(m)}</span></div><div class="mini-btns">${b.join("")}</div></div></div>`;
   }
   let sheetTab = "stats", sheetMulti = false, sheetShown = null;  // sheetShown: the Glumi whose page is already on screen
+  let ladHelp = false;  // the Ladder rules text, opened from "?"
   let lvPick = null, lvTo = 0, lvShown = false;  // the Level Up picker: which Glumi, which level
   const lvTop = m => Math.min(lvlCap(), (MAX_ASC + 1) * ASC_EVERY);
   function lvPlan(m, to) {  // what reaching level `to` costs: leaves, plus keepsakes for each ascension on the way
@@ -4856,6 +4864,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "sheettab") { sheetTab = arg; render(); }
     else if (a === "sheetmulti") { sheetMulti = !sheetMulti; render(); }
     else if (a === "lvpopen") { const m = mon(n); if (m) { lvPick = n; lvShown = false; lvTo = Math.max(m.lvl + 1, lvBest(m)); lvTo = Math.min(lvTo, lvTop(m)); render(); lvShown = true; } }
+    else if (a === "ladhelp") { ladHelp = !ladHelp; render(); }
     else if (a === "lvpclose") { lvPick = null; render(); }
     else if (a === "lvpstep") { const m = mon(lvPick); if (m) { lvTo = Math.max(m.lvl + 1, Math.min(lvTop(m), lvTo + n)); render(); } }
     else if (a === "lvpgo") { const m = mon(lvPick); if (m) { const p = lvPlan(m, lvTo); if (p.ok && lvTo > m.lvl) {
