@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795034569;</script>
+<script>window.GAME_BUILD = 1795034971;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -535,6 +535,29 @@ input { user-select: text; -webkit-user-select: text; }
 :root[data-contrast="high"] .wsc { border: 1.5px solid var(--edge); }
 .wslist { display: flex; flex-wrap: wrap; gap: 6px 12px; justify-content: center; font-weight: 800; font-size: calc(16px * var(--fs)); letter-spacing: .04em; }
 .wslist span.got { text-decoration: line-through; color: var(--muted); }
+
+/* Picture logic / Number cages */
+.ngrid { display: grid; gap: 2px; align-items: end; }
+.ngk { font-weight: 800; font-size: calc(var(--cell) * .42); text-align: center; line-height: 1.15; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ngk.row { align-self: center; text-align: right; padding-right: 2px; }
+.ngk.done { color: var(--muted); opacity: .55; }
+.ngc { width: var(--cell); height: var(--cell); border-radius: 4px; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); display: grid; place-items: center; font-weight: 800; color: var(--muted); font-size: calc(var(--cell) * .5); }
+.ngc.br { margin-right: 3px; } .ngc.bb { margin-bottom: 3px; }
+.ngc.f { background: var(--ink); box-shadow: none; }
+.ngc.x::after { content: "✕"; }
+.ngc.won.f { background: var(--accent); }
+:root[data-contrast="high"] .ngc { box-shadow: inset 0 0 0 1.5px var(--edge); }
+.ngmode button { min-height: var(--tap); font-size: calc(17px * var(--fs)); }
+.ncg { display: grid; background: var(--paper); border: 3px solid var(--line-strong); border-radius: 8px; overflow: hidden; }
+.ncc { width: var(--cell); height: var(--cell); position: relative; display: grid; place-items: center; border: 0; border-top: 1px dashed var(--line); border-left: 1px dashed var(--line); background: var(--paper); }
+/* each square draws only its top and left edge, so a cage line is never doubled; the board's own border closes the right and bottom */
+.ncc.bt { border-top: 3px solid var(--line-strong); } .ncc.bl { border-left: 3px solid var(--line-strong); }
+.ncc small { position: absolute; top: 2px; left: 4px; font-size: calc(var(--cell) * .24); font-weight: 800; line-height: 1; color: var(--ink); }
+.ncc b { font-size: calc(var(--cell) * .5); font-weight: 600; color: var(--user); }
+.ncc.peer { background: var(--peer); } .ncc.same { background: var(--same); } .ncc.sel { background: var(--sel); }
+.ncc.clash b { color: var(--err); }
+.ncc.won { animation: wave .5s ease-out both; }
+.nkp button { font-size: calc(28px * var(--fs)); }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -2360,6 +2383,185 @@ addGame({
     }
   },
 });
+
+/* ---------- Picture logic (nonograms) ---------- */
+// A puzzle is kept only when line-by-line reasoning alone solves it: then it has exactly one answer and never needs a guess.
+const NG_LV = [[5, .6], [5, .5], [6, .55], [7, .55], [8, .55], [10, .55]];
+const ngClues = line => { const out = []; let run = 0; for (const v of line) { if (v) run++; else if (run) { out.push(run); run = 0; } } if (run) out.push(run); return out.length ? out : [0]; };
+// all ways to place the clue blocks in a line that agree with what is known (1 filled, 0 empty, -1 unknown); returns what is certain
+function ngLine(known, clue) {
+  const n = known.length, blocks = clue[0] === 0 ? [] : clue, can1 = new Array(n).fill(false), can0 = new Array(n).fill(false), cur = new Array(n).fill(0);
+  const fits = (i, v) => known[i] === -1 || known[i] === v;
+  let any = false;
+  (function rec(b, pos) {   // cur[0..pos-1] are set
+    if (b === blocks.length) {
+      for (let i = pos; i < n; i++) if (!fits(i, 0)) return;
+      for (let i = pos; i < n; i++) cur[i] = 0;
+      any = true; for (let i = 0; i < n; i++) { if (cur[i]) can1[i] = true; else can0[i] = true; }
+      return;
+    }
+    const len = blocks[b], rest = blocks.slice(b + 1).reduce((a, x) => a + x + 1, 0);
+    for (let s = pos; s + len + rest <= n; s++) {
+      if (s > pos && !fits(s - 1, 0)) break;   // the gap before the block must be empty
+      let ok = true; for (let i = s; i < s + len; i++) if (!fits(i, 1)) { ok = false; break; }
+      if (ok && s + len < n && !fits(s + len, 0)) ok = false;
+      if (!ok) continue;
+      for (let i = pos; i < s; i++) cur[i] = 0; for (let i = s; i < s + len; i++) cur[i] = 1; if (s + len < n) cur[s + len] = 0;
+      rec(b + 1, Math.min(n, s + len + 1));
+    }
+  })(0, 0);
+  if (!any) return null;
+  return known.map((v, i) => v !== -1 ? v : can1[i] && !can0[i] ? 1 : can0[i] && !can1[i] ? 0 : -1);
+}
+function ngSolvable(n, rows, cols) {
+  const g = new Array(n * n).fill(-1);
+  for (let changed = true; changed;) {
+    changed = false;
+    for (let r = 0; r < n; r++) { const line = g.slice(r * n, r * n + n), res = ngLine(line, rows[r]); if (!res) return false; res.forEach((v, c) => { if (v !== g[r * n + c]) { g[r * n + c] = v; changed = true; } }); }
+    for (let c = 0; c < n; c++) { const line = range(n).map(r => g[r * n + c]), res = ngLine(line, cols[c]); if (!res) return false; res.forEach((v, r) => { if (v !== g[r * n + c]) { g[r * n + c] = v; changed = true; } }); }
+  }
+  return g.every(v => v !== -1);
+}
+function ngMake(n, dens) {
+  for (let t = 0; t < 400; t++) {
+    const sol = new Array(n * n).fill(0), half = Math.ceil(n / 2);
+    for (let r = 0; r < n; r++) for (let c = 0; c < half; c++) { const v = Math.random() < dens ? 1 : 0; sol[r * n + c] = v; sol[r * n + n - 1 - c] = v; }   // mirrored: looks like a picture
+    if (t > 200) for (let k = 0; k < n; k++) sol[randInt(n * n)] ^= 1;   // after many tries, break the mirror a little
+    const rows = range(n).map(r => ngClues(sol.slice(r * n, r * n + n))), cols = range(n).map(c => ngClues(range(n).map(r => sol[r * n + c])));
+    if (rows.some(x => x[0] === 0) && Math.random() < .7) continue;
+    if (ngSolvable(n, rows, cols)) return { sol, rows, cols };
+  }
+  return null;
+}
+addGame({
+  id: "nonogram", name: "Picture logic", icon: "🖼️", sec: "think", blurb: "Fill squares from the number clues", levels: 6, better: "low",
+  how: "The numbers beside each row and above each column tell you the runs of filled squares in that line, in order. “3 1” means three filled in a row, a gap, then one. Tap a square to fill it. Switch to ✕ to mark squares you know are empty. Every puzzle can be solved without guessing.",
+  levelName: l => { const [n] = NG_LV[l - 1]; return `${n}×${n}${l === 2 ? ", fewer filled" : ""}`; },
+  fmt: s => fmt(s),
+  start(c) {
+    const [n, dens] = NG_LV[c.lv - 1], P = ngMake(n, dens), cells = new Array(n * n).fill(0);   // 0 empty, 1 filled, 2 crossed
+    let mark = 1, mode = "play";
+    mgCur.peek = () => ({ sol: P.sol, n, mode });
+    const rw = Math.max(...P.rows.map(x => x.length)), ch = Math.max(...P.cols.map(x => x.length));
+    const grid = document.createElement("div"); grid.className = "ngrid";
+    grid.style.gridTemplateColumns = `repeat(${rw}, calc(var(--cell) * .62)) repeat(${n}, var(--cell))`;
+    let html = "";
+    for (let r = 0; r < ch; r++) { html += `<span class="ngx" style="grid-column:span ${rw}"></span>`; for (let c2 = 0; c2 < n; c2++) { const cl = P.cols[c2], k = r - (ch - cl.length); html += `<span class="ngk col c${c2}">${k >= 0 ? cl[k] : ""}</span>`; } }
+    for (let r = 0; r < n; r++) {
+      const rl = P.rows[r]; for (let k = 0; k < rw; k++) { const j = k - (rw - rl.length); html += `<span class="ngk row r${r}">${j >= 0 ? rl[j] : ""}</span>`; }
+      for (let c2 = 0; c2 < n; c2++) html += `<button class="ngc${c2 % 5 === 4 && c2 < n - 1 ? " br" : ""}${r % 5 === 4 && r < n - 1 ? " bb" : ""}" data-i="${r * n + c2}" aria-label="Row ${r + 1}, column ${c2 + 1}"></button>`;
+    }
+    grid.innerHTML = html; c.body.appendChild(grid);
+    const els = [...grid.querySelectorAll(".ngc")];
+    els.forEach(b => b.onclick = () => tap(+b.dataset.i));
+    // the clue columns are narrower than the squares: fit (rw*0.62 + n) squares across and (ch*0.62 + n) down
+    const fit = () => { const W = c.body.clientWidth, H = c.body.clientHeight; const s = Math.floor(Math.min((W - 2 * (n + rw)) / (n + rw * .62), (H - 2 * (n + ch)) / (n + ch * .62), 64)); grid.style.setProperty("--cell", Math.max(24, s) + "px"); };
+    fit(); requestAnimationFrame(fit); mgFit = fit;
+    c.foot.innerHTML = `<div class="seg two ngmode" role="radiogroup" aria-label="What a tap does"><button class="on" data-m="1" role="radio" aria-checked="true">■ Fill</button><button data-m="2" role="radio" aria-checked="false">✕ Mark empty</button></div>`;
+    c.foot.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { mark = +b.dataset.m; c.foot.querySelectorAll("[data-m]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); });
+    const upd = () => c.stat(`<span>Filled <b>${cells.filter(v => v === 1).length} of ${P.sol.filter(v => v).length}</b></span><span>${n}×${n}</span>`);
+    upd();
+    function tap(i) {
+      if (!c.alive() || mode !== "play") return;
+      cells[i] = cells[i] === mark ? 0 : mark; const b = els[i];
+      b.classList.toggle("f", cells[i] === 1); b.classList.toggle("x", cells[i] === 2); sfx(cells[i] === 1 ? "tap" : "note");
+      const r = Math.floor(i / n), col = i % n;
+      grid.querySelectorAll(".r" + r).forEach(e => e.classList.toggle("done", String(ngClues(range(n).map(k => cells[r * n + k] === 1 ? 1 : 0))) === String(P.rows[r])));
+      grid.querySelectorAll(".c" + col).forEach(e => e.classList.toggle("done", String(ngClues(range(n).map(k => cells[k * n + col] === 1 ? 1 : 0))) === String(P.cols[col])));
+      upd();
+      if (P.sol.every((v, k) => (cells[k] === 1) === !!v)) {
+        mode = "over"; els.forEach(e => { e.classList.remove("x"); e.classList.add("won"); }); sfx("group");
+        c.later(() => c.done({ score: c.secs(), up: c.secs() <= 60 * c.lv, good: true, title: "Picture complete!", lines: [[fmt(c.secs()), "Time"], [`${n}×${n}`, "Size"]] }), 1200);
+      }
+    }
+  },
+});
+
+/* ---------- Number cages ---------- */
+// Each row and column holds 1..N once; the small number in a cage is the sum of its squares. Kept only when it has one answer.
+const NC_LV = [[4, 2], [4, 3], [5, 2], [5, 3], [6, 3], [6, 4]];   // size, biggest cage
+function ncMake(n, maxCage) {
+  const latin = () => {
+    const base = range(n).map(r => range(n).map(c => (r + c) % n + 1)), rows = shuffle(range(n)), cols = shuffle(range(n)), sym = shuffle(range(n).map(x => x + 1));
+    return range(n * n).map(i => sym[base[rows[Math.floor(i / n)]][cols[i % n]] - 1]);
+  };
+  for (let t = 0; t < 300; t++) {
+    const sol = latin(), cage = new Array(n * n).fill(-1), cages = [];
+    for (const start of shuffle(range(n * n))) {
+      if (cage[start] >= 0) continue;
+      const id = cages.length, want = 1 + randInt(maxCage) + (Math.random() < .5 ? 1 : 0), cells = [start]; cage[start] = id;
+      while (cells.length < Math.min(want, maxCage)) {
+        const nb = []; for (const c0 of cells) { const r = Math.floor(c0 / n), c1 = c0 % n; for (const [dr, dc] of [[0, 1], [1, 0], [0, -1], [-1, 0]]) { const rr = r + dr, cc = c1 + dc; if (rr >= 0 && rr < n && cc >= 0 && cc < n && cage[rr * n + cc] < 0) nb.push(rr * n + cc); } }
+        if (!nb.length) break; const x = nb[randInt(nb.length)]; cage[x] = id; cells.push(x);
+      }
+      cages.push({ cells, sum: cells.reduce((a, i) => a + sol[i], 0) });
+    }
+    if (cages.filter(k => k.cells.length === 1).length > Math.ceil(n * .6)) continue;
+    if (ncCount(n, cage, cages, 2) === 1) return { sol, cage, cages };
+  }
+  return null;
+}
+function ncCount(n, cage, cages, limit) {
+  const g = new Array(n * n).fill(0), order = range(n * n).sort((a, b) => (cages[cage[a]].cells.length * 1000 + cage[a]) - (cages[cage[b]].cells.length * 1000 + cage[b]));   // cage by cage, small cages first
+  let count = 0;
+  (function rec(k) {
+    if (count >= limit) return;
+    if (k === order.length) { count++; return; }
+    const i = order[k], r = Math.floor(i / n), c = i % n, cg = cages[cage[i]];
+    for (let v = 1; v <= n; v++) {
+      let bad = false;
+      for (let j = 0; j < n; j++) if (g[r * n + j] === v || g[j * n + c] === v) { bad = true; break; }
+      if (bad) continue;
+      g[i] = v;
+      const vals = cg.cells.map(x => g[x]), s = vals.reduce((a, x) => a + x, 0), open = vals.filter(x => !x).length;
+      if (open ? s + open <= cg.sum && s + open * n >= cg.sum : s === cg.sum) rec(k + 1);
+      g[i] = 0; if (count >= limit) return;
+    }
+  })(0);
+  return count;
+}
+addGame({
+  id: "cages", name: "Number cages", icon: "🧩", sec: "think", blurb: "Sudoku-like squares with sums", levels: 6, better: "low",
+  how: "Fill the grid so every row and every column has each number once (1 to 4 on a 4×4 grid, and so on). The thick lines make cages: the small number in a cage is what its squares add up to. Tap a square, then a number.",
+  levelName: l => { const [n, m] = NC_LV[l - 1]; return `${n}×${n} · cages up to ${m}`; },
+  fmt: s => fmt(s),
+  start(c) {
+    const [n, maxCage] = NC_LV[c.lv - 1], P = ncMake(n, maxCage), vals = new Array(n * n).fill(0);
+    let sel = -1, mode = "play";
+    mgCur.peek = () => ({ sol: P.sol, n, mode });
+    const grid = document.createElement("div"); grid.className = "ncg";
+    const labelAt = new Map(P.cages.map(k => [Math.min(...k.cells), k.sum]));
+    grid.innerHTML = range(n * n).map(i => {
+      const r = Math.floor(i / n), col = i % n, id = P.cage[i], e = [];
+      if (r === 0 || P.cage[i - n] !== id) e.push("bt"); if (r === n - 1 || P.cage[i + n] !== id) e.push("bb2"); if (col === 0 || P.cage[i - 1] !== id) e.push("bl"); if (col === n - 1 || P.cage[i + 1] !== id) e.push("br2");
+      return `<button class="ncc ${e.join(" ")}" data-i="${i}" aria-label="Row ${r + 1}, column ${col + 1}${labelAt.has(i) ? ", cage sum " + labelAt.get(i) : ""}">${labelAt.has(i) ? `<small>${labelAt.get(i)}</small>` : ""}<b></b></button>`;
+    }).join("");
+    c.body.appendChild(grid);
+    const els = [...grid.querySelectorAll(".ncc")]; els.forEach(b => b.onclick = () => { if (mode !== "play") return; sel = +b.dataset.i; draw(); });
+    c.body.dataset.reserve = 0; fitGrid(grid, n, n, c.body, 0, 96);
+    const kp = document.createElement("div"); kp.className = "kpad nkp"; kp.style.gridTemplateColumns = `repeat(${n <= 4 ? n + 1 : Math.ceil((n + 1) / 2)}, 1fr)`;
+    kp.innerHTML = range(n).map(d => `<button data-k="${d + 1}">${d + 1}</button>`).join("") + `<button data-k="0" aria-label="Erase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/></svg></button>`;
+    kp.querySelectorAll("button").forEach(b => b.onclick = () => put(+b.dataset.k)); c.foot.appendChild(kp);
+    function draw() {
+      const sv = sel >= 0 ? vals[sel] : 0;
+      els.forEach((b, i) => {
+        const r = Math.floor(i / n), col = i % n, v = vals[i];
+        let clash = false; if (v) for (let j = 0; j < n; j++) { if (j !== col && vals[r * n + j] === v) clash = true; if (j !== r && vals[j * n + col] === v) clash = true; }
+        b.classList.toggle("sel", i === sel); b.classList.toggle("peer", sel >= 0 && i !== sel && (P.cage[i] === P.cage[sel]));
+        b.classList.toggle("same", !!sv && v === sv && i !== sel); b.classList.toggle("clash", clash);
+        b.querySelector("b").textContent = v || "";
+      });
+      c.stat(`<span>Filled <b>${vals.filter(v => v).length} of ${n * n}</b></span><span>${n}×${n}</span>`);
+    }
+    function put(v) {
+      if (!c.alive() || mode !== "play" || sel < 0) return;
+      vals[sel] = v; sfx(v ? "tap" : "note"); draw();
+      if (vals.every((x, i) => x === P.sol[i])) { mode = "over"; sel = -1; draw(); els.forEach(e => e.classList.add("won")); sfx("group");
+        c.later(() => c.done({ score: c.secs(), up: c.secs() <= 90 * c.lv, good: true, title: "Solved!", lines: [[fmt(c.secs()), "Time"], [`${n}×${n}`, "Size"], [P.cages.length, "Cages"]] }), 1200); }
+    }
+    draw();
+  },
+});
 /* ==== GAMES JS END ==== */
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
@@ -2447,7 +2649,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "New puzzles: Quick sums, Anagrams and Word search.";   // change with each update
+const NEWS = "New puzzles: Picture logic and Number cages. Every puzzle has one answer, no guessing needed.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
