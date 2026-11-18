@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795027809;</script>
+<script>window.GAME_BUILD = 1795028021;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -17,15 +17,15 @@
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0E1420; --paper: #172033; --ink: #E4EAF6; --muted: #98A4BB;
-  --line: #2B3954; --line-strong: #A9B7D0; --peer: #1C2840; --same: #27406B; --sel: #6E5C12;
+  --line: #2B3954; --line-strong: #A9B7D0; --peer: #1C2840; --same: #27406B; --sel: #463A0B;
   --user: #84AAFF; --err: #FF7B7B; --err-bg: #4A1E26; --note: #A6B1C6;
-  --btn: #1C2740; --btn-press: #26334F; --accent: #4F85F5; --accent-ink: #FFFFFF; --shade: rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6);
+  --btn: #1C2740; --btn-press: #26334F; --accent: #3366D6; --accent-ink: #FFFFFF; --shade: rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6);
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #0E1420; --paper: #172033; --ink: #E4EAF6; --muted: #98A4BB;
-  --line: #2B3954; --line-strong: #A9B7D0; --peer: #1C2840; --same: #27406B; --sel: #6E5C12;
+  --line: #2B3954; --line-strong: #A9B7D0; --peer: #1C2840; --same: #27406B; --sel: #463A0B;
   --user: #84AAFF; --err: #FF7B7B; --err-bg: #4A1E26; --note: #A6B1C6;
-  --btn: #1C2740; --btn-press: #26334F; --accent: #4F85F5; --accent-ink: #FFFFFF; --shade: rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6);
+  --btn: #1C2740; --btn-press: #26334F; --accent: #3366D6; --accent-ink: #FFFFFF; --shade: rgba(0,0,0,.4); --scrim: rgba(0,0,0,.6);
   color-scheme: dark; }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -167,6 +167,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .seg button { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 4px; border-radius: 10px; font-weight: 700; font-size: 14px; color: var(--muted); }
 .seg button svg { width: 17px; height: 17px; flex: none; }
 .seg button.on { background: var(--accent); color: var(--accent-ink); }
+.hcrow { padding: 6px 2px 0; }
 .hfoot { margin-top: auto; text-align: center; color: var(--muted); font-size: 12px; font-weight: 600; }
 /* what's new note after an update */
 .news { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30; width: min(440px, calc(100% - 32px));
@@ -176,6 +177,36 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 @keyframes newsin { from { transform: translate(-50%, 30px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (max-height: 640px) { .newbtn { display: none; } .app { gap: 8px; } .wrap { gap: 8px; } }
+
+/* High contrast (start page switch): stronger colours for light and dark, outlined controls, heavier numbers */
+:root { --edge: transparent; --selring: #000000; }
+:root[data-contrast="high"] { --bg: #FFFFFF; --paper: #FFFFFF; --ink: #000000; --muted: #2B2B2B;
+  --line: #5C5C5C; --line-strong: #000000; --peer: #D9E4F7; --same: #A8C5F7; --sel: #FFD000;
+  --user: #0033AA; --err: #A80000; --err-bg: #FFC9C9; --note: #000000;
+  --btn: #FFFFFF; --btn-press: #D9D9D9; --accent: #0033AA; --accent-ink: #FFFFFF; --shade: rgba(0,0,0,0); --scrim: rgba(0,0,0,.7); --edge: #000000; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"]:not([data-theme="light"]) { --bg: #000000; --paper: #000000; --ink: #FFFFFF; --muted: #E6E6E6;
+  --line: #A6A6A6; --line-strong: #FFFFFF; --peer: #1E2B47; --same: #1F3A6E; --sel: #3F3200;
+  --user: #8FD0FF; --err: #FF8F8F; --err-bg: #5C0000; --note: #FFFFFF;
+  --btn: #000000; --btn-press: #262626; --accent: #8FD0FF; --accent-ink: #000000; --shade: rgba(0,0,0,0); --scrim: rgba(0,0,0,.8); --edge: #FFFFFF; --selring: #FFD000; } }
+:root[data-contrast="high"][data-theme="dark"] { --bg: #000000; --paper: #000000; --ink: #FFFFFF; --muted: #E6E6E6;
+  --line: #A6A6A6; --line-strong: #FFFFFF; --peer: #1E2B47; --same: #1F3A6E; --sel: #3F3200;
+  --user: #8FD0FF; --err: #FF8F8F; --err-bg: #5C0000; --note: #FFFFFF;
+  --btn: #000000; --btn-press: #262626; --accent: #8FD0FF; --accent-ink: #000000; --shade: rgba(0,0,0,0); --scrim: rgba(0,0,0,.8); --edge: #FFFFFF; --selring: #FFD000; }
+:root[data-contrast="high"] .c { border-color: var(--line); }
+:root[data-contrast="high"] .c.user { font-weight: 700; }
+:root[data-contrast="high"] .c.sel { box-shadow: inset 0 0 0 3px var(--selring); }
+:root[data-contrast="high"] .notes { font-weight: 800; font-size: clamp(9px, 2.6vw, 12px); }
+:root[data-contrast="high"] .board { border-width: 3px; }
+:root[data-contrast="high"] .c.br { border-right-width: 3px; } :root[data-contrast="high"] .c.bb { border-bottom-width: 3px; }
+:root[data-contrast="high"] .num, :root[data-contrast="high"] .hbtn, :root[data-contrast="high"] .lvchip, :root[data-contrast="high"] .icbtn,
+:root[data-contrast="high"] .seg, :root[data-contrast="high"] .hrecs span, :root[data-contrast="high"] .hart span, :root[data-contrast="high"] .big,
+:root[data-contrast="high"] .presets button { border: 2px solid var(--edge); }
+:root[data-contrast="high"] .sheet { border-top: 3px solid var(--edge); }
+:root[data-contrast="high"] .tool, :root[data-contrast="high"] .stats, :root[data-contrast="high"] .num small { color: var(--ink); }
+:root[data-contrast="high"] .tool .badge { border: 1.5px solid var(--edge); background: var(--paper); color: var(--ink); }
+:root[data-contrast="high"] .tool.on .badge { background: var(--accent); color: var(--accent-ink); }
+:root[data-contrast="high"] .sw { border: 2px solid var(--edge); }
+:root[data-contrast="high"] .news { border: 2px solid var(--bg); }
 </style>
 </head>
 <body>
@@ -309,6 +340,7 @@ const darkQuery = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)")
 function applyTheme() {
   const t = opts.theme || "auto", root = document.documentElement;
   if (t === "auto") delete root.dataset.theme; else root.dataset.theme = t;
+  if (opts.hc) root.dataset.contrast = "high"; else delete root.dataset.contrast;
 }
 if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", applyTheme);
 let sel = -1, notesMode = false, paused = false, sheet = null, pickLv = 4, lastPop = -1;
@@ -475,12 +507,14 @@ function showHome() {
     </div>
     ${recs ? `<div class="hrec"><h3>Best times</h3><div class="hrecs">${recs}</div></div>` : ""}
     <div class="hlook"><h3>Look</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${[["auto", "Phone", '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'], ["light", "Light", '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>'], ["dark", "Dark", '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>']]
-      .map(([k, t, ic]) => `<button role="radio" aria-checked="${(opts.theme || "auto") === k}" class="${(opts.theme || "auto") === k ? "on" : ""}" data-theme-pick="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${t}</button>`).join("")}</div></div>
+      .map(([k, t, ic]) => `<button role="radio" aria-checked="${(opts.theme || "auto") === k}" class="${(opts.theme || "auto") === k ? "on" : ""}" data-theme-pick="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${t}</button>`).join("")}</div>
+      <div class="opt hcrow"><span>High contrast</span><button class="sw${opts.hc ? " on" : ""}" id="hcsw" role="switch" aria-checked="${!!opts.hc}" aria-label="High contrast"></button></div></div>
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
   if (live) $("hcont").onclick = () => { paused = false; hideHome(); render(); };
   $("hnew").onclick = openNew;
   h.querySelectorAll("[data-theme-pick]").forEach(b => b.onclick = () => { opts.theme = b.dataset.themePick; applyTheme(); save(); showHome(); });
+  $("hcsw").onclick = () => { opts.hc = !opts.hc; applyTheme(); save(); showHome(); };
 }
 function hideHome() { homeOn = false; $("home").hidden = true; }
 
@@ -505,7 +539,7 @@ window.appBack = () => { if (sheet === "new" && (homeOn || (G && !G.done))) { cl
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
 /* ---------- start ---------- */
-const NEWS = "Choose light or dark: Look, on the start page.";   // change with each update
+const NEWS = "High contrast: switch it on under Look, on the start page.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 applyTheme();
