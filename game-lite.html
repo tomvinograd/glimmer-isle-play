@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795011227;</script>
+<script>window.GAME_BUILD = 1795011694;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1510,10 +1510,12 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
 .geditteam { flex: 1 1 auto !important; min-width: 0; white-space: nowrap; }
 
 /* the dial fills the hero's whole face (face 126 px across; dial circle is 82% of its box) */
-#actions .compass.hero .cface { width: 150px !important; height: 150px !important; margin: 0 !important; left: calc(50% - 75px) !important; top: calc(50% - 75px) !important; right: auto !important; bottom: auto !important; }
+#actions .compass.hero .cface { width: 140px !important; height: 140px !important; margin: 0 !important; left: calc(50% - 70px) !important; top: calc(50% - 70px) !important; right: auto !important; bottom: auto !important; }
 #actions .compass.hero .cneedle-wrap { width: 116px !important; height: 116px !important; margin: 0 !important; left: calc(50% - 58px) !important; top: calc(50% - 58px) !important; right: auto !important; bottom: auto !important; }
 #actions .compass.hero .needle { width: 116px !important; height: 116px !important; }
 #actions .compass.hero .chero { left: calc(50% - 120.8px) !important; }
+
+#actions .compass.hero .cface circle { display: none; }  /* Tom 18 Nov: no separate dial ring; marks and letters sit right on the golden compass face */
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
