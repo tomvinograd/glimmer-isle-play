@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795033631;</script>
+<script>window.GAME_BUILD = 1795034206;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -486,6 +486,35 @@ input { user-select: text; -webkit-user-select: text; }
 .kpad button:disabled { opacity: .4; }
 .kpad svg { width: 28px; height: 28px; }
 :root[data-contrast="high"] .kpad button { border: 2px solid var(--edge); }
+
+/* Shopping list / What changed? / Same as before? / Story questions */
+.items { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; overflow-y: auto; align-content: start; max-height: 100%; padding: 2px; }
+:root[data-size="xl"] .items.pick { grid-template-columns: 1fr; }
+.item { display: flex; align-items: center; gap: 10px; min-height: var(--tap); padding: 6px 12px; border-radius: 14px; background: var(--paper); box-shadow: 0 1px 2px var(--shade); text-align: left; font-weight: 700; font-size: calc(17px * var(--fs)); }
+.item i { font-style: normal; font-size: calc(28px * var(--fs)); line-height: 1; }
+.item.on { box-shadow: inset 0 0 0 3px var(--accent); background: var(--same); }
+.item.right { box-shadow: inset 0 0 0 3px #1E8A4C; } .item.right::after { content: "✓"; margin-left: auto; color: #1E8A4C; font-weight: 900; }
+.item.wrong { box-shadow: inset 0 0 0 3px var(--err); } .item.wrong::after { content: "✕"; margin-left: auto; color: var(--err); font-weight: 900; }
+.item.missed { box-shadow: inset 0 0 0 3px #1E8A4C; opacity: .6; } .item.missed::after { content: "missed"; margin-left: auto; color: var(--muted); font-size: 12px; }
+:root[data-contrast="high"] .item { border: 2px solid var(--edge); }
+.studybar { width: 100%; height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.studybar i { display: block; height: 100%; background: var(--accent); width: 100%; transition: width linear; }
+.slot { width: var(--cell); height: var(--cell); border-radius: 14px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); display: grid; place-items: center; font-size: calc(var(--cell) * .55); line-height: 1; }
+.slot.right { box-shadow: inset 0 0 0 4px #1E8A4C; } .slot.wrong { box-shadow: inset 0 0 0 4px var(--err); }
+:root[data-contrast="high"] .slot { border: 2px solid var(--edge); }
+.nbcard { width: min(62vw, 260px); aspect-ratio: 1; border-radius: 28px; background: var(--paper); box-shadow: 0 3px 10px var(--shade); display: grid; place-items: center; font-size: min(36vw, 150px); line-height: 1; }
+.nbcard.pop { animation: pop .25s ease-out; }
+.nbcard.right { box-shadow: 0 0 0 6px #1E8A4C; } .nbcard.wrong { box-shadow: 0 0 0 6px var(--err); }
+:root[data-contrast="high"] .nbcard { border: 3px solid var(--edge); }
+.yn { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.yn .bigbtn { min-height: calc(var(--tap) + 12px); }
+.story { width: 100%; max-width: 34em; overflow-y: auto; font-size: calc(19px * var(--fs)); line-height: 1.65; font-weight: 500; background: var(--paper); border-radius: 18px; padding: 16px 18px; box-shadow: 0 1px 3px var(--shade); }
+:root[data-contrast="high"] .story { border: 2px solid var(--edge); }
+.qtext { margin: 0; text-align: center; font-size: calc(20px * var(--fs)); font-weight: 800; line-height: 1.35; }
+.opts { display: grid; gap: 10px; width: 100%; max-width: 440px; }
+.opts button { min-height: var(--tap); border-radius: 14px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); font-size: calc(18px * var(--fs)); font-weight: 700; padding: 8px 14px; }
+.opts button.right { background: #1E8A4C; color: #fff; } .opts button.wrong { background: var(--err); color: #fff; }
+:root[data-contrast="high"] .opts button { border: 2px solid var(--edge); }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -828,7 +857,8 @@ const BADGES = [
   ["sharp", "🃏", "Sharp memory", "Pairs, 8 or more: in 1.5 turns per pair"],
   ["seq10", "🎵", "Long tune", "Repeat a sequence of 10"],
   ["sq10", "🦅", "Eagle eye", "Remember 10 squares"],
-  ["digits9", "🧮", "Number whiz", "Remember 9 digits"],
+  ["digits9", "🔟", "Number whiz", "Remember 9 digits"],
+  ["story", "📖", "Good listener", "Story level 4+: every question right"],
   ["early", "🐦", "Early bird", "Solve one between 5 and 7 am"],
 ];
 const badgeOf = id => BADGES.find(b => b[0] === id);
@@ -844,7 +874,7 @@ function checkBadges(c) {
     streak3: (opts.bestStreak || 0) >= 3, streak7: (opts.bestStreak || 0) >= 7, streak30: (opts.bestStreak || 0) >= 30,
     race: (opts.vsWins || 0) >= 1, race10: (opts.vsWins || 0) >= 10,
     owl: c && hr < 5, early: c && hr >= 5 && hr < 7,
-    explorer: gamesPlayed() >= 5, sharp: !!(opts.flags || {}).sharp, seq10: !!(opts.flags || {}).seq10, sq10: !!(opts.flags || {}).sq10, digits9: !!(opts.flags || {}).digits9,
+    explorer: gamesPlayed() >= 5, sharp: !!(opts.flags || {}).sharp, seq10: !!(opts.flags || {}).seq10, sq10: !!(opts.flags || {}).sq10, digits9: !!(opts.flags || {}).digits9, story: !!(opts.flags || {}).story,
   };
   for (const [id] of BADGES) if (want[id] && !have[id]) { have[id] = dayKey(); got.push(id); }
   return got;
@@ -1903,6 +1933,215 @@ addGame({
     round();
   },
 });
+
+/* ---------- Shopping list ---------- */
+const ITEMS = [["🍎", "Apples"], ["🍌", "Bananas"], ["🍇", "Grapes"], ["🍓", "Strawberries"], ["🍋", "Lemons"], ["🍉", "Watermelon"], ["🍍", "Pineapple"], ["🥕", "Carrots"],
+  ["🌽", "Corn"], ["🍄", "Mushrooms"], ["🥔", "Potatoes"], ["🍅", "Tomatoes"], ["🥒", "Cucumber"], ["🍆", "Aubergine"], ["🧀", "Cheese"], ["🥚", "Eggs"], ["🥛", "Milk"],
+  ["🍞", "Bread"], ["🥐", "Croissants"], ["🍯", "Honey"], ["🍫", "Chocolate"], ["🍪", "Cookies"], ["🍰", "Cake"], ["🍦", "Ice cream"], ["🍕", "Pizza"], ["🍗", "Chicken"],
+  ["🐟", "Fish"], ["🍚", "Rice"], ["☕", "Coffee"], ["🍵", "Tea"], ["🍷", "Wine"], ["💐", "Flowers"], ["🔋", "Batteries"], ["💡", "Light bulbs"], ["✉️", "Envelopes"],
+  ["📰", "Newspaper"], ["✏️", "Pencils"], ["🎈", "Balloons"], ["🎁", "A present"], ["👟", "Trainers"], ["☂️", "An umbrella"], ["📎", "Paper clips"], ["✂️", "Scissors"],
+  ["🍒", "Cherries"], ["🥜", "Peanuts"], ["🥑", "Avocados"], ["🌶️", "Chillies"], ["🍑", "Peaches"], ["🍐", "Pears"], ["🍊", "Oranges"], ["🌰", "Chestnuts"], ["🥖", "A baguette"], ["🍝", "Pasta"]];
+const SHOP_N = [3, 4, 5, 6, 7, 8, 10, 12];
+// "Look" time: a bar runs down and "I've got it" goes on early; relaxed mode: no bar, take your time
+function studyTime(c, ms, onDone) {
+  let gone = false; const go = () => { if (!gone && c.alive()) { gone = true; onDone(); } };
+  const b = document.createElement("button"); b.className = "bigbtn"; b.textContent = "I've got it"; b.onclick = go;
+  c.foot.innerHTML = ""; c.foot.appendChild(b);
+  if (!c.relaxed) {
+    const bar = document.createElement("div"); bar.className = "studybar"; bar.innerHTML = "<i></i>"; c.foot.insertBefore(bar, b);
+    requestAnimationFrame(() => requestAnimationFrame(() => { const i = bar.firstChild; i.style.transitionDuration = ms + "ms"; i.style.width = "0%"; }));
+    c.later(go, ms);
+  }
+}
+const footBtn = (c, text, fn) => { c.foot.innerHTML = ""; const b = document.createElement("button"); b.className = "bigbtn"; b.textContent = text; b.onclick = fn; c.foot.appendChild(b); return b; };
+addGame({
+  id: "shop", name: "Shopping list", icon: "🛒", sec: "mem", blurb: "Remember the list, then pick it out", levels: 8, better: "high",
+  how: "A shopping list appears. Take a good look at it. Then the list hides and you see a mix of things: tap every one that was on your list, then Check. Each wrong pick takes off a point.",
+  levelName: l => `${SHOP_N[l - 1]} things to remember`,
+  fmt: s => s + (s === 1 ? " point" : " points"),
+  start(c) {
+    const n = SHOP_N[c.lv - 1], pool = pickN(ITEMS, n * 2), list = pool.slice(0, n), mix = shuffle(pool.slice()), chosen = new Set();
+    let mode = "look";
+    mgCur.peek = () => ({ list: list.map(x => x[1]), mix: mix.map(x => x[1]), mode });
+    c.stat(`<b>Remember the list</b><span>${n} things</span>`);
+    c.body.innerHTML = `<div class="items">${list.map(([e, w]) => `<div class="item"><i aria-hidden="true">${e}</i>${w}</div>`).join("")}</div>`;
+    studyTime(c, 2500 + n * 1500, pick);
+    function pick() {
+      mode = "pick"; c.stat(`<b>Which were on the list?</b><span>Pick ${n}</span>`);
+      c.body.innerHTML = `<div class="items pick">${mix.map(([e, w], i) => `<button class="item" data-i="${i}" aria-pressed="false"><i aria-hidden="true">${e}</i>${w}</button>`).join("")}</div>`;
+      const btn = footBtn(c, "Check (0 picked)", check);
+      c.body.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
+        if (mode !== "pick") return;
+        const i = +b.dataset.i; if (chosen.has(i)) chosen.delete(i); else chosen.add(i);
+        b.classList.toggle("on", chosen.has(i)); b.setAttribute("aria-pressed", chosen.has(i)); sfx("note"); btn.textContent = `Check (${chosen.size} picked)`;
+      });
+    }
+    function check() {
+      mode = "checked"; const onList = new Set(list.map(x => x[1])); let right = 0, wrong = 0;
+      c.body.querySelectorAll("[data-i]").forEach(b => {
+        const i = +b.dataset.i, w = mix[i][1]; b.classList.remove("on");
+        if (chosen.has(i) && onList.has(w)) { right++; b.classList.add("right"); } else if (chosen.has(i)) { wrong++; b.classList.add("wrong"); } else if (onList.has(w)) b.classList.add("missed");
+      });
+      const score = Math.max(0, right - wrong); sfx(score === n ? "group" : "tap");
+      c.stat(`<b>${right} of ${n} found</b>${wrong ? `<span>${wrong} wrong</span>` : ""}`);
+      footBtn(c, "See your score", () => c.done({ score, up: score === n, good: score > 0, title: score === n ? "Perfect list!" : score >= n / 2 ? "Well remembered!" : "Keep practising!",
+        lines: [[`${right}/${n}`, "Found"], [wrong, "Wrong picks"], [score, "Points"]] }));
+    }
+  },
+});
+
+/* ---------- What changed? ---------- */
+const WC_LV = [[4, "r"], [6, "r"], [6, "rm"], [9, "r"], [9, "rms"], [12, "rm"], [12, "rms"], [16, "rms"]];
+const wcCols = k => k === 4 ? 2 : k <= 9 ? 3 : 4;
+addGame({
+  id: "changed", name: "What changed?", icon: "🔍", sec: "mem", blurb: "Spot what moved or disappeared", levels: 8, better: "high",
+  how: "Look at the things on the table. They hide for a moment, then come back with one change: something new, something gone, or two that swapped places. Tap the square that changed. Eight rounds.",
+  levelName: l => { const [k, t] = WC_LV[l - 1]; return `${k} things · ${t === "r" ? "one replaced" : t === "rm" ? "replaced or gone" : "replaced, gone or swapped"}`; },
+  fmt: s => s + " of 8",
+  start(c) {
+    const [k, types] = WC_LV[c.lv - 1], cols = wcCols(k), rows = k / cols; let round = 0, score = 0, mode = "wait", ans = [];
+    mgCur.peek = () => ({ ans, mode });
+    const grid = document.createElement("div"); grid.className = "sqs"; c.body.appendChild(grid);
+    const els = range(k).map(i => { const b = document.createElement("button"); b.className = "slot"; b.setAttribute("aria-label", "Square " + (i + 1)); b.onclick = () => tap(i); grid.appendChild(b); return b; });
+    c.body.dataset.reserve = 90;   // room for the look bar and button underneath
+    fitGrid(grid, cols, rows, c.body, 10, 130);
+    const upd = t => c.stat(`<span>${t}</span><span>Round <b>${round} of 8</b></span><span>Right <b>${score}</b></span>`);
+    function next() {
+      round++; mode = "look"; upd("<b>Look</b>");
+      const things = pickN(PICS, k + 1), now = things.slice(0, k);
+      els.forEach((e, i) => { e.className = "slot"; e.textContent = now[i]; });
+      studyTime(c, 1500 + k * 450, () => {
+        c.foot.innerHTML = ""; mode = "hide"; els.forEach(e => e.textContent = ""); upd("…");
+        const t = types[randInt(types.length)], a = randInt(k);
+        if (t === "r") { now[a] = things[k]; ans = [a]; }
+        else if (t === "m") { now[a] = ""; ans = [a]; }
+        else { let b = randInt(k - 1); if (b >= a) b++; [now[a], now[b]] = [now[b], now[a]]; ans = [a, b]; }
+        c.later(() => { els.forEach((e, i) => e.textContent = now[i]); mode = "you"; upd("<b>Tap what changed</b>"); }, 900);
+      });
+    }
+    function tap(i) {
+      if (!c.alive() || mode !== "you") return;
+      mode = "wait"; const ok = ans.includes(i);
+      if (ok) { score++; sfx("group"); } else { sfx("err"); buzz(60); els[i].classList.add("wrong"); }
+      ans.forEach(a => els[a].classList.add("right")); upd(ok ? "Right!" : "That one changed");
+      c.later(() => round < 8 ? next() : c.done({ score, up: score >= 7, good: score > 0, title: score === 8 ? "Nothing gets past you!" : score >= 6 ? "Sharp eyes!" : "Well played!",
+        lines: [[`${score}/8`, "Right"], [k, "Things"], [fmt(c.secs()), "Time"]] }), 1400);
+    }
+    next();
+  },
+});
+
+/* ---------- Same as before? (n-back) ---------- */
+const NB_LV = [[1, 3000], [1, 2400], [1, 1900], [2, 3200], [2, 2600], [2, 2100], [3, 3400], [3, 2800]];
+const NB_SYM = ["🍎", "⭐", "🐟", "🌙", "🔔", "🚗"];
+addGame({
+  id: "nback", name: "Same as before?", icon: "🔁", sec: "mem", blurb: "Is this picture the same as before?", levels: 8, better: "high",
+  how: "Pictures appear one at a time. For each one, answer: is it the same as the picture before? On harder levels you compare it with the picture two or three before. Twenty pictures.",
+  levelName: l => { const [n, ms] = NB_LV[l - 1]; return `${n === 1 ? "the one before" : n === 2 ? "two before" : "three before"} · ${ms >= 3000 ? "slow" : ms >= 2300 ? "medium" : "quick"}`; },
+  fmt: s => s + "%",
+  start(c) {
+    const [n, ms] = NB_LV[c.lv - 1], total = 20 + n, seq = [];
+    for (let i = 0; i < total; i++) seq.push(i >= n && Math.random() < .35 ? seq[i - n] : NB_SYM[randInt(NB_SYM.length)]);
+    let i = -1, right = 0, asked = 0, answered = true;
+    mgCur.peek = () => ({ i, n, same: i >= n && seq[i] === seq[i - n], answered });
+    const ask = n === 1 ? "the one before" : n === 2 ? "two pictures ago" : "three pictures ago";
+    c.body.innerHTML = `<p class="mgsub" id="nbq"></p><div class="nbcard" id="nbc"></div>`;
+    c.foot.innerHTML = `<div class="yn"><button class="bigbtn alt" id="nbno">✕ No</button><button class="bigbtn" id="nbyes">✓ Same</button></div>`;
+    $("nbyes").onclick = () => answer(true); $("nbno").onclick = () => answer(false);
+    const upd = () => c.stat(`<span>Picture <b>${Math.max(0, i + 1)} of ${total}</b></span><span>Right <b>${right}</b></span>`);
+    function next() {
+      if (!c.alive()) return;
+      if (!answered && i >= n) { asked++; feedback(false); }   // too slow counts as a miss
+      i++; if (i >= total) { finish(); return; }
+      const card = $("nbc"); card.textContent = seq[i]; card.className = "nbcard"; void card.offsetWidth; card.classList.add("pop");
+      answered = i < n; $("nbq").innerHTML = i < n ? "Remember this one" : `Same as <b>${ask}</b>?`;
+      $("nbyes").disabled = $("nbno").disabled = i < n; upd();
+      if (i < n || !c.relaxed) c.later(next, i < n ? 1600 : ms);
+    }
+    function feedback(ok) { const card = $("nbc"); card.classList.add(ok ? "right" : "wrong"); if (ok) sfx("tap"); else { sfx("err"); buzz(50); } }
+    function answer(yes) {
+      if (!c.alive() || answered || i < n) return;
+      answered = true; asked++; const ok = yes === (seq[i] === seq[i - n]); if (ok) right++; feedback(ok); upd();
+      if (c.relaxed) c.later(next, 600);
+    }
+    function finish() {
+      const pct = Math.round(right / Math.max(1, asked) * 100);
+      c.done({ score: pct, up: pct >= 85, good: pct >= 50, title: pct >= 90 ? "Brilliant focus!" : pct >= 70 ? "Well done!" : "Keep practising!",
+        lines: [[pct + "%", "Right"], [`${right}/${asked}`, "Answers"], [n === 1 ? "1 back" : n + " back", "Compare"]] });
+    }
+    next();
+  },
+});
+
+/* ---------- Story questions: a new story each time, built from parts ---------- */
+const ST_NAMES = ["Anna", "Ben", "Clara", "Daniel", "Eva", "Frank", "Grace", "Henry", "Iris", "Jacob", "Lily", "Max", "Nora", "Oscar", "Rosa", "Simon", "Leah", "Adam", "Maya", "Noah"];
+const ST_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const ST_TIMES = ["early in the morning", "at nine o'clock", "at noon", "after lunch", "at four o'clock", "in the evening"];
+const ST_PLACES = ["the market", "the library", "the post office", "the bakery", "the park", "the bank", "the pharmacy", "the garden centre", "the museum", "the beach"];
+const ST_TRAVEL = ["by bus", "by bike", "by car", "on foot", "by train", "by taxi"];
+const ST_WEATHER = ["sunny", "rainy", "windy", "cold", "cloudy", "warm"];
+const ST_REL = ["a neighbour", "an old friend", "a cousin", "a teacher", "a colleague"];
+const ST_COLORS = ["red", "blue", "green", "yellow", "black", "white", "brown", "purple"];
+const ST_THINGS = ["umbrella", "hat", "scarf", "bag", "coat", "notebook", "dog"];
+const ST_MANY = ["apples", "bananas", "lemons", "carrots", "potatoes", "tomatoes", "eggs", "croissants", "cookies", "pencils", "balloons", "envelopes", "peaches", "pears", "oranges", "candles"];
+const ST_ONE = ["a cake", "a newspaper", "an umbrella", "a present", "a baguette", "some flowers", "some cheese", "some honey", "some coffee", "some tea", "a pizza", "some fish", "a book", "a plant"];
+const ST_LV = [[2, 2], [3, 3], [4, 3], [5, 4], [6, 4], [7, 5], [8, 5], [9, 6]];
+const pick1 = a => a[randInt(a.length)];
+const cap = s => s[0].toUpperCase() + s.slice(1);
+function makeStory(nFacts) {
+  const [who, friend] = pickN(ST_NAMES, 2), day = pick1(ST_DAYS), time = pick1(ST_TIMES), place = pick1(ST_PLACES), travel = pick1(ST_TRAVEL);
+  const weather = pick1(ST_WEATHER), rel = pick1(ST_REL), color = pick1(ST_COLORS), thing = pick1(ST_THINGS), many = pick1(ST_MANY), one = pick1(ST_ONE);
+  const k = 2 + randInt(8), price = 5 + randInt(40), home = 1 + randInt(11), nums = range(9).map(x => String(x + 2));
+  const facts = [
+    { s: `On ${day} ${time}, ${who} went to ${place}.`, q: [[`Where did ${who} go?`, cap(place), ST_PLACES.map(cap)], [`On which day was it?`, day, ST_DAYS], [`When did ${who} go?`, cap(time), ST_TIMES.map(cap)]] },
+    { s: `${who} went ${travel}.`, q: [[`How did ${who} get there?`, cap(travel), ST_TRAVEL.map(cap)]] },
+    { s: `It was a ${weather} day.`, q: [[`What was the weather like?`, cap(weather), ST_WEATHER.map(cap)]] },
+    { s: `${who} bought ${k} ${many}.`, q: [[`How many ${many} did ${who} buy?`, String(k), nums], [`What did ${who} buy ${k} of?`, cap(many), ST_MANY.map(cap)]] },
+    { s: `There, ${who} met ${friend}, ${rel}.`, q: [[`Who did ${who} meet?`, friend, ST_NAMES.filter(x => x !== who)], [`Who was ${friend}?`, cap(rel), ST_REL.map(cap)]] },
+    { s: `${friend} had a ${color} ${thing}.`, q: [[`What colour was ${friend}'s ${thing}?`, cap(color), ST_COLORS.map(cap)], [`What did ${friend} have?`, `A ${thing}`, ST_THINGS.map(t => "A " + t)]] },
+    { s: `Before going home, ${who} also bought ${one}.`, q: [[`What else did ${who} buy?`, cap(one), ST_ONE.map(cap)]] },
+    { s: `Everything cost ${price} dollars.`, q: [[`How much did it all cost?`, `${price} dollars`, range(40).map(x => `${x + 5} dollars`)]] },
+    { s: `${who} was home again at ${home} o'clock.`, q: [[`What time was ${who} home?`, `${home} o'clock`, range(11).map(x => `${x + 1} o'clock`)]] },
+  ];
+  // the first sentence always; the friend's things (5) only after meeting the friend (4)
+  const idx = [0, ...pickN(range(facts.length - 1).map(x => x + 1), nFacts - 1)];
+  if (idx.includes(5) && !idx.includes(4)) {
+    const j = idx.findIndex(x => x !== 0 && x !== 5);
+    if (j >= 0) idx[j] = 4; else idx[idx.indexOf(5)] = [1, 2, 3, 6, 7, 8].find(x => !idx.includes(x));
+  }
+  const used = idx.sort((a, b) => a - b).map(i => facts[i]);
+  return { text: used.map(f => f.s).join(" "), qs: used.flatMap(f => f.q) };
+}
+addGame({
+  id: "story", name: "Story questions", icon: "📖", sec: "mem", blurb: "Read a short story, answer questions", levels: 8, better: "high",
+  how: "Read a short story about someone's day, as slowly as you like. Then it hides, and you answer a few questions about it. A new story every time.",
+  levelName: l => { const [f, q] = ST_LV[l - 1]; return `${f} sentences · ${q} questions`; },
+  fmt: s => s + " right",
+  start(c) {
+    const [nf, nq] = ST_LV[c.lv - 1], st = makeStory(nf), qs = pickN(st.qs, nq);
+    let qi = 0, right = 0, mode = "read";
+    mgCur.peek = () => ({ mode, answer: mode === "q" ? qs[qi][1] : null, text: st.text });
+    c.stat(`<b>Read the story</b>`);
+    c.body.innerHTML = `<div class="story">${st.text}</div>`;
+    footBtn(c, "I've read it", () => { mode = "q"; c.foot.innerHTML = ""; ask(); });
+    function ask() {
+      const [q, a, pool] = qs[qi], wrong = pickN([...new Set(pool)].filter(x => x !== a), 3), choices = shuffle([a, ...wrong]);
+      c.stat(`<span>Question <b>${qi + 1} of ${qs.length}</b></span><span>Right <b>${right}</b></span>`);
+      c.body.innerHTML = `<p class="qtext">${q}</p><div class="opts">${choices.map((x, i) => `<button data-i="${i}">${x}</button>`).join("")}</div>`;
+      c.body.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
+        if (mode !== "q") return; mode = "wait";
+        const ok = choices[+b.dataset.i] === a; if (ok) { right++; sfx("group"); } else { sfx("err"); buzz(50); b.classList.add("wrong"); }
+        c.body.querySelectorAll("[data-i]").forEach(x => { if (choices[+x.dataset.i] === a) x.classList.add("right"); });
+        c.later(() => {
+          qi++; if (qi < qs.length) { mode = "q"; ask(); return; }
+          c.done({ score: right, up: right === qs.length, good: right > 0, flag: right === qs.length && c.lv >= 4 ? "story" : null,
+            title: right === qs.length ? "Every detail!" : right >= qs.length / 2 ? "Good memory!" : "Keep practising!",
+            lines: [[`${right}/${qs.length}`, "Right"], [nf, "Sentences"], [fmt(c.secs()), "Time"]], note: `The story: ${st.text}` });
+        }, ok ? 900 : 1700);
+      });
+    }
+  },
+});
 /* ==== GAMES JS END ==== */
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
@@ -1990,7 +2229,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Brain games! Pairs, Repeat the sequence, Remember the squares and Number memory, with more coming. Sudoku is under Puzzles.";   // change with each update
+const NEWS = "4 more memory games: Shopping list, What changed?, Same as before? and Story questions.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
