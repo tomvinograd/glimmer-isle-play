@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795027521;</script>
+<script>window.GAME_BUILD = 1795027809;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -162,6 +162,11 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .hrecs { display: flex; flex-wrap: wrap; gap: 6px; }
 .hrecs span { padding: 6px 10px; border-radius: 999px; background: var(--paper); font-size: 13px; font-weight: 600; color: var(--muted); }
 .hrecs span b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.hlook { display: grid; gap: 8px; } .hlook h3 { margin: 0; font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); }
+.seg button { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 4px; border-radius: 10px; font-weight: 700; font-size: 14px; color: var(--muted); }
+.seg button svg { width: 17px; height: 17px; flex: none; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
 .hfoot { margin-top: auto; text-align: center; color: var(--muted); font-size: 12px; font-weight: 600; }
 /* what's new note after an update */
 .news { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 30; width: min(440px, calc(100% - 32px));
@@ -299,6 +304,13 @@ function makePuzzle(lv) {
 const KEY = "sudoku.save.v1";
 let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0 };
 let homeOn = true;   // the start page is shown when the app opens
+// Look: "auto" follows the phone's light/dark setting; "light" / "dark" are fixed (the phone's own top and bottom bars keep the phone's setting).
+const darkQuery = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
+function applyTheme() {
+  const t = opts.theme || "auto", root = document.documentElement;
+  if (t === "auto") delete root.dataset.theme; else root.dataset.theme = t;
+}
+if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", applyTheme);
 let sel = -1, notesMode = false, paused = false, sheet = null, pickLv = 4, lastPop = -1;
 const load = () => { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s) { if (s.opts) opts = Object.assign(opts, s.opts); if (s.game && !s.game.done) G = s.game; } } catch (e) {} };
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ opts, game: G && Object.assign({}, G, { hist: G.hist.slice(-60) }) })); } catch (e) {} };
@@ -462,10 +474,13 @@ function showHome() {
       <button class="hbtn${live ? "" : " go"}" id="hnew"><span><b>New game</b><small>Pick how hard: level 1 to 10</small></span><i>›</i></button>
     </div>
     ${recs ? `<div class="hrec"><h3>Best times</h3><div class="hrecs">${recs}</div></div>` : ""}
+    <div class="hlook"><h3>Look</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${[["auto", "Phone", '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'], ["light", "Light", '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>'], ["dark", "Dark", '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>']]
+      .map(([k, t, ic]) => `<button role="radio" aria-checked="${(opts.theme || "auto") === k}" class="${(opts.theme || "auto") === k ? "on" : ""}" data-theme-pick="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${t}</button>`).join("")}</div></div>
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
   if (live) $("hcont").onclick = () => { paused = false; hideHome(); render(); };
   $("hnew").onclick = openNew;
+  h.querySelectorAll("[data-theme-pick]").forEach(b => b.onclick = () => { opts.theme = b.dataset.themePick; applyTheme(); save(); showHome(); });
 }
 function hideHome() { homeOn = false; $("home").hidden = true; }
 
@@ -490,9 +505,10 @@ window.appBack = () => { if (sheet === "new" && (homeOn || (G && !G.done))) { cl
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
 /* ---------- start ---------- */
-const NEWS = "Fixed: tapping squares works again. New start page with your best times.";   // change with each update
+const NEWS = "Choose light or dark: Look, on the start page.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
+applyTheme();
 if (G) render();
 showHome();
 if (window.GAME_BUILD) {
