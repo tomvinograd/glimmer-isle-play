@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795030535;</script>
+<script>window.GAME_BUILD = 1795031472;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -640,7 +640,7 @@ function startGame(lv) {
   layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Making a ${LEVELS[lv - 1].name} puzzle…</div></div>`;
   setTimeout(() => makePuzzle(lv).then(r => {
     G = { level: lv, givens: r.p, sol: r.sol, cells: r.p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: r.givens };
-    sel = -1; notesMode = false; paused = false; closeSheet(); hideHome(); render(); save();
+    sel = -1; notesMode = false; paused = false; dropFocus(); closeSheet(); hideHome(); render(); save(); refitSoon();
   }), 60);
 }
 function openWin(isBest, prev) {
@@ -689,10 +689,19 @@ function setResume(on) { try { if (on) sessionStorage.setItem("sudoku.resume", "
 function fitBoard() {
   const bb = $("boardbox"), app = document.querySelector(".app");
   bb.style.width = "";
+  if (typing()) return;   // the on-screen keyboard is up (typing a name or code): never squeeze the board for it
   const over = app.scrollHeight - app.clientHeight;
   if (over > 0) bb.style.width = Math.max(220, bb.getBoundingClientRect().width - over - 2) + "px";
 }
+const typing = () => { const a = document.activeElement; return !!a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA"); };
+// a tap on any button closes the keyboard first (Android can leave it up when the text box goes away)
+const dropFocus = () => { if (typing()) document.activeElement.blur(); };
+document.addEventListener("click", e => { if (e.target.closest && e.target.closest("button")) dropFocus(); }, true);
+// fit again whenever the screen size really changes (the keyboard closing, split screen), not only on "resize"
 addEventListener("resize", fitBoard);
+if (window.visualViewport) visualViewport.addEventListener("resize", fitBoard);
+if (window.ResizeObserver) new ResizeObserver(() => fitBoard()).observe(document.querySelector(".app"));
+const refitSoon = () => [0, 300, 1000, 2500].forEach(ms => setTimeout(fitBoard, ms));
 
 /* ---------- settings ---------- */
 function openSettings() { sheet = "settings"; drawSettings(); }
@@ -898,9 +907,9 @@ function vsBegin(r, x) {
   const p = [...s.p].map(Number);
   G = { level: s.lv, givens: p, sol: [...s.s].map(Number), cells: p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: p.filter(v => v).length, vs: r };
   sel = -1; notesMode = false; paused = false; vpSent = ""; vAnimDone = true;
-  closeSheet(); hideHome(); save(); buzz(30); vsCount();
+  dropFocus(); closeSheet(); hideHome(); save(); buzz(30); vsCount(); refitSoon();
 }
-function vsCount() { render(); if (counting()) setTimeout(vsCount, 200); else if (G && G.vs) buzz(40); }
+function vsCount() { render(); if (counting()) setTimeout(vsCount, 200); else if (G && G.vs) { buzz(40); refitSoon(); } }
 
 function renderVs() {
   const on = !!(G && G.vs && V && V.round === G.vs), bar = $("vsbar");
@@ -1130,7 +1139,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Play a friend: the same puzzle on two phones, first to finish wins. Tap Play a friend on the start page.";   // change with each update
+const NEWS = "Fixed: a Large or Extra large board keeps its size when a race starts. Play a friend is on the start page.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
