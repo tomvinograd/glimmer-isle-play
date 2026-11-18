@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1794989524;</script>
+<script>window.GAME_BUILD = 1794990610;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1636,9 +1636,28 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   const EGG_ART = { 1: "egg-blue", 2: "egg-purple", 3: "egg-gold" };
   const DRAGON_SLOTS = [2, 14, 20];  // the dragon families keep their drawn dragons until their art exists
   // moving parts: a sprite cut into layers (tools/make_rig.py); parts sit behind the body and swing around a pivot
+  // ---------- poses: whole pictures of the same Glumi (blink, happy, attack, hurt) swapped in for a moment (Tom 18 Nov) ----------
+  const POSE_KINDS = ["blink", "happy", "attack", "hurt"];
+  function poseShow(root, pose, ms, delay = 0) {
+    if (!root || (typeof moOff === "function" && moOff())) return;
+    const imgs = root.matches && root.matches("img[data-pk]") ? [root] : [...root.querySelectorAll("img[data-pk]")];
+    for (const img of imgs) {
+      const k = img.dataset.pk, src = ART[k + "-" + pose]; if (!src) continue;
+      clearTimeout(img._pt0); clearTimeout(img._pt);
+      img._pt0 = setTimeout(() => { img.src = src; img._pose = pose; img._pt = setTimeout(() => { img.src = ART[k]; img._pose = null; }, ms); }, delay);
+    }
+  }
+  setInterval(() => {  // blink now and then, each Glumi on its own rhythm
+    if (typeof moOff === "function" && moOff()) return;
+    for (const img of document.querySelectorAll("img[data-pk]")) {
+      if (img._pose || !ART[img.dataset.pk + "-blink"] || img.offsetParent === null) continue;
+      img._nb = img._nb || performance.now() + 1500 + Math.random() * 3000;
+      if (performance.now() >= img._nb) { poseShow(img, "blink", 130); if (Math.random() < .25) poseShow(img, "blink", 120, 260); img._nb = performance.now() + 2500 + Math.random() * 3500; }
+    }
+  }, 200);
   function art(sp, evo, size = 76) {
     const k = String(sp).padStart(2, "0") + "-" + (evo ? 1 : 0);
-    if (ART[k]) { return `<img src="${ART[k]}" alt="" width="${Math.round(size * .82)}" style="height:auto;display:block" draggable="false">`; }
+    if (ART[k]) { return `<img src="${ART[k]}"${POSE_KINDS.some(p => ART[k + "-" + p]) ? ` data-pk="${k}"` : ""} alt="" width="${Math.round(size * .82)}" style="height:auto;display:block" draggable="false">`; }
     if (DRAGON_SLOTS.includes(sp)) return dragonArt(sp, evo, size);
     return blobArt(sp, evo, size);
   }
@@ -1736,9 +1755,10 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     turn: [[{ transform: "none" }, { transform: "translateY(-12px) rotateY(180deg)", offset: .5 }, { transform: "rotateY(360deg)" }], 760],
   };
   function moFidget(el, tapped) {
+    if (tapped) { try { sfx("tap"); } catch {} poseShow(el, "happy", 700); }
     const ks = tapped ? ["hop", "hop", "turn", "wiggle"] : Object.keys(MO_FIDGET), [kf, ms] = MO_FIDGET[ks[Math.floor(Math.random() * ks.length)]];
     if (el.getAnimations && el.getAnimations().length) return;
-    if (tapped) try { sfx("tap"); } catch {}
+    
     moPlay(el, kf, { duration: ms, easing: "ease-in-out" });
   }
   setInterval(() => {
@@ -1752,6 +1772,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
     if (moOff()) return; const [x, y, L] = moVec(att, tgt), r = x > 0 ? 7 : -7, D = L * .28;
     const wind = skill ? `translate(${-x * 18}px,${-y * 18 - 18}px) scale(.92,1.1)` : `translate(${-x * 14}px,${-y * 14}px) scale(1.08,.9)`;
     const dur = skill ? 520 : 320, hitAt = dur * .55;
+    poseShow(att, "attack", dur + 120); poseShow(tgt, "hurt", strong ? 650 : 480, hitAt);
     moPlay(att, [{ transform: "none" }, { transform: wind, offset: .3 }, { transform: `translate(${x * D}px,${y * D}px) rotate(${r}deg) scale(.9,1.1)`, offset: .55 }, { transform: `translate(${x * D * .4}px,${y * D * .4}px) scale(1.05,.95)`, offset: .75 }, { transform: "none" }], { duration: dur, easing: "ease-in-out" });
     const k = strong ? 1.6 : 1;
     moPlay(tgt, [{ transform: "none", filter: "brightness(1)" }, { transform: `translate(${x * 12 * k}px,${y * 12 * k}px) rotate(${r * k}deg) scale(1.1,.88)`, filter: "brightness(2.5)", offset: .2 },
@@ -1766,8 +1787,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       { transform: `translateY(14px) rotate(${80 * r}deg) scale(.85)`, filter: "saturate(.3)", opacity: 0 }], { duration: 700, easing: "ease-in", fill: "forwards" });
     return true;
   }
-  async function moWin() { const el = document.querySelector("#meActor .spr"); if (el) await moPlay(el, MO_HOP, { duration: 560, iterations: 2 }); }
-  function moHero() { setTimeout(() => { moPlay(document.querySelector(".gart .mo-f"), MO_HOP, { duration: 620 }); fxLevelUp(); }, 30); }
+  async function moWin() { const el = document.querySelector("#meActor .spr"); poseShow(el, "happy", 1400); if (el) await moPlay(el, MO_HOP, { duration: 560, iterations: 2 }); }
+  function moHero() { setTimeout(() => { poseShow(document.querySelector(".gart"), "happy", 1100); moPlay(document.querySelector(".gart .mo-f"), MO_HOP, { duration: 620 }); fxLevelUp(); }, 30); }
   const MO_IN = [{ transform: "none", filter: "brightness(1)" }, { transform: "scale(1.14,.84)", filter: "brightness(1.5)", offset: .25 }, { transform: "translateY(-18px) scale(.55,1.25)", filter: "brightness(2.6)", offset: .6 }, { transform: "translateY(-6px) scale(.08)", filter: "brightness(3)", opacity: 0 }];
   const MO_OUT = [{ transform: "translateY(-10px) scale(.2)", opacity: 0 }, { transform: "translateY(-30px) scale(.9,1.15)", opacity: 1, offset: .35 }, { transform: "scale(1.18,.82)", offset: .6 }, { transform: "rotate(-7deg) scale(.97,1.03)", offset: .74 }, { transform: "rotate(6deg)", offset: .87 }, { transform: "none", opacity: 1 }];
   const MO_RUN = [{ transform: "none" }, { transform: "scaleX(-1)", offset: .1 }, { transform: "translate(60px,-34px) scaleX(-1)", offset: .3 }, { transform: "translate(110px,0) scale(-1.08,.9)", offset: .48 }, { transform: "translate(170px,-30px) scaleX(-1)", offset: .68 }, { transform: "translate(260px,0) scaleX(-1)", opacity: 0 }];
@@ -1795,7 +1816,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
         moPlay(fl, [{ opacity: 0 }, { opacity: .95, offset: .25 }, { opacity: 0 }], { duration: 650 });
         { const [ex, ey, er] = elXY(sh.querySelector(".evobox")); fxRing(ex, ey, "#fff", 200, .7, 0, 9); fxRing(ex, ey, "#ffd34d", 150, .7, .12); fxBurst(ex, ey, 40, RAINB, 320); fxConfetti(ex, ey + er.height * .2, 45); fxPillar(ex, ey + er.height * .45, "#fff3b0", 160, 420, 1.3); }
         await moPlay(b, [{ filter: W }, { filter: "none" }], { duration: 500, fill: "forwards" });
-        await moPlay(b, MO_HOP, { duration: 600 });
+        poseShow(b, "happy", 900); await moPlay(b, MO_HOP, { duration: 600 });
         setTimeout(finish, 250);
       })();
       setTimeout(finish, 6000);
@@ -2173,6 +2194,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
       const sh = document.createElement("div"); sh.className = "shade";
       sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">${title}</div><div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${live(m.sp, m.evo, 130, { cls: "joy" })}<div class="nm">${fname(m.sp, m.evo)}</div><div class="nmrow" style="font-size:14px"><span class="grade q${m.q}">${GRADES[m.q].name}</span><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</div></div></div></div>`;
       $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
+      poseShow(sh, "happy", 1800, 300);
       setTimeout(() => { const cd = sh.querySelector(".reveal"); if (!cd || !sh.isConnected) return; const [x, y] = elXY(cd), big = m.q >= 3;
         fxBurst(x, y, big ? 34 : 16, m.q === 4 ? RAINB : [GRADES[m.q].c, "#fff", "#ffd34d"], big ? 300 : 220); if (big) { fxRing(x, y, GRADES[m.q].c, 170); fxConfetti(x, y, 45); } }, 280);
       sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, quickNow ? 700 : 2600);
