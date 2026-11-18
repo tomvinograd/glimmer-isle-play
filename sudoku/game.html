@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795034206;</script>
+<script>window.GAME_BUILD = 1795034569;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -515,6 +515,26 @@ input { user-select: text; -webkit-user-select: text; }
 .opts button { min-height: var(--tap); border-radius: 14px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); font-size: calc(18px * var(--fs)); font-weight: 700; padding: 8px 14px; }
 .opts button.right { background: #1E8A4C; color: #fff; } .opts button.wrong { background: var(--err); color: #fff; }
 :root[data-contrast="high"] .opts button { border: 2px solid var(--edge); }
+
+/* Quick sums / Anagrams / Word search */
+.sumq { font-size: calc(46px * var(--fs)); font-weight: 800; font-variant-numeric: tabular-nums; text-align: center; letter-spacing: .02em; }
+.sumopts { grid-template-columns: 1fr 1fr; }
+.sumopts button { font-size: calc(26px * var(--fs)); font-variant-numeric: tabular-nums; min-height: calc(var(--tap) + 10px); }
+.anslots { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.anslots span { width: var(--tile, 48px); height: calc(var(--tile, 48px) * 1.15); border-bottom: 3px solid var(--line-strong); display: grid; place-items: end center; font-size: calc(var(--tile, 48px) * .62); font-weight: 800; }
+.anslots span.cur { border-bottom-color: var(--accent); }
+.antiles { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.antiles button { width: var(--tile, 48px); height: var(--tile, 48px); border-radius: 12px; background: var(--paper); box-shadow: 0 2px 4px var(--shade); font-size: calc(var(--tile, 48px) * .55); font-weight: 800; }
+.antiles button:disabled { opacity: .2; box-shadow: none; }
+:root[data-contrast="high"] .antiles button { border: 2px solid var(--edge); }
+.yn.three { grid-template-columns: 1fr 1fr 1fr; }
+.wsgrid { display: grid; gap: var(--gap, 3px); }
+.wsc { width: var(--cell); height: var(--cell); border-radius: 8px; background: var(--paper); font-weight: 800; font-size: calc(var(--cell) * .55); display: grid; place-items: center; }
+.wsc.sel { background: var(--sel); box-shadow: inset 0 0 0 3px var(--ink); }
+.wsc.got { color: #fff; } .wsc.g0 { background: #1E5BB8; } .wsc.g1 { background: #1B7F45; } .wsc.g2 { background: #7B2FB0; } .wsc.g3 { background: #B4510F; } .wsc.g4 { background: #AD2468; }
+:root[data-contrast="high"] .wsc { border: 1.5px solid var(--edge); }
+.wslist { display: flex; flex-wrap: wrap; gap: 6px 12px; justify-content: center; font-weight: 800; font-size: calc(16px * var(--fs)); letter-spacing: .04em; }
+.wslist span.got { text-decoration: line-through; color: var(--muted); }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -2142,6 +2162,204 @@ addGame({
     }
   },
 });
+
+/* ---------- Quick sums ---------- */
+const QS_LV = ["add up to 18", "add and take away up to 20", "add and take away up to 50", "times tables 2 to 5, add, take away",
+  "times tables to 10, sharing", "all four, up to 100", "two steps", "bigger numbers"];
+function qsMake(l) {
+  const r = (a, b) => a + randInt(b - a + 1), T = (q, a) => ({ q, a });
+  const add = m => { const a = r(1, m - 1), b = r(1, m - a); return T(`${a} + ${b}`, a + b); };
+  const sub = m => { const a = r(2, m), b = r(1, a - 1); return T(`${a} − ${b}`, a - b); };
+  const mul = (lo, hi) => { const a = r(lo, hi), b = r(2, 10); return T(`${a} × ${b}`, a * b); };
+  const div = hi => { const b = r(2, hi), a = r(2, 10); return T(`${a * b} ÷ ${b}`, a); };
+  const any = fs => fs[randInt(fs.length)]();
+  switch (l) {
+    case 1: return T(...(() => { const a = r(1, 9), b = r(1, 9); return [`${a} + ${b}`, a + b]; })());
+    case 2: return any([() => add(20), () => sub(20)]);
+    case 3: return any([() => add(50), () => sub(50)]);
+    case 4: return any([() => mul(2, 5), () => add(50), () => sub(50)]);
+    case 5: return any([() => mul(2, 10), () => mul(2, 10), () => div(10)]);
+    case 6: return any([() => add(100), () => sub(100), () => mul(2, 12), () => div(12)]);
+    case 7: return any([() => { const a = r(2, 9), b = r(2, 9), c = r(1, 20); return T(`${a} × ${b} + ${c}`, a * b + c); },
+      () => { const a = r(10, 60), b = r(2, 30), c = r(1, Math.min(30, a + b - 1)); return T(`${a} + ${b} − ${c}`, a + b - c); },
+      () => { const b = r(2, 9), a = r(2, 9), c = r(1, 9); return T(`${a * b} ÷ ${b} + ${c}`, a + c); }]);
+    default: return any([() => { const a = r(12, 99), b = r(3, 9); return T(`${a} × ${b}`, a * b); }, () => add(500), () => sub(500), () => div(12),
+      () => { const a = r(100, 400), b = r(20, 99); return T(`${a} − ${b}`, a - b); }]);
+  }
+}
+function qsChoices(a) {
+  const s = new Set([a]), near = [1, 2, 10, -1, -2, -10, 3, 5, -3, 11, -11, 9, -9];
+  for (const d of shuffle(near.slice())) { if (s.size >= 4) break; if (a + d >= 0) s.add(a + d); }
+  while (s.size < 4) s.add(a + s.size + 7);
+  return shuffle([...s]);
+}
+addGame({
+  id: "sums", name: "Quick sums", icon: "➕", sec: "think", blurb: "Mental arithmetic, four answers to pick from", levels: 8, better: "high",
+  how: "Work out the sum in your head and tap the right answer. You have one minute to get as many right as you can. In relaxed mode there's no clock: fifteen sums at your own pace.",
+  levelName: l => QS_LV[l - 1],
+  fmt: s => s + " right",
+  start(c) {
+    const total = 15, secs = 60; let right = 0, wrong = 0, n = 0, cur = null, mode = "q", end = Date.now() + secs * 1000;
+    mgCur.peek = () => ({ a: cur && cur.a, mode });
+    c.body.innerHTML = `<div class="sumq" id="sq"></div><div class="opts sumopts" id="so"></div>`;
+    if (!c.relaxed) { c.foot.innerHTML = `<div class="studybar"><i id="qbar"></i></div>`; requestAnimationFrame(() => requestAnimationFrame(() => { const b = $("qbar"); if (b) { b.style.transitionDuration = secs + "s"; b.style.width = "0%"; } })); }
+    const upd = () => c.stat(`${c.relaxed ? `<span>Sum <b>${n} of ${total}</b></span>` : `<span>Time <b>${Math.max(0, Math.ceil((end - Date.now()) / 1000))} s</b></span>`}<span>Right <b>${right}</b></span>`);
+    const tick = () => { if (!c.alive() || mode === "over") return; upd(); if (!c.relaxed && Date.now() >= end) finish(); else c.later(tick, 250); };
+    function ask() {
+      if (c.relaxed && n >= total) return finish();
+      n++; cur = qsMake(c.lv); mode = "q"; const ch = qsChoices(cur.a);
+      $("sq").textContent = cur.q + " = ?";
+      $("so").innerHTML = ch.map(v => `<button data-v="${v}">${v}</button>`).join("");
+      $("so").querySelectorAll("button").forEach(b => b.onclick = () => pickAns(b, +b.dataset.v));
+      upd();
+    }
+    function pickAns(b, v) {
+      if (!c.alive() || mode !== "q") return; mode = "wait";
+      if (v === cur.a) { right++; sfx("tap"); b.classList.add("right"); c.later(ask, 250); }
+      else { wrong++; sfx("err"); buzz(50); b.classList.add("wrong"); $("so").querySelectorAll("button").forEach(x => { if (+x.dataset.v === cur.a) x.classList.add("right"); }); c.later(ask, 1100); }
+      upd();
+    }
+    function finish() {
+      if (mode === "over") return; mode = "over";
+      c.done({ score: right, up: c.relaxed ? right >= 14 : right >= 20, good: right > 0, title: right >= (c.relaxed ? 14 : 20) ? "Lightning fast!" : "Well done!",
+        lines: [[right, "Right"], [wrong, "Wrong"], c.relaxed ? [fmt(c.secs()), "Time"] : ["1 min", "Clock"]] });
+    }
+    ask(); tick();
+  },
+});
+
+/* ---------- Anagrams ---------- */
+const WORDS = {
+  4: "BOOK BIRD CAKE COAT DOOR DUCK FISH FROG GAME GIFT GOLD HAND HOME KING KITE LAMP LEAF LION MILK MOON NEST PARK RAIN RING ROAD ROSE SALT SHIP SHOE SNOW SOUP STAR SWIM TREE WIND WOLF YARD BELL BOAT CORN DRUM FARM FIRE GATE HILL JUMP LAKE MAST NOSE PEAR SAND SEED TOWN WALL",
+  5: "APPLE BEACH BREAD CHAIR CLOCK CLOUD DANCE DREAM EARTH FIELD FRUIT GRAPE GRASS HEART HORSE HOUSE LEMON LIGHT MONEY MOUSE MUSIC OCEAN PAINT PAPER PIANO PLANT RIVER ROBIN SHEEP SMILE SNAKE SPOON STONE STORM SUGAR TABLE TIGER TOAST TOWEL TRAIN WATER WHALE CANDY CHESS FLAME FLOUR GLOVE HONEY JUICE KNIFE MANGO OLIVE PEACH SCARF SHIRT",
+  6: "ANIMAL BASKET BOTTLE BRIDGE BUTTER CAMERA CANDLE CASTLE CHEESE CIRCLE CLOVER COFFEE CORNER DINNER DOCTOR FAMILY FLOWER FOREST GARDEN GUITAR HAMMER ISLAND JACKET KETTLE LADDER MARKET MIRROR MONKEY ORANGE PENCIL PEPPER PILLOW PLANET POCKET RABBIT ROCKET SCHOOL SILVER SPIDER SPRING SUMMER TICKET TOMATO TURTLE WINDOW WINTER YELLOW",
+  7: "BALLOON BLANKET CABBAGE CHICKEN COUNTRY CRYSTAL CUSHION DOLPHIN FEATHER FREEDOM GIRAFFE HARVEST HOLIDAY JOURNEY KITCHEN LIBRARY MACHINE MORNING MUSHROOM NETWORK ORCHARD PARTNER PICTURE PENGUIN PERFUME PYRAMID RAINBOW SANDALS SHELTER SHOWER STATION SUNRISE TEACHER THUNDER TRUMPET UNICORN VILLAGE VIOLINS WEATHER WEDDING WHISPER",
+  8: "AIRPLANE ALPHABET BIRTHDAY BLUEBELL BRACELET BUILDING CALENDAR CAMPFIRE CHAMPION CHERRIES CHILDREN DAUGHTER DINOSAUR ELEPHANT EVENING EXERCISE FIREWORK FOOTBALL FOUNTAIN GRATEFUL HOSPITAL KANGAROO LANGUAGE MOUNTAIN NOTEBOOK PAINTING PEACEFUL PINEAPPLE PLATFORM QUESTION SANDWICH SHOULDER SKELETON SNOWBALL SOMETIME SQUIRREL STRAWBERRY SUNSHINE TOGETHER UMBRELLA VACATION",
+};
+for (const k in WORDS) WORDS[k] = WORDS[k].split(" ").filter(w => w.length === +k);   // a word of the wrong length is dropped, never shown
+// other real words made of the same letters also count (LAMP or PALM)
+const ALLWORDS = new Set([...Object.values(WORDS).flat(), ..."SORE ONES LAST RATS ARTS OWNS FLEA LEAK REAP PARE FLOW FOWL LOIN NETS SENT TENS GRIN RIFE MATS PALM BEARD HATER MELON CANOE SNEAK SLIME LIMES NOTES TONES SHORE BLEAT ARMED PAGER AMONG CHEAP DANGER GANDER RANGED LIVERS SLIVER LANCED CHEATER WREATHE".split(" ")]);
+const AN_LV = [[4], [5], [6], [7], [8], [5, 6, 7, 8]];
+const sortLetters = w => [...w].sort().join("");
+addGame({
+  id: "anagram", name: "Anagrams", icon: "🔤", sec: "think", blurb: "Unscramble the letters into a word", levels: 6, better: "high",
+  how: "The letters of a word are mixed up. Tap them in the right order to spell the word. Tap ⌫ to take a letter back. Stuck? “Hint” shows the next letter, “Skip” moves on. Six words.",
+  levelName: l => AN_LV[l - 1].length > 1 ? "mixed, 5 to 8 letters" : `${AN_LV[l - 1][0]}-letter words`,
+  fmt: s => s + " of 6",
+  start(c) {
+    const lens = AN_LV[c.lv - 1], words = range(6).map(() => null);
+    const used = new Set(); for (let i = 0; i < 6; i++) { let w; do { w = pick1(WORDS[pick1(lens)]); } while (used.has(w)); used.add(w); words[i] = w; }
+    let wi = -1, word = "", tiles = [], typed = [], solved = 0, hints = 0, mode = "wait";
+    mgCur.peek = () => ({ word, mode, letters: tiles.map(t => t.ch) });
+    const upd = () => c.stat(`<span>Word <b>${wi + 1} of 6</b></span><span>Solved <b>${solved}</b></span>`);
+    function next() {
+      wi++; if (wi >= 6) return c.done({ score: solved, up: solved >= 5, good: solved > 0, title: solved === 6 ? "Word wizard!" : solved >= 4 ? "Well spelled!" : "Keep practising!",
+        lines: [[`${solved}/6`, "Solved"], [hints, "Hints"], [fmt(c.secs()), "Time"]] });
+      word = words[wi]; typed = []; mode = "type";
+      let mix; do { mix = shuffle([...word]); } while (mix.join("") === word);
+      tiles = mix.map((ch, i) => ({ ch, i, used: false }));
+      c.body.innerHTML = `<div class="anslots" id="ans"></div><div class="antiles" id="til"></div><p class="mgmsg" id="amsg"></p>`;
+      c.foot.innerHTML = `<div class="yn three"><button class="bigbtn alt" id="adel" aria-label="Take a letter back">⌫</button><button class="bigbtn alt" id="ahint">Hint</button><button class="bigbtn alt" id="askip">Skip</button></div>`;
+      $("adel").onclick = del; $("ahint").onclick = hint; $("askip").onclick = skip;
+      draw(); upd();
+    }
+    function draw() {
+      $("ans").innerHTML = range(word.length).map(i => `<span class="${i === typed.length ? "cur" : ""}">${typed[i] ? typed[i].ch : ""}</span>`).join("");
+      $("til").innerHTML = tiles.map(t => `<button data-i="${t.i}"${t.used ? " disabled" : ""}>${t.ch}</button>`).join("");
+      $("til").querySelectorAll("button").forEach(b => b.onclick = () => add(+b.dataset.i));
+      const w = c.body.clientWidth, per = Math.min(64 * getFs(), Math.floor((w - 8 * word.length) / word.length));
+      c.body.style.setProperty("--tile", Math.max(34, per) + "px");
+    }
+    function add(i) {
+      if (!c.alive() || mode !== "type") return; const t = tiles.find(x => x.i === i); if (!t || t.used) return;
+      t.used = true; typed.push(t); sfx("note"); draw();
+      if (typed.length === word.length) check();
+    }
+    function del() { if (mode !== "type" || !typed.length) return; typed.pop().used = false; draw(); }
+    function check() {
+      const got = typed.map(t => t.ch).join("");
+      if (got === word || (ALLWORDS.has(got) && sortLetters(got) === sortLetters(word))) {
+        mode = "wait"; solved++; sfx("group"); $("amsg").textContent = "Right!"; $("amsg").className = "mgmsg ok"; upd(); c.later(next, 1000);
+      } else { sfx("err"); buzz(60); $("amsg").textContent = "Not a match. Try again"; $("amsg").className = "mgmsg bad"; c.later(() => { if (mode === "type") { typed.forEach(t => t.used = false); typed = []; draw(); $("amsg").textContent = ""; } }, 900); }
+    }
+    function hint() {
+      if (mode !== "type") return;
+      while (typed.length && typed.some((t, k) => t.ch !== word[k])) typed.pop().used = false;   // keep only the right start
+      const t = tiles.find(x => !x.used && x.ch === word[typed.length]); if (!t) return;
+      hints++; t.used = true; typed.push(t); sfx("hint"); draw(); if (typed.length === word.length) check();
+    }
+    function skip() { if (mode !== "type") return; mode = "wait"; $("amsg").innerHTML = `It was <b>${word}</b>`; $("amsg").className = "mgmsg"; c.later(next, 1600); }
+    next();
+  },
+});
+const getFs = () => +getComputedStyle(document.documentElement).getPropertyValue("--fs") || 1;
+
+/* ---------- Word search ---------- */
+const WS_THEMES = {
+  Animals: "CAT DOG HORSE MOUSE TIGER LION BEAR ZEBRA SHEEP GOAT RABBIT DUCK EAGLE OWL FROG SNAKE MONKEY WHALE SHARK CAMEL",
+  Fruit: "APPLE PEAR PLUM GRAPE LEMON MANGO PEACH CHERRY MELON ORANGE BANANA KIWI LIME FIG DATE",
+  Kitchen: "SPOON FORK KNIFE PLATE BOWL CUP OVEN PAN KETTLE TOASTER SINK FRIDGE MUG JUG",
+  Weather: "RAIN SNOW WIND STORM CLOUD SUN FOG HAIL FROST THUNDER SHOWER BREEZE",
+  Garden: "ROSE TULIP TREE GRASS SEED SOIL LEAF BUSH HEDGE DAISY SPADE POND",
+  Travel: "TRAIN PLANE SHIP BUS TAXI BIKE CAR BOAT TRAM VAN TICKET MAP",
+  Music: "PIANO DRUM FLUTE GUITAR SONG NOTE HARP VIOLIN CHOIR BAND",
+  Home: "DOOR WINDOW CHAIR TABLE SOFA LAMP BED SHELF CLOCK RUG",
+};
+const WS_LV = [[6, 4, 2], [7, 5, 2], [8, 6, 3], [9, 7, 5], [10, 8, 8], [10, 10, 8]];   // size, words, directions
+const WS_DIRS = [[0, 1], [1, 0], [1, 1], [0, -1], [-1, 0], [-1, -1], [1, -1], [-1, 1]];
+function wsMake(size, nWords, nDirs) {
+  for (let tries = 0; tries < 50; tries++) {
+    const theme = pick1(Object.keys(WS_THEMES)), pool = shuffle(WS_THEMES[theme].split(" ").filter(w => w.length <= size)).slice(0, nWords).sort((a, b) => b.length - a.length);
+    if (pool.length < nWords) continue;
+    const g = range(size * size).map(() => ""), placed = [];
+    let ok = true;
+    for (const w of pool) {
+      let done = false;
+      for (let t = 0; t < 300 && !done; t++) {
+        const [dr, dc] = WS_DIRS[randInt(nDirs)], r0 = randInt(size), c0 = randInt(size), r1 = r0 + dr * (w.length - 1), c1 = c0 + dc * (w.length - 1);
+        if (r1 < 0 || r1 >= size || c1 < 0 || c1 >= size) continue;
+        const cells = range(w.length).map(k => (r0 + dr * k) * size + c0 + dc * k);
+        if (cells.some((ci, k) => g[ci] && g[ci] !== w[k])) continue;
+        cells.forEach((ci, k) => g[ci] = w[k]); placed.push({ w, cells }); done = true;
+      }
+      if (!done) { ok = false; break; }
+    }
+    if (!ok) continue;
+    const fill = "EEEAAAIIOOTTNNSSRRLLHDDCUMPGBYFWK";
+    for (let i = 0; i < g.length; i++) if (!g[i]) g[i] = fill[randInt(fill.length)];
+    return { theme, g, placed };
+  }
+  return null;
+}
+addGame({
+  id: "words", name: "Word search", icon: "🔎", sec: "think", blurb: "Find the hidden words", levels: 6, better: "low",
+  how: "Words are hidden in the grid: across, down, and on harder levels slanting or backwards. Tap the first letter of a word, then its last letter. Find them all as quickly as you can.",
+  levelName: l => { const [s, n, d] = WS_LV[l - 1]; return `${s}×${s} · ${n} words${d > 2 ? d > 3 ? d > 5 ? " · every way" : " · also backwards" : " · also slanting" : ""}`; },
+  fmt: s => fmt(s),
+  start(c) {
+    const [size, n, nd] = WS_LV[c.lv - 1], P = wsMake(size, n, nd);
+    let first = -1, found = new Set(), mode = "play";
+    mgCur.peek = () => ({ placed: P.placed, size, mode });
+    c.body.innerHTML = `<div class="wsgrid" id="wsg"></div><div class="wslist" id="wsl"></div>`;
+    const grid = $("wsg");
+    const els = P.g.map((ch, i) => { const b = document.createElement("button"); b.className = "wsc"; b.textContent = ch; b.setAttribute("aria-label", `Row ${Math.floor(i / size) + 1}, letter ${ch}`); b.onclick = () => tap(i); grid.appendChild(b); return b; });
+    c.body.dataset.reserve = 110;
+    fitGrid(grid, size, size, c.body, 3, 64);
+    const list = () => { $("wsl").innerHTML = P.placed.map(p => `<span class="${found.has(p.w) ? "got" : ""}">${p.w}</span>`).join(""); };
+    const upd = () => c.stat(`<span>Theme <b>${P.theme}</b></span><span>Found <b>${found.size} of ${n}</b></span>`);
+    list(); upd();
+    function tap(i) {
+      if (!c.alive() || mode !== "play") return;
+      if (first < 0 || first === i) { if (first === i) { els[i].classList.remove("sel"); first = -1; return; } first = i; els[i].classList.add("sel"); sfx("note"); return; }
+      const hit = P.placed.find(p => !found.has(p.w) && ((p.cells[0] === first && p.cells[p.cells.length - 1] === i) || (p.cells[0] === i && p.cells[p.cells.length - 1] === first)));
+      els[first].classList.remove("sel");
+      if (!hit) { first = i; els[i].classList.add("sel"); sfx("note"); return; }   // not a word: this tap starts a new try
+      first = -1; found.add(hit.w); hit.cells.forEach(ci => els[ci].classList.add("got", "g" + (found.size % 5))); sfx("group"); list(); upd();
+      if (found.size === n) { mode = "over"; c.later(() => c.done({ score: c.secs(), up: c.secs() <= 60 + 20 * c.lv, good: true, title: "All words found!",
+        lines: [[fmt(c.secs()), "Time"], [n, "Words"], [P.theme, "Theme"]] }), 900); }
+    }
+  },
+});
 /* ==== GAMES JS END ==== */
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
@@ -2229,7 +2447,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "4 more memory games: Shopping list, What changed?, Same as before? and Story questions.";   // change with each update
+const NEWS = "New puzzles: Quick sums, Anagrams and Word search.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
