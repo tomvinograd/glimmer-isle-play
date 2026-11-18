@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795011967;</script>
+<script>window.GAME_BUILD = 1795012335;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1537,6 +1537,31 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 /* Tom 18 Nov: compass marks a little right, centred on the golden face */
 #actions .compass.hero .cface { left: calc(50% - 66px) !important; }
 #actions .compass.hero .cneedle-wrap { left: calc(50% - 54px) !important; }
+
+/* Tom 18 Nov: no scrolling when it is not needed */
+.mcard.wide { min-height: 0 !important; height: 96px !important; }
+.mrow .mcard small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.iscene { aspect-ratio: auto !important; height: min(calc((min(100vw, 480px) - 48px) * 460 / 360), calc(100dvh - 300px)); min-height: 300px; }
+
+.iscene.painted { height: auto !important; min-height: 0 !important; aspect-ratio: 648 / 656 !important; background: #6cc3c6; }
+
+/* buildings on the painted island: smaller, outlined labels, workers smaller */
+.iscene.painted .ibld { width: 84px; }
+.iscene.painted .ibld svg { width: 84px; height: 72px; }
+.iscene.painted .iname { margin-top: -4px; background: none; box-shadow: none; padding: 0; font-size: 12.5px; color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; white-space: nowrap; }
+.iscene.painted .ibld small, .iscene.painted .ibld .iadd { font-size: 10px; transform: scale(.9); }
+
+.iscene.painted .ihire { position: absolute; top: -2px; right: 4px; width: 22px; height: 22px; padding: 0; border-radius: 50%; font-size: 0 !important; overflow: hidden; display: grid; place-items: center; box-shadow: 0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,.3); }
+.iscene.painted .ihire::before { content: "+"; font: 900 18px/1 var(--display); color: #fff; }
+
+.iscene.painted .ihire { top: auto !important; bottom: -3px; right: auto; left: calc(100% - 4px); width: 20px; height: 20px; }
+.iscene.painted .ibld { z-index: 2; } .iscene.painted .iname { position: relative; z-index: 3; }
+
+.iscene.painted .ibld[data-act="homeplace:jars"] { z-index: 4; }
+/* menu fits the screen: tighter cards */
+#page .mcard { padding-top: 8px !important; padding-bottom: 8px !important; min-height: 0 !important; }
+#page .mcard.wide { height: 84px !important; }
+#page .mtiles { margin-top: 0 !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3630,12 +3655,12 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const z = S.zone, openN = ZONES.filter((_, i) => zoneOpen(i)).length, reqs = Array.isArray(S.requests) ? S.requests : [];
     const reqCan = reqs.some(r => !r.done && reqMatches(r).length);
     return `<div class="head"><h2>Menu</h2></div>
-      <button class="mcard soft claimall" data-act="claimall"><span class="mic">${IC.gift || IC.star}</span><span><b>Claim all</b><small>${claimReady() ? "Tasks, mail, gifts, Atlas and Home rewards waiting" : "Collects every ready reward in one tap"}</small></span>${claimReady() ? '<em class="bang">!</em>' : ""}</button>
+      <button class="mcard soft claimall" data-act="claimall"><span class="mic">${IC.gift || IC.star}</span><span><b>Claim all</b><small>${claimReady() ? "Rewards waiting" : "Every ready reward in one tap"}</small></span>${claimReady() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard wide z${z}" data-act="map"><span><b>Atlas</b><small>${openN} of ${ZONES.length} zones open</small></span></button>
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
-      <button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} letter${mailWaiting() > 1 ? "s" : ""} waiting` : "Gifts from game updates"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
-      <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>Offer spare Glumis for keepsakes and star shards · you have ${S.shards || 0}</small></span></button>
+      <div class="mrow"><button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} waiting` : "Update gifts"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
+      <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>${S.shards || 0} star shards</small></span></button></div>
       ${(() => { const ev = eventNow(); return ev ? `<div class="evcard"><b>${ev.name}</b><small>${ev.about} \u00B7 ends in ${mmss(ev.end - Date.now())}</small></div>` : ""; })()}
       <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
@@ -4187,7 +4212,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
         ${slots < 3 ? `<p class="hint" style="margin:0">A third worker spot opens at Explorer level 8.</p>` : ""}`;
     }
     // the island itself: buildings to tap, workers busy beside them, bubbles with what is ready to collect
-    const BLD = { orchard: { x: 25, y: 24 }, spring: { x: 75, y: 22 }, mine: { x: 26, y: 76 }, candy: { x: 74, y: 76 }, jars: { x: 50, y: 50 } };
+    const BLD = ART["bg-home"] ? { orchard: { x: 28, y: 25 }, spring: { x: 72, y: 25 }, mine: { x: 28, y: 68 }, candy: { x: 72, y: 68 }, jars: { x: 50, y: 47 } }  // on the painted island's plots
+      : { orchard: { x: 25, y: 24 }, spring: { x: 75, y: 22 }, mine: { x: 26, y: 76 }, candy: { x: 74, y: 76 }, jars: { x: 50, y: 50 } };
     const WORK_SPOTS = { orchard: [[-15, 13], [15, 15], [0, 19]], spring: [[-15, 13], [15, 14], [0, 18]], mine: [[-17, 12], [17, 12], [0, 17]], candy: [[-16, 12], [16, 12], [0, 17]], jars: [[-15, 11], [15, 11], [0, 15]] };
     const total = Object.keys(PLACES).reduce((a, k) => a + Math.floor(H[k].store), 0);
     const blds = Object.keys(PLACES).map(k => {
@@ -4199,9 +4225,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
         <button class="ibub" id="bub-${k}" data-act="collect:${k}" style="left:${b.x}%;top:${b.y - 15}%" ${n ? "" : "hidden"}>${resIcon(k)}<b>${n}</b></button>`;
     }).join("");
     return `<div class="head"><h2>Home island</h2><span class="row" style="gap:6px">${total ? `<button class="mb gold" data-act="collectall">Collect all</button>` : ""}</span></div>
-      <div class="iscene">${ART["bg-home"] ? `<img class="iland" src="${ART["bg-home"]}" alt="" draggable="false" style="object-fit:cover">` : HOME_ISLAND_SVG}${blds}</div>
-      <p class="hint" style="margin:0">Tap a building to choose its workers. Tap a bubble to collect.</p>
-      <div class="slist">${(() => { standTick(); const T = standState(), X = S.exps || [], now = Date.now(), backN = X.filter(x => now >= x.until).length;
+      <div class="iscene${ART["bg-home"] ? " painted" : ""}">${ART["bg-home"] ? `<img class="iland" src="${ART["bg-home"]}" alt="" draggable="false" style="object-fit:cover">` : HOME_ISLAND_SVG}${blds}</div>
+            <div class="slist">${(() => { standTick(); const T = standState(), X = S.exps || [], now = Date.now(), backN = X.filter(x => now >= x.until).length;
         return `<button class="hrow" data-act="homeplace:stand"><span class="ic">${ART["bld-snack-stand"] ? artIcon("bld-snack-stand") : IC.coin}</span><span class="txt"><b>Snack Stand</b><small>${T.menu.length ? `${T.menu.reduce((a, d) => a + d.left, 0)} servings left · ${Math.floor(T.coins)} coins ready` : Math.floor(T.coins) ? `${Math.floor(T.coins)} coins ready` : "Cook dishes to sell"}</small></span>${Math.floor(T.coins) ? '<em class="bang">!</em>' : ""}<i>›</i></button>
           <button class="hrow" data-act="homeplace:exp"><span class="ic">${ART["bld-balloon-dock"] ? artIcon("bld-balloon-dock") : IC.balloon}</span><span class="txt"><b>Expeditions</b><small>${X.length ? `${X.length} away${backN ? ` · ${backN} back home` : ""}` : "Send Glumis on trips"}</small></span>${backN ? '<em class="bang">!</em>' : ""}<i>›</i></button>`; })()}</div>`;
   }
