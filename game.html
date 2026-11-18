@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795011061;</script>
+<script>window.GAME_BUILD = 1795011227;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1396,7 +1396,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 /* side icons: no white boxes; bigger icons with a dark outline glow, outlined labels */
 .sico { width: 66px; }
 .sic { background: none !important; box-shadow: none !important; width: 52px !important; height: 52px !important; }
-.sic svg, .sic img { width: 44px !important; height: 44px !important; filter: drop-shadow(0 0 0 var(--ink)) drop-shadow(1.5px 0 0 var(--ink)) drop-shadow(-1.5px 0 0 var(--ink)) drop-shadow(0 1.5px 0 var(--ink)) drop-shadow(0 -1.5px 0 var(--ink)) drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+.sic svg, .sic img { width: 44px !important; height: 44px !important; filter: drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 3px 3px rgba(0,0,0,.25)); }
 .sil { background: none !important; box-shadow: none !important; color: #fff !important; font: 800 14px/16px var(--display) !important; padding: 0 !important; --ol: 3.5px; }
 .sit { background: none !important; color: #fff !important; font: 800 12px/14px var(--display) !important; --ol: 3px; }
 .sico:active .sic { transform: translateY(2px) scale(.94); }
@@ -1407,8 +1407,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 .evi svg, .evr svg { width: 22px !important; height: 22px !important; }
 .evtime { background: rgba(70,45,30,.55) !important; font-size: 12px !important; --ol: 2.5px; }
 /* softer background so the buttons stand out */
-#bg .bgimg { filter: saturate(.82) brightness(1.04) contrast(.94); }
-#bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(255,252,240,.18), rgba(255,252,240,0) 45%, rgba(255,250,235,.12)); }
+#bg .bgimg { will-change: transform, opacity; backface-visibility: hidden; }
+#bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(rgba(255,252,240,.26), rgba(255,250,238,.1) 45%, rgba(255,250,235,.2)); }
 /* the compass: the hero of the screen */
 #actions .compass:not([data-act="throw"]):not([data-act="view:shop"]) { transform: scale(1.22); transform-origin: 50% 85%; }
 /* bottom tabs: chunky tiles, each its own colour, thick dark frame, outlined labels */
@@ -2173,7 +2173,7 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
       el.style.transform = `translate(${x * W}px, ${y * H}px) scale(${s})`; el.style.zIndex = Math.round(p.z * 100); el.style.opacity = p.z < .04 ? p.z / .04 : 1;
     });
   }
-  function walk(ms = 650) {
+  function walk(ms = 480) {  // Tom 18 Nov: the walk felt slow and laggy
     return new Promise(res => {
       if (RM) { props.forEach(p => { p.z += .3; if (p.z > 1.08) p.z -= 1; }); placeProps(); return res(); }
       const fr0 = document.querySelector(".bgimg.front"), bk0 = document.querySelector(".bgimg.back");
@@ -2181,6 +2181,8 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
         fr0.animate([{ transform: "scale(1)", opacity: 1 }, { transform: "scale(1.18)", opacity: 0 }], { duration: ms, easing: "ease-in" });
         bk0.animate([{ transform: "scale(.88)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: ms, easing: "ease-out" });
       }
+      if (fr0 && bk0 && !props.length) {  // painted scene: the two zooms run on the graphics chip; nothing else moves
+        $("stage").classList.add("walking"); return setTimeout(() => { $("stage").classList.remove("walking"); res(); }, ms); }
       $("stage").classList.add("walking"); const t0 = performance.now(); let last = t0;
       const fr = now => { const dt = (now - last) / 1000; last = now; props.forEach(p => { p.z += dt * .5; if (p.z > 1.08) { p.z -= 1.0; p.off = Math.random() * 14; } }); placeProps();
         const k = (now - t0) / ms; $("stage").style.transform = `translateY(${Math.sin(k * Math.PI * 2) * 2}px)`;
