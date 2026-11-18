@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795032567;</script>
+<script>window.GAME_BUILD = 1795033631;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -400,6 +400,93 @@ input { user-select: text; -webkit-user-select: text; }
 :root[data-contrast="high"] .tiles div, :root[data-contrast="high"] .chart, :root[data-contrast="high"] .badge, :root[data-contrast="high"] .drow,
 :root[data-contrast="high"] .lvchips button, :root[data-contrast="high"] .pback { border: 2px solid var(--edge); }
 :root[data-contrast="high"] .tiles small, :root[data-contrast="high"] .badge small, :root[data-contrast="high"] .drow small { color: var(--ink); }
+/* ==== GAMES CSS BEGIN (game/src/games.css) ==== */
+/* ---------- brain games: the menu tiles, the shared game screen, and each game's pieces ---------- */
+:root { --tap: 56px; --fs: 1; }
+:root[data-size="large"] { --tap: 66px; --fs: 1.12; }
+:root[data-size="xl"] { --tap: 76px; --fs: 1.25; }
+.htitle.hub b { font-size: 34px; }
+.gtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; }
+:root[data-size="xl"] .gtiles { grid-template-columns: 1fr; }
+.gtile { display: grid; justify-items: start; align-content: start; gap: 2px; padding: 12px 14px 13px; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: left; min-height: 104px; }
+.gtile i { font-style: normal; font-size: calc(30px * var(--fs)); line-height: 1.15; }
+.gtile b { font-size: calc(16px * var(--fs)); font-weight: 800; line-height: 1.2; }
+.gtile small { color: var(--muted); font-weight: 600; font-size: calc(12.5px * var(--fs)); line-height: 1.3; }
+.gtile:active { transform: translateY(1px); }
+:root[data-contrast="high"] .gtile { border: 2px solid var(--edge); }
+:root[data-contrast="high"] .gtile small { color: var(--ink); }
+
+.mg { position: fixed; inset: 0; z-index: 17; background: var(--bg); display: flex; justify-content: center;
+  padding-block: calc(10px + env(safe-area-inset-top, 0px)) calc(14px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)); }
+.mgin { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.mghead { display: flex; align-items: center; gap: 10px; }
+.mghead .t { flex: 1; min-width: 0; font-size: calc(21px * var(--fs)); font-weight: 800; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pback.q { font-weight: 800; font-size: 20px; }
+.mgstat { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 16px; min-height: 24px; font-weight: 700; color: var(--muted); font-size: calc(15px * var(--fs)); }
+.mgstat b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.mgstat .lives { color: var(--err); letter-spacing: .1em; }
+.mgbody { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; position: relative; }
+.mgfoot { display: grid; gap: 8px; }
+.mgfoot:empty { display: none; }
+.mgmsg { margin: 0; text-align: center; font-size: calc(21px * var(--fs)); font-weight: 800; }
+.mgmsg.ok { color: #1E8A4C; } .mgmsg.bad { color: var(--err); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mgmsg.ok { color: #6EE69A; } }
+:root[data-theme="dark"] .mgmsg.ok { color: #6EE69A; }
+.mgsub { margin: 0; text-align: center; color: var(--muted); font-weight: 600; font-size: calc(15px * var(--fs)); }
+.mgsub b { color: var(--ink); }
+:root[data-contrast="high"] .mgsub, :root[data-contrast="high"] .mgstat { color: var(--ink); }
+.bigbtn { min-height: var(--tap); padding: 0 22px; border-radius: 16px; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: calc(18px * var(--fs)); box-shadow: 0 2px 6px var(--shade); }
+.bigbtn.alt { background: var(--paper); color: var(--ink); }
+.bigbtn:disabled { opacity: .45; }
+:root[data-contrast="high"] .bigbtn { border: 2px solid var(--edge); }
+.mgintro { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+.mgic { font-size: calc(64px * var(--fs)); line-height: 1; }
+.mghow { margin: 0; font-size: calc(16px * var(--fs)); line-height: 1.5; font-weight: 500; max-width: 30em; }
+.stepper { display: grid; grid-template-columns: var(--tap) 1fr var(--tap); align-items: center; gap: 10px; width: 100%; max-width: 380px; }
+.stepper > button { height: var(--tap); border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); font-size: calc(30px * var(--fs)); font-weight: 700; line-height: 1; }
+.stepper > button:disabled { opacity: .3; }
+.stepper div { display: grid; gap: 2px; } .stepper b { font-size: calc(22px * var(--fs)); font-weight: 800; } .stepper small { color: var(--muted); font-weight: 700; font-size: calc(14px * var(--fs)); }
+:root[data-contrast="high"] .stepper > button { border: 2px solid var(--edge); }
+
+/* Pairs */
+.cards, .pads, .sqs { display: grid; gap: var(--gap, 8px); }
+.card { width: var(--cell); height: var(--cell); border-radius: 12px; background: var(--accent); box-shadow: 0 2px 4px var(--shade); display: grid; place-items: center; position: relative; }
+.card .back { color: var(--accent-ink); opacity: .55; font-weight: 800; font-size: calc(var(--cell) * .38); }
+.card .back::before { content: "?"; }
+.card .face { display: none; font-size: calc(var(--cell) * .56); line-height: 1; }
+.card.up { background: var(--paper); animation: flipin .22s ease-out; }
+.card.up .face { display: block; } .card.up .back { display: none; }
+.card.done { background: var(--same); box-shadow: none; }
+@keyframes flipin { from { transform: scaleX(.1); } }
+:root[data-contrast="high"] .card { border: 2px solid var(--edge); }
+
+/* Repeat the sequence */
+.spad { width: var(--cell); height: var(--cell); border-radius: 22px; color: #fff; font-weight: 800; font-size: calc(var(--cell) * .38); display: grid; place-items: center;
+  transition: transform .08s, filter .08s, box-shadow .08s; box-shadow: 0 3px 6px var(--shade); }
+.spad.lit { filter: brightness(1.55) saturate(1.1); transform: scale(1.07); box-shadow: 0 0 0 5px var(--paper), 0 0 0 9px var(--ink); }
+.pads.wait .spad { cursor: default; }
+
+/* Remember the squares */
+.sq { width: var(--cell); height: var(--cell); border-radius: 12px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); display: grid; place-items: center; font-weight: 800; font-size: calc(var(--cell) * .45); color: var(--accent-ink); }
+.sq.lit, .sq.ok { background: var(--accent); }
+.sq.bad { background: var(--err); } .sq.bad::after { content: "✕"; color: #fff; }
+.sq.miss { background: var(--accent); opacity: .45; }
+:root[data-contrast="high"] .sq { border: 2px solid var(--edge); }
+
+/* Number memory */
+.digits { font-size: var(--dfs, 48px); font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; text-align: center; line-height: 1.1; word-break: break-all; }
+.slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.slots span { width: calc(34px * var(--fs)); height: calc(46px * var(--fs)); border-bottom: 3px solid var(--line-strong); display: grid; place-items: end center; font-size: calc(30px * var(--fs)); font-weight: 800; font-variant-numeric: tabular-nums; }
+.slots span.cur { border-bottom-color: var(--accent); }
+.kpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 440px; }
+.kpad button { min-height: var(--tap); border-radius: 14px; background: var(--btn); box-shadow: 0 1px 2px var(--shade); font-size: calc(26px * var(--fs)); font-weight: 700; display: grid; place-items: center; }
+.kpad button:active { background: var(--btn-press); }
+.kpad button.ok { background: var(--accent); color: var(--accent-ink); font-size: calc(19px * var(--fs)); font-weight: 800; }
+.kpad button:disabled { opacity: .4; }
+.kpad svg { width: 28px; height: 28px; }
+:root[data-contrast="high"] .kpad button { border: 2px solid var(--edge); }
+/* ==== GAMES CSS END ==== */
 </style>
 </head>
 <body>
@@ -427,6 +514,7 @@ input { user-select: text; -webkit-user-select: text; }
 </div></div>
 <div class="home" id="home" hidden></div>
 <div class="home" id="statpage" hidden></div>
+<div class="mg" id="mg" hidden></div>
 <div id="layer"></div>
 
 <script>
@@ -736,6 +824,11 @@ const BADGES = [
   ["race", "🤝", "First race", "Win a race against a friend"],
   ["race10", "🥇", "Champion", "Win 10 races"],
   ["owl", "🦉", "Night owl", "Solve one between midnight and 5 am"],
+  ["explorer", "🧭", "Explorer", "Play 5 different games"],
+  ["sharp", "🃏", "Sharp memory", "Pairs, 8 or more: in 1.5 turns per pair"],
+  ["seq10", "🎵", "Long tune", "Repeat a sequence of 10"],
+  ["sq10", "🦅", "Eagle eye", "Remember 10 squares"],
+  ["digits9", "🧮", "Number whiz", "Remember 9 digits"],
   ["early", "🐦", "Early bird", "Solve one between 5 and 7 am"],
 ];
 const badgeOf = id => BADGES.find(b => b[0] === id);
@@ -751,6 +844,7 @@ function checkBadges(c) {
     streak3: (opts.bestStreak || 0) >= 3, streak7: (opts.bestStreak || 0) >= 7, streak30: (opts.bestStreak || 0) >= 30,
     race: (opts.vsWins || 0) >= 1, race10: (opts.vsWins || 0) >= 10,
     owl: c && hr < 5, early: c && hr >= 5 && hr < 7,
+    explorer: gamesPlayed() >= 5, sharp: !!(opts.flags || {}).sharp, seq10: !!(opts.flags || {}).seq10, sq10: !!(opts.flags || {}).sq10, digits9: !!(opts.flags || {}).digits9,
   };
   for (const [id] of BADGES) if (want[id] && !have[id]) { have[id] = dayKey(); got.push(id); }
   return got;
@@ -960,7 +1054,7 @@ const gameLine = g => g.daily ? `Daily puzzle · ${fmt(g.t)} · ${g.cells.filter
 let statOn = false, statTab = "stats", statLv = 0;
 function openStats(tab) {
   if (tab) statTab = tab;
-  const p = $("statpage"), hist = opts.hist || [];
+  const p = $("statpage"), hist = (opts.hist || []).filter(isSud);
   const lvs = [...new Set(hist.map(h => h.lv))].sort((a, b) => a - b);
   if (!lvs.includes(statLv)) { const cnt = {}; hist.forEach(h => cnt[h.lv] = (cnt[h.lv] || 0) + 1); statLv = lvs.sort((a, b) => cnt[b] - cnt[a])[0] || 0; lvs.sort((a, b) => a - b); }
   const earned = BADGES.filter(b => (opts.badges || {})[b[0]]).length;
@@ -978,8 +1072,9 @@ function openStats(tab) {
 }
 function closeStats() { statOn = false; $("statpage").hidden = true; $("statpage").innerHTML = ""; }
 const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
+const isSud = h => !h.k || h.k === "solo" || h.k === "daily" || h.k === "race";
 function statsHtml(lvs) {
-  const hist = opts.hist || [], st = streakNow();
+  const hist = (opts.hist || []).filter(isSud), st = streakNow();
   const tiles = `<div class="tiles">
     <div><b>${opts.wins || 0}</b><small>Solved</small></div>
     <div><b>${st ? "🔥 " + st : 0}</b><small>Day streak</small></div>
@@ -1044,6 +1139,7 @@ function badgesHtml() {
 /* ---------- start page ---------- */
 function showHome() {
   homeOn = true; setResume(false); save();
+  if (homeView === "hub") { drawHub(); return; }   // the games menu; Sudoku has its own page below
   const h = $("home"), live = G && !G.done;
   const filled = live ? G.cells.filter(v => v).length : 0;
   const vsLive = live && G.vs && V;
@@ -1054,6 +1150,7 @@ function showHome() {
   const sub = st ? `🔥 ${st}-day streak${today ? " · solved today ✓" : " · solve one today to keep it"}` : opts.wins ? `${opts.wins} puzzle${opts.wins > 1 ? "s" : ""} solved · solve one today to start a streak` : "Ten levels, from Beginner to Extreme";
   const goDaily = !live && !dDone, earned = BADGES.filter(b => (opts.badges || {})[b[0]]).length;
   h.innerHTML = `<div class="hin">
+    <div class="phead"><button class="pback" id="hback" aria-label="All games">${BACK_SVG}</button><b style="font-size:17px;color:var(--muted)">All games</b></div>
     <div class="hart" aria-hidden="true"><span>5</span><span class="e">.</span><span class="u">3</span><span class="e">.</span><span class="y">7</span><span>1</span><span class="u">8</span><span>2</span><span class="e">.</span></div>
     <div class="htitle"><b>Sudoku</b><span id="hsub">${sub}</span></div>
     <div class="hbtns">
@@ -1070,6 +1167,7 @@ function showHome() {
   if (live) $("hcont").onclick = () => { paused = false; hideHome(); render(); };
   $("hnew").onclick = openNew;
   $("hdaily").onclick = openDaily;
+  $("hback").onclick = () => { homeView = "hub"; showHome(); h.scrollTop = 0; };
   if (shelf) $("hshelf").onclick = useShelf;
   $("hstats").onclick = () => openStats("stats");
   $("hvs").onclick = () => openVsMenu();
@@ -1119,6 +1217,7 @@ function drawSettings() {
     ${sw("optsame", opts.same, "Highlight the same numbers")}
     ${sw("optmis", opts.mistakes, "Show mistakes in red")}
     ${sw("optsnd", opts.sound !== false, "Sounds")}
+    ${sw("optrelax", opts.relaxed, "Relaxed: more time to look, no rush")}
     <div class="row2"><button class="big go" data-close>Done</button></div></div>`;
   const re = () => { applyTheme(); save(); render(); drawSettings(); };
   const L = layer;
@@ -1129,6 +1228,7 @@ function drawSettings() {
   $("hcsw").onclick = () => { opts.hc = !opts.hc; re(); };
   $("optsame").onclick = () => { opts.same = !opts.same; re(); };
   $("optmis").onclick = () => { opts.mistakes = !opts.mistakes; re(); };
+  $("optrelax").onclick = () => { opts.relaxed = !opts.relaxed; re(); };
   $("optsnd").onclick = () => { opts.sound = opts.sound === false; re(); if (opts.sound) sfx("tap"); };
   const nm = $("setname"); nm.oninput = () => { opts.name = nm.value.trim().slice(0, 14); save(); };
   L.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (homeOn) showHome(); });
@@ -1462,11 +1562,353 @@ function openVsLeave() {
   layer.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
 }
 
+/* ==== GAMES JS BEGIN (game/src/games.js) ==== */
+/* ---------- brain games ----------
+   A shared frame for every game except Sudoku: a menu tile, an intro page (how to play + level), the play screen
+   (header, a status line, the game's area) and a result sheet that records the score, best per level, streak and badges.
+   Each game is one object: { id, name, icon, sec ("mem" memory | "think" puzzles), blurb, how, levels, levelName(l),
+   better ("high" | "low"), fmt(score), start(c) }. start() draws into c.body and ends with c.done({ score, lines, ... }).
+   Relaxed mode (Settings) gives more time to look and no countdowns. */
+const GAMES = [], MGI = {};
+function addGame(g) { GAMES.push(g); MGI[g.id] = g; }
+const range = n => [...Array(n).keys()];
+const pickN = (a, n) => shuffle(a.slice()).slice(0, n);
+const randInt = n => Math.floor(Math.random() * n);
+const mgEl = $("mg");
+let mgCur = null, mgTimers = [], mgView = null, mgFit = null, homeView = "hub";
+function mgClear() { mgTimers.forEach(t => clearTimeout(t)); mgTimers = []; mgFit = null; }
+function mgStat(id) { opts.mgs = opts.mgs || {}; return opts.mgs[id] || (opts.mgs[id] = { best: {}, plays: 0, lv: 1 }); }
+const mgRead = id => (opts.mgs || {})[id];
+const BACK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>';
+// one tone (the sequence game's pads), same switch as the other sounds
+function beep(f, dur = .3, vol = .07) {
+  if (opts.sound === false) return; const a = audio(); if (!a) return; sfxCount++;
+  const t = a.currentTime, o = a.createOscillator(), g = a.createGain(); o.type = "sine"; o.frequency.value = f;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + .03);
+}
+// square cells as big as the game's area allows (cols x rows), again whenever the screen changes
+function fitGrid(grid, cols, rows, box, gap = 8, maxCell = 150) {
+  grid.style.setProperty("--gap", gap + "px");
+  const fit = () => {
+    const W = box.clientWidth, H = box.clientHeight - (box.dataset.reserve | 0);
+    const s = Math.floor(Math.min((W - gap * (cols - 1)) / cols, (H - gap * (rows - 1)) / rows, maxCell));
+    grid.style.setProperty("--cell", Math.max(28, s) + "px");
+    grid.style.gridTemplateColumns = `repeat(${cols}, var(--cell))`;
+  };
+  fit(); requestAnimationFrame(fit); mgFit = fit;
+}
+addEventListener("resize", () => mgFit && mgFit());
+
+/* the menu */
+function drawHub() {
+  const h = $("home"), st = streakNow(), k = dayKey(), today = (opts.days || []).includes(k), live = G && !G.done;
+  const sub = st ? `🔥 ${st}-day streak${today ? " · played today ✓" : " · play one today to keep it"}` : "Games to keep your mind sharp";
+  const earned = BADGES.filter(b => (opts.badges || {})[b[0]]).length;
+  const line = g => { const s = mgRead(g.id); const b = s && s.best[s.lv]; return b != null ? `Level ${s.lv} · best ${g.fmt(b)}` : g.blurb; };
+  const tile = g => `<button class="gtile" id="g-${g.id}"><i aria-hidden="true">${g.icon}</i><b>${g.name}</b><small>${line(g)}</small></button>`;
+  const dRec = (opts.daily || {})[k], sudLine = dRec && dRec.done ? `Daily puzzle ✓ · ${fmt(dRec.t)}` : "Daily puzzle, 10 levels, races";
+  h.innerHTML = `<div class="hin">
+    <div class="htitle hub"><b>Brain games</b><span id="hsub">${sub}</span></div>
+    ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue Sudoku</b><small>${G.vs && V ? `Race against ${esc(V.oppName)}` : gameLine(G)}</small></span><i>›</i></button>` : ""}
+    <p class="sec">Memory</p><div class="gtiles">${GAMES.filter(g => g.sec === "mem").map(tile).join("")}</div>
+    <p class="sec">Puzzles</p><div class="gtiles"><button class="gtile" id="g-sudoku"><i aria-hidden="true">🔢</i><b>Sudoku</b><small>${sudLine}</small></button>${GAMES.filter(g => g.sec === "think").map(tile).join("")}</div>
+    <div class="hrow"><button class="hbtn sm" id="hstats"><span><b>Stats & badges</b><small>${earned} of ${BADGES.length} badges</small></span></button>
+      <button class="hbtn sm" id="hset"><span><b>Settings</b><small>Size, colours, sound</small></span></button></div>
+    <p class="hfoot">${verLabel()}</p></div>`;
+  h.hidden = false;
+  if (live) $("hcont").onclick = () => { paused = false; homeView = "sudoku"; hideHome(); render(); };
+  $("g-sudoku").onclick = () => { homeView = "sudoku"; showHome(); h.scrollTop = 0; };
+  GAMES.forEach(g => $("g-" + g.id).onclick = () => mgOpen(g.id));
+  $("hstats").onclick = () => openStats("stats");
+  $("hset").onclick = openSettings;
+}
+
+/* one game: intro, play, result */
+function mgHead(title, extra) { return `<div class="mghead"><button class="pback" id="mgback" aria-label="Back">${BACK_SVG}</button><b class="t">${title}</b>${extra || ""}</div>`; }
+function mgOpen(id) {
+  const g = MGI[id]; if (!g) return;
+  mgClear(); mgCur = { g, lv: Math.min(g.levels, (mgRead(id) || {}).lv || 1) };
+  mgEl.hidden = false; mgIntro();
+}
+function mgIntro() {
+  mgClear(); mgView = "intro"; const { g, lv } = mgCur, s = mgRead(g.id), b = s && s.best[lv];
+  mgEl.innerHTML = `<div class="mgin">${mgHead(g.name)}
+    <div class="mgintro">
+      <div class="mgic" aria-hidden="true">${g.icon}</div>
+      <p class="mghow">${g.how}</p>
+      <div class="stepper" role="group" aria-label="Level">
+        <button id="lvdn" aria-label="Easier level"${lv <= 1 ? " disabled" : ""}>−</button>
+        <div><b>Level ${lv} of ${g.levels}</b><small>${g.levelName(lv)}</small></div>
+        <button id="lvup" aria-label="Harder level"${lv >= g.levels ? " disabled" : ""}>+</button></div>
+      <p class="mgsub">${b != null ? `Your best at this level: <b>${g.fmt(b)}</b>` : s && s.plays ? "No score at this level yet." : "Start low and go up a level when it feels easy."}</p>
+      ${opts.relaxed ? `<p class="mgsub">Relaxed mode is on: more time to look, no rush.</p>` : ""}
+    </div>
+    <button class="bigbtn" id="mgstart">Start</button></div>`;
+  $("mgback").onclick = mgClose;
+  $("lvdn").onclick = () => { mgCur.lv = Math.max(1, lv - 1); mgIntro(); };
+  $("lvup").onclick = () => { mgCur.lv = Math.min(g.levels, lv + 1); mgIntro(); };
+  $("mgstart").onclick = mgPlay;
+}
+function mgPlay() {
+  mgClear(); mgView = "play"; const { g, lv } = mgCur; mgStat(g.id).lv = lv; save();
+  mgEl.innerHTML = `<div class="mgin">${mgHead(g.name, `<button class="pback q" id="mghelp" aria-label="How to play">?</button>`)}
+    <div class="mgstat" id="mgstat" role="status"></div><div class="mgbody" id="mgbody"></div><div class="mgfoot" id="mgfoot"></div></div>`;
+  $("mgback").onclick = () => mgIntro();
+  $("mghelp").onclick = mgHelp;
+  const token = {}, t0 = Date.now();
+  mgCur.token = token;
+  const c = {
+    lv, relaxed: !!opts.relaxed, body: $("mgbody"), foot: $("mgfoot"),
+    stat: html => { if (mgCur && mgCur.token === token) $("mgstat").innerHTML = html; },
+    later: (fn, ms) => { const id = setTimeout(() => { if (mgCur && mgCur.token === token && mgView === "play") fn(); }, ms); mgTimers.push(id); return id; },
+    alive: () => !!mgCur && mgCur.token === token && mgView === "play",
+    secs: () => Math.round((Date.now() - t0) / 1000),
+    done: res => { if (mgCur && mgCur.token === token && mgView === "play") mgDone(res, Math.round((Date.now() - t0) / 1000)); },
+  };
+  mgCur.ctx = c;
+  g.start(c);
+}
+function mgHelp() {
+  const g = mgCur.g; sheet = "mghelp";
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="How to play"><h2>${g.icon} ${g.name}</h2><p class="mghow">${g.how}</p>
+    <div class="row2"><button class="big go" data-close>Got it</button></div></div>`;
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
+}
+function mgClose() { mgClear(); mgCur = null; mgView = null; mgEl.hidden = true; mgEl.innerHTML = ""; showHome(); }
+function mgDone(res, secs) {
+  const { g, lv } = mgCur, s = mgStat(g.id), k = dayKey();
+  mgClear(); mgView = "done";
+  s.plays++; const prev = s.best[lv];
+  const isBest = prev == null || (g.better === "low" ? res.score < prev : res.score > prev);
+  if (isBest) s.best[lv] = res.score;
+  if (res.flag) { opts.flags = opts.flags || {}; opts.flags[res.flag] = true; }
+  opts.hist = opts.hist || []; opts.hist.push({ d: k, k: g.id, lv, s: res.score, t: secs });
+  if (opts.hist.length > 600) opts.hist.splice(0, opts.hist.length - 600);
+  const days = new Set(opts.days || []), firstToday = !days.has(k); days.add(k); opts.days = [...days].sort().slice(-400);
+  const stk = streakNow(); opts.bestStreak = Math.max(opts.bestStreak || 0, stk);
+  const nb = checkBadges(null); save();
+  const up = !!res.up && lv < g.levels, good = res.good !== false;
+  sfx(isBest && prev != null ? "best" : good ? "win" : "lose");
+  if (good) confetti(isBest && prev != null);
+  if (nb.length) setTimeout(() => sfx("badge"), 800);
+  sheet = "mgres";
+  layer.innerHTML = `<div class="scrim"></div><div class="sheet" role="dialog" aria-label="Result">
+    <div class="winhead"><b>${res.title || "Well done!"}</b><span>${g.name} · level ${lv}</span></div>
+    <div class="winstats" style="grid-template-columns:repeat(${res.lines.length},1fr)">${res.lines.map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join("")}</div>
+    ${res.note ? `<p class="about" style="text-align:center">${res.note}</p>` : ""}
+    <p class="best">${isBest ? (prev != null ? `New best! Before: <b>${g.fmt(prev)}</b>` : "Your first score at this level") : `Your best: <b>${g.fmt(prev)}</b>`}</p>
+    ${winExtras({ st: stk, firstToday, nb })}
+    ${up ? `<button class="big go" id="mgup">Try level ${lv + 1} ›</button>` : ""}
+    <div class="row2"><button class="big" id="mgmenu">All games</button><button class="big${up ? "" : " go"}" id="mgagain">Play again</button></div></div>`;
+  $("mgmenu").onclick = () => { closeSheet(); mgClose(); };
+  $("mgagain").onclick = () => { closeSheet(); mgPlay(); };
+  if (up) $("mgup").onclick = () => { closeSheet(); mgCur.lv = lv + 1; mgPlay(); };
+}
+const mgMax = id => { const s = mgRead(id); return s ? Math.max(0, ...Object.values(s.best)) : 0; };
+const gamesPlayed = () => Object.keys(opts.mgs || {}).filter(id => opts.mgs[id].plays > 0).length + (opts.wins > 0 ? 1 : 0);
+// the shared number keypad (Number memory, Quick sums...)
+function keypad(onKey, okLabel = "OK") {
+  const k = document.createElement("div"); k.className = "kpad";
+  k.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => `<button data-k="${d}" aria-label="${d}">${d}</button>`).join("")
+    + `<button data-k="del" aria-label="Erase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/></svg></button>`
+    + `<button data-k="0" aria-label="0">0</button><button data-k="ok" class="ok">${okLabel}</button>`;
+  k.querySelectorAll("button").forEach(b => b.onclick = () => onKey(b.dataset.k));
+  return k;
+}
+
+/* ---------- Pairs ---------- */
+const PICS = ["🍎", "🍌", "🍇", "🍓", "🍒", "🍋", "🍉", "🍍", "🥕", "🌽", "🍄", "🌻", "🌵", "🌲", "🐶", "🐱", "🐭", "🐰", "🦊", "🐻", "🐼", "🐸", "🐵", "🐔",
+  "🐧", "🐢", "🐟", "🐙", "🦋", "🐝", "⚽", "🏀", "🎈", "🎁", "⭐", "🌙", "⛄", "🔔", "🎸", "🚗", "🚲", "⛵", "🏠", "⏰", "🔑", "📚", "👓", "🎩", "👟", "🍰", "🍕", "🍦", "🍩", "☕"];
+const PAIRS_GRID = [[3, 2], [4, 3], [4, 4], [4, 5], [4, 6], [5, 6], [6, 6]];
+addGame({
+  id: "pairs", name: "Pairs", icon: "🃏", sec: "mem", blurb: "Find the matching cards", levels: 7, better: "low",
+  how: "All the cards lie face down. Tap two cards to turn them over. If they match, they stay open. If not, they turn back: remember where they were! Find every pair in as few turns as you can.",
+  levelName: l => { const [c, r] = PAIRS_GRID[l - 1]; return `${c * r / 2} pairs`; },
+  fmt: s => s + " turns",
+  start(c) {
+    const [cols, rows] = PAIRS_GRID[c.lv - 1], n = cols * rows / 2, pics = pickN(PICS, n), deck = shuffle([...pics, ...pics]);
+    let first = -1, second = -1, turns = 0, found = 0;
+    mgCur.peek = () => ({ deck });   // for the tests
+    const grid = document.createElement("div"); grid.className = "cards";
+    const els = deck.map((p, i) => {
+      const b = document.createElement("button"); b.className = "card"; b.setAttribute("aria-label", "Card " + (i + 1));
+      b.innerHTML = `<span class="back" aria-hidden="true"></span><span class="face">${p}</span>`; b.onclick = () => flip(i); grid.appendChild(b); return b;
+    });
+    c.body.appendChild(grid); fitGrid(grid, cols, rows, c.body, 8, 130);
+    const upd = () => c.stat(`Turns <b>${turns}</b><span>Pairs <b>${found} of ${n}</b></span>`); upd();
+    const hide = () => { if (first >= 0) els[first].classList.remove("up"); if (second >= 0) els[second].classList.remove("up"); first = second = -1; };
+    function flip(i) {
+      if (!c.alive() || els[i].classList.contains("done")) return;
+      if (second >= 0) { if (!c.relaxed) return; const was = [first, second]; hide(); if (was.includes(i)) return; }   // relaxed: the wrong two stay open until your next tap
+      if (els[i].classList.contains("up")) return;
+      els[i].classList.add("up"); sfx("note");
+      if (first < 0) { first = i; return; }
+      second = i; turns++;
+      if (deck[first] === deck[second]) {
+        const a = first, b = second; first = second = -1; found++; upd();
+        c.later(() => { els[a].classList.add("done"); els[b].classList.add("done"); sfx("group"); }, 250);
+        if (found === n) c.later(() => c.done({
+          score: turns, up: turns <= Math.ceil(n * 1.6), flag: n >= 8 && turns <= Math.floor(n * 1.5) ? "sharp" : null,
+          title: turns === n ? "Perfect memory!" : "All pairs found!",
+          lines: [[turns, "Turns"], [fmt(c.secs()), "Time"], [n, "Pairs"]],
+          note: `The fewest possible is ${n} turns.`,
+        }), 900);
+        return;
+      }
+      upd(); if (!c.relaxed) c.later(hide, 1000);
+    }
+  },
+});
+
+/* ---------- Repeat the sequence ---------- */
+const SEQ_LV = [[4, 900], [4, 750], [4, 600], [6, 800], [6, 650], [6, 520], [9, 700], [9, 560]];
+const PAD_COL = ["#C62828", "#1E5BB8", "#1B7F45", "#9A6500", "#7B2FB0", "#B4510F", "#0B7373", "#AD2468", "#4B5870"];   // white numbers on each: at least 4.5:1
+const PAD_F = [262, 294, 330, 392, 440, 523, 587, 659, 784];
+addGame({
+  id: "seq", name: "Repeat the sequence", icon: "🎵", sec: "mem", blurb: "Watch the pads, then repeat them", levels: 8, better: "high",
+  how: "The numbered pads light up one after another, each with its own sound. When it says “Your turn”, tap them in the same order. Every round adds one more step. How long a sequence can you repeat?",
+  levelName: l => { const [n, ms] = SEQ_LV[l - 1]; return `${n} pads · ${ms >= 800 ? "slow" : ms >= 650 ? "medium speed" : "fast"}`; },
+  fmt: s => s + (s === 1 ? " step" : " steps"),
+  start(c) {
+    const [n, ms0] = SEQ_LV[c.lv - 1], ms = Math.round(c.relaxed ? ms0 * 1.4 : ms0), cols = n === 4 ? 2 : 3, rows = n / cols;
+    const seq = [], grid = document.createElement("div"); grid.className = "pads wait";
+    let pos = 0, mode = "watch", best = 0, chances = c.relaxed ? 1 : 0;
+    mgCur.peek = () => ({ seq, mode });
+    const pads = range(n).map(i => {
+      const b = document.createElement("button"); b.className = "spad"; b.style.background = PAD_COL[i]; b.innerHTML = `<span>${i + 1}</span>`; b.setAttribute("aria-label", "Pad " + (i + 1));
+      b.addEventListener("pointerdown", e => { e.preventDefault(); tap(i); }); grid.appendChild(b); return b;
+    });
+    c.body.appendChild(grid); fitGrid(grid, cols, rows, c.body, 14, 170);
+    const say = (t, cls) => c.stat(`<span class="${cls || ""}">${t}</span><span>Steps <b>${seq.length}</b></span>`);
+    const light = (i, dur) => { pads[i].classList.add("lit"); beep(PAD_F[i], Math.min(.55, dur / 1000)); c.later(() => pads[i].classList.remove("lit"), Math.max(180, dur * .65)); };
+    function play() {
+      mode = "watch"; grid.classList.add("wait"); say("Watch…");
+      seq.forEach((p, k) => c.later(() => light(p, ms), 700 + k * ms));
+      c.later(() => { mode = "you"; pos = 0; grid.classList.remove("wait"); say("<b>Your turn</b>"); }, 700 + seq.length * ms);
+    }
+    const next = () => { seq.push(randInt(n)); play(); };
+    function tap(i) {
+      if (!c.alive() || mode !== "you") return;
+      light(i, 320);
+      if (i === seq[pos]) {
+        pos++;
+        if (pos === seq.length) { best = seq.length; mode = "wait"; grid.classList.add("wait"); say("Right!", "mgmsg ok"); c.later(next, 1000); }
+        return;
+      }
+      buzz(80); sfx("err"); mode = "wait"; grid.classList.add("wait");
+      if (chances > 0) { chances--; say("Not quite. Watch again…"); c.later(play, 1400); return; }
+      pads[seq[pos]].classList.add("lit"); say(`It was pad ${seq[pos] + 1}`);
+      c.later(() => c.done({
+        score: best, up: best >= 8, flag: best >= 10 ? "seq10" : null, good: best > 0,
+        title: best >= 8 ? "Great memory!" : best ? "Well played!" : "Try again!",
+        lines: [[best, "Longest"], [n, "Pads"], [fmt(c.secs()), "Time"]],
+      }), 1500);
+    }
+    seq.push(randInt(n)); next();
+  },
+});
+
+/* ---------- Remember the squares ---------- */
+const SQ_LV = [[3, 1800], [3, 1300], [4, 1800], [4, 1300], [5, 1600], [5, 1200], [6, 1300], [7, 1100]];
+const sqSide = k => k <= 4 ? 3 : k <= 7 ? 4 : k <= 10 ? 5 : 6;
+addGame({
+  id: "squares", name: "Remember the squares", icon: "🔲", sec: "mem", blurb: "Some squares light up: tap the same ones", levels: 8, better: "high",
+  how: "Some squares in the grid light up for a moment. When they go dark, tap the same squares, in any order. Each time you get them all, one more lights up. A wrong square costs a life; you have three.",
+  levelName: l => { const [k, ms] = SQ_LV[l - 1]; return `start with ${k} · ${ms >= 1500 ? "long look" : "short look"}`; },
+  fmt: s => s + " squares",
+  start(c) {
+    let K = SQ_LV[c.lv - 1][0], lives = 3, best = 0, mode = "wait", lit = new Set(), got = new Set(), els = [], grid = null, side = 0;
+    const show = Math.round(SQ_LV[c.lv - 1][1] * (c.relaxed ? 1.7 : 1));
+    mgCur.peek = () => ({ lit: [...lit], mode, K });
+    const upd = t => c.stat(`<span>${t}</span><span>Squares <b>${K}</b></span><span class="lives" aria-label="${lives} lives">${"♥".repeat(lives)}${"♡".repeat(3 - lives)}</span>`);
+    function build() {
+      side = sqSide(K); c.body.innerHTML = ""; grid = document.createElement("div"); grid.className = "sqs";
+      els = range(side * side).map(i => { const b = document.createElement("button"); b.className = "sq"; b.setAttribute("aria-label", "Square " + (i + 1));
+        b.addEventListener("pointerdown", e => { e.preventDefault(); tap(i); }); grid.appendChild(b); return b; });
+      c.body.appendChild(grid); fitGrid(grid, side, side, c.body, 8, 120);
+    }
+    function round() {
+      if (sqSide(K) !== side) build(); else els.forEach(e => e.className = "sq");
+      lit = new Set(pickN(range(side * side), K)); got = new Set(); mode = "watch"; upd("Watch…");
+      c.later(() => { lit.forEach(i => els[i].classList.add("lit")); }, 500);
+      c.later(() => { lit.forEach(i => els[i].classList.remove("lit")); mode = "you"; upd("<b>Your turn</b>"); }, 500 + show);
+    }
+    function tap(i) {
+      if (!c.alive() || mode !== "you" || got.has(i)) return;
+      if (lit.has(i)) {
+        got.add(i); els[i].classList.add("ok"); sfx("tap");
+        if (got.size === K) { best = K; mode = "wait"; sfx("group"); upd("Right!"); c.later(() => { K++; round(); }, 900); }
+        return;
+      }
+      els[i].classList.add("bad"); buzz(80); sfx("err"); lives--; mode = "wait";
+      lit.forEach(j => { if (!got.has(j)) els[j].classList.add("miss"); }); upd(lives ? "Missed one" : "Out of lives");
+      c.later(() => lives > 0 ? round() : c.done({
+        score: best, up: best >= SQ_LV[c.lv - 1][0] + 4, flag: best >= 10 ? "sq10" : null, good: best > 0,
+        title: best >= 9 ? "Eagle eye!" : best ? "Well played!" : "Try again!",
+        lines: [[best, "Most squares"], [fmt(c.secs()), "Time"]],
+      }), 1500);
+    }
+    build(); round();
+  },
+});
+
+/* ---------- Number memory ---------- */
+const NUM_LV = [[3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [3, 1], [4, 1], [5, 1]];
+addGame({
+  id: "numbers", name: "Number memory", icon: "🔟", sec: "mem", blurb: "Remember the digits, type them back", levels: 8, better: "high",
+  how: "A number appears for a few seconds. When it disappears, type it back. Each right answer makes the next number one digit longer. On the harder levels you type the digits backwards, last one first.",
+  levelName: l => { const [n, b] = NUM_LV[l - 1]; return b ? `backwards · start with ${n} digits` : `start with ${n} digits`; },
+  fmt: s => s + " digits",
+  start(c) {
+    let len = NUM_LV[c.lv - 1][0], strikes = c.relaxed ? 3 : 2, best = 0, cur = "", typed = "", mode = "wait";
+    const back = !!NUM_LV[c.lv - 1][1];
+    mgCur.peek = () => ({ cur, mode, back });
+    const upd = t => c.stat(`<span>${t}</span><span>Digits <b>${len}</b></span><span class="lives" aria-label="${strikes} tries left">${"♥".repeat(strikes)}</span>`);
+    function round() {
+      cur = range(len).map(() => randInt(10)).join(""); typed = ""; mode = "look";
+      c.body.innerHTML = `<p class="mgsub">Remember this number</p><div class="digits" id="dg">${cur}</div>`;
+      const w = c.body.clientWidth; $("dg").style.setProperty("--dfs", Math.min(64 * (+getComputedStyle(document.documentElement).getPropertyValue("--fs") || 1), Math.floor(w / (len * .78))) + "px");
+      c.foot.innerHTML = ""; upd("Look");
+      const ask = () => { if (mode === "look") input(); };
+      if (c.relaxed) { const b = document.createElement("button"); b.className = "bigbtn"; b.textContent = "I've got it"; b.onclick = ask; c.foot.appendChild(b); c.later(ask, 30000); }
+      else c.later(ask, 900 + 550 * len);
+    }
+    function input() {
+      mode = "type"; c.foot.innerHTML = ""; upd(back ? "<b>Type it backwards</b>" : "<b>Type the number</b>");
+      c.body.innerHTML = `<p class="mgsub">${back ? "Last digit first" : "What was the number?"}</p><div class="slots" id="slots"></div>`;
+      c.body.appendChild(keypad(key, "Check")); slots();
+    }
+    function slots() {
+      $("slots").innerHTML = range(len).map(i => `<span class="${i === typed.length ? "cur" : ""}">${typed[i] || ""}</span>`).join("");
+      const ok = c.body.querySelector(".kpad .ok"); if (ok) ok.disabled = typed.length !== len;
+    }
+    function key(k) {
+      if (!c.alive() || mode !== "type") return;
+      if (k === "del") { typed = typed.slice(0, -1); slots(); return; }
+      if (k === "ok") { if (typed.length === len) check(); return; }
+      if (typed.length < len) { typed += k; sfx("tap"); slots(); }
+    }
+    function check() {
+      mode = "wait"; const want = back ? [...cur].reverse().join("") : cur;
+      if (typed === want) { best = len; sfx("group"); c.body.innerHTML = `<p class="mgmsg ok">Right!</p><div class="digits" style="--dfs:40px">${want}</div>`; c.later(() => { len++; round(); }, 1100); return; }
+      strikes--; sfx("err"); buzz(80); upd("Not quite");
+      c.body.innerHTML = `<p class="mgmsg bad">Not quite</p><p class="mgsub">The answer was</p><div class="digits" style="--dfs:40px">${want}</div><p class="mgsub">You typed ${typed}</p>`;
+      c.later(() => strikes > 0 ? round() : c.done({
+        score: best, up: best >= NUM_LV[c.lv - 1][0] + 3, flag: !back && best >= 9 ? "digits9" : null, good: best > 0,
+        title: best >= 8 ? "Superb!" : best ? "Well played!" : "Try again!",
+        lines: [[best, "Longest"], [back ? "Back" : "Forward", "Direction"], [fmt(c.secs()), "Time"]],
+      }), 2200);
+    }
+    round();
+  },
+});
+/* ==== GAMES JS END ==== */
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
 $("notes").onclick = () => { notesMode = !notesMode; render(); };
 $("pausebtn").onclick = () => { if (G && !G.done) { paused = !paused; render(); } };
-$("homebtn").onclick = showHome; $("setbtn").onclick = openSettings; $("newbtn").onclick = openNew;
+$("homebtn").onclick = () => { homeView = "sudoku"; showHome(); }; $("setbtn").onclick = openSettings; $("newbtn").onclick = openNew;
 $("lvchip").onclick = () => G && G.vs && V ? openVsLeave() : openNew();
 document.addEventListener("keydown", e => {
   if (sheet) { if (e.key === "Escape") window.appBack(); return; }
@@ -1484,6 +1926,10 @@ const tickId = setInterval(() => {
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
 window.appBack = () => {
+  if (sheet === "mghelp") { closeSheet(); return true; }
+  if (sheet === "mgres") { $("mgmenu").click(); return true; }
+  if (!sheet && mgView === "play") { mgIntro(); return true; }
+  if (!sheet && mgView === "intro") { mgClose(); return true; }
   if (sheet === "daily") { closeSheet(); if (homeOn) showHome(); return true; }
   if (statOn && !sheet) { closeStats(); return true; }
   if (sheet === "new" && newMode !== "solo") { $("newback").click(); return true; }
@@ -1492,7 +1938,7 @@ window.appBack = () => {
   if (sheet === "vsinvite") { $("vsno").click(); return true; }
   if (sheet === "vsend") { closeSheet(); showHome(); return true; }   // still connected: a rematch from the friend can still come
   if (sheet === "vswait" || sheet === "vschk" || sheet === "making") return true;
-  if (sheet === "settings") { closeSheet(); if (homeOn) showHome(); return true; } if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
+  if (sheet === "settings") { closeSheet(); if (homeOn) showHome(); return true; } if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn && homeView === "sudoku") { homeView = "hub"; showHome(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
 /* ---------- updates, also mid-game ---------- */
@@ -1540,10 +1986,11 @@ const vsTimer = setInterval(() => { if (V && vready && (!ves || ves.readyState =
 window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode() { return notesMode; }, get paused() { return paused; }, get sheet() { return sheet; },
   get opts() { return opts; }, get homeOn() { return homeOn; }, get V() { return V; }, get vlog() { return vlog; }, get vnet() { return vnet; },
   get statOn() { return statOn; }, get sfxCount() { return sfxCount; },
+  get mgView() { return mgView; }, get mgCur() { return mgCur; }, mgOpen, MGI, set homeView(v) { homeView = v; },
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "New: a daily puzzle, streaks, 22 badges, Stats, sounds and confetti. Sounds can be switched off in Settings.";   // change with each update
+const NEWS = "Brain games! Pairs, Repeat the sequence, Remember the squares and Number memory, with more coming. Sudoku is under Puzzles.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
