@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795028432;</script>
+<script>window.GAME_BUILD = 1795028837;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Sudoku</title>
@@ -54,11 +54,11 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .stats b { color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* board */
-.boardbox { position: relative; width: 100%; aspect-ratio: 1; max-width: 100%; }
-.board { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(9, 1fr);
+.boardbox { position: relative; width: 100%; aspect-ratio: 1; max-width: 100%; flex: none; align-self: center; container-type: inline-size; --dig: .62; --nt: .78; }
+.board { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: repeat(9, minmax(0, 1fr));   /* nine equal rows, whatever the font size */
   background: var(--paper); border: 2.5px solid var(--line-strong); border-radius: 6px; overflow: hidden; box-shadow: 0 2px 10px var(--shade); }
-.c { position: relative; display: grid; place-items: center; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  font-size: clamp(20px, 6.6vw, 30px); font-weight: 500; font-variant-numeric: tabular-nums; }
+.c { position: relative; display: grid; place-items: center; line-height: 1; overflow: hidden; min-width: 0; min-height: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  font-size: clamp(20px, 6.6vw, 30px); font-size: calc(100cqw / 9 * var(--dig)); font-weight: 500; font-variant-numeric: tabular-nums; }   /* a share of the square */
 .c.br { border-right: 2px solid var(--line-strong); } .c.bb { border-bottom: 2px solid var(--line-strong); }
 .c.r9 { border-right: 0; } .c.b9 { border-bottom: 0; }
 .c.peer { background: var(--peer); } .c.same { background: var(--same); } .c.sel { background: var(--sel); }
@@ -66,8 +66,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .c.err { color: var(--err); } .c.err:not(.sel) { background: var(--err-bg); }
 .c.pop { animation: pop .22s ease-out; }
 @keyframes pop { 40% { transform: scale(1.18); } }
-.notes { position: absolute; inset: 2px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
-  font-size: clamp(8px, 2.4vw, 11px); font-weight: 600; color: var(--note); line-height: 1; }
+.notes { position: absolute; inset: 2px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr));
+  font-size: clamp(8px, 2.4vw, 11px); font-size: calc(100cqw / 27 * var(--nt)); font-weight: 600; color: var(--note); line-height: 1; }
 .notes span { display: grid; place-items: center; }
 .notes span.hl { color: var(--accent); font-weight: 800; }
 .board.paused .c { color: transparent !important; background: var(--paper) !important; }
@@ -76,7 +76,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .cover b { font-size: 22px; font-weight: 800; }
 
 /* tools + pad */
-.tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.tools { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .tool { display: grid; justify-items: center; gap: 3px; padding: 8px 0 6px; border-radius: 14px; color: var(--muted); font-size: 12px; font-weight: 700; position: relative; }
 .tool svg { width: 24px; height: 24px; color: var(--ink); }
 .tool:active { background: var(--btn-press); }
@@ -195,7 +195,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 :root[data-contrast="high"] .c { border-color: var(--line); }
 :root[data-contrast="high"] .c.user { font-weight: 700; }
 :root[data-contrast="high"] .c.sel { box-shadow: inset 0 0 0 3px var(--selring); }
-:root[data-contrast="high"] .notes { font-weight: 800; font-size: clamp(9px, 2.6vw, 12px); }
+:root[data-contrast="high"] .notes { font-weight: 800; } :root[data-contrast="high"] .boardbox { --nt: .86; }
 :root[data-contrast="high"] .board { border-width: 3px; }
 :root[data-contrast="high"] .c.br { border-right-width: 3px; } :root[data-contrast="high"] .c.bb { border-bottom-width: 3px; }
 :root[data-contrast="high"] .num, :root[data-contrast="high"] .hbtn, :root[data-contrast="high"] .lvchip, :root[data-contrast="high"] .icbtn,
@@ -245,6 +245,63 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .upd button:disabled { opacity: .5; }
 :root[data-contrast="high"] .upd { border: 2px solid var(--bg); }
 @keyframes updin { from { transform: translate(-50%, -30px); opacity: 0; } }
+
+/* highlight colour of the same numbers (Settings). blue = the built-in colours */
+:root[data-hl="yellow"] { --same: #FFE38A; }
+@media (prefers-color-scheme: dark) { :root[data-hl="yellow"]:not([data-theme="light"]) { --same: #4A3C08; } }
+:root[data-hl="yellow"][data-theme="dark"] { --same: #4A3C08; }
+:root[data-contrast="high"][data-hl="yellow"] { --same: #FFE680; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"][data-hl="yellow"]:not([data-theme="light"]) { --same: #433500; } }
+:root[data-contrast="high"][data-hl="yellow"][data-theme="dark"] { --same: #433500; }
+:root[data-hl="green"] { --same: #CBEFD3; }
+@media (prefers-color-scheme: dark) { :root[data-hl="green"]:not([data-theme="light"]) { --same: #1D4A2E; } }
+:root[data-hl="green"][data-theme="dark"] { --same: #1D4A2E; }
+:root[data-contrast="high"][data-hl="green"] { --same: #A9E5B6; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"][data-hl="green"]:not([data-theme="light"]) { --same: #123F25; } }
+:root[data-contrast="high"][data-hl="green"][data-theme="dark"] { --same: #123F25; }
+:root[data-hl="pink"] { --same: #F8D3E4; }
+@media (prefers-color-scheme: dark) { :root[data-hl="pink"]:not([data-theme="light"]) { --same: #55223D; } }
+:root[data-hl="pink"][data-theme="dark"] { --same: #55223D; }
+:root[data-contrast="high"][data-hl="pink"] { --same: #F4BAD5; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"][data-hl="pink"]:not([data-theme="light"]) { --same: #4A1733; } }
+:root[data-contrast="high"][data-hl="pink"][data-theme="dark"] { --same: #4A1733; }
+:root[data-hl="orange"] { --same: #FFDDBE; }
+@media (prefers-color-scheme: dark) { :root[data-hl="orange"]:not([data-theme="light"]) { --same: #55320F; } }
+:root[data-hl="orange"][data-theme="dark"] { --same: #55320F; }
+:root[data-contrast="high"][data-hl="orange"] { --same: #FFC996; }
+@media (prefers-color-scheme: dark) { :root[data-contrast="high"][data-hl="orange"]:not([data-theme="light"]) { --same: #472800; } }
+:root[data-contrast="high"][data-hl="orange"][data-theme="dark"] { --same: #472800; }
+:root[data-hl="yellow"] .c.sel { box-shadow: inset 0 0 0 3px var(--ink); }   /* yellow highlight: the selected square keeps a ring */
+.hlcol { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.hlcol button { display: grid; justify-items: center; gap: 4px; padding: 7px 2px 6px; border-radius: 12px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); border: 2px solid transparent; }
+.hlcol button i { width: 34px; height: 34px; border-radius: 6px; display: grid; place-items: center; font: 600 22px var(--font); font-style: normal; color: var(--ink); border: 1px solid var(--line); }
+.hlcol button small { font-size: 12px; font-weight: 700; color: var(--muted); }
+.hlcol button.on, .sizes button.on { border-color: var(--accent); } .hlcol button.on small { color: var(--ink); }
+:root[data-contrast="high"] .hlcol button { border-color: var(--edge); } :root[data-contrast="high"] .hlcol button.on { box-shadow: 0 0 0 3px var(--accent); }
+.sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.sizes button { display: grid; justify-items: center; align-content: end; gap: 2px; padding: 8px 2px 6px; border-radius: 12px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); border: 2px solid transparent; min-height: 64px; }
+.sizes button b { line-height: 1; font-weight: 600; } .sizes button small { font-size: 12px; font-weight: 700; color: var(--muted); }
+.sizes button.on small { color: var(--ink); }
+:root[data-contrast="high"] .sizes button { border-color: var(--edge); } :root[data-contrast="high"] .sizes button.on { box-shadow: 0 0 0 3px var(--accent); }
+.sheet h3 { margin: 4px 0 -6px; font-size: 13px; font-weight: 800; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+/* board size (Settings): Large and Extra large make the numbers, notes, keypad and buttons bigger; the keypad goes to two rows */
+.padx { display: none !important; }
+:root[data-size="large"] .app, :root[data-size="xl"] .app { padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); gap: 10px; }
+:root[data-size="xl"] .app { padding-left: max(4px, env(safe-area-inset-left, 0px)); padding-right: max(4px, env(safe-area-inset-right, 0px)); }
+:root[data-size="large"] .wrap, :root[data-size="xl"] .wrap { gap: 10px; max-width: 560px; }
+:root[data-size="large"] .newbtn, :root[data-size="xl"] .newbtn { display: none; }
+:root[data-size="large"] .boardbox { --dig: .74; --nt: .92; }
+:root[data-size="xl"] .boardbox { --dig: .82; --nt: 1; }
+:root[data-size="xl"] .notes { inset: 1px; }
+:root[data-size="large"] .pad, :root[data-size="xl"] .pad { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+:root[data-size="large"] .padx, :root[data-size="xl"] .padx { display: grid !important; place-items: center; }
+:root[data-size="large"] .num { padding: 8px 0 6px; } :root[data-size="xl"] .num { padding: 10px 0 7px; }
+:root[data-size="large"] .num b { font-size: clamp(26px, 7.6vw, 36px); } :root[data-size="xl"] .num b { font-size: clamp(30px, 8.6vw, 40px); }
+:root[data-size="large"] .num small, :root[data-size="xl"] .num small { font-size: 12px; }
+.padx svg { width: 30px; height: 30px; color: var(--ink); }
+:root[data-size="large"] .tool svg, :root[data-size="xl"] .tool svg { width: 28px; height: 28px; }
+:root[data-size="large"] .tool, :root[data-size="xl"] .tool { font-size: 13px; padding: 8px 0; }
+:root[data-size="xl"] .stats { font-size: 14px; }
 </style>
 </head>
 <body>
@@ -264,6 +321,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
     <button class="tool" id="erase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H9L4 15a2 2 0 0 1 0-2.8L13.2 3a2 2 0 0 1 2.8 0l4 4a2 2 0 0 1 0 2.8L11 19"/><path d="M8 10l6 6"/></svg>Erase</button>
     <button class="tool" id="notes"><span class="badge" id="notesbadge">OFF</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Notes</button>
     <button class="tool" id="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Hint</button>
+    <button class="tool" id="setbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
   </div>
   <div class="pad" id="pad"></div>
   <button class="newbtn" id="newbtn">New game</button>
@@ -372,7 +430,7 @@ function makePuzzle(lv) {
 
 /* ---------- state ---------- */
 const KEY = "sudoku.save.v1";
-let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0, ucolor: "printed" };
+let G = null, opts = { mistakes: true, same: true, level: 4, best: {}, wins: 0, ucolor: "printed", hl: "blue", size: "normal" };
 let homeOn = true;   // the start page is shown when the app opens
 // Look: "auto" follows the phone's light/dark setting; "light" / "dark" are fixed (the phone's own top and bottom bars keep the phone's setting).
 const darkQuery = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
@@ -381,6 +439,9 @@ function applyTheme() {
   if (t === "auto") delete root.dataset.theme; else root.dataset.theme = t;
   if (opts.hc) root.dataset.contrast = "high"; else delete root.dataset.contrast;
   root.dataset.ucolor = opts.ucolor || "printed";
+  root.dataset.hl = opts.hl || "blue";
+  root.dataset.size = opts.size || "normal";
+  if (typeof fitBoard === "function") requestAnimationFrame(fitBoard);
 }
 if (darkQuery && darkQuery.addEventListener) darkQuery.addEventListener("change", applyTheme);
 let sel = -1, notesMode = false, paused = false, sheet = null, pickLv = 4, lastPop = -1;
@@ -404,6 +465,9 @@ for (let d = 1; d <= 9; d++) {
   const b = document.createElement("button"); b.className = "num"; b.innerHTML = `<b>${d}</b><small></small>`; b.setAttribute("aria-label", "Number " + d);
   b.addEventListener("click", () => enter(d)); pad.appendChild(b);
 }
+{ const x = document.createElement("button"); x.className = "num padx"; x.setAttribute("aria-label", "Erase");
+  x.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H9L4 15a2 2 0 0 1 0-2.8L13.2 3a2 2 0 0 1 2.8 0l4 4a2 2 0 0 1 0 2.8L11 19"/><path d="M8 10l6 6"/></svg>';
+  x.addEventListener("click", () => erase()); pad.appendChild(x); }
 
 function render() {
   if (!G) return;
@@ -426,7 +490,7 @@ function render() {
   lastPop = -1;
   const left = [0, 9, 9, 9, 9, 9, 9, 9, 9, 9];
   for (let i = 0; i < 81; i++) if (G.cells[i] && G.cells[i] === G.sol[i]) left[G.cells[i]]--;
-  [...pad.children].forEach((b, k) => { b.querySelector("small").textContent = left[k + 1]; b.classList.toggle("gone", left[k + 1] === 0); });
+  [...pad.querySelectorAll(".num:not(.padx)")].forEach((b, k) => { b.querySelector("small").textContent = left[k + 1]; b.classList.toggle("gone", left[k + 1] === 0); });
   pad.classList.toggle("notes-on", notesMode);
   $("notes").classList.toggle("on", notesMode); $("notesbadge").textContent = notesMode ? "ON" : "OFF";
   $("lvname").textContent = LEVELS[G.level - 1].name; $("lvnum").textContent = G.level + "/10";
@@ -496,13 +560,9 @@ function drawNew() {
     <div class="ticks">${LEVELS.map((_, k) => `<span>${k + 1}</span>`).join("")}</div>
     <div class="presets">${presets.map(([n, t]) => `<button data-lv="${n}" class="${n === pickLv ? "on" : ""}">${t}</button>`).join("")}</div>
     <p class="about">About <b>${L.clues} numbers given</b> out of 81. ${L.singles ? "Every step can be found by looking at one row, column or box." : L.tough ? "Needs advanced techniques: some steps can't be seen from a single row, column or box." : "Some steps may need advanced techniques."}${best ? ` Your best: <b>${fmt(best)}</b>.` : ""}</p>
-    <div class="opt"><span>Show mistakes in red</span><button class="sw${opts.mistakes ? " on" : ""}" id="optmis" role="switch" aria-checked="${opts.mistakes}" aria-label="Show mistakes in red"></button></div>
-    <div class="opt"><span>Highlight the same numbers</span><button class="sw${opts.same ? " on" : ""}" id="optsame" role="switch" aria-checked="${opts.same}" aria-label="Highlight the same numbers"></button></div>
     <div class="row2">${homeOn ? `<button class="big" data-close>Back</button>` : G && !G.done ? `<button class="big" data-close>Keep playing</button>` : ""}<button class="big go" id="startbtn">Start ${L.name}</button></div><p class="ver">${verLabel()}</p></div>`;
   $("lvrange").oninput = e => { pickLv = +e.target.value; drawNew(); $("lvrange").focus(); };
   layer.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => { pickLv = +b.dataset.lv; drawNew(); });
-  $("optmis").onclick = () => { opts.mistakes = !opts.mistakes; save(); render(); drawNew(); };
-  $("optsame").onclick = () => { opts.same = !opts.same; save(); render(); drawNew(); };
   $("startbtn").onclick = () => startGame(pickLv);
   layer.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheet);
 }
@@ -544,35 +604,73 @@ function showHome() {
     <div class="hbtns">
       ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue</b><small>${LEVELS[G.level - 1].name} · ${fmt(G.t)} · ${filled} of 81 filled</small></span><i>›</i></button>` : ""}
       <button class="hbtn${live ? "" : " go"}" id="hnew"><span><b>New game</b><small>Pick how hard: level 1 to 10</small></span><i>›</i></button>
+      <button class="hbtn" id="hset"><span><b>Settings</b><small>Board size, colours, light or dark</small></span><i>›</i></button>
     </div>
     ${recs ? `<div class="hrec"><h3>Best times</h3><div class="hrecs">${recs}</div></div>` : ""}
-    <div class="hlook"><h3>Look</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${[["auto", "Phone", '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'], ["light", "Light", '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>'], ["dark", "Dark", '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>']]
-      .map(([k, t, ic]) => `<button role="radio" aria-checked="${(opts.theme || "auto") === k}" class="${(opts.theme || "auto") === k ? "on" : ""}" data-theme-pick="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${t}</button>`).join("")}</div>
-      <h3>Your numbers</h3><div class="ucol" role="radiogroup" aria-label="Colour of the numbers you enter">${[["printed", "Printed"], ["blue", "Blue"], ["green", "Green"], ["purple", "Purple"]]
-        .map(([k, t]) => `<button role="radio" aria-checked="${opts.ucolor === k}" class="${opts.ucolor === k ? "on" : ""}" data-ucolor-pick="${k}"><b data-uc="${k}">7</b><small>${t}</small></button>`).join("")}</div>
-      <div class="opt hcrow"><span>High contrast</span><button class="sw${opts.hc ? " on" : ""}" id="hcsw" role="switch" aria-checked="${!!opts.hc}" aria-label="High contrast"></button></div></div>
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
   if (live) $("hcont").onclick = () => { paused = false; hideHome(); render(); };
   $("hnew").onclick = openNew;
-  h.querySelectorAll("[data-theme-pick]").forEach(b => b.onclick = () => { opts.theme = b.dataset.themePick; applyTheme(); save(); showHome(); });
-  $("hcsw").onclick = () => { opts.hc = !opts.hc; applyTheme(); save(); showHome(); };
-  h.querySelectorAll("[data-ucolor-pick]").forEach(b => b.onclick = () => { opts.ucolor = b.dataset.ucolorPick; applyTheme(); save(); showHome(); });
-  // each sample "7" shows its own colour in the current look
-  h.querySelectorAll("[data-uc]").forEach(el => { const root = document.documentElement, was = root.dataset.ucolor; root.dataset.ucolor = el.dataset.uc;
-    el.style.color = getComputedStyle(root).getPropertyValue("--user").trim() || "inherit"; root.dataset.ucolor = was; });
+  $("hset").onclick = openSettings;
 }
 function hideHome() { homeOn = false; $("home").hidden = true; setResume(true); }
 // while a game is on screen, a reload in the same app session (an update) goes straight back into it
 function setResume(on) { try { if (on) sessionStorage.setItem("sudoku.resume", "1"); else sessionStorage.removeItem("sudoku.resume"); } catch (e) {} }
 
+/* ---------- the board always fits the screen ---------- */
+// The board is as wide as the screen allows; when everything together is taller than the screen, it shrinks just enough.
+function fitBoard() {
+  const bb = $("boardbox"), app = document.querySelector(".app");
+  bb.style.width = "";
+  const over = app.scrollHeight - app.clientHeight;
+  if (over > 0) bb.style.width = Math.max(220, bb.getBoundingClientRect().width - over - 2) + "px";
+}
+addEventListener("resize", fitBoard);
+
+/* ---------- settings ---------- */
+function openSettings() { sheet = "settings"; drawSettings(); }
+function drawSettings() {
+  const old = layer.querySelector(".sheet"), top = old ? old.scrollTop : 0;
+  const seg = (name, list, cur) => list.map(([k, t, extra]) => `<button role="radio" aria-checked="${cur === k}" class="${cur === k ? "on" : ""}" data-${name}="${k}">${extra || ""}${t}</button>`).join("");
+  const ic = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const sw = (id, on, label) => `<div class="opt"><span>${label}</span><button class="sw${on ? " on" : ""}" id="${id}" role="switch" aria-checked="${!!on}" aria-label="${label}"></button></div>`;
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Settings">
+    <h2>Settings</h2>
+    <h3>Board size</h3><div class="sizes" role="radiogroup" aria-label="Board size">${[["normal", "Normal", 18], ["large", "Large", 24], ["xl", "Extra large", 30]]
+      .map(([k, t, px]) => `<button role="radio" aria-checked="${opts.size === k}" class="${opts.size === k ? "on" : ""}" data-size-pick="${k}"><b style="font-size:${px}px">7</b><small>${t}</small></button>`).join("")}</div>
+    <h3>Look</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${seg("theme-pick", [["auto", "Phone", ic('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>')], ["light", "Light", ic('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>')], ["dark", "Dark", ic('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>')]], opts.theme || "auto")}</div>
+    ${sw("hcsw", opts.hc, "High contrast")}
+    <h3>Your numbers</h3><div class="ucol" role="radiogroup" aria-label="Colour of the numbers you enter">${[["printed", "Printed"], ["blue", "Blue"], ["green", "Green"], ["purple", "Purple"]]
+      .map(([k, t]) => `<button role="radio" aria-checked="${opts.ucolor === k}" class="${opts.ucolor === k ? "on" : ""}" data-ucolor-pick="${k}"><b data-uc="${k}">7</b><small>${t}</small></button>`).join("")}</div>
+    <h3>Highlight colour</h3><div class="hlcol" role="radiogroup" aria-label="Colour of the squares with the same number">${[["blue", "Blue"], ["yellow", "Yellow"], ["green", "Green"], ["pink", "Pink"], ["orange", "Orange"]]
+      .map(([k, t]) => `<button role="radio" aria-checked="${opts.hl === k}" class="${opts.hl === k ? "on" : ""}" data-hl-pick="${k}"><i data-hlc="${k}">4</i><small>${t}</small></button>`).join("")}</div>
+    ${sw("optsame", opts.same, "Highlight the same numbers")}
+    ${sw("optmis", opts.mistakes, "Show mistakes in red")}
+    <div class="row2"><button class="big go" data-close>Done</button></div></div>`;
+  const re = () => { applyTheme(); save(); render(); drawSettings(); };
+  const L = layer;
+  L.querySelectorAll("[data-size-pick]").forEach(b => b.onclick = () => { opts.size = b.dataset.sizePick; re(); });
+  L.querySelectorAll("[data-theme-pick]").forEach(b => b.onclick = () => { opts.theme = b.dataset.themePick; re(); });
+  L.querySelectorAll("[data-ucolor-pick]").forEach(b => b.onclick = () => { opts.ucolor = b.dataset.ucolorPick; re(); });
+  L.querySelectorAll("[data-hl-pick]").forEach(b => b.onclick = () => { opts.hl = b.dataset.hlPick; if (!opts.same) opts.same = true; re(); });
+  $("hcsw").onclick = () => { opts.hc = !opts.hc; re(); };
+  $("optsame").onclick = () => { opts.same = !opts.same; re(); };
+  $("optmis").onclick = () => { opts.mistakes = !opts.mistakes; re(); };
+  L.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (homeOn) showHome(); });
+  // each sample shows its own colour in the current look
+  const root = document.documentElement, cs = () => getComputedStyle(root);
+  L.querySelectorAll("[data-uc]").forEach(el => { const was = root.dataset.ucolor; root.dataset.ucolor = el.dataset.uc; el.style.color = cs().getPropertyValue("--user").trim(); root.dataset.ucolor = was; });
+  L.querySelectorAll("[data-hlc]").forEach(el => { const was = root.dataset.hl; root.dataset.hl = el.dataset.hlc; el.style.background = cs().getPropertyValue("--same").trim(); root.dataset.hl = was; });
+  const sh = L.querySelector(".sheet"); sh.style.animation = old ? "none" : ""; sh.scrollTop = top;
+}
+
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
 $("notes").onclick = () => { notesMode = !notesMode; render(); };
 $("pausebtn").onclick = () => { if (G && !G.done) { paused = !paused; render(); } };
-$("homebtn").onclick = showHome; $("lvchip").onclick = openNew; $("newbtn").onclick = openNew;
+$("homebtn").onclick = showHome; $("setbtn").onclick = openSettings; $("lvchip").onclick = openNew; $("newbtn").onclick = openNew;
 document.addEventListener("keydown", e => {
-  if (sheet) { if (e.key === "Escape" && sheet === "new") closeSheet(); return; }
+  if (sheet) { if (e.key === "Escape" && (sheet === "new" || sheet === "settings")) closeSheet(); return; }
   if (homeOn) return;
   if (e.key >= "1" && e.key <= "9") enter(+e.key);
   else if (e.key === "Backspace" || e.key === "Delete" || e.key === "0") erase();
@@ -583,7 +681,7 @@ document.addEventListener("keydown", e => {
 const tickId = setInterval(() => { if (G && !G.done && !paused && !sheet && !homeOn && document.visibilityState === "visible") { G.t++; $("timer").textContent = fmt(G.t); if (G.t % 5 === 0) save(); } }, 1000);
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
-window.appBack = () => { if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
+window.appBack = () => { if (sheet === "settings") { closeSheet(); if (homeOn) showHome(); return true; } if (sheet === "new" && (homeOn || (G && !G.done))) { closeSheet(); return true; } if (homeOn) return false; if (sheet === "win") { closeSheet(); showHome(); return true; } if (paused) { paused = false; render(); return true; } if (sel >= 0) { sel = -1; render(); return true; } showHome(); return true; };
 window.appPause = () => { if (G && !G.done) { paused = true; render(); } save(); };
 
 /* ---------- updates, also mid-game ---------- */
@@ -631,10 +729,11 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   get opts() { return opts; }, get homeOn() { return homeOn; }, startGame, showHome, enter, render, checkUpdate, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Your numbers now look like the printed ones (pick a colour on the start page). Updates show up mid-game too.";   // change with each update
+const NEWS = "Settings: a bigger board, and your own highlight colour. Tap Settings next to Hint.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 applyTheme();
+fitBoard();
 let resume = false; try { resume = sessionStorage.getItem("sudoku.resume") === "1"; } catch (e) {}
 if (G) render();
 if (G && !G.done && resume) { paused = false; hideHome(); render(); } else showHome();
