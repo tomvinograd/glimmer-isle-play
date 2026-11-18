@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795008106;</script>
+<script>window.GAME_BUILD = 1795008537;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1640,7 +1640,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   // ---------- poses: whole pictures of the same Glumi (blink, happy, attack, hurt) swapped in for a moment (Tom 18 Nov) ----------
   const POSE_KINDS = ["blink", "happy", "attack", "hurt"];
   // idle animations made from AI videos (tools/vid_batch.py) live on the update site, one file per Glumi; the phone keeps them after the first download
-  const CLIPS = /*CLIPS_START*/{"00-0":68114,"01-0":41496,"01-1":62701,"02-0":16798,"02-1":50437,"03-0":8456,"03-1":3253}/*CLIPS_END*/, CLIP_BASE = "https://tomvinograd.github.io/glimmer-isle-play/clips/", CLIP_OK = new Set(), CLIP_BUSY = new Set();
+  const CLIPS = /*CLIPS_START*/{"00-0":68114,"01-0":41496,"01-1":62701,"02-0":16798,"02-1":50437,"03-0":8456,"03-1":3253,"04-0":49275}/*CLIPS_END*/, CLIP_BASE = "https://tomvinograd.github.io/glimmer-isle-play/clips/", CLIP_OK = new Set(), CLIP_BUSY = new Set();
   const clipUrl = k => CLIP_BASE + k + "-idle.webp?v=" + CLIPS[k];
   function clipLoad(k) {
     if (CLIP_OK.has(k) || CLIP_BUSY.has(k)) return; CLIP_BUSY.add(k);
