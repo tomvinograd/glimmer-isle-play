@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795064145;</script>
+<script>window.GAME_BUILD = 1795065163;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -592,6 +592,42 @@ input { user-select: text; -webkit-user-select: text; }
 .fld textarea:focus { border-color: var(--accent); outline: none; }
 .fsel { font: inherit; font-size: calc(17px * var(--fs)); font-weight: 600; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 0 12px; min-height: var(--tap); width: 100%; }
 :root[data-contrast="high"] .fld textarea, :root[data-contrast="high"] .fsel { border-color: var(--edge); }
+
+/* the compact menu */
+.hub2 { gap: 12px; }
+.hubtop { display: flex; align-items: center; gap: 8px; }
+.hubtop .htitle { flex: 1; min-width: 0; text-align: left; justify-items: start; }
+.hubtop .htitle b { font-size: calc(28px * var(--fs)); line-height: 1.1; }
+.hubtop .htitle span { font-size: calc(13.5px * var(--fs)); }
+.icb { width: var(--tap); height: var(--tap); flex: none; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); display: grid; place-items: center; }
+.icb svg { width: 26px; height: 26px; }
+:root[data-contrast="high"] .icb { border: 2px solid var(--edge); }
+.hbtn.slim { padding: 10px 16px; } .hbtn.slim b { font-size: calc(16px * var(--fs)); }
+.wcard { display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; }
+.wtx { flex: 1; min-width: 0; display: grid; gap: 2px; } .wtx b { font-size: calc(17px * var(--fs)); font-weight: 800; } .wtx small { color: var(--muted); font-weight: 700; font-size: calc(14px * var(--fs)); }
+.wcard .bigbtn { min-height: calc(var(--tap) - 4px); padding: 0 18px; font-size: calc(16px * var(--fs)); box-shadow: none; white-space: nowrap; }
+.wcard .bigbtn.alt { background: var(--bg); color: var(--muted); }
+.again { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.again button { min-height: var(--tap); border-radius: 14px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 8px; font-weight: 800; font-size: calc(13.5px * var(--fs)); line-height: 1.15; text-align: left; }
+.again i { font-style: normal; font-size: calc(22px * var(--fs)); flex: none; }
+.again span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+:root[data-contrast="high"] .again button { border: 2px solid var(--edge); }
+.gtiles.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+:root[data-size="xl"] .gtiles.c3, :root[data-size="xl"] .again { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gt { position: relative; display: grid; justify-items: center; align-content: center; gap: 5px; padding: 12px 4px 10px; min-height: calc(88px * var(--fs)); border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: center; }
+.gt i { font-style: normal; font-size: calc(30px * var(--fs)); line-height: 1; }
+.gt b { font-size: calc(13.5px * var(--fs)); font-weight: 800; line-height: 1.2; }
+.gt .lv { position: absolute; top: 6px; right: 8px; font-size: 11px; font-weight: 800; color: var(--muted); }
+.gt:active, .again button:active { transform: translateY(1px); }
+:root[data-contrast="high"] .gt { border: 2px solid var(--edge); } :root[data-contrast="high"] .gt .lv { color: var(--ink); }
+
+/* Extra large and narrow phones: the title and icons fit one line, the workout button drops under its text when needed */
+.hubtop .htitle b { font-size: min(calc(28px * var(--fs)), 8vw); }
+:root[data-size="xl"] .icb, :root[data-size="large"] .icb { width: 60px; height: 60px; }
+.wcard { flex-wrap: wrap; } .wtx { flex: 1 1 170px; } .wcard .bigbtn { flex: 1 0 auto; }
+:root[data-size="xl"] .wcard .bigbtn { flex-basis: 100%; }
+:root[data-size="xl"] .hubtop .htitle b { font-size: 7vw; }
+:root[data-size="xl"] .again button:nth-child(3) { display: none; }   /* two per row: the two latest */
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -1761,35 +1797,44 @@ function workoutToday() {
   let ids; try { ids = [...shuffle(GAMES.filter(g => g.sec === "mem").map(g => g.id)).slice(0, 2), shuffle(GAMES.filter(g => g.sec === "think").map(g => g.id))[0]]; } finally { rnd = was; }
   opts.wk = { d: k, ids, done: [] }; return opts.wk;
 }
-function workoutCard() {
-  const w = workoutToday(), done = w.ids.filter(id => w.done.includes(id)).length, next = w.ids.find(id => !w.done.includes(id)), all = !next;
-  return `<div class="wcard"><div class="wtop"><b>Today's workout</b><small>${done} of 3 done</small></div>
-    <div class="wlist">${w.ids.map(id => `<span class="${w.done.includes(id) ? "ok" : ""}">${MGI[id].icon} ${MGI[id].name}${w.done.includes(id) ? " ✓" : ""}</span>`).join("")}</div>
-    <button class="hbtn${all ? "" : " go"}" id="hwork"><span><b>${all ? "Workout done ✓" : done ? `Next: ${MGI[next].name}` : "Start the workout"}</b><small>${all ? "A new one tomorrow" : "Three short games, a few minutes"}</small></span><i>›</i></button></div>`;
+function workoutCard() {   // one slim bar: what today's three are, how many done, a big button for the next
+  const w = workoutToday(), done = w.ids.filter(id => w.done.includes(id)).length, next = w.ids.find(id => !w.done.includes(id));
+  return `<div class="wcard"><div class="wtx"><b>💪 Today's workout</b><small>${w.ids.map(id => `${MGI[id].icon}${w.done.includes(id) ? "✓" : ""}`).join(" ")} · ${done} of 3 done</small></div>
+    <button class="bigbtn${next ? "" : " alt"}" id="hwork">${next ? (done ? "Next ›" : "Start ›") : "✓ Workout done"}</button></div>`;
 }
 
-/* the menu */
+/* the menu: everything on about one screen. Stats and Settings sit next to the title, the workout is one bar, the games
+   you played last are one tap away, and every game is a compact tile, three to a row (two in Extra large). */
+const SUDOKU_TILE = { id: "sudoku", icon: "🔢", name: "Sudoku" };
+function recentGames() {
+  const seen = [], hist = opts.hist || [];
+  for (let i = hist.length - 1; i >= 0 && seen.length < 3; i--) { const id = isSud(hist[i]) ? "sudoku" : hist[i].k; if ((id === "sudoku" || MGI[id]) && !seen.includes(id)) seen.push(id); }
+  return seen.map(id => id === "sudoku" ? SUDOKU_TILE : MGI[id]);
+}
 function drawHub() {
   const h = $("home"), st = streakNow(), k = dayKey(), today = (opts.days || []).includes(k), live = G && !G.done;
-  const sub = st ? `🔥 ${st}-day streak${today ? " · played today ✓" : " · play one today to keep it"}` : "Games to keep your mind sharp";
-  const earned = BADGES.filter(b => (opts.badges || {})[b[0]]).length;
-  const line = g => { const s = mgRead(g.id); const b = s && s.best[s.lv]; return b != null ? `Level ${s.lv} · best ${g.fmt(b)}` : g.blurb; };
-  const tile = g => `<button class="gtile" id="g-${g.id}"><i aria-hidden="true">${g.icon}</i><b>${g.name}</b><small>${line(g)}</small></button>`;
-  const dRec = (opts.daily || {})[k], sudLine = dRec && dRec.done ? `Daily puzzle ✓ · ${fmt(dRec.t)}` : "Daily puzzle, 10 levels, races";
-  h.innerHTML = `<div class="hin">
-    <div class="htitle hub"><b>Thinking games</b><span id="hsub">${sub}</span></div>
+  const sub = st ? `🔥 ${st}-day streak${today ? " · played today ✓" : " · play today to keep it"}` : "Games to keep your mind sharp";
+  const lvOf = g => { const s = mgRead(g.id); return s && s.plays ? `<span class="lv">Lv ${s.lv}</span>` : ""; };
+  const tile = g => `<button class="gt" id="g-${g.id}"><i aria-hidden="true">${g.icon}</i><b>${g.name}</b>${g.id === "sudoku" ? "" : lvOf(g)}</button>`;
+  const recent = recentGames();
+  const ic = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  h.innerHTML = `<div class="hin hub2">
+    <div class="hubtop"><div class="htitle"><b>Thinking games</b><span id="hsub">${sub}</span></div>
+      <button class="icb" id="hstats" aria-label="Stats and badges">${ic('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>')}</button>
+      <button class="icb" id="hset" aria-label="Settings">${ic('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>')}</button></div>
+    ${live ? `<button class="hbtn go slim" id="hcont"><span><b>Continue Sudoku</b><small>${G.vs && V ? `Race against ${esc(V.oppName)}` : gameLine(G)}</small></span><i>›</i></button>` : ""}
     ${workoutCard()}
-    ${live ? `<button class="hbtn go" id="hcont"><span><b>Continue Sudoku</b><small>${G.vs && V ? `Race against ${esc(V.oppName)}` : gameLine(G)}</small></span><i>›</i></button>` : ""}
-    <p class="sec">Memory</p><div class="gtiles">${GAMES.filter(g => g.sec === "mem").map(tile).join("")}</div>
-    <p class="sec">Puzzles</p><div class="gtiles"><button class="gtile" id="g-sudoku"><i aria-hidden="true">🔢</i><b>Sudoku</b><small>${sudLine}</small></button>${GAMES.filter(g => g.sec === "think").map(tile).join("")}</div>
-    <div class="hrow"><button class="hbtn sm" id="hstats"><span><b>Stats & badges</b><small>${earned} of ${BADGES.length} badges</small></span></button>
-      <button class="hbtn sm" id="hset"><span><b>Settings</b><small>Size, colours, sound</small></span></button></div>
-    <button class="hbtn" id="hidea"><span><b>💡 Suggest an idea</b><small>A new game, a setting, something hard to use…</small></span><i>›</i></button>
+    ${recent.length ? `<p class="sec">Play again</p><div class="again">${recent.map(g => `<button data-g="${g.id}" id="r-${g.id}"><i aria-hidden="true">${g.icon}</i><span>${g.name}</span></button>`).join("")}</div>` : ""}
+    <p class="sec">Memory</p><div class="gtiles c3">${GAMES.filter(g => g.sec === "mem").map(tile).join("")}</div>
+    <p class="sec">Puzzles</p><div class="gtiles c3">${tile(SUDOKU_TILE)}${GAMES.filter(g => g.sec === "think").map(tile).join("")}</div>
+    <button class="hbtn slim" id="hidea"><span><b>💡 Suggest an idea</b><small>A new game, a setting, something hard to use…</small></span><i>›</i></button>
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
+  const openId = id => { if (id === "sudoku") { homeView = "sudoku"; showHome(); h.scrollTop = 0; } else mgOpen(id); };
   if (live) $("hcont").onclick = () => { paused = false; homeView = "sudoku"; hideHome(); render(); };
-  $("g-sudoku").onclick = () => { homeView = "sudoku"; showHome(); h.scrollTop = 0; };
+  $("g-sudoku").onclick = () => openId("sudoku");
   GAMES.forEach(g => $("g-" + g.id).onclick = () => mgOpen(g.id));
+  h.querySelectorAll(".again [data-g]").forEach(b => b.onclick = () => openId(b.dataset.g));
   $("hwork").onclick = () => { const w = workoutToday(), next = w.ids.find(id => !w.done.includes(id)); if (next) mgOpen(next, { workout: true }); else toast("Today's workout is done. A new one tomorrow!"); };
   $("hstats").onclick = () => openStats("stats");
   $("hset").onclick = openSettings;
@@ -2931,7 +2976,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Have an idea for the app? Tap “Suggest an idea” at the bottom of the menu.";   // change with each update
+const NEWS = "A tidier menu: every game on one screen, and your last games under “Play again”. Stats and Settings are next to the title.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
