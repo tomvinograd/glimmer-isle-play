@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795100304;</script>
+<script>window.GAME_BUILD = 1795108767;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1641,6 +1641,66 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .lvplus { color: #fff; font-size: 20px; }
 .lvgo { color: #3d2716; font-size: 22px; }
 .lvgo:disabled { color: #6e6258; }
+/* ===== online: friends, bosses, live duel, trade ===== */
+.olwarn { background: #fff1d6; border-radius: 8px; padding: 6px 10px; color: #a0602a !important; }
+.olme, .oladd, .olinv, .olgifts, .olroom, .olboss { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 10px; background: #fff; box-shadow: 0 2px 10px rgba(91,70,54,.12); }
+.olme > span { flex: 1; display: grid; gap: 2px; min-width: 0; } .olme small { font-size: 12px; color: var(--brown-2, #8a6d55); } .olme b { font: 900 22px var(--display); letter-spacing: 2px; color: var(--brown); }
+.olme input, .oladd input { width: 100%; box-sizing: border-box; height: 38px; border: 2px solid #eadfce; border-radius: 7px; padding: 0 10px; font: 800 16px var(--display); color: var(--brown); background: #fffaf2; user-select: text; -webkit-user-select: text; }
+.oladd input { flex: 1; text-transform: uppercase; letter-spacing: 2px; }
+.olinv { background: linear-gradient(90deg, #fff1b8, #e3f6fb); } .olinv > span { flex: 1; font-size: 13.5px; } .olinv b { font-family: var(--display); }
+.olgifts > span { flex: 1; display: grid; grid-template-columns: 30px 1fr; column-gap: 8px; align-items: center; } .olgifts svg { width: 30px; height: 30px; grid-row: span 2; }
+.olgifts b { font: 800 15px var(--display); } .olgifts small { font-size: 12px; color: var(--brown-2, #8a6d55); }
+.olfl { display: grid; gap: 8px; }
+.olf { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
+.olf .rname { min-width: 0; } .olf .rname b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.olfb { display: flex; gap: 5px; } .olfb .mb { padding: 0 10px; height: 34px; } .olfb .mb svg { width: 18px; height: 18px; } .olx { color: #b0907a !important; }
+.olfeed { display: grid; gap: 3px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,.6); } .olfeed b { font: 800 13px var(--display); } .olfeed p { margin: 0; font-size: 12.5px; color: var(--brown-2, #8a6d55); }
+.olboss { align-items: center; } .olboss > div { flex: 1; display: grid; gap: 3px; } .olboss b { font: 800 19px var(--display); color: var(--brown); } .olboss small { font-size: 12px; color: var(--brown-2, #8a6d55); }
+.olbimg { width: 96px; height: 96px; flex: none; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, #ffe3d6, #f5b6a4); box-shadow: 0 0 0 3px #e5484d33; }
+.olboss.wb .olbimg { background: radial-gradient(circle, #efe3ff, #c6a8f5); box-shadow: 0 0 0 3px #a77bff44; }
+.olwbar { position: relative; height: 30px; border-radius: 15px; background: #eadfd2; overflow: hidden; box-shadow: inset 0 2px 4px rgba(91,70,54,.2); }
+.olwbar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #ff7a5c, #e5484d); border-radius: 15px; transition: width .6s; }
+.olwbar span { position: absolute; inset: 0; display: grid; place-items: center; font: 800 13px var(--display); color: var(--brown); text-shadow: 0 0 4px #fff, 0 0 2px #fff; }
+.olwbar em { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.7); }
+.olwrew { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; } .olwrew > span { display: flex; align-items: center; gap: 5px; font: 800 13px var(--display); padding: 4px 8px; border-radius: 8px; background: #fff; }
+.olwrew > span.got { opacity: .45; }
+.olroom { flex-direction: column; gap: 4px; text-align: center; } .olroom b { font: 900 26px var(--display); color: var(--brown); letter-spacing: 1px; } .olroom small { font-size: 12.5px; color: var(--brown-2, #8a6d55); }
+.olpicks { display: flex; gap: 6px; margin-top: 6px; }
+.olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
+.olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
+.olemo { display: flex; gap: 8px; justify-content: center; } .olemo .mb { font-size: 18px; min-width: 48px; justify-content: center; }
+.olsel { display: flex; gap: 8px; justify-content: center; } .olsel .pmbtn { width: 74px; height: 80px; }
+.olgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; }
+.olpick { position: relative; border: 0; border-radius: 10px; padding: 6px 2px 5px; background: #fff; display: grid; justify-items: center; gap: 2px; box-shadow: 0 0 0 2px var(--gc) inset, 0 2px 6px rgba(91,70,54,.12); color: var(--brown); }
+.olpick small { font-size: 10.5px; font-weight: 800; } .olpick.on { background: #fff1b8; box-shadow: 0 0 0 3px #f5b23c inset, 0 2px 6px rgba(91,70,54,.2); }
+.olpick.on::after { content: "\2713"; position: absolute; top: 3px; right: 6px; font: 900 14px var(--display); color: #c47f0a; }
+.oltrade { display: grid; grid-template-columns: 1fr 30px 1fr; align-items: start; gap: 6px; } .oltrade .oltx { align-self: center; } .oltrade > div { display: grid; gap: 5px; justify-items: center; } .oltrade > div > small { font: 800 12px var(--display); color: var(--brown-2, #8a6d55); }
+.oltx { font: 900 26px var(--display); color: #c47f0a; text-align: center; }
+.oltc { width: 100%; min-height: 150px; box-sizing: border-box; border-radius: 12px; padding: 8px; background: #fff; display: grid; justify-items: center; align-content: center; gap: 2px; box-shadow: 0 0 0 3px var(--gc, #eadfce) inset, 0 2px 8px rgba(91,70,54,.14); text-align: center; }
+.oltc b { font: 800 15px var(--display); color: var(--brown); } .oltc small { font-size: 11.5px; color: var(--brown-2, #8a6d55); } .oltc.empty { background: rgba(255,255,255,.55); box-shadow: 0 0 0 2px #e3d6c4 inset; }
+.olgp { display: grid !important; place-items: center; background: linear-gradient(#fff6e2, #ffe7c2) !important; } .olgp svg { width: 30px; height: 30px; } .olswap { font: 900 26px var(--display); color: #c47f0a; }
+.olrow { position: relative; } .olrow .bang { top: 8px; right: 34px; }
+.olidea textarea { width: 100%; box-sizing: border-box; border: 2px solid #eadfce; border-radius: 8px; padding: 8px 10px; font: 600 14px var(--body); color: var(--brown); background: #fffaf2; resize: vertical; user-select: text; -webkit-user-select: text; }
+.pnote { margin: 0; padding: 6px 10px; border-radius: 8px; background: #fff1d6; }
+.olbt { position: absolute; top: 158px; left: 50%; transform: translateX(-50%); z-index: 6; display: flex; align-items: baseline; gap: 8px; padding: 6px 14px; border-radius: 18px; background: rgba(40,25,15,.72); color: #fff; font-family: var(--display); pointer-events: none; }
+.olbt span { display: flex; align-items: center; gap: 4px; font-size: 15px; font-weight: 800; } .olbt span svg { width: 15px; height: 15px; } .olbt b { font-size: 22px; font-weight: 900; color: #ffd34d; } .olbt small { font-size: 11px; opacity: .85; }
+.duelplay { background-size: cover !important; background-position: center !important; position: fixed; inset: 0; z-index: 94; display: grid; grid-template-rows: auto 1fr auto 1fr; align-items: center; justify-items: center; padding: 18px 16px 30px; background: linear-gradient(#3b2f6b, #6d4f9e 45%, #f2a65a); color: #fff; overflow: hidden; }
+.dphead { font: 900 22px var(--display); letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,.4); }
+.dpside { display: grid; justify-items: center; gap: 6px; width: 100%; max-width: 300px; } .dpside b { font: 800 15px var(--display); text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.dpside .bar { width: 100%; height: 12px; } .dpdots { display: flex; gap: 6px; } .dpdots span { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; overflow: hidden; }
+.dpdots span.cur { box-shadow: 0 0 0 2px #ffd34d; background: rgba(255,255,255,.5); } .dpdots span.out { opacity: .35; filter: grayscale(1); }
+.dpmon { position: relative; animation: dpbob 1.2s ease-in-out infinite; } .dpmon.ko { opacity: .25; filter: grayscale(1); animation: none; transform: rotate(-12deg) translateY(10px); transition: all .3s; }
+.dpside.foe .dpmon { animation-delay: -.6s; }
+@keyframes dpbob { 50% { transform: translateY(-6px); } }
+.dphit { position: absolute; left: 50%; top: 10%; font: 900 20px var(--display); font-style: normal; color: #fff; text-shadow: 0 2px 0 #e5484d, 0 0 6px rgba(0,0,0,.4); animation: dphit .7s ease-out forwards; pointer-events: none; }
+@keyframes dphit { from { transform: translate(-50%, 0) scale(1.2); opacity: 1; } to { transform: translate(-50%, -40px) scale(.9); opacity: 0; } }
+.dpvs { font: 900 34px var(--display); color: #ffd34d; text-shadow: 0 3px 0 rgba(120,60,0,.6); }
+.dpres { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; background: rgba(30,20,50,.55); animation: rpop .4s ease-out; }
+.dpres b { font: 900 30px var(--display); text-align: center; padding: 0 20px; text-shadow: 0 3px 0 rgba(0,0,0,.35); } .dpres.win b { color: #ffd34d; } .dpres small { font: 900 40px var(--display); } .dpres em { font: 800 14px var(--display); font-style: normal; opacity: .85; }
+.olemofly { position: fixed; left: 50%; top: 40%; z-index: 99; transform: translateX(-50%); font: 900 54px var(--display); color: #fff; text-shadow: 0 3px 8px rgba(0,0,0,.35); pointer-events: none; animation: olemo 2.2s ease-out forwards; }
+@keyframes olemo { 0% { transform: translate(-50%, 30px) scale(.5); opacity: 0; } 15% { transform: translate(-50%, 0) scale(1.15); opacity: 1; } 75% { opacity: 1; } 100% { transform: translate(-50%, -90px) scale(1); opacity: 0; } }
+.amode .aimg.a-online { background-image: linear-gradient(135deg, #7fc8ff, #c49bff 60%, #ff9ad1); }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -1746,7 +1806,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     hp: { n: "Life charm", s: "HP", b: [.1, .18, .3], c: "#ff6fa8" }, en: { n: "Spark charm", s: "fight energy", b: [.1, .2, .3], c: "#f5b400" } };
   const CHARM_R = ["Common", "Rare", "Epic"], CHARM_RC = ["#b9a68f", "#4f9cff", "#a46bff"];
   const charmOf = m => m && m.charm && S && S.charms ? S.charms.find(c => c.id === m.charm) || null : null;
-  const charmB = (m, k) => { if (!m || !m.charm || m.wild) return 0; const c = charmOf(m); return c && c.k === k ? CHARM[c.k].b[c.r] : 0; };
+  const charmB = (m, k) => { if (m && m.xc) return m.xc.k === k ? m.xc.b : 0; if (!m || !m.charm || m.wild) return 0; const c = charmOf(m); return c && c.k === k ? CHARM[c.k].b[c.r] : 0; };
   const CHARM_ART = { atk: "item-charm-power", def: "item-charm-guard", hp: "item-charm-life", en: "item-charm-spark" };
   const charmSvg = (k, r) => ART[CHARM_ART[k]] ? `<svg viewBox="0 0 24 24">${r ? `<circle cx="12" cy="14.5" r="10.5" fill="${CHARM_RC[r]}" opacity=".5"/><circle cx="12" cy="14.5" r="10.5" fill="none" stroke="${CHARM_RC[r]}" stroke-width="1.4"/>` : ""}<image href="${ART[CHARM_ART[k]]}" x="2" y="0" width="20" height="24" preserveAspectRatio="xMidYMid meet"/></svg>` : charmSvgDrawn(k, r);
   const charmSvgDrawn = (k, r) => `<svg viewBox="0 0 24 24"><path d="M7 3.5 12 8l5-4.5" fill="none" stroke="#8a6d55" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="14" r="7.5" fill="${CHARM_RC[r || 0]}" stroke="#5b4636" stroke-width="1.3"/><circle cx="12" cy="14" r="5" fill="${CHARM[k || "atk"].c}"/>${(r || 0) >= 1 ? '<path d="M12 10.6l1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#fff"/>' : '<circle cx="10" cy="12" r="1.6" fill="#fff" opacity=".8"/>'}</svg>`;
@@ -1762,7 +1822,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return null;
   }
   const withTB = list => { const tb = teamBonus(list); return list.map(m => ({ ...m, tb })); };
-  const stat = (m, k, per) => Math.round((TIER[SP[m.sp].tier][k] + (m.lvl - 1) * per) * GRADES[m.q].mul * (m.evo ? 1.25 : 1) * (m.wild ? .8 : 1) * (1 + (m.stars || 0) * STAR_BONUS) * (1 + ascOf(m) * ASC_BONUS) * (m.boost || 1) * (1 + charmB(m, k)) * (m.tb ? (k === "atk" ? m.tb.a : k === "hp" ? m.tb.h : 1) : 1) * (m.boss && k === "hp" ? 1.5 : 1));
+  const stat = (m, k, per) => Math.round((TIER[SP[m.sp].tier][k] + (m.lvl - 1) * per) * GRADES[m.q].mul * (m.evo ? 1.25 : 1) * (m.wild ? .8 : 1) * (1 + (m.stars || 0) * STAR_BONUS) * (1 + ascOf(m) * ASC_BONUS) * (m.boost || 1) * (1 + charmB(m, k)) * (m.tb ? (k === "atk" ? m.tb.a : k === "hp" ? m.tb.h : 1) : 1) * (m.boss && k === "hp" ? 1.5 : 1) * (k === "hp" && m.hpx ? m.hpx : 1) * (k === "atk" && m.atkx ? m.atkx : 1));
   const maxHp = m => stat(m, "hp", 7), atk = m => stat(m, "atk", 2.2), def = m => stat(m, "def", 1.8);
   const interval = m => ({ round: 1, tall: .8, wide: 1.25 }[SP[m.sp].shape]);
 
@@ -2721,7 +2781,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     tickId = setInterval(() => { const now = performance.now(); tick(Math.min(.25, (now - last) / 1000)); last = now; }, 100);
   }
   const DMG_MULT = 1.6;  // all fight damage (Tom 17 Nov: fights dragged on)
-  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(DMG_MULT * atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1) * stMul(sideA, sideD) * (att.rage ? 1.3 : 1))); dfn.hp = Math.max(0, dfn.hp - dmg);  return dmg; }
+  function hit(att, dfn, power, sideA, sideD, basic) { const dmg = Math.max(1, Math.round(DMG_MULT * atk(att) * power * 60 / (60 + def(dfn)) * (sideD.sh > 0 ? .5 : 1) * stMul(sideA, sideD) * (att.rage ? 1.3 : 1))); dfn.hp = Math.max(0, dfn.hp - dmg); if (BT && BT.limit && BT.foes.includes(dfn)) BT.dealt = (BT.dealt || 0) + dmg; return dmg; }
   function doSkill(mine) {
     const me = front(), foe = BT.foes[BT.fi], a = mine ? me : foe, d = mine ? foe : me, sa = mine ? BT.me : BT.foe, sd = mine ? BT.foe : BT.me;
     return castSkill(mine, "x");
@@ -2733,7 +2793,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (BT.ko > 0) { BT.ko -= dt; if (BT.ko > 0) return; const who = BT.koWho; BT.koWho = null;  // the fallen one has fallen over: now bring in the next
       if (who === "foe") { if (BT.fi + 1 < BT.foes.length) { BT.fi++; BT.foe = { e: 0, t: 0 }; render(); return; } return endBattle(true); }
       if (front()) { BT.me.t = 0; if (!BT.auto && team().filter(m => m.hp > 0).length > 1) BT.pick = 5; render(); return; } return endBattle(false); }
-    dt *= BT.speed; BT.swapCd = Math.max(0, BT.swapCd - dt); BT.me.sh = Math.max(0, (BT.me.sh || 0) - dt); BT.foe.sh = Math.max(0, (BT.foe.sh || 0) - dt);
+    dt *= BT.speed; if (BT.limit) { BT.left -= dt; olBossTick(); if (BT.left <= 0) return endBattle(true); } BT.swapCd = Math.max(0, BT.swapCd - dt); BT.me.sh = Math.max(0, (BT.me.sh || 0) - dt); BT.foe.sh = Math.max(0, (BT.foe.sh || 0) - dt);
     const me = front(), foe = BT.foes[BT.fi]; if (!foe) return; if (!me) return endBattle(false);  // nobody left standing: never hang
     for (const [sd2, mm] of [[BT.me, me], [BT.foe, foe]]) { const st = sd2.st || (sd2.st = {}); for (const k in st) st[k] = Math.max(0, st[k] - dt);
       if (st.burn > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .04 * dt); if (st.poison > 0) mm.hp = Math.max(0, mm.hp - maxHp(mm) * .03 * dt); if (st.regen > 0) mm.hp = Math.min(maxHp(mm), mm.hp + maxHp(mm) * .015 * dt); }
@@ -2746,6 +2806,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       if (foe.boss) bossTick(foe, me, dt);
     }
     playFx();
+    if (BT.limit && foe.hp <= 0) foe.hp = 1;
     if (foe.hp <= 0) {
       if (moKO("foe")) return;
       if (BT.fi + 1 < BT.foes.length) { BT.fi++; BT.foe = { e: 0, t: 0 }; render(); return; }
@@ -3313,7 +3374,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return Array.from({ length: n }, () => foeMon(pickOf(Z.sp), 2 + f * 2, f < 5 ? 1 : f < 12 ? 1 + wpick([60, 40]) : 1 + wpick([30, 50, 20])));
   }
   // quick battle: the same fight worked out without showing it
-  function simulate(mine, foes, detail) {  // detail: { won, margin (-1..1: share of HP left on the winning side), top (foe that dealt most), topShare }
+  function simulate(mine, foes, detail, trace) {  // detail: { won, margin (-1..1: share of HP left on the winning side), top (foe that dealt most), topShare }
     const A = withTB(mine).map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), B = withTB(foes).map(m => ({ m, hp: maxHp(m), t: 0, d: 0 })), ea = { e: 0 }, eb = { e: 0 };
     let i = 0, j = 0;
     const hitS = (x, y, p, sx, sy, basic) => { const d = Math.max(1, Math.round(DMG_MULT * atk(x.m) * p * 60 / (60 + def(y.m)) * (x.rage ? 1.3 : 1))); y.hp -= d; x.d += d; };
@@ -3327,7 +3388,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       simSkill(a, b, ea, eb);
       if (b.hp > 0) { if (b.t >= interval(b.m)) { b.t -= interval(b.m); hitS(b, a, interval(b.m) * .9 * em(b, a), eb, ea, true); } simSkill(b, a, eb, ea); }
       if (b.hp <= 0) { j++; eb.e = 0; } if (a.hp <= 0) i++;
+      if (trace && Math.round(t * 10) % 5 === 0) trace.push([i, j, i < A.length ? Math.max(0, A[i].hp) : 0, j < B.length ? Math.max(0, B[j].hp) : 0]);
     }
+    if (trace) trace.push([i, j, i < A.length ? Math.max(0, A[i].hp) : 0, j < B.length ? Math.max(0, B[j].hp) : 0]);
     const won = j >= B.length; if (!detail) return won;
     const left = X => X.reduce((s, x) => s + Math.max(0, x.hp), 0) / Math.max(1, X.reduce((s, x) => s + maxHp(x.m), 0));
     const top = B.slice().sort((p, q) => q.d - p.d)[0], all = B.reduce((s, x) => s + x.d, 0);
@@ -3377,7 +3440,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const nextLabel = (P, won) => P.mode === "ladder" ? "Next match" : P.mode === "tower" ? (won ? "Next floor" : "Try again") : null;
   function playNext(P) { if (P.mode === "ladder") prepLadder(); else if (P.mode === "tower") prepTower(); }
   async function finishArena(won) {
-    const P = BT.prep; let given = [];
+    const P = BT.prep; if (P && P.boss) return olBossEnd(); olAfter(P, won); let given = [];
     if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); }
     if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); }
     save(); const ch = await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes), nextLabel(P, won));
@@ -3385,15 +3448,17 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   async function startPrep(quick) {
     const P = prep; if (!P || !team().length) return;
-    if (P.mode === "duel") duelState().left--;
-    if (quick) { const won = simulate(team(), P.foes); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); const ch = await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes), nextLabel(P, won)); prep = null; arenaSub = P.back; render(); if (ch === "next") playNext(P); return; }
+    if (P.mode === "duel") duelState().left--; if (P.boss) olBossStart(P);
+    if (quick) { const won = simulate(team(), P.foes); olAfter(P, won); let given = []; if (won) given = arenaWin(P); else if (P.mode === "duel") { const D = duelState(); D.pts = Math.max(0, D.pts - 5); } if (!won && P.mode === "ladder") { ladderRank(-RANK_LOSS[ladderTier(ladderState().pts)]); ladderLossPts(); } save(); const ch = await resultScreen(won, given, 0, won ? null : lossTips(team(), P.foes), nextLabel(P, won)); prep = null; arenaSub = P.back; render(); if (ch === "next") playNext(P); return; }
     startBattle(P.foes, "trainer", { mode: P.mode, prep: P, name: P.name, color: P.color });
+    if (P.boss && BT) { BT.limit = P.limit; BT.left = P.limit; BT.dealt = 0; }
   }
   const rchips = rs => rs.map(r => `<span class="rchip">${r.k === "charm" ? charmSvg(r.kind || "atk", r.r || 0) : RW[r.k][0]}${r.k === "charm" ? CHARM_R[r.r || 0] : r.n}</span>`).join("");
   function pageArena() {
+    if (arenaSub === "online" || /^ol/.test(arenaSub)) return pageOnline();
     const back = to => `<div class="sheethead"><button class="mb" data-act="arenasub:${to}" aria-label="Back">‹ Back</button>`;
     if (arenaSub === "prep" && prep) {
-      const P = prep, mine = team(), od = fightOdds(mine, P.foes);
+      const P = prep, mine = team(), od = P.boss ? null : fightOdds(mine, P.foes);
       const edge = (m, others, mineSide) => { const e = SP[m.sp].el, up = others.some(o => mult(e, SP[o.sp].el) > 1), down = others.some(o => mult(SP[o.sp].el, e) > 1);
         return up && !down ? `<em class="pedge up" title="Strong here">\u25B2</em>` : down && !up ? `<em class="pedge dn" title="Weak here">\u25BC</em>` : ""; };
       const mon2 = (m, mineSide) => `<div class="pmon">${art(m.sp, m.evo, 58)}${mineSide ? edge(m, P.foes) : ""}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span><span class="pel" style="color:${EL[SP[m.sp].el].color}">${EL[SP[m.sp].el].name}</span>${gChip(m.q)}</div>`;
@@ -3401,7 +3466,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
         <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><small class="ppow">Power ${teamPower(P.foes).toLocaleString("en")}${teamBonus(P.foes) ? ` \u00B7 ${teamBonus(P.foes).txt}` : ""}</small><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
           <div class="pvs">VS</div>
           <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}${teamBonus(mine) ? ` \u00B7 <span class="ptb">${teamBonus(mine).txt}</span>` : ""}</small><div class="pmons">${[0, 1, 2].map(i => mine[i] ? `<button class="pmbtn" data-act="prepslot:${i}" aria-label="Swap ${nameOf(mine[i])}">${mon2(mine[i], true)}</button>` : `<button class="pmbtn padd" data-act="prepslot:${i}" aria-label="Add a Glumi">+</button>`).join("")}</div></div></div></div>
-        ${od ? `<div class="podds ${od.cls}"><span>Forecast</span><b>${od.label}</b><div class="pobar"><i style="width:${od.fill}%"></i></div></div>` : ""}
+        ${P.note ? `<p class="hint pnote">${P.note}</p>` : ""}${od ? `<div class="podds ${od.cls}"><span>Forecast</span><b>${od.label}</b><div class="pobar"><i style="width:${od.fill}%"></i></div></div>` : ""}
         ${P.rewards.length ? `<div class="prew"><span>Reward</span>${rchips(P.rewards)}</div>` : `<p class="hint" style="margin:0">Already beaten: no reward this time.</p>`}
         <div class="pbtns"><button class="mb" data-act="view:team">Change team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick battle</button>` : ""}</div>`;
     }
@@ -3459,7 +3524,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return `<div class="head"><h2>Arena</h2></div>
       ${mode("ladder", "Ladder", `<span>${duelRank(L.pts)}</span><span>${L.lp} week points</span>`, "a-duel")}
       ${mode("tower", "Cloud Climb", `<span>Best floor ${S.tower || 0}</span>`, "a-tower")}
-      ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}`;
+      ${mode("gyms", "Gyms", `<span>${gymsDone} of ${ZONES.length} badges</span>`, "a-gym")}
+      ${mode("online", "Friends & online", `<span>${S.ol ? olState().friends.length : 0} friend${S.ol && olState().friends.length === 1 ? "" : "s"}</span><span>Bosses, duels, trades</span>`, "a-online")}`;
   }
   // ================= GRADE COLLECTION per zone (Atlas) =================
   const GC_REW = { 1: { k: "plain", n: 2 }, 2: { k: "bright", n: 1 }, 3: { k: "star", n: 1 }, 4: { k: "star", n: 2 } };
@@ -3560,7 +3626,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (L.lp === undefined) { L.lp = L.wins * LADDER_WIN; const took = L.claimed ? LADDER_MS_OLD[L.claimed - 1] * LADDER_WIN : 0; L.claimed = LADDER_MS.filter(m => m <= took).length; setTimeout(() => { ladderClaim(); render(); }, 0); }
     return L; }
   function prepLadder() {
-    const t = ladderTier(ladderState().pts); openPrep({ mode: "ladder", title: `Ladder match · ${DRANKS[t][1]}`, name: pickOf(TNAMES), color: pickOf(TCOLORS), foes: ladderFoes(), rewards: [{ k: "coins", n: Math.round((20 + avgLvl() * 3) * (1 + t * .3)) }], quick: true, back: "ladder" }); }
+    const t = ladderTier(ladderState().pts), lf = ladderFoes(), rl = olLadderReal(lf); openPrep({ mode: "ladder", real: rl ? rl.code : null, title: `Ladder match · ${DRANKS[t][1]}${rl ? " · real player" : ""}`, name: rl ? rl.name : pickOf(TNAMES), color: pickOf(TCOLORS), foes: rl ? rl.foes : lf, rewards: [{ k: "coins", n: Math.round((20 + avgLvl() * 3) * (1 + t * .3)) }], quick: true, back: "ladder" }); }
   // ================= CLOUD CLIMB =================
   const climbRewards = f => [{ k: "coins", n: 16 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }, { k: "charm", n: 1, r: f >= 30 ? 2 : f >= 20 ? 1 : 0 }] : [])];
   let climbing = false;
@@ -3801,7 +3867,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function paintCss() {  // zone paintings as backgrounds for the zone card, the Atlas card and the wide bottom tile (set once)
     if (zoneCss) return; zoneCss = true;
     const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
-      + [["a-gym", "banner-gyms", "bg-arena", "72% 55%"], ["a-duel", "banner-ladder", "bg-2", "70% 28%"], ["a-tower", "banner-cloud-climb", "bg-7", "78% 40%"], ["a-race", "banner-island-race", "bg-5", "78% 45%"]]
+      + [["a-online", "banner-online", "", "60% 45%"], ["a-gym", "banner-gyms", "bg-arena", "72% 55%"], ["a-duel", "banner-ladder", "bg-2", "70% 28%"], ["a-tower", "banner-cloud-climb", "bg-7", "78% 40%"], ["a-race", "banner-island-race", "bg-5", "78% 45%"]]
         .map(([c, b, z, pos]) => ART[b] ? `.aimg.${c}{background-image:url(${ART[b]});background-position:${pos}}` : ART[z] ? `.aimg.${c}{background-image:url(${ART[z]})}` : "").join("");
     const el = document.createElement("style"); el.textContent = r; document.body.appendChild(el);  // after the game style, wherever that is
   }
@@ -3827,7 +3893,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       <div class="mrow"><button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} waiting` : "Update gifts"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>${S.shards || 0} star shards</small></span></button></div>
       ${(() => { const ev = eventNow(); return ev ? `<div class="evcard"><b>${ev.name}</b><small>${ev.about} \u00B7 ends in ${mmss(ev.end - Date.now())}</small></div>` : ""; })()}
-      <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
+      <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="olgo:olfriends">${IC.gift || IC.star}<span>Friends</span>${olWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
   function pageStart() {
     return `<div class="head"><h2>Choose a buddy</h2></div><div class="starters">${[0, 3, 6].map(sp => `<button class="card starter" data-act="start:${sp}">${art(sp, 0, 84)}<span class="nmrow" style="font-size:16px">${SP[sp].name}</span>${elDot(SP[sp].el)}</button>`).join("")}</div>`;
@@ -5192,6 +5258,469 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       S.coins -= p; sfx("coin"); save(); render(); if (q > 1) toast(`Bought ${q} ${JAR_NAME[arg] || arg} jars`);
     }
   });
+
+  // ================= ONLINE: friends, gifts, friend battles, real Ladder teams, Daily Boss, World Boss, live duels, trades, ideas =================
+  // Every phone talks through the free public relay ntfy.sh (the same one the Sudoku race uses). Topics (all start "tvglim-"):
+  //   pub            profiles: name, friend code, team (feeds friend battles and real players in the Ladder)
+  //   in-<code>      a player's inbox: friend added, gifts, battle results, invites
+  //   db-<day>       Daily Boss scores; wb-<week> World Boss totals; r-<room> one live duel or trade room
+  // ntfy keeps messages about 12 hours and allows about 250 posts a day per internet connection, so every phone keeps what it
+  // saw and posts its own latest profile / score again when the relay may have forgotten it.
+  const RELAY = window.GLIMMER_RELAY || "https://ntfy.sh/", OLP = "tvglim-", IDEAS_TOPIC = "tvsudoku-ideas-w126b7sykrsk";
+  const olFetch = (u, o) => (window.GLIMMER_FETCH || fetch)(u, o);
+  const OL_ABC = "ACDEFHJKMNPRTUVWXY3479";  // no look-alikes
+  const olRid = (n, abc = OL_ABC) => { let s = ""; for (let k = 0; k < n; k++) s += abc[Math.floor(Math.random() * abc.length)]; return s; };
+  const olEsc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0) + ";");
+  const OL_DAY = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); };
+  const olDayN = () => { const d = new Date(); return Math.round(new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() / 86400000); };
+  let olNet = true, olFull = false, olBusy = false;
+  function olState() {
+    const O = S.ol || (S.ol = {});
+    if (!O.pid) O.pid = olRid(10, "abcdefghijkmnpqrstuvwxyz23456789"); if (!O.code) O.code = olRid(6);
+    for (const k of ["friends", "seen", "gifts", "feed", "invites"]) if (!Array.isArray(O[k])) O[k] = [];
+    for (const k of ["sent", "pool", "fwin", "done"]) if (!O[k] || typeof O[k] !== "object") O[k] = {};
+    if (O.share === undefined) O.share = true; return O;
+  }
+  const olName = () => { const O = olState(); return O.name || "Islander " + O.code.slice(0, 3); };
+  const olFriend = c => olState().friends.find(f => f.code === c);
+  function olFeed(txt) { const O = olState(); O.feed.push({ t: Date.now(), txt }); O.feed = O.feed.slice(-12); }
+  async function olPost(topic, o) {
+    try { const r = await olFetch(RELAY + OLP + topic, { method: "POST", body: JSON.stringify(o) }); if (r.status === 429) olFull = true; olNet = true; return r.ok; }
+    catch { olNet = false; return false; }
+  }
+  async function olRead(topic, since = "all") {
+    try {
+      const r = await olFetch(RELAY + OLP + topic + "/json?poll=1&since=" + since, { cache: "no-store" }); if (!r.ok) return null;
+      const txt = await r.text(), out = [];
+      for (const l of txt.split("\n")) if (l.trim()) { try { const m = JSON.parse(l); if (m.event !== "message") continue; const o = JSON.parse(m.message); if (o && typeof o === "object") { o._id = m.id; o._t = (m.time || 0) * 1000; out.push(o); } } catch {} }
+      olNet = true; return out;
+    } catch { olNet = false; return null; }
+  }
+  // ---------- teams as small snapshots (what other phones fight) ----------
+  const snapMon = m => { const c = charmOf(m), o = { sp: m.sp, l: m.lvl, q: m.q, e: m.evo ? 1 : 0, a: ascOf(m), s: m.stars || 0, k: Math.min(2, m.sk || 0) }; if (c) o.c = [c.k, c.r]; return o; };
+  const snapTeam = list => list.map(snapMon);
+  const clampN = (v, a, b) => Math.max(a, Math.min(b, Math.round(+v || 0)));
+  function snapFoe(o) {
+    if (!o || !SP[+o.sp]) return null; const sp = +o.sp;
+    const f = newMon(sp, clampN(o.l, 1, 300), clampN(o.q, 0, 4), o.e && SP[sp].evo ? 1 : 0);
+    f.asc = clampN(o.a, 0, MAX_ASC); f.stars = clampN(o.s, 0, MAX_STARS); f.sk = clampN(o.k, 0, 2);
+    if (Array.isArray(o.c) && CHARM[o.c[0]]) f.xc = { k: o.c[0], b: CHARM[o.c[0]].b[clampN(o.c[1], 0, 2)] };
+    f.real = 1; f.hp = maxHp(f); return f;
+  }
+  const snapFoes = list => (Array.isArray(list) ? list : []).slice(0, 3).map(snapFoe).filter(Boolean);
+  // ---------- profile, pool of other players, inbox ----------
+  function olProfile() { const O = olState(); return { t: "p", pid: O.pid, code: O.code, name: olName(), team: snapTeam(team()), tier: ladderTier(ladderState().pts), x: S.xlvl }; }
+  async function olShare(force) {
+    const O = olState(); if (!O.share || !S.started || !team().length) return;
+    const p = olProfile(), sig = JSON.stringify([p.name, p.team, p.tier]), ago = Date.now() - (O.pubT || 0);
+    if (!force && ((O.pubSig === sig && ago < 10 * 3600000) || ago < 20 * 60000)) return;
+    if (await olPost("pub", p)) { O.pubSig = sig; O.pubT = Date.now(); save(); }
+  }
+  async function olPull() {
+    const list = await olRead("pub"); if (!list) return false; const O = olState(); let ch = false;
+    for (const p of list) {
+      if (p.t !== "p" || !/^[A-Z0-9]{6}$/.test(p.code || "") || p.code === O.code || !Array.isArray(p.team) || !p.team.length) continue;
+      const cur = O.pool[p.code]; if (cur && cur.t >= p._t) continue;
+      O.pool[p.code] = { name: String(p.name || "Islander").slice(0, 20), team: p.team.slice(0, 3), tier: clampN(p.tier, 0, 5), t: p._t }; ch = true;
+    }
+    const keep = Object.entries(O.pool).filter(([, v]) => Date.now() - v.t < 4 * 86400000).sort((a, b) => b[1].t - a[1].t).slice(0, 60); O.pool = Object.fromEntries(keep);
+    for (const f of O.friends) { const p = O.pool[f.code]; if (p) { f.name = p.name; f.team = p.team; f.teamT = p.t; } }
+    if (ch) save(); return ch;
+  }
+  async function olInbox() {
+    const O = olState(), list = await olRead("in-" + O.code); if (!list) return false; let news = false;
+    for (const o of list) { if (O.seen.includes(o._id)) continue; O.seen.push(o._id); news = olTake(o) || news; }
+    O.seen = O.seen.slice(-300); if (news) save(); return news;
+  }
+  function olTake(o) {
+    const O = olState(), from = String(o.code || ""), nm = String(o.name || "A friend").slice(0, 20);
+    if (!/^[A-Z0-9]{6}$/.test(from) || from === O.code) return false;
+    if (o.t === "lad") { olFeed(o.won ? `${nm} beat your team in the Ladder` : `Your team beat ${nm} in the Ladder!`); return true; }
+    if (o.t === "hi") { const F = olFriend(from); if (!F) { O.friends.push({ code: from, name: nm, t: Date.now() }); olFeed(`${nm} added you as a friend`); toast(`${nm} is now your friend`); } else F.name = nm; return true; }
+    const F = olFriend(from); if (!F) return false; F.name = nm;
+    if (o.t === "gift") { if (O.gifts.some(g => g.id === o._id)) return false; O.gifts.push({ id: o._id, code: from, name: nm, t: o._t }); olFeed(`${nm} sent you a gift`); toast(`${nm} sent you a gift!`); return true; }
+    if (o.t === "fought") { olFeed(o.won ? `${nm} beat your team in a friendly battle` : `Your team beat ${nm} in a friendly battle!`); return true; }
+    if (o.t === "invite" && /^[A-Z0-9]{5}$/.test(o.room || "") && (o.kind === "duel" || o.kind === "trade")) {
+      if (Date.now() - o._t > 20 * 60000) return false;
+      O.invites = O.invites.filter(x => x.code !== from).concat([{ code: from, name: nm, room: o.room, kind: o.kind, t: o._t }]).slice(-5); toast(`${nm} invites you to a ${o.kind === "duel" ? "live duel" : "trade"}`); return true; }
+    return false;
+  }
+  const olInvites = () => olState().invites.filter(x => Date.now() - x.t < 20 * 60000);
+  const olWaiting = () => S.started && S.ol ? olState().gifts.length + olInvites().length : 0;
+  async function olSync(full) {
+    if (!S.started || olBusy) return; olBusy = true;
+    try { const a = await olInbox(); let b = false; if (full) { b = await olPull(); await olShare(); } if (a || b) olRefresh(); } finally { olBusy = false; }
+  }
+  const olOnPage = () => view === "arena" && (arenaSub === "online" || /^ol/.test(arenaSub));
+  function olRefresh() {
+    if (BT || busy || document.querySelector(".duelplay, .result, .hatch")) { renderTabs(); return; }
+    const a = document.activeElement; if (a && /INPUT|TEXTAREA/.test(a.tagName)) return;
+    if (olOnPage() || view === "menu") render(); else renderTabs();
+  }
+  // ---------- friends ----------
+  async function olAddFriend(code) {
+    const O = olState(); code = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (!/^[A-Z0-9]{6}$/.test(code)) return toast("A friend code has 6 letters and numbers");
+    if (code === O.code) return toast("That's your own code");
+    if (olFriend(code)) return toast("Already your friend");
+    if (O.friends.length >= 30) return toast("You can have up to 30 friends");
+    O.friends.push({ code, name: (O.pool[code] && O.pool[code].name) || "New friend", t: Date.now() }); save(); render();
+    const ok = await olPost("in-" + code, { t: "hi", code: O.code, name: olName() }); await olShare(true); await olPull();
+    toast(ok ? "Friend added: they'll see you in their friends list" : "Friend added. Couldn't reach the internet to tell them yet"); olRefresh();
+  }
+  async function olGift(code) {
+    const O = olState(), F = olFriend(code); if (!F || O.sent[code] === today()) return;
+    O.sent[code] = today(); save(); render();
+    const ok = await olPost("in-" + code, { t: "gift", code: O.code, name: olName() });
+    if (ok) { toast(`Gift sent to ${F.name}`); sfx("claim"); } else { delete O.sent[code]; save(); toast("Couldn't send the gift: check the internet"); render(); }
+  }
+  const OL_GIFT = [{ k: "glow", n: 10 }, { k: "coins", n: 30 }], OL_GIFTS_DAY = 5;
+  function olClaimGifts() {
+    const O = olState(); if (!O.gday || O.gday.d !== today()) O.gday = { d: today(), n: 0 };
+    const can = Math.min(O.gifts.length, OL_GIFTS_DAY - O.gday.n); if (can <= 0) return toast(`You can open ${OL_GIFTS_DAY} gifts a day: the rest wait for tomorrow`);
+    const got = O.gifts.splice(0, can); O.gday.n += can; for (let i = 0; i < can; i++) OL_GIFT.forEach(giveReward);
+    sfx("claim"); save(); render(); toast(`Opened ${can} gift${can > 1 ? "s" : ""}: +${10 * can} energy, +${30 * can} coins`);
+    const g = document.querySelector(".olgifts"); if (g) { const [x, y] = elXY(g); fxBurst(x, y, 20, CONF, 200); }
+  }
+  function olBattleFriend(code) {
+    const O = olState(), F = olFriend(code); if (!F) return;
+    const foes = snapFoes(F.team); if (!foes.length) return toast(`${F.name}'s team isn't on the relay yet: it shows up after they open the game`);
+    openPrep({ mode: "friend", code, title: "Friendly battle", name: F.name, color: TCOLORS[code.charCodeAt(0) % TCOLORS.length], foes, rewards: O.fwin[code] === today() ? [] : [{ k: "coins", n: 40 }, { k: "glow", n: 5 }], quick: true, back: "olfriends" });
+  }
+  // after any arena fight: friendly battles and real Ladder players hear how it went
+  function olAfter(P, won) {
+    if (!P) return; const O = olState();
+    if (P.mode === "friend") { if (won) O.fwin[P.code] = today(); olPost("in-" + P.code, { t: "fought", code: O.code, name: olName(), won: !!won }); }
+    if (P.mode === "ladder" && P.real) olPost("in-" + P.real, { t: "lad", code: O.code, name: olName(), won: !!won });
+  }
+  // ---------- real players in the Ladder: a pool team close in power to the made-up one, half the time ----------
+  function olLadderReal(bots) {
+    if (!S.ol || !olState().share || Math.random() < .5) return null; const O = olState(), want = teamPower(bots), mine = teamPower(team());
+    const c = Object.entries(O.pool).filter(([, p]) => Date.now() - p.t < 3 * 86400000).map(([code, p]) => ({ code, p, foes: snapFoes(p.team) }))
+      .filter(x => { const p = teamPower(x.foes); return x.foes.length >= 2 && ((p >= want * .7 && p <= want * 1.4) || (p >= mine * .75 && p <= mine * 1.25)); });  // close to the tier's made-up team or to your own
+    if (!c.length) return null; const x = pickOf(c); return { name: x.p.name, code: x.code, foes: x.foes };
+  }
+  // ---------- Daily Boss + World Boss: timed fights against a giant guardian scaled to your team ----------
+  const OL_BOSS = { d: { q: 2, up: 0, hpx: 40, atkx: .35, limit: 40, tries: 3, name: "Daily Boss" }, w: { q: 3, up: 0, hpx: 60, atkx: .22, limit: 40, tries: 5, name: "World Boss" } };  // giant HP, soft hits: the team lasts most of the 40 s
+  const WB_PER = 2500;  // World Boss points needed per player who joins this week (at least 2 players' worth)
+  function olBossFoe(kind) {
+    const B = OL_BOSS[kind], G = ZONES.map(z => z.boss), sp = G[(kind === "d" ? olDayN() : weekId() + 3) % G.length];
+    const f = newMon(sp, Math.max(1, avgLvl() + B.up), B.q, kind === "w" && SP[sp].evo ? 1 : 0); f.boss = 1; f.hpx = B.hpx; f.atkx = B.atkx; f.hp = maxHp(f); return f;
+  }
+  function olDb() { const O = olState(), d = OL_DAY(); if (!O.db || O.db.d !== d) O.db = { d, left: OL_BOSS.d.tries, best: 0, postT: 0, board: {} }; return O.db; }
+  function olWb() { const O = olState(), w = weekId(); if (!O.wb || O.wb.w !== w) O.wb = { w, me: 0, day: "", left: 0, postT: 0, others: {}, claimed: 0 }; if (O.wb.day !== today()) { O.wb.day = today(); O.wb.left = OL_BOSS.w.tries; } return O.wb; }
+  const wbPlayers = W => Object.values(W.others).filter(p => p.pts > 0).length + (W.me > 0 ? 1 : 0);
+  const wbGoal = W => WB_PER * Math.max(2, wbPlayers(W));
+  const wbSum = W => Object.values(W.others).reduce((s, p) => s + p.pts, 0) + W.me;
+  async function olBoards(kind) {
+    const O = olState();
+    if (kind === "d") { const D = olDb(), list = await olRead("db-" + D.d); if (!list) return;
+      for (const o of list) { if (o.t !== "d" || !o.pid || o.pid === O.pid) continue; const cur = D.board[o.pid]; const pts = clampN(o.pts, 0, 1e7); if (!cur || cur.pts < pts) D.board[o.pid] = { name: String(o.name || "Islander").slice(0, 20), code: String(o.code || ""), pts, lead: clampN(o.lead, 0, 99) }; }
+      if (D.best > 0 && Date.now() - D.postT > 10 * 3600000 && !list.some(o => o.pid === O.pid && +o.pts >= D.best)) olBossPost("d");
+    } else { const W = olWb(), list = await olRead("wb-" + W.w); if (!list) return;
+      for (const o of list) { if (o.t !== "w" || !o.pid || o.pid === O.pid) continue; const cur = W.others[o.pid], pts = clampN(o.pts, 0, 1e7); if (!cur || cur.pts < pts) W.others[o.pid] = { name: String(o.name || "Islander").slice(0, 20), pts, lead: clampN(o.lead, 0, 99) }; }
+      if (W.me > 0 && Date.now() - W.postT > 10 * 3600000 && !list.some(o => o.pid === O.pid && +o.pts >= W.me)) olBossPost("w");
+    }
+    save();
+  }
+  async function olBossPost(kind) {
+    const O = olState();
+    if (kind === "d") { const D = olDb(); if (await olPost("db-" + D.d, { t: "d", pid: O.pid, code: O.code, name: olName(), pts: D.best, lead: team()[0] ? team()[0].sp : 0 })) { D.postT = Date.now(); save(); } }
+    else { const W = olWb(); if (await olPost("wb-" + W.w, { t: "w", pid: O.pid, name: olName(), pts: W.me, lead: team()[0] ? team()[0].sp : 0 })) { W.postT = Date.now(); save(); } }
+  }
+  function olBossPrep(kind) {
+    const B = OL_BOSS[kind], left = kind === "d" ? olDb().left : olWb().left; if (left <= 0) return toast(`No ${B.name} tries left today`);
+    const f = olBossFoe(kind);
+    openPrep({ mode: kind === "d" ? "dboss" : "wboss", boss: kind, limit: B.limit, title: B.name, name: B.name, color: "#e5484d", foes: [f], rewards: [{ k: "coins", n: 30 }, { k: "glow", n: 10 }], quick: false, back: kind === "d" ? "oldboss" : "olwboss",
+      note: `${B.limit} seconds to deal as much damage as you can. It matches your team's level. ${left} ${left === 1 ? "try" : "tries"} left today.` });
+  }
+  function olBossStart(P) { if (P.boss === "d") olDb().left--; else olWb().left--; save(); }
+  function olBossTick() {
+    let d = $("olbt"); if (!d) { d = document.createElement("div"); d.id = "olbt"; d.className = "olbt"; $("arena").appendChild(d); }
+    const foe = BT.foes[0], life = maxHp(foe) / (foe.hpx || 1), pts = Math.round((BT.dealt || 0) / life * 100);
+    d.innerHTML = `<span>${CLOCK}${Math.max(0, Math.ceil(BT.left))}s</span><b>${pts.toLocaleString("en")}</b><small>points</small>`;
+  }
+  async function olBossEnd() {
+    const P = BT.prep, foe = BT.foes[0], life = maxHp(foe) / (foe.hpx || 1), pts = Math.round((BT.dealt || 0) / life * 100), kind = P.boss;
+    const tb = $("olbt"); if (tb) tb.remove();
+    const rew = [{ k: "coins", n: Math.min(300, 20 + Math.round(pts / 4)) }, ...(pts >= 100 ? [{ k: "glow", n: 10 }] : []), ...(pts >= 300 ? [{ k: "bright", n: 1 }] : [])];
+    rew.forEach(giveReward); track("win", null, 20); let line = "";
+    if (kind === "d") { const D = olDb(); if (pts > D.best) { D.best = pts; line = "New best today!"; olBossPost("d"); } else line = `Your best today: ${D.best.toLocaleString("en")}`; }
+    else { const W = olWb(); W.me += pts; line = `You've hit it for ${W.me.toLocaleString("en")} this week`; olBossPost("w"); }
+    save(); BT = null; prep = null; arenaSub = P.back; render();
+    await new Promise(res => { const d = document.createElement("div"); d.className = "result win";
+      d.innerHTML = `<h1>${pts.toLocaleString("en")}</h1><p class="rtip">points of damage · ${line}</p><div class="rrew">${rew.map(r => `<span>${RW[r.k][0]}<b>+${r.n}</b></span>`).join("")}</div><p class="rtap">Tap to close</p>`;
+      document.body.appendChild(d); sfx("win"); setTimeout(() => fxRain(60), 120); setTimeout(() => d.addEventListener("click", () => { d.remove(); res(); }), 350); });
+    olBoards(kind).then(olRefresh);
+  }
+  function olWbClaim() {
+    const W = olWb(), pct = wbSum(W) / wbGoal(W); if (W.me <= 0) return toast("Hit the World Boss once this week to share the reward");
+    const steps = [[.5, [{ k: "coins", n: 250 }, { k: "star", n: 1 }]], [1, [{ k: "star", n: 2 }, { k: "egg3", n: 1 }]]]; let got = [];
+    while (W.claimed < steps.length && pct >= steps[W.claimed][0]) { got = got.concat(steps[W.claimed][1]); W.claimed++; }
+    if (!got.length) return; got.forEach(giveReward); sfx("claim"); save(); render(); toast("World Boss reward: " + got.map(r => `${r.n} ${RW[r.k][1]}`).join(", "));
+  }
+  // ---------- live rooms (duel or trade): both phones read the same message list, so both work out the same state ----------
+  let R = null;
+  function roomOpen(code, kind, host) { roomClose(false); R = { code, kind, host, log: [], seen: new Set(), last: "", t0: Date.now(), net: true, played: {} }; roomConnect(); if (host) roomPost({ t: "hello", kind }); else setTimeout(() => { if (R && R.code === code && !roomHost()) { roomClose(false); toast("No room with that code. Check the code and try again"); render(); } }, 9000); }
+  function roomConnect() {
+    const r = R; if (!r) return; const ES = window.GLIMMER_ES || window.EventSource; if (!ES) return;
+    let es; try { es = new ES(RELAY + OLP + "r-" + r.code + "/sse?since=" + (r.last || "all")); } catch { return; } r.es = es;
+    es.onopen = () => { if (R === r) { r.net = true; } };
+    es.onmessage = e => { if (R !== r) return; let m; try { m = JSON.parse(e.data); } catch { return; } if (roomTake(m)) roomSync(); };
+    es.onerror = () => { if (R !== r) return; r.net = false; if (es.readyState === 2) { r.es = null; setTimeout(() => { if (R === r && !r.es) roomConnect(); }, 4000); } };
+  }
+  function roomTake(m) {
+    if (!m || m.event !== "message" || !m.id || R.seen.has(m.id)) return false; R.seen.add(m.id); R.last = m.id;
+    let o; try { o = JSON.parse(m.message); } catch { return false; } if (!o || !o.t || !o.pid) return false; o._id = m.id; R.log.push(o); return true;
+  }
+  function roomPost(o) { const O = olState(); return R ? olPost("r-" + R.code, Object.assign({ pid: O.pid, code: O.code, name: olName(), v: window.GAME_BUILD || 0 }, o)) : Promise.resolve(false); }
+  function roomClose(say) { if (!R) return; if (say) roomPost({ t: "bye" }); if (R.es) try { R.es.close(); } catch {} R = null; }
+  const roomPlayers = () => { const ids = []; for (const o of R.log) if (o.t === "hello" && !ids.some(x => x.pid === o.pid) && ids.length < 2) ids.push(o); return ids; };
+  const roomHost = () => roomPlayers()[0] || null;
+  const roomOther = () => { const me = olState().pid; return roomPlayers().find(p => p.pid !== me) || null; };
+  const roomIn = () => roomPlayers().some(p => p.pid === olState().pid);
+  const roomGone = () => { const o = roomOther(); return !!o && R.log.some(x => x.t === "bye" && x.pid === o.pid); };
+  function roomSync() {
+    if (!R) return; const O = olState(), h = roomHost();
+    if (!R.host && h && !R.kind) { R.kind = h.kind; if (!roomIn()) { if (roomPlayers().length >= 2) { toast("That room is full"); roomClose(false); render(); return; } roomPost({ t: "hello", kind: R.kind }); } }
+    const again = R.log.find(o => o.t === "again"); if (again && !R.moved) { R.moved = true; const k = R.kind, mine = again.pid === O.pid; setTimeout(() => { roomOpen(again.room, k, mine); render(); }, 400); return; }
+    if (R.kind === "duel") duelSync(); if (R.kind === "trade") tradeSync();
+    olRefresh();
+  }
+  async function olInvite(code) {
+    const O = olState(), F = olFriend(code); if (!F || !R) return;
+    const ok = await olPost("in-" + code, { t: "invite", code: O.code, name: olName(), room: R.code, kind: R.kind }); toast(ok ? `Invite sent to ${F.name}` : "Couldn't send the invite");
+  }
+  // ---------- live duel: best of 3 rounds; each round both pick 3 Glumis, the fight is worked out the same way on both phones ----------
+  let duelSel = null;
+  const duelPick = (r, pid) => R.log.find(o => o.t === "pick" && o.r === r && o.pid === pid);
+  function duelRounds() {
+    const P = roomPlayers(); if (P.length < 2) return { rounds: [], wins: [0, 0], over: false };
+    const out = [], wins = [0, 0];
+    for (let r = 1; r <= 3 && wins[0] < 2 && wins[1] < 2; r++) {
+      const a = duelPick(r, P[0].pid), b = duelPick(r, P[1].pid); if (!a || !b) { out.push({ r, a, b }); break; }
+      const tr = [], A = snapFoes(a.team), B = snapFoes(b.team); A.forEach(m => delete m.real); B.forEach(m => delete m.real);
+      const res = simulate(A, B, true, tr); wins[res.won ? 0 : 1]++; out.push({ r, a, b, A, B, tr, hostWon: res.won });
+    }
+    return { rounds: out, wins, over: wins[0] >= 2 || wins[1] >= 2 };
+  }
+  function duelSync() {
+    const D = duelRounds(), P = roomPlayers(), meHost = P[0] && P[0].pid === olState().pid;
+    const ready = D.rounds.find(x => x.tr && !R.played[x.r]);
+    if (ready && !document.querySelector(".duelplay")) { R.played[ready.r] = 1; duelPlay(ready, meHost, D); return; }
+    if (D.over && !R.rewarded && !document.querySelector(".duelplay")) duelReward(D, meHost);
+  }
+  function duelReward(D, meHost) {
+    const O = olState(); R.rewarded = true; if (O.done[R.code]) return; O.done[R.code] = 1;
+    const won = meHost ? D.wins[0] >= 2 : D.wins[1] >= 2; if (!O.dday || O.dday.d !== today()) O.dday = { d: today(), n: 0 };
+    O.dwins = (O.dwins || 0) + (won ? 1 : 0); O.dlosses = (O.dlosses || 0) + (won ? 0 : 1);
+    if (O.dday.n < 5) { O.dday.n++; const rew = won ? [{ k: "coins", n: 80 }, { k: "glow", n: 10 }] : [{ k: "coins", n: 25 }]; rew.forEach(giveReward); toast(`${won ? "You won the duel!" : "Good duel!"} +${rew.map(r => `${r.n} ${RW[r.k][1]}`).join(", ")}`); }
+    olFeed(`${won ? "Won" : "Lost"} a live duel against ${(roomOther() || {}).name || "a friend"}`); save();
+  }
+  function duelPlay(x, meHost, D) {  // the round's fight, played back from the worked-out trace
+    const mineT = meHost ? x.A : x.B, theirT = meHost ? x.B : x.A, mi = meHost ? 0 : 1, ti = meHost ? 1 : 0, iWon = meHost ? x.hostWon : !x.hostWon;
+    const d = document.createElement("div"); d.className = "duelplay"; if (ART["bg-arena"]) d.style.backgroundImage = `linear-gradient(rgba(40,25,70,.62), rgba(60,35,90,.35) 50%, rgba(40,25,70,.62)), url(${ART["bg-arena"]})`; document.body.appendChild(d);
+    const other = (roomOther() || {}).name || "Friend";
+    const side = (list, k, hp, who) => { const m = list[Math.min(k, list.length - 1)], out = k >= list.length; return `<div class="dpside ${who}"><div class="dpdots">${list.map((q, i) => `<span class="${i < k ? "out" : i === k ? "cur" : ""}">${art(q.sp, q.evo, 28)}</span>`).join("")}</div><div class="dpmon${out ? " ko" : ""}">${art(m.sp, m.evo, who === "me" ? 120 : 100)}</div>${bar(out ? 0 : hp, maxHp(withTB(list)[Math.min(k, list.length - 1)]))}<b>${who === "me" ? "You" : olEsc(other)}</b></div>`; };
+    const tr = x.tr.length > 120 ? x.tr.filter((_, i) => i % Math.ceil(x.tr.length / 120) === 0).concat([x.tr[x.tr.length - 1]]) : x.tr;
+    let f = 0, lastA = null, lastB = null; sfx("tap");
+    const step = () => {
+      if (!d.isConnected) return; const fr = tr[Math.min(f, tr.length - 1)], mk = fr[mi], tk = fr[ti], mh = fr[2 + mi], th = fr[2 + ti];
+      d.innerHTML = `<div class="dphead">Round ${x.r}</div>${side(theirT, tk, th, "foe")}<div class="dpvs">VS</div>${side(mineT, mk, mh, "me")}`;
+      const pop = (who, v) => { const el = d.querySelector(`.dpside.${who} .dpmon`); if (!el || v <= 0) return; const s = document.createElement("i"); s.className = "dphit"; s.textContent = "-" + v; el.appendChild(s); };
+      if (lastA && lastA[mi] === mk) pop("me", Math.round(lastA[2 + mi] - mh)); if (lastB && lastB[ti] === tk) pop("foe", Math.round(lastB[2 + ti] - th));
+      lastA = fr; lastB = fr; f++;
+      if (f < tr.length) setTimeout(step, RM ? 30 : 130);
+      else setTimeout(() => { if (!d.isConnected) return; let mw = 0, tw = 0; for (const y of D.rounds) if (y.tr && y.r <= x.r) { if ((meHost ? y.hostWon : !y.hostWon)) mw++; else tw++; }
+        d.insertAdjacentHTML("beforeend", `<div class="dpres ${iWon ? "win" : "lose"}"><b>${iWon ? "You win round " + x.r + "!" : olEsc(other) + " wins round " + x.r}</b><small>${mw} : ${tw}</small><em>Tap to go on</em></div>`);
+        sfx(iWon ? "win" : "tap"); if (iWon) fxRain(40); const end = () => { d.remove(); duelSel = null; render(); roomSync(); }; setTimeout(() => d.addEventListener("click", end), 300); setTimeout(() => { if (d.isConnected) end(); }, 4000); }, 500);
+    };
+    step();
+  }
+  function duelReady() {
+    if (!R) return; const D = duelRounds(), cur = D.rounds.find(x => !x.tr); if (!cur) return;
+    const list = (duelSel || S.team).map(mon).filter(Boolean).slice(0, 3); if (!list.length) return toast("Pick at least one Glumi");
+    if (duelPick(cur.r, olState().pid)) return; roomPost({ t: "pick", r: cur.r, team: snapTeam(list) }); toast("Ready! Waiting for your friend"); duelSel = null;
+  }
+  // ---------- trade: each puts up one spare Glumi; when both say OK to the same two, both phones swap ----------
+  let tradePickOn = false;
+  const tradeOffer = pid => { let o = null; for (const x of R.log) if (x.t === "offer" && x.pid === pid) o = x; return o; };
+  const tradeOk = pid => { let o = null; for (const x of R.log) if ((x.t === "ok" || x.t === "offer") && x.pid === pid) o = x; return o && o.t === "ok" ? o : null; };
+  function tradeState() {
+    const P = roomPlayers(), O = olState(); if (P.length < 2) return null;
+    const mine = tradeOffer(O.pid), theirs = tradeOffer((roomOther() || {}).pid), pair = mine && theirs ? [tradeOffer(P[0].pid)._id, tradeOffer(P[1].pid)._id].join("|") : "";
+    const okMe = tradeOk(O.pid), okThem = tradeOk((roomOther() || {}).pid);
+    return { mine, theirs, pair, okMe: !!(okMe && okMe.h === pair && pair), okThem: !!(okThem && okThem.h === pair && pair) };
+  }
+  function tradeSync() {
+    const T = tradeState(), O = olState(); if (!T || !T.okMe || !T.okThem || O.done[R.code]) return;
+    const m = mon(T.mine.uid); O.done[R.code] = 1;
+    if (!m || !isSpare(m)) { save(); toast("Trade stopped: your Glumi isn't free to trade any more"); return; }
+    const g = T.theirs.mon && snapFoe(T.theirs.mon); if (!g) { save(); return; }
+    S.mons = S.mons.filter(x => x.uid !== m.uid);
+    delete g.real; delete g.xc; g.uid = S.nextUid++; g.hp = maxHp(g); g.isNew = 1; g.from = String(T.theirs.name || "").slice(0, 20); S.mons.push(g);
+    const k = key(g.sp, g.evo); if (!S.caught[k]) { S.bookNew = S.bookNew || {}; S.bookNew[k] = 1; } S.caught[k] = 1; S.seen[k] = 1;
+    logEv(`Traded ${nameOf(m)} for ${GRADES[g.q].name} ${fname(g.sp, g.evo)}`); olFeed(`Traded with ${g.from}: got ${GRADES[g.q].name} ${fname(g.sp, g.evo)}`); save();
+    setTimeout(() => reveal(g, "Traded!"), 200);
+  }
+  function tradePut(uid) {
+    const m = mon(uid); if (!m || !R) return; if (!isSpare(m)) return toast("Only spare Glumis can be traded (not in the team, locked, a favorite, working or away)");
+    tradePickOn = false; roomPost({ t: "offer", uid, mon: snapMon(m) }); render();
+  }
+  function tradeAccept() { const T = tradeState(); if (!T || !T.mine || !T.theirs) return; roomPost({ t: "ok", h: T.pair }); toast("OK sent: the trade happens when your friend says OK too"); }
+  // ---------- ideas: straight to the game maker's phone ----------
+  function olIdeas() {
+    closePopup(); const O = olState(), sentToday = (O.ideas || []).filter(x => x.d === today()).length;
+    const d = document.createElement("div"); d.className = "popwrap";
+    d.innerHTML = `<div class="popbg" data-act="closepop"></div><div class="popup olidea" role="dialog"><h3>Suggest an idea</h3><p>A new Glumi, a game mode, something that's hard to find or a bug: every message is read.</p>
+      <textarea id="olidtx" maxlength="800" rows="5" placeholder="Your idea"></textarea>
+      <p class="hint">Please don't write private details: messages travel through a public message service.</p>
+      <div class="popbtns"><button class="mb" data-act="closepop">Close</button><button class="mb gold" data-act="olidsend" ${sentToday >= 5 ? "disabled" : ""}>Send</button></div></div>`;
+    document.body.appendChild(d);
+  }
+  async function olIdeaSend() {
+    const O = olState(), tx = $("olidtx"), text = tx ? tx.value.trim() : ""; if (text.length < 3) return toast("Write a few words first");
+    if ((O.ideas || []).filter(x => x.d === today()).length >= 5) return toast("That's 5 ideas today, thank you!");
+    const body = JSON.stringify({ topic: IDEAS_TOPIC, title: "Glimmer Isle · idea", tags: ["bulb"], message: `${text}\n\n— ${olName()} · ${versionText()}` });
+    try { const r = await olFetch(RELAY, { method: "POST", body }); if (!r.ok) throw 0; O.ideas = (O.ideas || []).concat([{ d: today(), text: text.slice(0, 200) }]).slice(-10); save(); closePopup(); sfx("claim"); toast("Thank you! Your idea was sent"); }
+    catch { toast("Couldn't send right now: check the internet"); }
+  }
+  // ---------- pages (inside the Arena tab) ----------
+  const olBack = to => `<div class="sheethead"><button class="mb" data-act="arenasub:${to}" aria-label="Back">‹ Back</button>`;
+  const olNetNote = () => !olNet ? `<p class="hint olwarn">Offline: online features come back with the internet.</p>` : olFull ? `<p class="hint olwarn">The free relay is busy for this internet connection today. Try again later.</p>` : "";
+  const olLeadArt = list => { const f = snapFoes(list)[0]; return f ? art(f.sp, f.evo, 40) : ""; };
+  function pageOnline() {
+    const O = olState();
+    if (arenaSub === "olfriends") {
+      const gi = O.gifts.length, inv = olInvites();
+      const row = F => { const foes = snapFoes(F.team), sent = O.sent[F.code] === today();
+        return `<div class="olf"><span class="rav">${foes[0] ? art(foes[0].sp, foes[0].evo, 40) : ""}</span><span class="rname"><b>${olEsc(F.name)}</b><small>${foes.length ? `Power ${teamPower(foes).toLocaleString("en")}` : "Team not seen yet"} · ${F.code}</small></span>
+          <span class="olfb"><button class="mb gold" data-act="olbattle:${F.code}" ${foes.length ? "" : "disabled"}>Battle</button><button class="mb" data-act="olgift:${F.code}" ${sent ? "disabled" : ""} aria-label="Send a gift">${sent ? "✓" : IC.gift || IC.star}</button><button class="mb olx" data-act="olunfriend:${F.code}" aria-label="Remove ${olEsc(F.name)}">×</button></span></div>`; };
+      return `${olBack("online")}<h3>Friends</h3><span></span></div>${olNetNote()}
+        <div class="olme"><span><small>Your friend code</small><b>${O.code}</b></span><button class="mb" data-act="olshare">Share</button></div>
+        <div class="oladd"><input id="olcode" maxlength="7" placeholder="Friend's code" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="mb gold" data-act="oladd">Add</button></div>
+        ${inv.map(x => `<div class="olinv"><span><b>${olEsc(x.name)}</b> invites you to a ${x.kind === "duel" ? "live duel" : "trade"}</span><button class="mb gold" data-act="oljoin:${x.kind}:${x.room}">Join</button></div>`).join("")}
+        ${gi ? `<div class="olgifts"><span>${IC.gift || IC.star}<b>${gi} gift${gi > 1 ? "s" : ""} from friends</b><small>Each: +10 energy, +30 coins (${OL_GIFTS_DAY} a day)</small></span><button class="mb gold" data-act="olgifts">Open</button></div>` : ""}
+        ${O.friends.length ? `<div class="olfl">${O.friends.map(row).join("")}</div>` : `<p class="hint" style="margin:14px 0">No friends yet. Send your code to a friend, or type theirs above.</p>`}
+        <p class="hint">Battle: fight a friend's team (they hear how it went). A gift a day to each friend: energy and coins.</p>
+        ${O.feed.length ? `<div class="olfeed"><b>Latest</b>${O.feed.slice().reverse().slice(0, 6).map(x => `<p>${olEsc(x.txt)}</p>`).join("")}</div>` : ""}`;
+    }
+    if (arenaSub === "oldboss") {
+      const D = olDb(), f = olBossFoe("d"), rows = Object.values(D.board).concat(D.best ? [{ name: olName(), pts: D.best, me: 1, lead: team()[0] ? team()[0].sp : 0 }] : []).sort((a, b) => b.pts - a.pts).slice(0, 15);
+      return `${olBack("online")}<h3>Daily Boss</h3><span></span></div>${olNetNote()}
+        <div class="olboss"><span class="olbimg">${art(f.sp, f.evo, 96)}</span><div><b>${fname(f.sp, f.evo)}</b><small>${EL[SP[f.sp].el].name} · the same boss for everyone today</small><small>Tries left: ${D.left} of ${OL_BOSS.d.tries} · Your best: ${D.best.toLocaleString("en")}</small></div></div>
+        <button class="mb gold pbig" data-act="olboss:d" ${D.left > 0 && team().length ? "" : "disabled"}>Fight</button>
+        <p class="hint">${OL_BOSS.d.limit} seconds to deal as much damage as you can. 100 points = one life of a normal boss at your level. More points, more coins.</p>
+        <div class="race">${rows.length ? rows.map((r, i) => `<div class="rrow${r.me ? " me" : ""} p${i + 1}"><span class="rpos">${i + 1}</span><span class="rav">${art(r.lead || 0, 0, 40)}</span><span class="rname"><b>${olEsc(r.name)}${!r.me && r.code && olFriend(r.code) ? " ♥" : ""}</b><small>${r.pts.toLocaleString("en")} points</small></span><span></span></div>`).join("") : `<p class="hint">Nobody has fought today's boss yet.</p>`}</div>`;
+    }
+    if (arenaSub === "olwboss") {
+      const W = olWb(), f = olBossFoe("w"), sum = wbSum(W), goal = wbGoal(W), pct = Math.min(1, sum / goal), weekEnd = (weekId() + 1) * 7 * 86400000 + 4 * 86400000;
+      const top = Object.values(W.others).concat(W.me ? [{ name: olName(), pts: W.me, me: 1, lead: team()[0] ? team()[0].sp : 0 }] : []).sort((a, b) => b.pts - a.pts).slice(0, 10);
+      const canClaim = W.me > 0 && ((W.claimed < 1 && pct >= .5) || (W.claimed < 2 && pct >= 1));
+      return `${olBack("online")}<h3>World Boss</h3><span class="atimer">${CLOCK}${mmss(weekEnd - Date.now())}</span></div>${olNetNote()}
+        <div class="olboss wb"><span class="olbimg">${art(f.sp, f.evo, 96)}</span><div><b>${fname(f.sp, f.evo)}</b><small>Everyone's hits this week add up. ${wbPlayers(W)} player${wbPlayers(W) === 1 ? "" : "s"} so far.</small></div></div>
+        <div class="olwbar"><i style="width:${Math.round(pct * 100)}%"></i><span>${Math.round(pct * 100)}% · ${sum.toLocaleString("en")} of ${goal.toLocaleString("en")}</span><em style="left:50%"></em></div>
+        <div class="olwrew"><span class="${W.claimed >= 1 ? "got" : ""}">50%: ${rchips([{ k: "coins", n: 250 }, { k: "star", n: 1 }])}</span><span class="${W.claimed >= 2 ? "got" : ""}">100%: ${rchips([{ k: "star", n: 2 }, { k: "egg3", n: 1 }])}</span></div>
+        ${canClaim ? `<button class="mb gold pbig" data-act="olwbclaim">Claim reward</button>` : ""}
+        <button class="mb ${canClaim ? "" : "gold "}pbig" data-act="olboss:w" ${W.left > 0 && team().length ? "" : "disabled"}>Hit it (${W.left} left today)</button>
+        <p class="hint">Everyone who hits it this week shares the rewards. You: ${W.me.toLocaleString("en")} points.</p>
+        ${top.length ? `<div class="race">${top.map((r, i) => `<div class="rrow${r.me ? " me" : ""} p${i + 1}"><span class="rpos">${i + 1}</span><span class="rav">${art(r.lead || 0, 0, 40)}</span><span class="rname"><b>${olEsc(r.name)}</b><small>${r.pts.toLocaleString("en")} points</small></span><span></span></div>`).join("")}</div>` : ""}`;
+    }
+    if (arenaSub === "olduel" || arenaSub === "oltrade") {
+      const kind = arenaSub === "olduel" ? "duel" : "trade", title = kind === "duel" ? "Live duel" : "Trade";
+      const head = `${olBack(R && R.kind === kind ? "olleave" : "online")}<h3>${title}</h3><span></span></div>${olNetNote()}`;
+      if (!R || (R.kind && R.kind !== kind)) return `${head}
+        <p class="hint" style="margin:6px 0 10px">${kind === "duel" ? "Both phones at the same time: best of 3 rounds, pick 3 Glumis each round, watch them fight." : "Both phones at the same time: each puts up one spare Glumi, both say OK, and they swap."}</p>
+        <button class="mb gold pbig" data-act="olmake:${kind}">Make a room</button>
+        <div class="oladd"><input id="olroom" maxlength="6" placeholder="Room code" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="mb" data-act="olenter:${kind}">Join</button></div>`;
+      const P = roomPlayers(), other = roomOther();
+      if (!R.kind || !roomIn()) return `${head}<p class="hint" style="margin:24px 0">Joining room ${R.code}...</p>`;
+      if (!other) return `${head}<div class="olroom"><small>Room code</small><b>${R.code}</b><small>Your friend opens ${title} and types this code</small></div>
+        ${O.friends.length ? `<div class="olfl">${O.friends.map(F => `<div class="olf"><span class="rname"><b>${olEsc(F.name)}</b></span><span class="olfb"><button class="mb" data-act="olinvite:${F.code}">Invite</button></span></div>`).join("")}</div>` : ""}
+        <p class="hint">Waiting for your friend...</p>`;
+      if (roomGone()) return `${head}<p class="hint" style="margin:24px 0">${olEsc(other.name)} left the room.</p><button class="mb gold pbig" data-act="arenasub:olleave">OK</button>`;
+      if (kind === "duel") {
+        const D = duelRounds(), meHost = P[0].pid === O.pid, mw = D.wins[meHost ? 0 : 1], tw = D.wins[meHost ? 1 : 0];
+        const score = `<div class="olscore"><span><b>You</b><em>${mw}</em></span><i>:</i><span><em>${tw}</em><b>${olEsc(other.name)}</b></span></div>`;
+        const emo = `<div class="olemo">${["\u{1F44B}", "\u{1F604}", "\u{1F62E}", "GG"].map((e, i) => `<button class="mb" data-act="olemo:${i}">${e}</button>`).join("")}</div>`;
+        if (D.over) { const won = mw > tw; return `${head}${score}<div class="olroom"><b>${won ? "You won the duel!" : olEsc(other.name) + " won the duel"}</b><small>${O.dwins || 0} duel wins · ${O.dlosses || 0} losses</small></div>${emo}
+          <div class="pbtns"><button class="mb" data-act="arenasub:olleave">Leave</button><button class="mb gold pbig" data-act="olagain">Rematch</button></div>`; }
+        const cur = D.rounds.find(x => !x.tr) || { r: 1 }, picked = duelPick(cur.r, O.pid);
+        if (picked) return `${head}${score}<div class="olroom"><b>Round ${cur.r}</b><small>Ready! Waiting for ${olEsc(other.name)} to pick...</small><span class="olpicks">${snapFoes(picked.team).map(m => art(m.sp, m.evo, 54)).join("")}</span></div>${emo}`;
+        const sel = (duelSel || S.team.slice()).filter(u => mon(u)), cands = S.mons.slice().sort((a, b) => monPower(b) - monPower(a)).slice(0, 24);
+        return `${head}${score}<p class="hint" style="margin:4px 0"><b>Round ${cur.r}:</b> pick up to 3 Glumis (first one fights first), then Ready.</p>
+          <div class="olsel">${[0, 1, 2].map(i => { const m = mon(sel[i]); return m ? `<button class="pmbtn" data-act="olunsel:${m.uid}">${art(m.sp, m.evo, 54)}<span class="lv">Lv ${m.lvl}</span></button>` : `<span class="pmbtn padd">+</span>`; }).join("")}</div>
+          <button class="mb gold pbig" data-act="olready" ${sel.length ? "" : "disabled"}>Ready</button>
+          <div class="olgrid">${cands.map(m => `<button class="olpick${sel.includes(m.uid) ? " on" : ""}" data-act="olsel:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 52)}<small>Lv ${m.lvl} · ${monPower(m)}</small></button>`).join("")}</div>${emo}`;
+      }
+      const T = tradeState(), mine = T && T.mine, theirs = T && T.theirs, done = O.done[R.code];
+      const card = (o, who) => { if (!o) return `<div class="oltc empty"><small>${who === "me" ? "Pick a Glumi to put up" : "Waiting for " + olEsc(other.name) + "..."}</small></div>`; const g = snapFoe(o.mon); if (!g) return ""; delete g.real;
+        return `<div class="oltc" style="--gc:${GRADES[g.q].c}">${art(g.sp, g.evo, 76)}<b>${fname(g.sp, g.evo)}</b><small>${GRADES[g.q].name} · Lv ${g.lvl}${g.stars ? " · " + "★".repeat(g.stars) : ""}</small><small>Power ${monPower(g)}</small></div>`; };
+      if (done) return `${head}<div class="olroom"><b>Trade done!</b><small>Your new Glumi is in your Glumis list.</small></div><div class="pbtns"><button class="mb" data-act="arenasub:olleave">Leave</button><button class="mb gold pbig" data-act="olagain">Trade again</button></div>`;
+      if (tradePickOn) { const L = S.mons.filter(isSpare).sort((a, b) => b.q - a.q || b.lvl - a.lvl);
+        return `${head}<p class="hint" style="margin:4px 0">Pick a spare Glumi to put up (not in your team, not locked or a favorite).</p>
+          ${L.length ? `<div class="olgrid">${L.slice(0, 40).map(m => `<button class="olpick" data-act="olput:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 52)}<small>${GRADES[m.q].name} · Lv ${m.lvl}</small></button>`).join("")}</div>` : `<p class="hint">No spare Glumis right now.</p>`}
+          <button class="mb pbig" data-act="oltpick:0">Back</button>`; }
+      return `${head}<div class="oltrade"><div><small>${olEsc(other.name)} gives</small>${card(theirs, "them")}${T && T.okThem ? `<span class="rchip ok">✓ OK</span>` : ""}</div><div class="oltx">⇄</div><div><small>You give</small>${card(mine, "me")}${T && T.okMe ? `<span class="rchip ok">✓ OK</span>` : ""}</div></div>
+        <div class="pbtns"><button class="mb" data-act="oltpick:1">${mine ? "Change" : "Pick a Glumi"}</button><button class="mb gold pbig" data-act="oltok" ${mine && theirs && !(T && T.okMe) ? "" : "disabled"}>OK, trade</button></div>
+        <p class="hint">The swap happens on both phones once you both say OK. Changing a Glumi asks for OK again.</p>`;
+    }
+    // hub
+    const D = olDb(), W = olWb(), nf = O.friends.length, gi = O.gifts.length + olInvites().length;
+    const row = (k, title, sub, bang, ic) => `<button class="garow olrow" data-act="arenasub:${k}"><span class="gpic olgp">${ic}</span><span class="gtx"><b>${title}</b><small>${sub}</small></span><i>›</i>${bang ? '<em class="bang">!</em>' : ""}</button>`;
+    return `${olBack("hub")}<h3>Friends &amp; online</h3><span></span></div>${olNetNote()}
+      <div class="olme"><span><small>Your name (other players see it)</small><input id="olnm" maxlength="16" value="${olEsc(O.name || "")}" placeholder="${olEsc(olName())}" autocomplete="off"></span><button class="mb" data-act="olname">Save</button></div>
+      <div class="slist">${row("olfriends", "Friends", `${nf} friend${nf === 1 ? "" : "s"}${O.gifts.length ? ` · ${O.gifts.length} gift${O.gifts.length > 1 ? "s" : ""} waiting` : ""}`, gi, IC.gift || IC.star)}
+        ${row("oldboss", "Daily Boss", `${D.left} of ${OL_BOSS.d.tries} tries left · best ${D.best.toLocaleString("en")}`, 0, art(olBossFoe("d").sp, 0, 44))}
+        ${row("olwboss", "World Boss", `${Math.round(Math.min(1, wbSum(W) / wbGoal(W)) * 100)}% down · ${W.left} hits left today`, 0, art(olBossFoe("w").sp, olBossFoe("w").evo, 44))}
+        ${row("olduel", "Live duel", "Best of 3 with a friend, live", 0, IC.sword)}
+        ${row("oltrade", "Trade", "Swap a spare Glumi with a friend, live", 0, '<b class="olswap">⇄</b>')}</div>
+      <button class="mcard soft" data-act="olideas"><span class="mic">${IC.star}</span><span><b>Suggest an idea</b><small>Goes straight to the game maker</small></span></button>
+      <button class="swrow" data-act="olsharesw" role="switch" aria-checked="${!!O.share}"><span><b>Share my team</b><small>Other players can meet your team in the Ladder and your friends can battle it</small></span><i class="sw${O.share ? " on" : ""}"><em></em></i></button>
+      <p class="hint">Online features use a free public message service. Only your name, friend code and team are shared.</p>`;
+  }
+  // ---------- taps ----------
+  document.addEventListener("click", e => {
+    const b = e.target.closest && e.target.closest("[data-act]"); if (!b || b.disabled) return;
+    const parts = b.dataset.act.split(":"), a = parts[0], arg = parts.slice(1).join(":");
+    if (a === "arenasub" && arg === "olleave") { roomClose(true); duelSel = null; tradePickOn = false; arenaSub = "online"; render(); return; }
+    if (a === "arenasub" && (arg === "online" || /^ol/.test(arg))) { olState(); if (arg === "online" || arg === "olfriends") olSync(true); if (arg === "oldboss") olBoards("d").then(olRefresh); if (arg === "olwboss") olBoards("w").then(olRefresh); return; }
+    if (!/^ol/.test(a)) return;
+    const O = olState();
+    if (a === "olgo") { if (E || BT || busy) return; view = "arena"; arenaSub = arg || "online"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); olSync(true); }
+    else if (a === "oladd") { const i = $("olcode"); olAddFriend(i ? i.value : ""); }
+    else if (a === "olshare") { const txt = `Add me in Glimmer Isle: my friend code is ${O.code}`; const tell = () => toast(`Your code: ${O.code}`); try { if (navigator.share) navigator.share({ text: txt }).catch(tell); else if (navigator.clipboard) navigator.clipboard.writeText(O.code).then(() => toast("Code copied: paste it to your friend"), tell); else tell(); } catch { tell(); } }
+    else if (a === "olname") { const i = $("olnm"); if (!i) return; O.name = i.value.replace(/[<>]/g, "").trim().slice(0, 16); save(); i.blur(); render(); toast("Name saved"); olShare(true); }
+    else if (a === "olsharesw") { O.share = !O.share; save(); render(); if (O.share) olShare(true); }
+    else if (a === "olgift") olGift(arg);
+    else if (a === "olgifts") olClaimGifts();
+    else if (a === "olbattle") olBattleFriend(arg);
+    else if (a === "olunfriend") { const F = olFriend(arg); if (!F) return; if (b.dataset.sure !== "1") { b.dataset.sure = "1"; b.textContent = "Sure?"; setTimeout(() => { if (b.isConnected) { b.dataset.sure = ""; b.textContent = "×"; } }, 2500); return; } O.friends = O.friends.filter(f => f.code !== arg); save(); render(); toast(`Removed ${F.name}`); }
+    else if (a === "olboss") olBossPrep(arg);
+    else if (a === "olwbclaim") olWbClaim();
+    else if (a === "olideas") olIdeas();
+    else if (a === "olidsend") olIdeaSend();
+    else if (a === "olmake") { roomOpen(olRid(5), arg, true); arenaSub = arg === "duel" ? "olduel" : "oltrade"; render(); }
+    else if (a === "olenter") { const i = $("olroom"), c = (i ? i.value : "").toUpperCase().replace(/[^A-Z0-9]/g, ""); if (!/^[A-Z0-9]{5}$/.test(c)) return toast("A room code has 5 letters and numbers"); roomOpen(c, null, false); render(); }
+    else if (a === "oljoin") { const [k, c] = arg.split(":"); O.invites = O.invites.filter(x => x.room !== c); roomOpen(c, null, false); arenaSub = k === "duel" ? "olduel" : "oltrade"; save(); render(); window.scrollTo(0, 0); }
+    else if (a === "olinvite") olInvite(arg);
+    else if (a === "olsel") { const u = +arg; let s = (duelSel || S.team.slice()).filter(x => mon(x)); s = s.includes(u) ? s.filter(x => x !== u) : s.length < 3 ? s.concat([u]) : s; duelSel = s; render(); }
+    else if (a === "olunsel") { duelSel = (duelSel || S.team.slice()).filter(x => x !== +arg && mon(x)); render(); }
+    else if (a === "olready") duelReady();
+    else if (a === "olemo") { const now = Date.now(); if (now - (R && R.emoT || 0) < 4000) return; if (R) { R.emoT = now; roomPost({ t: "emo", e: +arg }); } }
+    else if (a === "olagain") { if (!R) return; const c = olRid(5); roomPost({ t: "again", room: c }); }
+    else if (a === "oltpick") { tradePickOn = arg === "1"; render(); window.scrollTo(0, 0); }
+    else if (a === "olput") tradePut(+arg);
+    else if (a === "oltok") tradeAccept();
+  });
+  // emotes from the other phone float up on the room page
+  let emoSeen = 0;
+  setInterval(() => { if (!R) return; const o = roomOther(); if (!o) return; const list = R.log.filter(x => x.t === "emo" && x.pid === o.pid); if (list.length > emoSeen) { const x = list[list.length - 1]; emoSeen = list.length; const t = ["\u{1F44B}", "\u{1F604}", "\u{1F62E}", "GG"][x.e] || "\u{1F44B}"; const d = document.createElement("div"); d.className = "olemofly"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2200); } }, 500);
+  // keep in touch: inbox now and then, more often on the online pages
+  setTimeout(() => olSync(true), 8000);
+  let olTickN = 0;  // the relay allows about one request every 5 s per connection: inbox every 2 min, every 30 s on the online pages
+  setInterval(() => { if (document.hidden) return; olTickN++; if (olOnPage()) olSync(true); else if (olTickN % 4 === 0) olSync(olTickN % 60 === 0); }, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(() => olSync(false), 1500); });
 
   // ================= BOOT =================
   const local = migrate(readLocal()); if (local) S = local;
