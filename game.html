@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795095458;</script>
+<script>window.GAME_BUILD = 1795095895;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2929,7 +2929,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const ELK = Object.keys(EL);
   const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "energy"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"], prism: [IC.jar("prism"), "prism jar"],
                treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"], charm: [charmSvg("atk", 1), "charm"] };
-  function giveReward(r) { if (r.k === "charm") { for (let i = 0; i < r.n; i++) addCharm(r.kind, r.r || 0); return; } if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
+  let eggWait = 0;  // best egg got since the Backpack last opened for it (the Backpack opens by itself)
+  function giveReward(r) { if (/^egg[1-4]$/.test(r.k)) { eggWait = Math.max(eggWait, +r.k[3]); setTimeout(() => eggGo(), 900); } if (r.k === "charm") { for (let i = 0; i < r.n; i++) addCharm(r.kind, r.r || 0); return; } if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
   const TASKS = {
     starter: [
       { id: "c1", name: "First catch", about: "Catch a Glumi", need: 1, got: T => T.total.catch, r: { k: "plain", n: 3 } },
@@ -3074,6 +3075,11 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   // ================= BACKPACK =================
   let bagTab = "items", bagPick = null;
+  function eggGo() {  // show the Backpack with the new egg picked, once nothing else is on screen
+    if (!eggWait || !S.started || E || BT || busy || S.auto || document.querySelector(".shade, .popwrap, .hatch")) return;
+    const t = [4, 3, 2, 1].find(x => x <= eggWait && (S["egg" + x] || 0) > 0) || [4, 3, 2, 1].find(x => (S["egg" + x] || 0) > 0); eggWait = 0; if (!t) return;
+    view = "bag"; bagTab = "items"; bagPick = "egg" + t; settingsPage = null; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0);
+  }
   let charmFor = null;  // uid of the Glumi choosing a charm, or null (charm list from the Backpack)
   const charmPct = c => Math.round(CHARM[c.k].b[c.r] * 100);
   function charmRow(m) {
@@ -4627,7 +4633,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   setInterval(() => { try { maybeHint(); } catch {} }, 1500);  // also after the splash and between renders
   function render() {
-    setTimeout(maybeHint, 0);
+    setTimeout(maybeHint, 0); if (eggWait) setTimeout(eggGo, 700);
     renderTabs();
     setTimeout(() => { sheetShown = document.querySelector('.sheet') ? sheetUid : null; }, 0);
     $("arena").hidden = !BT; if (BT) renderArena();
@@ -4862,7 +4868,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "relflip") { if (rel) { rel.up = !rel.up; render(); } }
     else if (a === "relgo") relDo();
     else if (a === "relback") { const back = rel && (rel.keep || rel.back); rel = null; view = "team"; sheetUid = back && mon(back) ? back : null; sheetPage = "main"; render(); }
-    else if (a === "openegg") { bagPick = null; hatchEgg(n); render(); }
+    else if (a === "openegg") { bagPick = null; hatchEgg(n); const nx = [4, 3, 2, 1].find(x => (S["egg" + x] || 0) > 0); bagPick = nx ? "egg" + nx : null; render(); }
     else if (a === "shrinepick") { shrineSure = false; const i = shrinePick.indexOf(n); if (i > -1) shrinePick.splice(i, 1); else if (shrinePick.length < 5 && mon(n) && shrineFree(mon(n))) shrinePick.push(n); else if (shrinePick.length >= 5) toast("All 5 slots are full"); render(); }
     else if (a === "shrinequick") { shrineSure = false; const pool = S.mons.filter(m => shrineFree(m) && !shrinePick.includes(m.uid)).sort((a, b) => a.q - b.q || a.lvl - b.lvl); while (shrinePick.length < 5 && pool.length) shrinePick.push(pool.shift().uid); render(); }
     else if (a === "shrinesort") { shrineSort = arg; render(); }
