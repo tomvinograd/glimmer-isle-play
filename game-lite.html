@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795093541;</script>
+<script>window.GAME_BUILD = 1795095458;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -340,6 +340,8 @@
   .sp-bar i { position: absolute; left: 3px; top: 3px; bottom: 3px; width: 0; border-radius: 6px; background: linear-gradient(90deg, #ffe08a, #f5a623); transition: width .35s ease; }
   .sp-bar b { position: absolute; top: 50%; left: 0; width: 22px; height: 26px; margin: -15px 0 0 -11px; transition: left .35s ease;
     background: radial-gradient(circle at 40% 60%, #e8fbff 0 25%, #49c6e5 60%); clip-path: path("M11 0 C11 0 22 13 22 18 A11 8 0 0 1 0 18 C0 13 11 0 11 0Z"); filter: drop-shadow(0 0 4px #7fe7ff); }
+  .sp-bar b.loadstar { width: 36px; height: 36px; margin: -19px 0 0 -18px; background: center / contain no-repeat; clip-path: none; filter: drop-shadow(0 0 5px #fff3b0); animation: sp-starwob 1.8s ease-in-out infinite; }
+  @keyframes sp-starwob { 0%, 100% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(8deg) scale(1.08); } }
   .sp-tip { margin: 0; font-family: var(--body); font-size: 13px; font-weight: 700; color: #8a6d55; text-align: center; min-height: 18px; }
   @media (prefers-reduced-motion: reduce) { #splash *, #splash { animation: none !important; } }
   .zrow { display: flex; align-items: center; gap: 6px; }
@@ -1876,7 +1878,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     for (const q in C) if (ART[C[q]]) { document.documentElement.style.setProperty("--card-q" + q, `url(${ART[C[q]]})`); n++; }
     if (n === 4) document.body.classList.add("cards");
     if (ART["map-world"]) document.documentElement.style.setProperty("--wmap", `url(${ART["map-world"]})`);
-    const t = document.querySelector("#splash .sp-title h1"); if (t && ART.logo) t.innerHTML = `<img class="splogo" src="${ART.logo}" alt="Glimmer Isle">`; }
+    const t = document.querySelector("#splash .sp-title h1"); if (t && ART.logo) t.innerHTML = `<img class="splogo" src="${ART.logo}" alt="Glimmer Isle">`;
+    const ld = document.getElementById("spDrop"); if (ld && ART["ui-loadbar"]) { ld.classList.add("loadstar"); ld.style.backgroundImage = `url(${ART["ui-loadbar"]})`; } }
   const ICON_ART = { glow: "ui-energy", coin: "ui-coin", leaf: "ui-leaf", fruit: "ui-moonfruit", treat: "ui-treat", keepsake: "ui-keepsake", core: "ui-star-core",
     lock: "ui-lock", crown: "ui-crown", gear: "ui-settings", map: "ui-map", lantern: "ui-lantern", sword: "ui-sword", flag: "ui-flag", auto: "ui-auto", fast: "ui-speed", home: "ui-home", chest: "item-chest" };
   Object.assign(ICON_ART, { tasks: "ui-tasks", bag: "ui-backpack", clock: "ui-clock", book: "ui-book" });
