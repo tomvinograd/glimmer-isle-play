@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795113805;</script>
+<script>window.GAME_BUILD = 1795114129;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1785,7 +1785,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const RAINBOW_ODDS = [Infinity, Infinity, Infinity, 250, 250, 250, 250, 250, 250];  // Rainbow 1 in 250 from x10, none below  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 1, MAX_STARS = 5, STAR_BONUS = .1;
   const FLEE_AFTER = [5, 6, 12, 20, 50];  // missed jars before a wild Glumi runs away, by grade Green..Rainbow
-  const ASC_EVERY = 10, MAX_ASC = 9, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20, 26, 33, 40, 50];  // top level 100  // ascension: top level, +30% stats each, keepsakes needed
+  const ASC_EVERY = 10, MAX_ASC = 14, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20, 26, 33, 40, 50, 60, 70, 80, 90, 100];  // top level 150 (Tom 19 Nov; was 100)
+  const ASC_STONES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 7, 10], WILD_MAX_ASC = 9;  // Glimmerstones for each ascension past level 100; foes stay as before  // ascension: top level, +30% stats each, keepsakes needed
   const KEEPSAKES_BY_GRADE = [1, 1, 5, 8, 12], SELL_BASE = [5, 9, 18, 36, 120];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
   const RIVALS = ["Nia", "Oren", "Tali", "Bex", "Ido", "Maya", "Ravi", "Lena", "Yoni", "Kai"];
   const RM_SYS = matchMedia("(prefers-reduced-motion: reduce)").matches; let RM = RM_SYS;
@@ -1799,7 +1800,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function mix(hex, amt) { const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255; const t = amt < 0 ? 0 : 255, p = Math.abs(amt); r = Math.round(r + (t - r) * p); g = Math.round(g + (t - g) * p); b = Math.round(b + (t - b) * p); return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1); }
   const fname = (sp, evo) => evo ? SP[sp].evo : SP[sp].name;
   const key = (sp, evo) => sp + "-" + (evo ? 1 : 0);
-  const ascOf = m => m.asc !== undefined ? m.asc : Math.min(MAX_ASC, Math.floor(Math.max(0, m.lvl - 1) / ASC_EVERY));  // wild ones: by level
+  const ascOf = m => m.asc !== undefined ? m.asc : Math.min(WILD_MAX_ASC, Math.floor(Math.max(0, m.lvl - 1) / ASC_EVERY));  // wild ones: by level
   const ascTop = m => (ascOf(m) + 1) * ASC_EVERY, sellPrice = m => Math.round((SELL_BASE[m.q] + m.lvl) * (m.evo ? 1.5 : 1));
   // charms: one per Glumi, kept in S.charms [{id, k, r}], m.charm = id
   const CHARM = { atk: { n: "Power charm", s: "attack", b: [.08, .15, .25], c: "#ff7a5c" }, def: { n: "Guard charm", s: "defense", b: [.08, .15, .25], c: "#7f93ad" },
@@ -1967,6 +1968,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   if (ART["ui-map"]) TABI.atlas = artIcon("ui-map");
   Object.assign(ICON_ART, { run: "ui-walk", shield: "ui-shield", arena: "ui-arena", gift: "ui-gift", sound: "ui-sound", menu: "ui-menu" });
   for (const k of ["run", "shield", "arena", "gift", "sound", "menu", "auto", "fast", "flag", "sword", "lantern", "home"]) if (ART[ICON_ART[k]]) IC[k] = artIcon(ICON_ART[k]);
+  IC.gstone = ART["ui-glimmerstone"] ? artIcon("ui-glimmerstone") : '<svg viewBox="0 0 24 24"><defs><linearGradient id="gsg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bff6ff"/><stop offset=".5" stop-color="#8fa8ff"/><stop offset="1" stop-color="#c58bff"/></linearGradient></defs><path d="M12 2.5 19.5 8.5 16.5 20 7.5 20 4.5 8.5Z" fill="url(#gsg)" stroke="#5b4fb0" stroke-width="1.3" stroke-linejoin="round"/><path d="M4.5 8.5H19.5M12 2.5 9 8.5 12 20 15 8.5Z" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width=".9"/><path d="M19 2.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="#fff"/></svg>';
   if (ART["ui-shop"]) TABI.shop = artIcon("ui-shop");
   if (ART["ui-home"]) TABI.home = artIcon("ui-home");
   if (ART["ui-glumis"]) TABI.team = artIcon("ui-glumis");
@@ -3025,7 +3027,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   // ================= TASKS: Starter (once), Daily (new every day), Challenge (once) =================
   const ELK = Object.keys(EL);
   const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "energy"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"], prism: [IC.jar("prism"), "prism jar"],
-               treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"], charm: [charmSvg("atk", 1), "charm"] };
+               treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"], charm: [charmSvg("atk", 1), "charm"], gstone: [IC.gstone, "Glimmerstones"] };
   let eggWait = [];  // eggs just got, waiting for their opening screen (best first)
   function giveReward(r) { if (/^egg[1-4]$/.test(r.k)) { for (let i = 0; i < r.n; i++) eggWait.push(+r.k[3]); eggWait.sort((a, b) => b - a); setTimeout(() => eggGo(), 900); } if (r.k === "charm") { for (let i = 0; i < r.n; i++) addCharm(r.kind, r.r || 0); return; } if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
   const TASKS = {
@@ -3063,6 +3065,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       { id: "g-cc25", name: "Cloud walker", about: "Reach Cloud Climb floor 25", need: 25, got: () => S.tower || 0, r: { k: "star", n: 3 } },
       { id: "g-cc50", name: "Sky high", about: "Reach Cloud Climb floor 50", need: 50, got: () => S.tower || 0, r: { k: "egg3", n: 1 } },
       { id: "g-lv100", name: "Fully grown", about: "Get a Glumi to level 100", need: 100, got: () => Math.max(0, ...S.mons.map(m => m.lvl)), r: { k: "prism", n: 1 } },
+      { id: "g-lv150", name: "Beyond the clouds", about: "Get a Glumi to level 150", need: 150, got: () => Math.max(0, ...S.mons.map(m => m.lvl)), r: { k: "egg4", n: 1 } },
       { id: "g-steps", name: "Long road", about: "Walk 10,000 steps", need: 10000, got: () => statsState().steps, r: { k: "glow", n: 200 } },
     ],
     challenge: [
@@ -3212,7 +3215,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
         ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["prism", IC.jar("prism"), "Prism jar", S.jars.prism || 0, 4, "Always catches, even Rainbows."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
-        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glumi: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glumi or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glumi, sometimes Rainbow."], ["egg4", EGG_ICON(4), "Rainbow egg", S.egg4 || 0, 4, "Hatches a Rainbow Glumi."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
+        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["gstone", IC.gstone, "Glimmerstones", S.gstone || 0, 4, "Rare. Needed to ascend a Glumi past level 100. From the Daily and World Boss, Cloud Climb floors 50+, Rainbow releases and the Shop."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glumi: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glumi or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glumi, sometimes Rainbow."], ["egg4", EGG_ICON(4), "Rainbow egg", S.egg4 || 0, 4, "Hatches a Rainbow Glumi."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
       tiles = items.filter(i => i[3] > 0).map(([k, ic, nm, n, q]) => `<button class="btile${bagPick === k ? " on" : ""}" data-act="bagpick:${k}" style="--gc:${GRADES[q].c}">${ic}<b>${n >= 10000 ? (n / 1000).toFixed(1) + "K" : n}</b></button>`);
       const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span>${/^egg/.test(p[0]) && p[3] > 0 ? `<button class="mb gold" data-act="openegg:${p[0].slice(3)}">Open</button>` : ""}</div>`;
     } else {
@@ -3357,7 +3360,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   function ladderFoes() {
     const T = DRANKS[ladderTier(ladderState().pts)], t = ladderTier(ladderState().pts), pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []), L = avgLvl();
-    if (t === DRANKS.length - 1) return Array.from({ length: 3 }, () => { const f = foeMon(pickOf(pool), 100, 4); f.evo = SP[f.sp].evo ? 1 : 0; f.stars = 0; f.asc = MAX_ASC; f.boost = FOE_BOOST[t]; f.hp = maxHp(f); return f; });  // Master: maxed Rainbows
+    if (t === DRANKS.length - 1) return Array.from({ length: 3 }, () => { const f = foeMon(pickOf(pool), 100, 4); f.evo = SP[f.sp].evo ? 1 : 0; f.stars = 0; f.asc = WILD_MAX_ASC; f.boost = FOE_BOOST[t]; f.hp = maxHp(f); return f; });  // Master: maxed Rainbows
     return Array.from({ length: t === 0 ? 2 : 3 }, () => { const f = foeMon(pickOf(pool), T[3] + rnd(-2, 2), wpick(T[4])); f.boost = FOE_BOOST[t]; f.stars = FOE_STARS[t]; f.hp = maxHp(f); return f; });
   }
   function duelState() { if (!S.duel) S.duel = { date: "", left: 5, pts: 0, wins: 0 }; if (S.duel.date !== today()) { S.duel.date = today(); S.duel.left = 5; } return S.duel; }
@@ -3632,7 +3635,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function prepLadder() {
     const t = ladderTier(ladderState().pts), lf = ladderFoes(), rl = olLadderReal(lf); openPrep({ mode: "ladder", real: rl ? rl.code : null, title: `Ladder match · ${DRANKS[t][1]}${rl ? " · real player" : ""}`, name: rl ? rl.name : pickOf(TNAMES), color: pickOf(TCOLORS), foes: rl ? rl.foes : lf, rewards: [{ k: "coins", n: Math.round((20 + avgLvl() * 3) * (1 + t * .3)) }], quick: true, back: "ladder" }); }
   // ================= CLOUD CLIMB =================
-  const climbRewards = f => [{ k: "coins", n: 16 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }, { k: "charm", n: 1, r: f >= 30 ? 2 : f >= 20 ? 1 : 0 }] : [])];
+  const climbRewards = f => [{ k: "coins", n: 16 * f }, ...(f % 5 === 0 ? [{ k: "star", n: 1 }, { k: "glow", n: 50 }] : []), ...(f % 10 === 0 ? [{ k: "egg2", n: 1 }, { k: "charm", n: 1, r: f >= 30 ? 2 : f >= 20 ? 1 : 0 }] : []), ...(f >= 50 && f % 10 === 0 ? [{ k: "gstone", n: 2 }] : [])];
   let climbing = false;
   async function autoClimb() {
     if (climbing || !team().length) return; climbing = true; render();
@@ -3678,7 +3681,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (!shrineSure) { shrineSure = true; render(); return; }
     const G = shrineGain(picked);
     for (const sp in G.keeps) S.keepsakes[sp] = (S.keepsakes[sp] || 0) + G.keeps[sp];
-    for (const m of picked) if (m.q === 4) S.starCores[m.sp] = (S.starCores[m.sp] || 0) + RAINBOW_STAR_CORES;
+    for (const m of picked) if (m.q === 4) { S.starCores[m.sp] = (S.starCores[m.sp] || 0) + RAINBOW_STAR_CORES; S.gstone = (S.gstone || 0) + 1; }
     S.shards = (S.shards || 0) + G.shards;
     S.mons = S.mons.filter(m => !shrinePick.includes(m.uid)); shrinePick = []; shrineSure = false;
     sfx("claim"); save(); render(); toast(`Offered ${picked.length}: +${Object.values(G.keeps).reduce((a, b) => a + b, 0)} keepsakes${G.shards ? `, +${G.shards} star shard${G.shards > 1 ? "s" : ""}` : ""}`);
@@ -3917,10 +3920,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   let lvPick = null, lvTo = 0, lvShown = false;  // the Level Up picker: which Glumi, which level
   const lvTop = m => Math.min(lvlCap(), (MAX_ASC + 1) * ASC_EVERY);
   function lvPlan(m, to) {  // what reaching level `to` costs: leaves, plus keepsakes for each ascension on the way
-    let leaves = 0, keeps = 0, ascs = 0, a = ascOf(m);
-    for (let l = m.lvl; l < to; l++) { while (l >= (a + 1) * ASC_EVERY && a < MAX_ASC) { keeps += ASC_COST[a]; a++; ascs++; } leaves += 5 + l * 3; }
+    let leaves = 0, keeps = 0, ascs = 0, stones = 0, a = ascOf(m);
+    for (let l = m.lvl; l < to; l++) { while (l >= (a + 1) * ASC_EVERY && a < MAX_ASC) { keeps += ASC_COST[a]; stones += ASC_STONES[a]; a++; ascs++; } leaves += 5 + l * 3; }
     const own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
-    return { leaves, keeps, ascs, own, have, ok: S.leaves >= leaves && have >= keeps };
+    return { leaves, keeps, ascs, own, have, stones, stoneOk: (S.gstone || 0) >= stones, ok: S.leaves >= leaves && have >= keeps && (S.gstone || 0) >= stones };
   }
   function keepBuyPlan(m, missing) {  // cheapest Purple/Gold shop buys that cover `missing` keepsakes (null: not sold)
     const k = marketKinds().find(x => x.sp === m.sp); if (!k || missing <= 0) return null;
@@ -3936,11 +3939,11 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return `<button class="lvbg" data-act="lvpclose" aria-label="Close"></button><div class="lvpick${lvShown ? " still" : ""}" role="dialog" aria-label="Level up">
       <div class="lvhead">Level Up</div>
       <div class="lvfromto"><div><small>Level</small><span class="lvc">${m.lvl}</span></div><i class="lvarrow">\u00BB</i><div><small>Level</small><span class="lvc to">${lvTo}</span></div></div>
-      <div class="lvreq"><b>Required</b>${row(IC.leaf, S.leaves, p.leaves)}${p.keeps ? row(IC.keepsake || IC.heart || IC.star, p.have, p.keeps, `${s.name} keepsakes${S.shards ? " + star shards" : ""} \u00B7 ascends ${p.ascs}\u00D7`) : ""}</div>
+      <div class="lvreq"><b>Required</b>${row(IC.leaf, S.leaves, p.leaves)}${p.keeps ? row(IC.keepsake || IC.heart || IC.star, p.have, p.keeps, `${s.name} keepsakes${S.shards ? " + star shards" : ""} \u00B7 ascends ${p.ascs}\u00D7`) : ""}${p.stones ? row(IC.gstone, S.gstone || 0, p.stones, "Glimmerstones") : ""}</div>
       <div class="lvstep"><button data-act="lvpstep:-10" ${lvTo - 10 > m.lvl ? "" : "disabled"}>-10</button><button class="lvpm" data-act="lvpstep:-1" ${lvTo - 1 > m.lvl ? "" : "disabled"}>\u2212</button>
         <span class="lvplus">+${lvTo - m.lvl}</span><button class="lvpm" data-act="lvpstep:1" ${lvTo < top ? "" : "disabled"}>+</button><button data-act="lvpstep:10" ${lvTo < top ? "" : "disabled"}>+10</button></div>
       ${lvTo >= top && top < (MAX_ASC + 1) * ASC_EVERY ? `<p class="lvnote">Level ${top} is the top for now: raise your Explorer level to go higher</p>` : ""}
-      ${p.ok || S.leaves < p.leaves ? `<button class="lvgo" data-act="lvpgo" ${p.ok ? "" : "disabled"}>${p.ok ? "Level Up" : "Not enough leaves"}</button>` : `<button class="lvgo keep" data-act="lvpkeep">Get keepsakes${kbOk ? ` <span class="lvcost">${IC.coin}${kb.cost.toLocaleString("en-US")}</span>` : ""}</button>`}</div>`;
+      ${p.ok || S.leaves < p.leaves || !p.stoneOk ? `<button class="lvgo" data-act="lvpgo" ${p.ok ? "" : "disabled"}>${p.ok ? "Level Up" : S.leaves < p.leaves ? "Not enough leaves" : "Need Glimmerstones"}</button>` : `<button class="lvgo keep" data-act="lvpkeep">Get keepsakes${kbOk ? ` <span class="lvcost">${IC.coin}${kb.cost.toLocaleString("en-US")}</span>` : ""}</button>`}</div>`;
   }
   function levelsAffordable(m) { let n = 0, lv = m.lvl, leaves = S.leaves; const top = Math.min(lvlCap(), ascTop(m)); while (lv < top && leaves >= 5 + lv * 3 && n < 99) { leaves -= 5 + lv * 3; lv++; n++; } return n; }
   function levelsCost(m, n) { let c = 0; for (let k = 0; k < n; k++) c += 5 + (m.lvl + k) * 3; return c; }
@@ -4062,10 +4065,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const s = SP[m.sp], inTeam = S.team.includes(m.uid), lead = S.team[0] === m.uid, cost = 5 + m.lvl * 3, atAsc = m.lvl >= ascTop(m), capped = atAsc || m.lvl >= lvlCap();
     const L = [], ST = [], T = [], G = [];
     L.push(`<button class="big2 gold" data-act="lvl:${m.uid}" ${!capped && S.leaves >= cost ? "" : "disabled"}>${IC.up}Level up<small>${capped ? (atAsc ? (ascOf(m) >= MAX_ASC ? "Highest level reached" : `Level ${m.lvl} is the top: ascend to keep leveling`) : `Highest level for now: raise your Explorer level (now ${S.xlvl})`) : `Costs ${cost} leaves · you have ${S.leaves}`}</small></button>`);
-    { const a = ascOf(m), need = ASC_COST[a], have = S.keepsakes[m.sp] || 0;
-      if (a < MAX_ASC) L.push(`<button class="big2 ascend${atAsc && have >= need ? " ready" : ""}" data-act="ascend:${m.uid}" ${atAsc ? "" : "disabled"}>${IC.up}Ascend${a ? ` again (${a + 1} of ${MAX_ASC})` : ""}<small>${atAsc ? `Costs ${need} ${s.name} keepsakes · you have ${have}` : `At level ${ascTop(m)} · needs ${need} ${s.name} keepsakes (you have ${have})`}. +${Math.round(ASC_BONUS * 100)}% stats, levels up to ${ascTop(m) + ASC_EVERY}</small></button>`); }
+    { const a = ascOf(m), need = ASC_COST[a], have = S.keepsakes[m.sp] || 0, gs = ASC_STONES[a] || 0, gst = gs ? ` + ${gs} Glimmerstones (you have ${S.gstone || 0})` : "";
+      if (a < MAX_ASC) L.push(`<button class="big2 ascend${atAsc && have >= need && (S.gstone || 0) >= gs ? " ready" : ""}" data-act="ascend:${m.uid}" ${atAsc ? "" : "disabled"}>${IC.up}Ascend${a ? ` again (${a + 1} of ${MAX_ASC})` : ""}<small>${atAsc ? `Costs ${need} ${s.name} keepsakes · you have ${have}${gst}` : `At level ${ascTop(m)} · needs ${need} ${s.name} keepsakes (you have ${have})${gst}`}. +${Math.round(ASC_BONUS * 100)}% stats, levels up to ${ascTop(m) + ASC_EVERY}</small></button>`); }
     if (s.evo && !m.evo) L.push(`<button class="big2" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}Evolve into ${s.evo}<small>${m.lvl < EVOLVE_AT ? `Reach level ${EVOLVE_AT} first` : `Costs ${EVOLVE_FRUIT} moonfruit and 60 coins · you have ${S.fruit} and ${S.coins}`}</small></button>`);
-    if (m.lvl > 1) { const g = resetGain(m); L.push(`<button class="big2 danger" data-act="lvlreset:${m.uid}">${IC.up.replace("M12 19V5M6 11l6-6 6 6", "M12 5v14M6 13l6 6 6-6")}${resetSure === m.uid ? "Tap again to reset" : "Reset levels"}<small>Back to level 1 · you get ${g.leaves} leaves${g.keeps ? `, ${g.keeps} ${s.name} keepsakes` : ""}${g.shards ? `, ${g.shards} star shards` : ""} back</small></button>`); }
+    if (m.lvl > 1) { const g = resetGain(m); L.push(`<button class="big2 danger" data-act="lvlreset:${m.uid}">${IC.up.replace("M12 19V5M6 11l6-6 6 6", "M12 5v14M6 13l6 6 6-6")}${resetSure === m.uid ? "Tap again to reset" : "Reset levels"}<small>Back to level 1 · you get ${g.leaves} leaves${g.keeps ? `, ${g.keeps} ${s.name} keepsakes` : ""}${g.shards ? `, ${g.shards} star shards` : ""}${g.stones ? `, ${g.stones} Glimmerstones` : ""} back</small></button>`); }
     { const st = m.stars || 0, have = S.starCores[m.sp] || 0, need = st + 1;
       ST.push(`<button class="big2 starup" data-act="starup:${m.uid}" ${st < MAX_STARS && have >= need ? "" : "disabled"}>${IC.star}${st >= MAX_STARS ? "All stars reached" : `Star up to ${st + 1} of ${MAX_STARS}`}<small>${st >= MAX_STARS ? `+${Math.round(MAX_STARS * STAR_BONUS * 100)}% HP, Attack and Defense` : `Costs ${need} ${s.name} star core${need > 1 ? "s" : ""} · you have ${have}. Release a Rainbow ${s.name} to get ${RAINBOW_STAR_CORES}`}</small></button>`); }
     if (!inTeam) T.push(`<button class="big2" data-act="addteam:${m.uid}">${IC.up.replace('M12 19V5M6 11l6-6 6 6', 'M12 5v14M5 12h14')}Add to team<small>${S.team.length < slots() ? "There is a free spot" : "You choose who it swaps with"}</small></button>`);
@@ -4076,7 +4079,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       G.push(`<button class="big2 danger" data-act="release:${m.uid}">${IC.glow}${confirmRelease === m.uid ? "Tap again to release" : "Release for keepsakes"}<small>+${KEEPSAKES_BY_GRADE[m.q]} ${s.name} keepsake${KEEPSAKES_BY_GRADE[m.q] > 1 ? "s" : ""}${m.q === 4 ? ` and ${RAINBOW_STAR_CORES} ${s.name} star core${RAINBOW_STAR_CORES > 1 ? "s" : ""}` : ""} · you have ${S.keepsakes[m.sp] || 0}</small></button>`);
     }
     const st = m.stars || 0, cores = S.starCores[m.sp] || 0, aNeed = ASC_COST[ascOf(m)] || 0, keeps = (S.keepsakes[m.sp] || 0) + (S.shards || 0);
-    const ascReady = atAsc && ascOf(m) < MAX_ASC && keeps >= aNeed, lvlReady = !capped && S.leaves >= cost, starReady = st < MAX_STARS && cores >= st + 1;
+    const ascReady = atAsc && ascOf(m) < MAX_ASC && keeps >= aNeed && (S.gstone || 0) >= (ASC_STONES[ascOf(m)] || 0), lvlReady = !capped && S.leaves >= cost, starReady = st < MAX_STARS && cores >= st + 1;
     const door = (pg, icon, title, sub, hot) => `<button class="door${hot ? " hot" : ""}" data-act="spage:${pg}">${icon}<span><b>${title}</b><small>${sub}</small></span><i>\u203A</i></button>`;
     const mini = `<div class="minihero" style="--gc:${GRADES[m.q].c}"><div class="hero">${art(m.sp, m.evo, 74)}</div><div><div class="nmrow">${fname(m.sp, m.evo)}</div>
       <div class="tags" style="justify-content:flex-start">${gChip(m.q)}<span class="tag2">Level ${m.lvl}</span>${ascOf(m) ? `<span class="tag2 asc">Ascended ${ascOf(m)}</span>` : ""}</div></div></div>`;
@@ -4084,7 +4087,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const stats = `<div class="stats2">${statBar("HP", maxHp(m), 260, "#43c59e")}${statBar("Attack", atk(m), 70, "#ff8a4c")}${statBar("Defense", def(m), 60, "#5aa8ff")}</div>`;
     let body;
     if (sheetPage === "level") body = `${back("Level up")}${mini}${stats}
-      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a Glumi must ascend to keep growing. Ascending costs ${s.name} keepsakes (you have ${keeps}).</p>
+      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a Glumi must ascend to keep growing. Ascending costs ${s.name} keepsakes (you have ${keeps}); past level 100 it also takes Glimmerstones (you have ${S.gstone || 0}).</p>
       <div class="btns">${L.join("")}</div>`;
     else if (sheetPage === "stars") {
       const next = st < MAX_STARS ? Object.assign({}, m, { stars: st + 1 }) : null;
@@ -4104,7 +4107,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       const workBest = Math.max(...Object.keys(PLACES).map(k => workerRate(m, k)));
       const lvlN = levelsAffordable(m), multi = sheetMulti && lvlN > 1;
       const bigBtn = atAsc && ascOf(m) < MAX_ASC
-        ? `<button class="gbig asc" data-act="ascend:${m.uid}"><b>Ascend</b><small>${IC.heart || ""}${keeps}/${aNeed} ${s.name} keepsakes</small></button>`
+        ? `<button class="gbig asc" data-act="ascend:${m.uid}"><b>Ascend</b><small>${IC.heart || ""}${keeps}/${aNeed} ${s.name} keepsakes${ASC_STONES[ascOf(m)] ? ` · ${IC.gstone}${S.gstone || 0}/${ASC_STONES[ascOf(m)]}` : ""}</small></button>`
         : `<button class="gbig" data-act="${multi ? "lvlmax" : "lvl"}:${m.uid}" ${lvlReady ? "" : "disabled"}><b>${capped ? "Top level" : multi ? `Level up x${lvlN}` : "Level up"}</b><small>${IC.leaf}${S.leaves}/${multi ? levelsCost(m, lvlN) : cost}</small></button>`;
       const tabBody = sheetTab === "skill"
         ? `<div class="skilltab">${skillTab(m)}</div>`
@@ -4152,10 +4155,11 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   let shopTab = "jars";
   let resetSure = null;
-  const resetGain = m => { let leaves = 0; for (let l = 1; l < m.lvl; l++) leaves += 5 + l * 3; let paid = 0; for (let a = 0; a < (m.asc || 0); a++) paid += ASC_COST[a]; const shards = Math.min(paid, m.ascShards || 0); return { leaves, keeps: paid - shards, shards }; };
+  const resetGain = m => { let leaves = 0; for (let l = 1; l < m.lvl; l++) leaves += 5 + l * 3; let paid = 0; for (let a = 0; a < (m.asc || 0); a++) paid += ASC_COST[a]; const shards = Math.min(paid, m.ascShards || 0); let stones = 0; for (let a = 0; a < (m.asc || 0); a++) stones += ASC_STONES[a] || 0; return { leaves, keeps: paid - shards, shards, stones }; };
   // ================= MAILBOX: update gifts =================
   const MAIL = [
     { id: "upd-2026-11-17-charms", title: "Charms are here", text: "Glumis can now wear a charm (on their card). Gym leaders and Cloud Climb now give charms, so here are some for the fights you already won.", rew: [{ k: "charm", n: 1, r: 1 }, { k: "charm", n: 2, r: 0 }] },
+    { id: "upd-2026-11-19-lv150", title: "Glumis grow to level 150", text: "Glumis can now go past level 100, up to 150. Each ascension past 100 needs Glimmerstones, a rare new stone from the Daily and World Boss, Cloud Climb floors 50+, Rainbow releases and the Shop. Here are your first ones.", rew: [{ k: "gstone", n: 3 }] },
     { id: "upd-2026-11-17-moonfruit", title: "Moonfruit gift", text: "New explorers now start with 20 moonfruit. You started before that, so here are yours!", rew: [{ k: "fruit", n: 20 }] },
   ];
   function mailSync() {  // put every letter not delivered yet into the inbox
@@ -4173,6 +4177,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   const BUY_QS = [1, 5, 10, 50], buyQ = () => BUY_QS.includes(S.buyQ) ? S.buyQ : 1;
   const EPACK = { n: 15, price: 120, perDay: 3 };
+  const GSTONE_PRICE = 2500, gstoneLeft = () => S.gsbuy === today() ? 0 : 1;  // one Glimmerstone a day from the shop
   const epackLeft = () => { const P = S.epack; return P && P.d === today() ? Math.max(0, EPACK.perDay - P.n) : EPACK.perDay; };
   function pageBoost(tabs) {
     const left = epackLeft();
@@ -4184,6 +4189,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       <h4 class="bsec">Energy</h4>
       <div class="brow"><span class="bmx">${IC.glow}</span><span class="gct"><b>Energy pack: ${EPACK.n} energy</b><small>${left} of ${EPACK.perDay} left today${S.glow >= glowCap() ? " \u00B7 can go above your cap" : ""}</small></span>
         <button class="price" data-act="buyepack" ${left && S.coins >= EPACK.price ? "" : "disabled"}>${IC.coin}${EPACK.price}</button></div>
+      <h4 class="bsec">Rare</h4>
+      <div class="brow"><span class="bmx">${IC.gstone}</span><span class="gct"><b>Glimmerstone</b><small>Ascends Glumis past level 100 \u00B7 ${gstoneLeft()} left today \u00B7 you have ${S.gstone || 0}</small></span>
+        <button class="price" data-act="buygstone" ${gstoneLeft() && S.coins >= GSTONE_PRICE ? "" : "disabled"}>${IC.coin}${GSTONE_PRICE.toLocaleString("en")}</button></div>
       <h4 class="bsec">Multipliers</h4>
       <div class="blist">${MULTS.filter(M => MULT_PRICE[M.m]).map(mrow).join("")}</div>
       <p class="hint" style="margin:0">A multiplier makes each step cost more energy and gives rarer Glumis and bigger rewards. Without buying it, you can only pick it while you have the energy shown in its card saved up.</p>`;
@@ -4554,9 +4562,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const R = rel; if (!R) return; const pool = S.mons.filter(x => relFree(x, R) && R.sel.includes(x.uid)); if (!pool.length) return;
     if (!R.sure) { R.sure = true; render(); return; }
     let k = 0, c = 0; for (const x of pool) { k += KEEPSAKES_BY_GRADE[x.q]; if (x.q === 4) c += RAINBOW_STAR_CORES; }
-    S.keepsakes[R.sp] = (S.keepsakes[R.sp] || 0) + k; if (c) S.starCores[R.sp] = (S.starCores[R.sp] || 0) + c;
+    S.keepsakes[R.sp] = (S.keepsakes[R.sp] || 0) + k; if (c) S.starCores[R.sp] = (S.starCores[R.sp] || 0) + c; const gs = pool.filter(x => x.q === 4).length; if (gs) S.gstone = (S.gstone || 0) + gs;
     S.mons = S.mons.filter(x => !R.sel.includes(x.uid)); R.sel = []; R.sure = false;
-    sfx("claim"); save(); toast(`Released ${pool.length}: +${k} ${SP[R.sp].name} keepsake${k > 1 ? "s" : ""}${c ? `, +${c} star core${c > 1 ? "s" : ""}` : ""}`);
+    sfx("claim"); save(); toast(`Released ${pool.length}: +${k} ${SP[R.sp].name} keepsake${k > 1 ? "s" : ""}${c ? `, +${c} star core${c > 1 ? "s" : ""}` : ""}${gs ? `, +${gs} Glimmerstone${gs > 1 ? "s" : ""}` : ""}`);
     if (R.keep && mon(R.keep)) { const back = R.keep; rel = null; view = "team"; sheetUid = back; sheetPage = "main"; render(); } else render();
   }
   // which bottom-bar tab a page belongs to, and how each tab looks when you come to it from another tab
@@ -5048,7 +5056,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "lvpgo") { const m = mon(lvPick); if (m) { const p = lvPlan(m, lvTo); if (p.ok && lvTo > m.lvl) {
       let a2 = ascOf(m);
       for (let l = m.lvl; l < lvTo; l++) { while (l >= (a2 + 1) * ASC_EVERY && a2 < MAX_ASC) { const need = ASC_COST[a2], own = S.keepsakes[m.sp] || 0, fromOwn = Math.min(own, need);
-          S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); a2++; m.asc = a2; }
+          S.gstone = (S.gstone || 0) - ASC_STONES[a2]; S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); a2++; m.asc = a2; }
         track("lvl"); }
       const k = lvTo - m.lvl; S.leaves -= p.leaves; m.lvl = lvTo; m.hp = maxHp(m); lvPick = null; sfx("up"); save(); render(); moHero();
       toast(`${fname(m.sp, m.evo)}: +${k} level${k > 1 ? "s" : ""}${p.ascs ? `, ascended ${p.ascs}\u00D7` : ""}`); if (p.ascs) setTimeout(() => fxPower("Ascended!"), 400); } } }
@@ -5071,8 +5079,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "prepslot") prepSwapPopup(n);
     else if (a === "prepswap") { const [i, u] = arg.split("-").map(Number); if (!isAway(u) && !S.team.includes(u)) { if (S.team[i] !== undefined) S.team[i] = u; else S.team.push(u); save(); closePopup(); render(); toast(`${nameOf(mon(u))} is in the team`); } }
     else if (a === "undo") { const G = lastGone; const u = $("undobar"); if (u) u.hidden = true; if (!G || Date.now() - G.t > 12000) return;
-      const sp = G.m.sp; if ((S.keepsakes[sp] || 0) < G.keeps || (S.starCores[sp] || 0) < G.cores || S.coins < G.coins) { toast("Can't undo: what you got for it is already spent"); lastGone = null; return; }
-      S.keepsakes[sp] -= G.keeps; if (G.cores) S.starCores[sp] -= G.cores; S.coins -= G.coins; if (G.m.charm && S.mons.some(x => x.charm === G.m.charm)) delete G.m.charm;
+      const sp = G.m.sp; if ((S.keepsakes[sp] || 0) < G.keeps || (S.starCores[sp] || 0) < G.cores || S.coins < G.coins || (S.gstone || 0) < (G.gs || 0)) { toast("Can't undo: what you got for it is already spent"); lastGone = null; return; }
+      S.keepsakes[sp] -= G.keeps; if (G.cores) S.starCores[sp] -= G.cores; if (G.gs) S.gstone -= G.gs; S.coins -= G.coins; if (G.m.charm && S.mons.some(x => x.charm === G.m.charm)) delete G.m.charm;
       if (!S.mons.some(x => x.uid === G.m.uid)) S.mons.push(G.m); lastGone = null; save(); render(); toast(`${nameOf(G.m)} is back`); }
     else if (a === "tel") { tEl = tEl === arg ? null : arg; render(); }
     else if (a === "tq") { tQ = tQ === n ? null : n; render(); }
@@ -5219,7 +5227,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "starup") { const m = mon(n); if (m) { const st = m.stars || 0, need = st + 1, have = S.starCores[m.sp] || 0; if (st < MAX_STARS && have >= need) { S.starCores[m.sp] = have - need; m.stars = st + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} reached ${m.stars} star${m.stars > 1 ? "s" : ""}!`); setTimeout(() => fxPower("\u2605".repeat(m.stars), "#ffd34d"), 30); } } }
     else if (a === "lvlreset") { const m = mon(n); if (!m || m.lvl <= 1) return;
       if (resetSure !== n) { const g0 = resetGain(m); resetSure = n; render(); toast(`Tap again to reset to level 1: +${g0.leaves} leaves${g0.keeps ? `, +${g0.keeps} keepsakes` : ""}${g0.shards ? `, +${g0.shards} star shards` : ""}`); setTimeout(() => { if (resetSure === n) { resetSure = null; render(); } }, 3000); return; }
-      const g = resetGain(m); resetSure = null; S.leaves += g.leaves; if (g.keeps) S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + g.keeps; if (g.shards) S.shards = (S.shards || 0) + g.shards;
+      const g = resetGain(m); resetSure = null; S.leaves += g.leaves; if (g.keeps) S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + g.keeps; if (g.shards) S.shards = (S.shards || 0) + g.shards; if (g.stones) S.gstone = (S.gstone || 0) + g.stones;
       m.lvl = 1; m.asc = 0; m.ascShards = 0; m.hp = maxHp(m); sfx("claim"); save(); render(); toast(`${fname(m.sp, m.evo)} is level 1 again: +${g.leaves} leaves${g.keeps ? `, +${g.keeps} ${SP[m.sp].name} keepsakes` : ""}${g.shards ? `, +${g.shards} star shards` : ""}`); }
     else if (a === "lvl") { const m = mon(n), cost = 5 + m.lvl * 3; if (m && S.leaves >= cost && m.lvl < lvlCap() && m.lvl < ascTop(m)) { S.leaves -= cost; m.lvl++; m.hp = maxHp(m); track("lvl"); sfx("up"); save(); render(); moHero(); } }
     else if (a === "evolve") {
@@ -5240,19 +5248,22 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "join") { if (S.team.length < slots()) { S.team.push(n); save(); render(); } }
     else if (a === "release") { if (confirmRelease !== n) { confirmRelease = n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const k = KEEPSAKES_BY_GRADE[m.q]; S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + k; if (m.q === 4) S.starCores[m.sp] = (S.starCores[m.sp] || 0) + RAINBOW_STAR_CORES;
-      lastGone = { m: JSON.parse(JSON.stringify(m)), keeps: k, cores: m.q === 4 ? RAINBOW_STAR_CORES : 0, coins: 0, t: Date.now() }; showUndo(`Released ${nameOf(m)}`);
+      if (m.q === 4) S.gstone = (S.gstone || 0) + 1;
+      lastGone = { m: JSON.parse(JSON.stringify(m)), keeps: k, cores: m.q === 4 ? RAINBOW_STAR_CORES : 0, gs: m.q === 4 ? 1 : 0, coins: 0, t: Date.now() }; showUndo(`Released ${nameOf(m)}`);
       S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render();
-      toast(`+${k} ${SP[m.sp].name} keepsake${k > 1 ? "s" : ""}${m.q === 4 ? ` and +${RAINBOW_STAR_CORES} star core${RAINBOW_STAR_CORES > 1 ? "s" : ""}` : ""}`); } }
+      toast(`+${k} ${SP[m.sp].name} keepsake${k > 1 ? "s" : ""}${m.q === 4 ? `, +${RAINBOW_STAR_CORES} star core${RAINBOW_STAR_CORES > 1 ? "s" : ""} and +1 Glimmerstone` : ""}`); } }
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const p = sellPrice(m); S.coins += p; lastGone = { m: JSON.parse(JSON.stringify(m)), keeps: 0, cores: 0, coins: p, t: Date.now() }; showUndo(`Sold ${nameOf(m)}`); S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && (S.gstone || 0) < ASC_STONES[as]) { toast(`Ascending past level ${ascTop(m)} needs ${ASC_STONES[as]} Glimmerstones (you have ${S.gstone || 0}). Find them in the Daily and World Boss, Cloud Climb, Rainbow releases and the Shop`); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
-      if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); setTimeout(() => fxPower("Ascended!"), 30); } } }
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { S.gstone = (S.gstone || 0) - ASC_STONES[as]; const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); setTimeout(() => fxPower("Ascended!"), 30); } } }
     else if (a === "mailclaim") { const ids = arg === "all" ? (S.mail || []).map(x => x.id) : [arg], got = {};
       for (const id of ids) { const L = MAIL.find(m => m.id === id); if (!L) continue; for (const r of L.rew) { giveReward(r); got[r.k] = (got[r.k] || 0) + r.n; } }
       S.mail = (S.mail || []).filter(x => !ids.includes(x.id)); sfx("claim"); save(); render(); toast("Got " + Object.entries(got).map(([k, n]) => `${n} ${RW[k] ? RW[k][1] : k}`).join(", ")); }
     else if (a === "buyq") { S.buyQ = n; save(); render(); }
     else if (a === "buymult") { const p = MULT_PRICE[n]; if (!p || S.coins < p || (S.multOwned && S.multOwned[n])) return; if (p >= 1000 && !sureSpend("mult:" + n, p)) return; S.coins -= p; S.multOwned = S.multOwned || {}; S.multOwned[n] = 1; sfx("claim"); save(); render(); toast(`x${n} is yours: pick it with the knob on the compass`); }
+    else if (a === "buygstone") { if (!gstoneLeft() || S.coins < GSTONE_PRICE) return; if (!sureSpend("gstone", GSTONE_PRICE)) return; S.coins -= GSTONE_PRICE; S.gsbuy = today(); S.gstone = (S.gstone || 0) + 1; sfx("claim"); save(); render(); toast("+1 Glimmerstone"); }
     else if (a === "buyepack") { if (!epackLeft() || S.coins < EPACK.price) return; if (!S.epack || S.epack.d !== today()) S.epack = { d: today(), n: 0 }; S.epack.n++; S.coins -= EPACK.price; S.glow += EPACK.n; sfx("coin"); save(); render(); toast(`+${EPACK.n} energy`); }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, q = S.jars[arg] !== undefined ? buyQ() : 1, p = prices[arg] * q;
@@ -5406,7 +5417,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   // ---------- Daily Boss + World Boss: timed fights against a giant guardian scaled to your team ----------
   const OL_BOSS = { d: { q: 2, up: 0, hpx: 40, atkx: .35, limit: 40, tries: 3, name: "Daily Boss" }, w: { q: 3, up: 0, hpx: 60, atkx: .22, limit: 40, tries: 5, name: "World Boss" } };  // giant HP, soft hits: the team lasts most of the 40 s
-  const WB_PER = 2500;  // World Boss points needed per player who joins this week (at least 2 players' worth)
+  const WB_PER = 2500;
+  const WB_REW = [[{ k: "coins", n: 250 }, { k: "star", n: 1 }, { k: "gstone", n: 1 }], [{ k: "star", n: 2 }, { k: "egg3", n: 1 }, { k: "gstone", n: 3 }]];  // World Boss points needed per player who joins this week (at least 2 players' worth)
   function olBossFoe(kind) {
     const B = OL_BOSS[kind], G = ZONES.map(z => z.boss), sp = G[(kind === "d" ? olDayN() : weekId() + 3) % G.length];
     const f = newMon(sp, Math.max(1, avgLvl() + B.up), B.q, kind === "w" && SP[sp].evo ? 1 : 0); f.boss = 1; f.hpx = B.hpx; f.atkx = B.atkx; f.hp = maxHp(f); return f;
@@ -5448,6 +5460,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const P = BT.prep, foe = BT.foes[0], life = maxHp(foe) / (foe.hpx || 1), pts = Math.round((BT.dealt || 0) / life * 100), kind = P.boss;
     const tb = $("olbt"); if (tb) tb.remove();
     const rew = [{ k: "coins", n: Math.min(300, 20 + Math.round(pts / 4)) }, ...(pts >= 100 ? [{ k: "glow", n: 10 }] : []), ...(pts >= 300 ? [{ k: "bright", n: 1 }] : [])];
+    if (kind === "d" && pts >= 200 && !olDb().gs) { olDb().gs = 1; rew.push({ k: "gstone", n: 1 }); }  // a Glimmerstone a day for 200+ points
     rew.forEach(giveReward); track("win", null, 20); let line = "";
     if (kind === "d") { const D = olDb(); if (pts > D.best) { D.best = pts; line = "New best today!"; olBossPost("d"); } else line = `Your best today: ${D.best.toLocaleString("en")}`; }
     else { const W = olWb(); W.me += pts; line = `You've hit it for ${W.me.toLocaleString("en")} this week`; olBossPost("w"); }
@@ -5459,7 +5472,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   function olWbClaim() {
     const W = olWb(), pct = wbSum(W) / wbGoal(W); if (W.me <= 0) return toast("Hit the World Boss once this week to share the reward");
-    const steps = [[.5, [{ k: "coins", n: 250 }, { k: "star", n: 1 }]], [1, [{ k: "star", n: 2 }, { k: "egg3", n: 1 }]]]; let got = [];
+    const steps = [[.5, WB_REW[0]], [1, WB_REW[1]]]; let got = [];
     while (W.claimed < steps.length && pct >= steps[W.claimed][0]) { got = got.concat(steps[W.claimed][1]); W.claimed++; }
     if (!got.length) return; got.forEach(giveReward); sfx("claim"); save(); render(); toast("World Boss reward: " + got.map(r => `${r.n} ${RW[r.k][1]}`).join(", "));
   }
@@ -5617,7 +5630,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       return `${olBack("online")}<h3>Daily Boss</h3><span></span></div>${olNetNote()}
         <div class="olboss"><span class="olbimg">${art(f.sp, f.evo, 96)}</span><div><b>${fname(f.sp, f.evo)}</b><small>${EL[SP[f.sp].el].name} · the same boss for everyone today</small><small>Tries left: ${D.left} of ${OL_BOSS.d.tries} · Your best: ${D.best.toLocaleString("en")}</small></div></div>
         <button class="mb gold pbig" data-act="olboss:d" ${D.left > 0 && team().length ? "" : "disabled"}>Fight</button>
-        <p class="hint">${OL_BOSS.d.limit} seconds to deal as much damage as you can. 100 points = one life of a normal boss at your level. More points, more coins.</p>
+        <p class="hint">${OL_BOSS.d.limit} seconds to deal as much damage as you can. 100 points = one life of a normal boss at your level. More points, more coins; 200+ gives a Glimmerstone once a day${olDb().gs ? " (got today's)" : ""}.</p>
         <div class="race">${rows.length ? rows.map((r, i) => `<div class="rrow${r.me ? " me" : ""} p${i + 1}"><span class="rpos">${i + 1}</span><span class="rav">${art(r.lead || 0, 0, 40)}</span><span class="rname"><b>${olEsc(r.name)}${!r.me && r.code && olFriend(r.code) ? " ♥" : ""}</b><small>${r.pts.toLocaleString("en")} points</small></span><span></span></div>`).join("") : `<p class="hint">Nobody has fought today's boss yet.</p>`}</div>`;
     }
     if (arenaSub === "olwboss") {
@@ -5627,7 +5640,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       return `${olBack("online")}<h3>World Boss</h3><span class="atimer">${CLOCK}${mmss(weekEnd - Date.now())}</span></div>${olNetNote()}
         <div class="olboss wb"><span class="olbimg">${art(f.sp, f.evo, 96)}</span><div><b>${fname(f.sp, f.evo)}</b><small>Everyone's hits this week add up. ${wbPlayers(W)} player${wbPlayers(W) === 1 ? "" : "s"} so far.</small></div></div>
         <div class="olwbar"><i style="width:${Math.round(pct * 100)}%"></i><span>${Math.round(pct * 100)}% · ${sum.toLocaleString("en")} of ${goal.toLocaleString("en")}</span><em style="left:50%"></em></div>
-        <div class="olwrew"><span class="${W.claimed >= 1 ? "got" : ""}">50%: ${rchips([{ k: "coins", n: 250 }, { k: "star", n: 1 }])}</span><span class="${W.claimed >= 2 ? "got" : ""}">100%: ${rchips([{ k: "star", n: 2 }, { k: "egg3", n: 1 }])}</span></div>
+        <div class="olwrew"><span class="${W.claimed >= 1 ? "got" : ""}">50%: ${rchips(WB_REW[0])}</span><span class="${W.claimed >= 2 ? "got" : ""}">100%: ${rchips(WB_REW[1])}</span></div>
         ${canClaim ? `<button class="mb gold pbig" data-act="olwbclaim">Claim reward</button>` : ""}
         <button class="mb ${canClaim ? "" : "gold "}pbig" data-act="olboss:w" ${W.left > 0 && team().length ? "" : "disabled"}>Hit it (${W.left} left today)</button>
         <p class="hint">Everyone who hits it this week shares the rewards. You: ${W.me.toLocaleString("en")} points.</p>
