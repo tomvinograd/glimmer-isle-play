@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795036163;</script>
+<script>window.GAME_BUILD = 1795064145;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -586,6 +586,12 @@ input { user-select: text; -webkit-user-select: text; }
 .ngc.bad { color: var(--err); background: var(--err-bg); }
 .wsc.missed { box-shadow: inset 0 0 0 3px var(--err); }
 .wslist span:not(.got):only-child, .wslist span:last-child:not(.got) { color: var(--muted); letter-spacing: 0; }
+
+/* suggestion form */
+.fld textarea { font: inherit; font-size: calc(17px * var(--fs)); font-weight: 500; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; resize: vertical; user-select: text; -webkit-user-select: text; line-height: 1.4; }
+.fld textarea:focus { border-color: var(--accent); outline: none; }
+.fsel { font: inherit; font-size: calc(17px * var(--fs)); font-weight: 600; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 0 12px; min-height: var(--tap); width: 100%; }
+:root[data-contrast="high"] .fld textarea, :root[data-contrast="high"] .fsel { border-color: var(--edge); }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -1778,6 +1784,7 @@ function drawHub() {
     <p class="sec">Puzzles</p><div class="gtiles"><button class="gtile" id="g-sudoku"><i aria-hidden="true">🔢</i><b>Sudoku</b><small>${sudLine}</small></button>${GAMES.filter(g => g.sec === "think").map(tile).join("")}</div>
     <div class="hrow"><button class="hbtn sm" id="hstats"><span><b>Stats & badges</b><small>${earned} of ${BADGES.length} badges</small></span></button>
       <button class="hbtn sm" id="hset"><span><b>Settings</b><small>Size, colours, sound</small></span></button></div>
+    <button class="hbtn" id="hidea"><span><b>💡 Suggest an idea</b><small>A new game, a setting, something hard to use…</small></span><i>›</i></button>
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
   if (live) $("hcont").onclick = () => { paused = false; homeView = "sudoku"; hideHome(); render(); };
@@ -1786,6 +1793,7 @@ function drawHub() {
   $("hwork").onclick = () => { const w = workoutToday(), next = w.ids.find(id => !w.done.includes(id)); if (next) mgOpen(next, { workout: true }); else toast("Today's workout is done. A new one tomorrow!"); };
   $("hstats").onclick = () => openStats("stats");
   $("hset").onclick = openSettings;
+  $("hidea").onclick = openSuggest;
 }
 
 /* one game: intro, play, result */
@@ -2792,6 +2800,49 @@ MGI.cages.settings = [
   { key: "clash", label: "Same number twice in a line shows red", opts: [[1, "Yes"], [0, "No"]], def: 1 },
   { key: "cage", label: "Shade the cage of the selected square", opts: [[1, "Yes"], [0, "No"]], def: 1 },
 ];
+
+
+/* ---------- suggestions: players write ideas; each one goes to the app maker's phone as an ntfy notification ----------
+   The game posts to one ntfy.sh topic (the same free relay as the races); whoever made the app subscribes to it in the
+   ntfy app. The relay is public, so the form asks people not to write private details. Sent ideas are also kept here. */
+const IDEAS_TOPIC = "tvsudoku-ideas-w126b7sykrsk";
+const IDEA_KINDS = [["idea", "💡 New idea", "bulb"], ["better", "🛠️ Make a game better", "hammer_and_wrench"], ["problem", "🐞 Something's wrong", "beetle"], ["other", "💬 Something else", "speech_balloon"]];
+function openSuggest() {
+  sheet = "suggest"; let kind = "idea";
+  const today = dayKey(), sentToday = (opts.ideas || []).filter(x => x.d === today).length;
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Suggest an idea">
+    <h2>💡 Suggest an idea</h2>
+    <p class="about">What would make the app better for you? A new game, a setting, something that's hard to see or tap… Every message is read.</p>
+    <h3>What is it about?</h3><div class="chips" id="skind">${IDEA_KINDS.map(([k, t]) => `<button role="radio" aria-checked="${k === kind}" class="${k === kind ? "on" : ""}" data-kind="${k}">${t}</button>`).join("")}</div>
+    <h3>Which game?</h3><select class="fsel" id="sgame" aria-label="Which game"><option value="">The whole app</option><option>Sudoku</option>${GAMES.map(g => `<option>${esc(g.name)}</option>`).join("")}<option>A game that isn't here yet</option></select>
+    <label class="fld"><span>Your message</span><textarea id="stext" maxlength="1000" rows="5" placeholder="Write your idea here"></textarea></label>
+    <label class="fld"><span>Your name (if you like)</span><input id="sname" maxlength="20" autocomplete="off" value="${esc(opts.name || "")}"></label>
+    <p class="hint2">Please don't write private details such as phone numbers: messages travel through a public message service.</p>
+    <p class="vsmsg" id="smsg" role="status"></p>
+    <div class="row2"><button class="big" data-close>Close</button><button class="big go" id="ssend">Send</button></div>
+    ${(opts.ideas || []).length ? `<p class="sec">You sent</p><div class="list">${opts.ideas.slice(-5).reverse().map(x => `<div class="drow"><span class="rk">${(IDEA_KINDS.find(k => k[0] === x.kind) || IDEA_KINDS[0])[1].split(" ")[0]}</span><span>${esc(x.text.slice(0, 60))}${x.text.length > 60 ? "…" : ""}<small>${dayLabel(x.d)}${x.game ? " · " + esc(x.game) : ""}</small></span><b></b></div>`).join("")}</div>` : ""}
+  </div>`;
+  layer.querySelectorAll("[data-kind]").forEach(b => b.onclick = () => { kind = b.dataset.kind; layer.querySelectorAll("[data-kind]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); });
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (homeOn) showHome(); });
+  const msg = (t, bad) => { const m = $("smsg"); m.textContent = t; m.className = "vsmsg" + (bad ? " bad" : ""); };
+  $("ssend").onclick = async () => {
+    const text = $("stext").value.trim(), name = $("sname").value.trim().slice(0, 20), game = $("sgame").value;
+    if (text.length < 3) { msg("Please write a few words first.", true); return; }
+    if (sentToday >= 5) { msg("That's 5 ideas today, thank you! Send more tomorrow.", true); return; }
+    const k = IDEA_KINDS.find(x => x[0] === kind);
+    const body = JSON.stringify({ topic: IDEAS_TOPIC, title: k[1].replace(/^\S+\s/, "") + (game ? " · " + game : ""), tags: [k[2]],
+      message: `${text}\n\n— ${name || "someone"}${verLabel() ? " · " + verLabel() : ""}` });
+    $("ssend").disabled = true; msg("Sending…");
+    try {
+      const r = await fetch(RELAY, { method: "POST", body });   // ntfy: a JSON body posted to the site root names its own topic
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      if (name) opts.name = opts.name || name;
+      opts.ideas = (opts.ideas || []).concat([{ d: today, kind, game, text }]).slice(-20); save();
+      sfx("badge"); msg("Thank you! Your idea was sent.");
+      $("stext").value = ""; setTimeout(() => { if (sheet === "suggest") openSuggest(); }, 1600);
+    } catch (e) { $("ssend").disabled = false; msg("Couldn't send right now. Check the internet and try again.", true); }
+  };
+}
 /* ==== GAMES JS END ==== */
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
@@ -2815,6 +2866,7 @@ const tickId = setInterval(() => {
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
 window.appBack = () => {
+  if (sheet === "suggest") { closeSheet(); if (homeOn) showHome(); return true; }
   if (sheet === "mghelp") { closeSheet(); return true; }
   if (sheet === "mgres") { $("mgmenu").click(); return true; }
   if (!sheet && mgView === "play") { mgIntro(); return true; }
@@ -2879,7 +2931,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Now called Thinking games. Every game has its own settings: tap a game, then “Settings for this game”.";   // change with each update
+const NEWS = "Have an idea for the app? Tap “Suggest an idea” at the bottom of the menu.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
