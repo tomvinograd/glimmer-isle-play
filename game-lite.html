@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795099342;</script>
+<script>window.GAME_BUILD = 1795100304;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1160,6 +1160,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .pin .silh { background: #3f2d22; }
   .revhint { margin: 0; text-align: center; font: 900 15px var(--display); color: #d9822b; }
   /* grade cards from pictures */
+  .cards .gcard.q0, .cards .tile.q0, .cards .tcard.q0 { background: var(--card-q0, linear-gradient(160deg, #d9f5e1, #8fcf9f)) center/cover no-repeat; }
   .cards .gcard.q1, .cards .tile.q1 { background: var(--card-q1) center/cover no-repeat; }
   .cards .gcard.q2, .cards .tile.q2 { background: var(--card-q2) center/cover no-repeat; }
   .cards .gcard.q3, .cards .tile.q3 { background: var(--card-q3) center/cover no-repeat; }
@@ -1892,9 +1893,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const elDot = e => ART[EL_ART[e]] ? `<span class="el elic" title="${EL[e].name}">${artIcon(EL_ART[e])}</span>` : `${elDot(e)}`;
   const artIcon = k => `<svg viewBox="0 0 24 24"><image href="${ART[k]}" x="0" y="0" width="24" height="24" preserveAspectRatio="xMidYMid meet"/></svg>`;
   // grade cards as CSS variables; the logo on the loading screen
-  { const C = { 1: "card-blue", 2: "card-purple", 3: "card-gold", 4: "card-rainbow" }; let n = 0;
+  { const C = { 0: "card-green", 1: "card-blue", 2: "card-purple", 3: "card-gold", 4: "card-rainbow" }; let n = 0;
     for (const q in C) if (ART[C[q]]) { document.documentElement.style.setProperty("--card-q" + q, `url(${ART[C[q]]})`); n++; }
-    if (n === 4) document.body.classList.add("cards");
+    if (n >= 4) document.body.classList.add("cards");
     if (ART["map-world"]) document.documentElement.style.setProperty("--wmap", `url(${ART["map-world"]})`);
     const t = document.querySelector("#splash .sp-title h1"); if (t && ART.logo) t.innerHTML = `<img class="splogo" src="${ART.logo}" alt="Glimmer Isle">`;
     if (ART["fx-cloudpad"]) { document.documentElement.style.setProperty("--cloudpad", `url(${ART["fx-cloudpad"]})`); document.body.classList.add("cpad"); }
