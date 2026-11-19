@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795095895;</script>
+<script>window.GAME_BUILD = 1795096137;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1098,6 +1098,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .hring { position: absolute; width: 160px; height: 200px; border-radius: 50%; border: 10px solid color-mix(in srgb, var(--c) 40%, #fff); opacity: 0; }
 .hatch.burst .hring { animation: ring2 .8s ease-out forwards; } .hatch.burst .hring.r2 { animation-delay: .15s; }
 @keyframes ring2 { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
+.hatch.wait .hegg { animation: eggDrop .5s cubic-bezier(.3,1.5,.5,1) both, eggIdle 1.4s ease-in-out .6s infinite; cursor: pointer; }
+@keyframes eggIdle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-6deg); } 40% { transform: rotate(5deg); } 55% { transform: rotate(0) translateY(-6px); } 70% { transform: rotate(0); } }
 .htap { position: absolute; bottom: calc(40px + env(safe-area-inset-bottom, 0px)); margin: 0; font: 800 14px var(--display); color: #fff; text-shadow: 0 1px 3px rgba(40,30,20,.5); }
 .hcard { position: relative; width: 250px; padding: 14px 12px 16px; border-radius: 16px; display: grid; justify-items: center; gap: 6px; animation: rpop .45s cubic-bezier(.3,1.5,.5,1);
   background: linear-gradient(160deg, color-mix(in srgb, var(--gc) 30%, #fff), color-mix(in srgb, var(--gc) 65%, #fff)); box-shadow: 0 0 0 5px #fff, 0 0 0 8px var(--gc), 0 14px 40px rgba(40,30,20,.35); }
@@ -2930,8 +2932,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const ELK = Object.keys(EL);
   const RW = { coins: [IC.coin, "coins"], glow: [IC.glow, "energy"], plain: [IC.jar(JARS[0].c), "plain jar"], bright: [IC.jar(JARS[1].c), "bright jar"], star: [IC.jar(JARS[2].c), "star jar"], prism: [IC.jar("prism"), "prism jar"],
                treats: [IC.treat, "treat"], leaves: [IC.leaf, "leaves"], fruit: [IC.fruit, "moonfruit"], charm: [charmSvg("atk", 1), "charm"] };
-  let eggWait = 0;  // best egg got since the Backpack last opened for it (the Backpack opens by itself)
-  function giveReward(r) { if (/^egg[1-4]$/.test(r.k)) { eggWait = Math.max(eggWait, +r.k[3]); setTimeout(() => eggGo(), 900); } if (r.k === "charm") { for (let i = 0; i < r.n; i++) addCharm(r.kind, r.r || 0); return; } if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
+  let eggWait = [];  // eggs just got, waiting for their opening screen (best first)
+  function giveReward(r) { if (/^egg[1-4]$/.test(r.k)) { for (let i = 0; i < r.n; i++) eggWait.push(+r.k[3]); eggWait.sort((a, b) => b - a); setTimeout(() => eggGo(), 900); } if (r.k === "charm") { for (let i = 0; i < r.n; i++) addCharm(r.kind, r.r || 0); return; } if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
   const TASKS = {
     starter: [
       { id: "c1", name: "First catch", about: "Catch a Glumi", need: 1, got: T => T.total.catch, r: { k: "plain", n: 3 } },
@@ -3076,10 +3078,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   // ================= BACKPACK =================
   let bagTab = "items", bagPick = null;
-  function eggGo() {  // show the Backpack with the new egg picked, once nothing else is on screen
-    if (!eggWait || !S.started || E || BT || busy || S.auto || document.querySelector(".shade, .popwrap, .hatch")) return;
-    const t = [4, 3, 2, 1].find(x => x <= eggWait && (S["egg" + x] || 0) > 0) || [4, 3, 2, 1].find(x => (S["egg" + x] || 0) > 0); eggWait = 0; if (!t) return;
-    view = "bag"; bagTab = "items"; bagPick = "egg" + t; settingsPage = null; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0);
+  function eggGo() {  // the egg-opening screen for the next new egg, once nothing else is on screen
+    if (!eggWait.length || !S.started || E || BT || busy || S.auto || document.querySelector(".shade, .popwrap, .hatch")) return;
+    while (eggWait.length) { const t = eggWait.shift(); if ((S["egg" + t] || 0) > 0) { hatchEgg(t, true); return; } }
   }
   let charmFor = null;  // uid of the Glumi choosing a charm, or null (charm list from the Backpack)
   const charmPct = c => Math.round(CHARM[c.k].b[c.r] * 100);
@@ -3708,27 +3709,30 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const EGG_ICON = t => ART[EGG_ART[t]] ? artIcon(EGG_ART[t]) : EGG_SVG(t, "i" + t + Math.random().toString(36).slice(2, 6));
   const eggBig = (t, id) => ART[EGG_ART[t]] ? `<img src="${ART[EGG_ART[t]]}" alt="">` : EGG_SVG(t, id);
   Object.assign(RW, { egg1: [EGG_ICON(1), "blue egg"], egg2: [EGG_ICON(2), "purple egg"], egg3: [EGG_ICON(3), "gold egg"], egg4: [EGG_ICON(4), "rainbow egg"] });
-  function hatchEgg(t) {
+  function hatchEgg(t, wait) {  // wait: the egg sits in the middle until the player taps it
     if (!((S["egg" + t] || 0) > 0)) return;
     const pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []); if (!pool.length) return;
     S["egg" + t]--; const [qs, ws] = EGG_ODDS[t], q = qs[wpick(ws)], m = newMon(pool[rnd(0, pool.length - 1)], 1, q);
     keepMon(m); save();
     const ov = document.createElement("div"); ov.className = "hatch"; ov.style.setProperty("--c", EGG_COL[t][1]);
     const crack = `<svg class="cracks" viewBox="0 0 100 120"><path class="k1" d="M50 40 46 52 54 58 48 70"/><path class="k2" d="M48 70 36 76 30 70M54 58 66 62 72 56"/><path class="k3" d="M48 70 52 84 44 94M66 62 70 78 80 82"/></svg>`;
-    ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${eggBig(t, "h1")}</div><div class="half bot">${eggBig(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">Tap to hatch faster</p>`; if (ART["bg-hatch"]) ov.style.background = `url(${ART["bg-hatch"]}) center/cover`;
+    ov.innerHTML = `<div class="hblob"></div><div class="hrays"></div><div class="hegg"><div class="half top">${eggBig(t, "h1")}</div><div class="half bot">${eggBig(t, "h2")}</div>${crack}</div><div class="hflash"></div><i class="hring"></i><i class="hring r2"></i><p class="htap">${wait ? "Tap the egg to open it" : "Tap to hatch faster"}</p>`; if (wait) ov.classList.add("wait"); if (ART["bg-hatch"]) ov.style.background = `url(${ART["bg-hatch"]}) center/cover`;
     document.body.appendChild(ov);
     let shown = false; const timers = [];
     const card = () => { if (shown) return; shown = true; timers.forEach(clearTimeout); sfx("claim");
       ov.classList.add("done");
       ov.innerHTML = `<div class="hrays on"></div><div class="hcard q${m.q}" style="--gc:${GRADES[m.q].c}"><span class="hpow${m.q === 4 ? " q4" : ""}">${GRADES[m.q].name}</span><div class="hart">${art(m.sp, m.evo, 190)}</div><b>${fname(m.sp, m.evo)}</b><span class="hmeta"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>${EL[SP[m.sp].el].name} · Lv 1</span></div><p class="htap">Tap to close</p>`;
       setTimeout(() => ov.addEventListener("click", () => { ov.remove(); render(); }, { once: true }), 400); };
-    ov.addEventListener("click", () => { if (!shown) card(); });
+    let started = !wait;
+    ov.addEventListener("click", () => { if (!started) { started = true; ov.classList.remove("wait"); const p = ov.querySelector(".htap"); if (p) p.textContent = "Tap to hatch faster"; go(); } else if (!shown) card(); });
     const at = (ms, fn) => timers.push(setTimeout(fn, RM ? Math.min(ms, 300) : ms));
+    const go = () => {
     at(500, () => { ov.classList.add("w1"); sfx("tap"); });
     at(1000, () => { ov.classList.add("w2"); sfx("tap"); });
     at(1500, () => { ov.classList.add("w3"); sfx("tap"); });
     at(2000, () => { ov.classList.add("burst"); sfx("win"); });
-    at(2700, card);
+    at(2700, card); };
+    if (!wait) go();
   }
   const NAVI = { menu: '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>',
                  close: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>' };
@@ -4634,7 +4638,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   setInterval(() => { try { maybeHint(); } catch {} }, 1500);  // also after the splash and between renders
   function render() {
-    setTimeout(maybeHint, 0); if (eggWait) setTimeout(eggGo, 700);
+    setTimeout(maybeHint, 0); if (eggWait.length) setTimeout(eggGo, 700);
     renderTabs();
     setTimeout(() => { sheetShown = document.querySelector('.sheet') ? sheetUid : null; }, 0);
     $("arena").hidden = !BT; if (BT) renderArena();
