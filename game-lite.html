@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795116610;</script>
+<script>window.GAME_BUILD = 1795116705;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -5848,12 +5848,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const tips = ["Tip: tap the compass to walk the path", "Tip: hold the compass to switch Auto on", "Tip: throw a jar when the ring is small", "Tip: energy refills by itself over time", "Tip: the Atlas shows every zone's Glumis", "Tip: a glowing chest gives extra energy"];
     $("spTip").textContent = tips[rnd(0, tips.length - 1)];
     $("spVer").textContent = versionText();
-    // Tom 19 Nov: it was gone too fast - the app's own blue box covers the page until it has loaded, so the poster now
-    // stays at least SHOW_AFTER_LOAD ms after loading, the bar filling smoothly to 100% over that time
-    const SHOW_AFTER_LOAD = 3600; let p = 0, ready = false, tReady = 0, pReady = 0;
+    let p = 0, ready = false;
     const show = v => { $("spFill").style.width = `calc(${v}% - 6px)`; $("spDrop").style.left = v + "%"; $("spPct").textContent = Math.round(v) + "%"; };
-    const iv = setInterval(() => { if (ready && !tReady) { tReady = performance.now(); pReady = p; }
-      p = ready ? Math.min(100, pReady + (100 - pReady) * Math.min(1, (performance.now() - tReady) / SHOW_AFTER_LOAD)) : Math.min(88, p + 1 + Math.random() * 2); show(p);
+    const iv = setInterval(() => { p = Math.min(ready ? 100 : 88, p + (ready ? 9 : 3 + Math.random() * 5)); show(p);
       if (p >= 100 && performance.now() - t0 >= SPLASH_MIN_MS) { clearInterval(iv); setTimeout(() => { sp.classList.add("done"); setTimeout(() => sp.remove(), 800); }, 250); } }, 90);
     Promise.all([document.fonts ? document.fonts.ready : 0, new Promise(r => document.readyState === "complete" ? r() : addEventListener("load", r, { once: true }))])
       .then(() => { ready = true; }, () => { ready = true; });
