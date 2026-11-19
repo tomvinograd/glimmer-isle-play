@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795065163;</script>
+<script>window.GAME_BUILD = 1795067347;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -153,7 +153,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
 .htitle b { font-size: 38px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
 .htitle span { color: var(--muted); font-weight: 600; }
 .hbtns { display: grid; gap: 10px; margin-top: 6px; }
-.hbtn { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: left; }
+.hbtn { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: start; }
 .hbtn > span { flex: 1; display: grid; gap: 1px; } .hbtn b { font-size: 18px; font-weight: 800; } .hbtn small { color: var(--muted); font-weight: 600; font-size: 13px; }
 .hbtn i { font-style: normal; font-size: 22px; color: var(--muted); }
 .hbtn.go { background: var(--accent); color: var(--accent-ink); } .hbtn.go small, .hbtn.go i { color: var(--accent-ink); opacity: .85; }
@@ -408,7 +408,7 @@ input { user-select: text; -webkit-user-select: text; }
 .htitle.hub b { font-size: 34px; }
 .gtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; }
 :root[data-size="xl"] .gtiles { grid-template-columns: 1fr; }
-.gtile { display: grid; justify-items: start; align-content: start; gap: 2px; padding: 12px 14px 13px; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: left; min-height: 104px; }
+.gtile { display: grid; justify-items: start; align-content: start; gap: 2px; padding: 12px 14px 13px; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: start; min-height: 104px; }
 .gtile i { font-style: normal; font-size: calc(30px * var(--fs)); line-height: 1.15; }
 .gtile b { font-size: calc(16px * var(--fs)); font-weight: 800; line-height: 1.2; }
 .gtile small { color: var(--muted); font-weight: 600; font-size: calc(12.5px * var(--fs)); line-height: 1.3; }
@@ -490,12 +490,12 @@ input { user-select: text; -webkit-user-select: text; }
 /* Shopping list / What changed? / Same as before? / Story questions */
 .items { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; overflow-y: auto; align-content: start; max-height: 100%; padding: 2px; }
 :root[data-size="xl"] .items.pick { grid-template-columns: 1fr; }
-.item { display: flex; align-items: center; gap: 10px; min-height: var(--tap); padding: 6px 12px; border-radius: 14px; background: var(--paper); box-shadow: 0 1px 2px var(--shade); text-align: left; font-weight: 700; font-size: calc(17px * var(--fs)); }
+.item { display: flex; align-items: center; gap: 10px; min-height: var(--tap); padding: 6px 12px; border-radius: 14px; background: var(--paper); box-shadow: 0 1px 2px var(--shade); text-align: start; font-weight: 700; font-size: calc(17px * var(--fs)); }
 .item i { font-style: normal; font-size: calc(28px * var(--fs)); line-height: 1; }
 .item.on { box-shadow: inset 0 0 0 3px var(--accent); background: var(--same); }
-.item.right { box-shadow: inset 0 0 0 3px #1E8A4C; } .item.right::after { content: "✓"; margin-left: auto; color: #1E8A4C; font-weight: 900; }
-.item.wrong { box-shadow: inset 0 0 0 3px var(--err); } .item.wrong::after { content: "✕"; margin-left: auto; color: var(--err); font-weight: 900; }
-.item.missed { box-shadow: inset 0 0 0 3px #1E8A4C; opacity: .6; } .item.missed::after { content: "missed"; margin-left: auto; color: var(--muted); font-size: 12px; }
+.item.right { box-shadow: inset 0 0 0 3px #1E8A4C; } .item.right::after { content: "✓"; margin-inline-start: auto; color: #1E8A4C; font-weight: 900; }
+.item.wrong { box-shadow: inset 0 0 0 3px var(--err); } .item.wrong::after { content: "✕"; margin-inline-start: auto; color: var(--err); font-weight: 900; }
+.item.missed { box-shadow: inset 0 0 0 3px #1E8A4C; opacity: .6; } .item.missed::after { content: "missed"; margin-inline-start: auto; color: var(--muted); font-size: 12px; }
 :root[data-contrast="high"] .item { border: 2px solid var(--edge); }
 .studybar { width: 100%; height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .studybar i { display: block; height: 100%; background: var(--accent); width: 100%; transition: width linear; }
@@ -596,19 +596,19 @@ input { user-select: text; -webkit-user-select: text; }
 /* the compact menu */
 .hub2 { gap: 12px; }
 .hubtop { display: flex; align-items: center; gap: 8px; }
-.hubtop .htitle { flex: 1; min-width: 0; text-align: left; justify-items: start; }
+.hubtop .htitle { flex: 1; min-width: 0; text-align: start; justify-items: start; }
 .hubtop .htitle b { font-size: calc(28px * var(--fs)); line-height: 1.1; }
 .hubtop .htitle span { font-size: calc(13.5px * var(--fs)); }
 .icb { width: var(--tap); height: var(--tap); flex: none; border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); display: grid; place-items: center; }
 .icb svg { width: 26px; height: 26px; }
 :root[data-contrast="high"] .icb { border: 2px solid var(--edge); }
 .hbtn.slim { padding: 10px 16px; } .hbtn.slim b { font-size: calc(16px * var(--fs)); }
-.wcard { display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; }
+.wcard { display: flex; align-items: center; gap: 12px; padding-block: 10px; padding-inline: 16px 10px; }
 .wtx { flex: 1; min-width: 0; display: grid; gap: 2px; } .wtx b { font-size: calc(17px * var(--fs)); font-weight: 800; } .wtx small { color: var(--muted); font-weight: 700; font-size: calc(14px * var(--fs)); }
 .wcard .bigbtn { min-height: calc(var(--tap) - 4px); padding: 0 18px; font-size: calc(16px * var(--fs)); box-shadow: none; white-space: nowrap; }
 .wcard .bigbtn.alt { background: var(--bg); color: var(--muted); }
 .again { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.again button { min-height: var(--tap); border-radius: 14px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 8px; font-weight: 800; font-size: calc(13.5px * var(--fs)); line-height: 1.15; text-align: left; }
+.again button { min-height: var(--tap); border-radius: 14px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 4px 8px; font-weight: 800; font-size: calc(13.5px * var(--fs)); line-height: 1.15; text-align: start; }
 .again i { font-style: normal; font-size: calc(22px * var(--fs)); flex: none; }
 .again span { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 :root[data-contrast="high"] .again button { border: 2px solid var(--edge); }
@@ -617,7 +617,7 @@ input { user-select: text; -webkit-user-select: text; }
 .gt { position: relative; display: grid; justify-items: center; align-content: center; gap: 5px; padding: 12px 4px 10px; min-height: calc(88px * var(--fs)); border-radius: 16px; background: var(--paper); box-shadow: 0 1px 3px var(--shade); text-align: center; }
 .gt i { font-style: normal; font-size: calc(30px * var(--fs)); line-height: 1; }
 .gt b { font-size: calc(13.5px * var(--fs)); font-weight: 800; line-height: 1.2; }
-.gt .lv { position: absolute; top: 6px; right: 8px; font-size: 11px; font-weight: 800; color: var(--muted); }
+.gt .lv { position: absolute; top: 6px; inset-inline-end: 8px; font-size: 11px; font-weight: 800; color: var(--muted); }
 .gt:active, .again button:active { transform: translateY(1px); }
 :root[data-contrast="high"] .gt { border: 2px solid var(--edge); } :root[data-contrast="high"] .gt .lv { color: var(--ink); }
 
@@ -628,6 +628,13 @@ input { user-select: text; -webkit-user-select: text; }
 :root[data-size="xl"] .wcard .bigbtn { flex-basis: 100%; }
 :root[data-size="xl"] .hubtop .htitle b { font-size: 7vw; }
 :root[data-size="xl"] .again button:nth-child(3) { display: none; }   /* two per row: the two latest */
+
+/* Hebrew: right-to-left. Number grids, keypads, sums, codes and the chart stay left-to-right; arrows point the other way */
+.board, .pad, .kpad, .digits, .slots, .sumq, .sumtyped, .ngrid, .ncg, .wsgrid, .chart svg, .timer, .code, .codein, .tools, .vsrow b { direction: ltr; }
+[dir="rtl"] .pback svg, [dir="rtl"] .mark svg, [dir="rtl"] .hbtn > i { transform: scaleX(-1); }
+[dir="rtl"] .sec, [dir="rtl"] .sheet h3, [dir="rtl"] .hrec h3, [dir="rtl"] .hlook h3, [dir="rtl"] .mark, [dir="rtl"] .htitle b { letter-spacing: 0; }
+[lang="he"] .item.missed::after { content: "פוספס"; }
+[dir="rtl"] .tools { direction: rtl; }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -772,7 +779,7 @@ const dayKey = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() +
 const keyDate = k => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
 const addDays = (k, n) => { const d = keyDate(k); d.setDate(d.getDate() + n); return dayKey(d); };
 const dailyLevel = k => DAILY_LV[keyDate(k).getDay()];
-const dayLabel = k => k === dayKey() ? "Today" : k === addDays(dayKey(), -1) ? "Yesterday" : keyDate(k).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+const dayLabel = k => k === dayKey() ? "Today" : k === addDays(dayKey(), -1) ? "Yesterday" : keyDate(k).toLocaleDateString(isHe() ? "he-IL" : "en-GB", { day: "numeric", month: "short" });
 function makeDaily(k) {
   const lv = dailyLevel(k), L = LEVELS[lv - 1], was = rnd; let best = null;
   rnd = seeded(hashStr("tvsudoku-daily-" + k));
@@ -1081,7 +1088,7 @@ function drawNew() {
 // "Version 1.1 · game of 18 Nov, 21:05": the app's version (from the app) and when this game was published
 function verLabel() {
   const app = (navigator.userAgent.match(/SudokuApp\/([\d.]+)/) || [])[1], b = window.GAME_BUILD;
-  const when = b ? new Date(b * 1000).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+  const when = b ? new Date(b * 1000).toLocaleString(isHe() ? "he-IL" : "en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
   return [app ? "Version " + app : "", when ? "game of " + when : ""].filter(Boolean).join(" · ");
 }
 function startGame(lv) {
@@ -1387,10 +1394,11 @@ function drawSettings() {
   const sw = (id, on, label) => `<div class="opt"><span>${label}</span><button class="sw${on ? " on" : ""}" id="${id}" role="switch" aria-checked="${!!on}" aria-label="${label}"></button></div>`;
   layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Settings">
     <h2>Settings</h2>
+    <h3 data-notr>Language · שפה</h3><div class="seg two" role="radiogroup" aria-label="Language" data-notr>${[["en", "English"], ["he", "עברית"]].map(([k, t]) => `<button role="radio" aria-checked="${LANG === k}" class="${LANG === k ? "on" : ""}" data-lang="${k}" lang="${k}">${t}</button>`).join("")}</div>
     <label class="fld"><span>Your name (friends see it in races and daily times)</span><input id="setname" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Your name" value="${esc(opts.name || "")}"></label>
     <h3>Board size</h3><div class="sizes" role="radiogroup" aria-label="Board size">${[["normal", "Normal", 18], ["large", "Large", 24], ["xl", "Extra large", 30]]
       .map(([k, t, px]) => `<button role="radio" aria-checked="${opts.size === k}" class="${opts.size === k ? "on" : ""}" data-size-pick="${k}"><b style="font-size:${px}px">7</b><small>${t}</small></button>`).join("")}</div>
-    <h3>Look</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${seg("theme-pick", [["auto", "Phone", ic('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>')], ["light", "Light", ic('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>')], ["dark", "Dark", ic('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>')]], opts.theme || "auto")}</div>
+    <h3>Appearance</h3><div class="seg" role="radiogroup" aria-label="Light or dark">${seg("theme-pick", [["auto", "Phone", ic('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>')], ["light", "Light", ic('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>')], ["dark", "Dark", ic('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>')]], opts.theme || "auto")}</div>
     ${sw("hcsw", opts.hc, "High contrast")}
     <h3>Your numbers</h3><div class="ucol" role="radiogroup" aria-label="Colour of the numbers you enter">${[["printed", "Printed"], ["blue", "Blue"], ["green", "Green"], ["purple", "Purple"]]
       .map(([k, t]) => `<button role="radio" aria-checked="${opts.ucolor === k}" class="${opts.ucolor === k ? "on" : ""}" data-ucolor-pick="${k}"><b data-uc="${k}">7</b><small>${t}</small></button>`).join("")}</div>
@@ -1410,6 +1418,7 @@ function drawSettings() {
   $("hcsw").onclick = () => { opts.hc = !opts.hc; re(); };
   $("optsame").onclick = () => { opts.same = !opts.same; re(); };
   $("optmis").onclick = () => { opts.mistakes = !opts.mistakes; re(); };
+  L.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { opts.lang = b.dataset.lang; save(); applyLang(true); });
   $("optrelax").onclick = () => { opts.relaxed = !opts.relaxed; re(); };
   $("optsnd").onclick = () => { opts.sound = opts.sound === false; re(); if (opts.sound) sfx("tap"); };
   const nm = $("setname"); nm.oninput = () => { opts.name = nm.value.trim().slice(0, 14); save(); };
@@ -1745,6 +1754,343 @@ function openVsLeave() {
 }
 
 /* ==== GAMES JS BEGIN (game/src/games.js) ==== */
+/* ---------- Hebrew ----------
+   The game is written in English. In Hebrew, a watcher (MutationObserver) translates every piece of text the moment it
+   appears on screen: exact phrases from HE_TEXT, and phrases with numbers or names from HE_PATS. The game's logic never
+   changes. Content that must be written in Hebrew from the start (stories, the word lists) comes from heStory / HE_WORDS.
+   Text inside [data-notr] (names people typed, the language switch) is never touched. Switching back to English puts every
+   original text back. The page turns right-to-left; number grids and keypads stay left-to-right (CSS). */
+let LANG = "en";
+const isHe = () => LANG === "he";
+const HE_TEXT = {};   // filled from he-text below
+const HE_PATS = [];   // [regex, replacement string or function]
+const trOrig = new WeakMap(), trAttrOrig = new WeakMap(), TR_ATTRS = ["aria-label", "placeholder", "title"];
+if (window.__miss === undefined && window.SUDOKU_COLLECT) window.__miss = new Set();   // tests: list text with no Hebrew yet
+// translate one piece of text: exact, then a pattern, then piece by piece (" · ", sentences, an emoji or arrow around words)
+function trCore(core, depth = 0) {
+  if (!/[A-Za-z]/.test(core)) return core;
+  let t = HE_TEXT[core]; if (t != null) return t;
+  for (const [re, rep] of HE_PATS) { const mm = core.match(re); if (mm) return typeof rep === "function" ? rep(...mm) : core.replace(re, rep); }
+  if (depth > 3) return null;
+  const all = (parts, sep) => { const out = parts.map(x => trCore(x, depth + 1)); return out.every(x => x != null) ? out.join(sep) : null; };
+  if (core.includes(" · ")) { const r = all(core.split(" · "), " · "); if (r != null) return r; }
+  const sent = core.split(/(?<=[.!?…])\s+(?=[A-Z])/); if (sent.length > 1) { const r = all(sent, " "); if (r != null) return r; }
+  for (const re of [/^([^A-Za-z0-9]*)([\s\S]*?)()$/, /^([^A-Za-z0-9]*)([\s\S]*?)([^A-Za-z0-9]*)$/, /^([^A-Za-z]*)([\s\S]*?)([^A-Za-z]*)$/]) {   // an emoji in front (keep "?"), then both ends
+    const m = core.match(re); if (m && (m[1] || m[3]) && m[2]) { const r = trCore(m[2], depth + 1); if (r != null) return m[1] + r + m[3]; }
+  }
+  return null;
+}
+function trText(s) {
+  if (!s || !/[A-Za-z]/.test(s)) return null;
+  const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/), r = trCore(m[2]);
+  if (r == null) { if (window.__miss && !/[\u0590-\u05FF]/.test(m[2])) window.__miss.add(m[2]); return null; }
+  return m[1] + r.replace(/›/g, "‹") + m[3];
+}
+const trSkip = el => !el || !!el.closest("[data-notr],script,style,textarea");
+function trNode(n) {
+  if (n.nodeType === 3) {
+    if (trSkip(n.parentElement)) return;
+    const t = trText(n.nodeValue); if (t != null && t !== n.nodeValue) { if (!trOrig.has(n)) trOrig.set(n, n.nodeValue); n.nodeValue = t; }
+    return;
+  }
+  if (n.nodeType !== 1 || trSkip(n)) return;
+  for (const a of TR_ATTRS) trAttr(n, a);
+  for (const c of n.childNodes) trNode(c);
+}
+function trAttr(el, a) {
+  if (!el.hasAttribute || !el.hasAttribute(a) || trSkip(el)) return;
+  const v = el.getAttribute(a), t = trText(v);
+  if (t != null && t !== v) { const o = trAttrOrig.get(el) || {}; if (!(a in o)) o[a] = v; trAttrOrig.set(el, o); el.setAttribute(a, t); }
+}
+function trRevert(n) {
+  if (n.nodeType === 3) { if (trOrig.has(n)) { n.nodeValue = trOrig.get(n); trOrig.delete(n); } return; }
+  if (n.nodeType !== 1) return;
+  const o = trAttrOrig.get(n); if (o) { for (const a in o) n.setAttribute(a, o[a]); trAttrOrig.delete(n); }
+  for (const c of n.childNodes) trRevert(c);
+}
+const trObs = new MutationObserver(list => {
+  if (!isHe()) return;
+  for (const m of list) {
+    if (m.type === "characterData") trNode(m.target);
+    else if (m.type === "attributes") trAttr(m.target, m.attributeName);
+    else m.addedNodes.forEach(trNode);
+  }
+});
+trObs.observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS });
+// set the language: the page direction, every text on screen, then redraw what is open (its new text gets translated as it appears)
+function applyLang(redraw) {
+  LANG = (window.SUDOKU_LANG || opts.lang) === "he" ? "he" : "en";
+  const root = document.documentElement; root.lang = LANG; root.dir = isHe() ? "rtl" : "ltr";
+  document.title = isHe() ? "משחקי חשיבה" : "Thinking games";
+  if (isHe()) trNode(document.body); else trRevert(document.body);
+  if (!redraw) return;
+  if (G) render();
+  if (homeOn) showHome();
+  if (mgView === "intro") mgIntro();
+  if (statOn) openStats();
+  if (sheet === "settings") drawSettings();
+}
+
+/* ---------- Hebrew content ---------- */
+// words for Anagrams (grouped by length when needed) and Word search
+const HE_WORDS_ALL = ("בית ספר ילד כלב גשם שמש ירח דגל לחם חלב מים עין אבא אמא דוד סבא שלג ענן חול אור קיר דלת זהב כסף ברז פרח עלה שקד תות זית בצל שום אגס סוס פיל דוב זאב נמר כבש עגל רכב שיר תוף לוח גיר תיק נעל גרב קיץ ערב גשר חסה סיר נשר " +
+  "כיסא שעון חתול ארנב אריה תפוח בננה חלון מטבח סלון מיטה רכבת מטוס כדור בובה כובע צעיף מעיל פרפר נמלה כריש חורף אביב סתיו בוקר לילה כפית סכין צלחת מקרר תנור מגבת סבון כרית מכתב מתנה מורה רופא אחות גינה מחשב מסוק כביש מגדל חנות חציל פלפל תירס זברה תוכי סנאי שועל אננס " +
+  "שולחן ענבים לימון עיתון חולצה דבורה ציפור ברווז מחברת אנייה גלידה מברשת שמיכה מנורה פרחים ירקות פירות גיטרה פסנתר כינור מטריה חבילה משפחה חברים תלמיד טלפון צוללת רמזור ארמון מסעדה בריכה אבטיח אפרסק קישוא צפרדע קיפוד ינשוף חסידה מקלחת סוודר ספרים מסטיק " +
+  "מכונית עיפרון תרנגול דולפין לוויתן קומקום ספרייה עוגייה שוקולד מוזיקה חצוצרה צהריים אופנוע מלפפון תפוזים דובדבן קנגורו אמבטיה מטריות עוגיות מחברות פרפרים דבורים חתולים משאיות מגדלור תפוחים " +
+  "אוטובוס אופניים מספריים משקפיים מכנסיים עגבנייה קרואסון מוזיאון ציפורים תרנגולת מכוניות אווירון").split(" ");
+const HE_SET = new Set(HE_WORDS_ALL), HE_WORDS = {}; for (const w of HE_WORDS_ALL) (HE_WORDS[w.length] = HE_WORDS[w.length] || []).push(w);
+const HE_AN_LV = [[3], [4], [5], [6], [7], [4, 5, 6]];
+const HE_WS_THEMES = {
+  "חיות": "כלב חתול סוס פיל אריה נמר דוב זאב ארנב שועל זברה קוף ברווז ינשוף צפרדע דולפין כריש גמל",
+  "פירות": "תפוח בננה אגס ענבים לימון אבטיח אפרסק תות תפוז שזיף דובדבן אננס מלון תמר",
+  "מטבח": "כפית מזלג סכין צלחת קערה כוס תנור סיר מחבת קומקום מקרר כיור ספל",
+  "מזג אוויר": "גשם שלג רוח סערה ענן שמש ערפל ברד כפור רעם ברק",
+  "גינה": "ורד צבעוני עץ דשא זרע אדמה עלה שיח גדר חיננית מעדר בריכה",
+  "תחבורה": "רכבת מטוס אנייה אוטובוס מונית אופניים מכונית סירה משאית אופנוע כרטיס מפה",
+  "מוזיקה": "פסנתר תוף חליל גיטרה שיר תו נבל כינור מקהלה להקה",
+  "בית": "דלת חלון כיסא שולחן ספה מנורה מיטה מדף שעון שטיח",
+};
+const HE_WS_DIRS = [[0, -1], [1, 0], [1, -1], [0, 1], [-1, 0], [-1, 1], [1, 1], [-1, -1]];   // the first is right-to-left: how Hebrew reads
+const HE_FILL = "אבגדהוזחטיכלמנסעפצקרשתאיוהלמרבנשת";
+
+// Story questions in Hebrew: the verbs and adjectives agree with each person and thing (masculine / feminine)
+const HE_ST = {
+  men: ["דני", "יוסי", "משה", "אבי", "רון", "עומר", "איתי", "נועם", "אורי", "יונתן"],
+  women: ["רותי", "מירב", "נועה", "שירה", "מיכל", "דנה", "יעל", "תמר", "הילה", "ענת"],
+  days: ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"],
+  times: ["מוקדם בבוקר", "בשעה תשע", "בצהריים", "אחרי ארוחת הצהריים", "בשעה ארבע", "בערב"],
+  places: [["לשוק", "השוק"], ["לספרייה", "הספרייה"], ["לדואר", "הדואר"], ["למאפייה", "המאפייה"], ["לפארק", "הפארק"], ["לבנק", "הבנק"], ["לבית המרקחת", "בית המרקחת"], ["למשתלה", "המשתלה"], ["למוזיאון", "המוזיאון"], ["לים", "הים"]],
+  travel: ["באוטובוס", "באופניים", "במכונית", "ברגל", "ברכבת", "במונית"],
+  weather: ["חם", "קר", "גשום", "סוער", "מעונן", "שמשי"],
+  relM: ["שכן", "חבר ותיק", "בן דוד", "מורה", "עמית לעבודה"], relF: ["שכנה", "חברה ותיקה", "בת דודה", "מורה", "עמיתה לעבודה"],
+  colors: [["אדום", "אדומה"], ["כחול", "כחולה"], ["ירוק", "ירוקה"], ["צהוב", "צהובה"], ["שחור", "שחורה"], ["לבן", "לבנה"], ["חום", "חומה"], ["סגול", "סגולה"]],
+  things: [["כובע", "m"], ["מטריה", "f"], ["צעיף", "m"], ["תיק", "m"], ["מעיל", "m"], ["מחברת", "f"], ["כלב", "m"]],
+  many: ["תפוחים", "בננות", "לימונים", "גזרים", "עגבניות", "ביצים", "קרואסונים", "עוגיות", "עפרונות", "בלונים", "מעטפות", "אפרסקים", "אגסים", "תפוזים", "נרות"],
+  one: ["עוגה", "עיתון", "מטריה", "מתנה", "באגט", "זר פרחים", "גבינה", "צנצנת דבש", "שקית קפה", "קופסת תה", "פיצה", "דג", "ספר", "עציץ"],
+};
+function heStory(nFacts) {
+  const S = HE_ST, whoF = Math.random() < .5, frF = Math.random() < .5;
+  const who = pick1(whoF ? S.women : S.men), friend = pick1((frF ? S.women : S.men).filter(x => x !== who));
+  const v = (m, f) => whoF ? f : m, vf = (m, f) => frF ? f : m;
+  const day = pick1(S.days), time = pick1(S.times), place = pick1(S.places), travel = pick1(S.travel), weather = pick1(S.weather);
+  const rel = pick1(frF ? S.relF : S.relM), colorI = randInt(S.colors.length), thing = pick1(S.things), many = pick1(S.many), one = pick1(S.one);
+  const k = 2 + randInt(8), price = 5 + randInt(40), home = 1 + randInt(11), nums = range(9).map(x => String(x + 2));
+  const col = c => S.colors[c][thing[1] === "f" ? 1 : 0];
+  const allNames = [...S.men, ...S.women].filter(x => x !== who);
+  const facts = [
+    { s: `ביום ${day} ${time}, ${who} ${v("הלך", "הלכה")} ${place[0]}.`, q: [[`לאן ${who} ${v("הלך", "הלכה")}?`, place[1], S.places.map(p => p[1])], [`באיזה יום זה היה?`, `יום ${day}`, S.days.map(d => `יום ${d}`)], [`מתי ${who} ${v("יצא", "יצאה")}?`, time, S.times]] },
+    { s: `${who} ${v("הגיע", "הגיעה")} לשם ${travel}.`, q: [[`איך ${who} ${v("הגיע", "הגיעה")} לשם?`, travel, S.travel]] },
+    { s: `היה יום ${weather}.`, q: [[`איך היה מזג האוויר?`, weather, S.weather]] },
+    { s: `${who} ${v("קנה", "קנתה")} ${k} ${many}.`, q: [[`כמה ${many} ${who} ${v("קנה", "קנתה")}?`, String(k), nums], [`מה ${who} ${v("קנה", "קנתה")} בכמות של ${k}?`, many, S.many]] },
+    { s: `שם ${who} ${v("פגש", "פגשה")} את ${friend}, ${rel}.`, q: [[`את מי ${who} ${v("פגש", "פגשה")}?`, friend, allNames], [`${frF ? "מי זאת" : "מי זה"} ${friend}?`, rel, frF ? S.relF : S.relM]] },
+    { s: `ל${friend} ${thing[1] === "f" ? "הייתה" : "היה"} ${thing[0]} ${col(colorI)}.`, q: [[`באיזה צבע ${thing[1] === "f" ? "הייתה" : "היה"} ה${thing[0]} של ${friend}?`, col(colorI), S.colors.map((_, i) => col(i))], [`מה ${thing[1] === "f" ? "הייתה" : "היה"} ל${friend}?`, thing[0], S.things.filter(t => t[1] === thing[1]).map(t => t[0])]] },
+    { s: `לפני ${v("שחזר", "שחזרה")} הביתה, ${who} ${v("קנה", "קנתה")} גם ${one}.`, q: [[`מה עוד ${who} ${v("קנה", "קנתה")}?`, one, S.one]] },
+    { s: `הכול עלה ${price} שקלים.`, q: [[`כמה עלה הכול?`, `${price} שקלים`, range(40).map(x => `${x + 5} שקלים`)]] },
+    { s: `${who} ${v("חזר", "חזרה")} הביתה בשעה ${home}.`, q: [[`באיזו שעה ${who} ${v("חזר", "חזרה")} הביתה?`, `בשעה ${home}`, range(11).map(x => `בשעה ${x + 1}`)]] },
+  ];
+  const idx = [0, ...pickN(range(facts.length - 1).map(x => x + 1), nFacts - 1)];
+  if (idx.includes(5) && !idx.includes(4)) { const j = idx.findIndex(x => x !== 0 && x !== 5); if (j >= 0) idx[j] = 4; else idx[idx.indexOf(5)] = [1, 2, 3, 6, 7, 8].find(x => !idx.includes(x)); }
+  const used = idx.sort((a, b) => a - b).map(i => facts[i]);
+  return { text: used.map(f => f.s).join(" "), qs: used.flatMap(f => f.q) };
+}
+
+/* ---------- the Hebrew texts (see i18n.js). Keys are the English text exactly as it appears on screen. ---------- */
+Object.assign(HE_TEXT, {
+  // app, menu
+  "Thinking games": "משחקי חשיבה", "Games to keep your mind sharp": "משחקים לשמירה על מוח חד", "Sudoku": "סודוקו", "Memory": "זיכרון", "Puzzles": "חידות",
+  "Play again": "לשחק שוב", "Today's workout": "האימון של היום", "Start": "התחלה", "Next": "הבא", "Start ›": "התחלה ›", "Next ›": "הבא ›", "Workout done": "האימון הושלם",
+  "Suggest an idea": "הציעו רעיון", "A new game, a setting, something hard to use…": "משחק חדש, הגדרה, משהו שקשה להשתמש בו…",
+  "Stats and badges": "סטטיסטיקה ותגים", "Settings": "הגדרות", "Continue Sudoku": "המשך סודוקו", "played today": "שיחקתם היום", "play today to keep it": "שחקו היום כדי לשמור עליו",
+  "Today's workout is done. A new one tomorrow!": "האימון של היום הושלם. מחר יהיה חדש!",
+  // game names and short lines
+  "Pairs": "זוגות", "Repeat the sequence": "חזרו על הרצף", "Remember the squares": "זכרו את הריבועים", "Number memory": "זיכרון מספרים", "Shopping list": "רשימת קניות",
+  "What changed?": "מה השתנה?", "Same as before?": "כמו הקודמת?", "Story questions": "שאלות על סיפור", "Quick sums": "חשבון מהיר", "Anagrams": "אותיות מבולבלות",
+  "Word search": "תפזורת", "Picture logic": "תמונה בהיגיון", "Number cages": "כלובי מספרים",
+  "Find the matching cards": "מצאו את הקלפים התואמים", "Watch the pads, then repeat them": "צפו בכפתורים וחזרו עליהם", "Some squares light up: tap the same ones": "ריבועים נדלקים: הקישו על אותם ריבועים",
+  "Remember the digits, type them back": "זכרו את הספרות והקלידו אותן", "Remember the list, then pick it out": "זכרו את הרשימה ובחרו אותה", "Spot what moved or disappeared": "מצאו מה זז או נעלם",
+  "Is this picture the same as before?": "האם התמונה כמו הקודמת?", "Read a short story, answer questions": "קראו סיפור קצר וענו על שאלות", "Mental arithmetic against the clock": "חשבון בראש נגד השעון",
+  "Unscramble the letters into a word": "סדרו את האותיות למילה", "Find the hidden words": "מצאו את המילים המוסתרות", "Fill squares from the number clues": "מלאו ריבועים לפי רמזי המספרים", "Sudoku-like squares with sums": "ריבועים כמו בסודוקו, עם סכומים",
+  // game frame
+  "Back": "חזרה", "How to play": "איך משחקים", "Easier level": "שלב קל יותר", "Harder level": "שלב קשה יותר", "Level": "שלב", "No score at this level yet.": "עוד אין תוצאה בשלב הזה.",
+  "Start low and go up a level when it feels easy.": "התחילו נמוך ועלו שלב כשזה מרגיש קל.", "Relaxed mode is on: more time to look, no rush.": "מצב רגוע פועל: יותר זמן להסתכל, בלי לחץ.",
+  "Your best at this level:": "השיא שלכם בשלב הזה:", "Your settings:": "ההגדרות שלכם:", "Settings for this game": "הגדרות למשחק הזה", "Got it": "הבנתי",
+  "Well done!": "כל הכבוד!", "New best! Before:": "שיא חדש! קודם:", "Your first score at this level": "התוצאה הראשונה שלכם בשלב הזה", "Your best:": "השיא שלכם:",
+  "Finish in time to set a best score": "סיימו בזמן כדי לקבוע שיא", "All games": "כל המשחקים", "Today's workout is done!": "האימון של היום הושלם!",
+  "Back to standard": "חזרה לרגיל", "Done": "סיום", "Result": "תוצאה", "Ready": "מוכן", "I've got it": "זכרתי", "Look": "הסתכלו", "Check": "בדיקה", "OK": "אישור", "Erase": "מחיקה",
+  // results and status
+  "Turns": "תורות", "Time": "זמן", "Longest": "הכי ארוך", "Pads": "כפתורים", "Most squares": "הכי הרבה ריבועים", "Direction": "כיוון", "Forward": "רגיל", "Found": "נמצאו",
+  "Wrong picks": "בחירות שגויות", "Points": "נקודות", "Right": "נכון", "Things": "דברים", "Answers": "תשובות", "Compare": "השוואה", "Sentences": "משפטים", "Wrong": "שגויות",
+  "Clock": "שעון", "Solved": "נפתרו", "Hints": "רמזים", "Words": "מילים", "Theme": "נושא", "Size": "גודל", "Cages": "כלובים", "Pairs found": "זוגות שנמצאו", "Timer": "טיימר",
+  "Words found": "מילים שנמצאו", "Perfect memory!": "זיכרון מושלם!", "All pairs found!": "כל הזוגות נמצאו!", "Great memory!": "זיכרון מעולה!", "Well played!": "כל הכבוד!",
+  "Try again!": "נסו שוב!", "Eagle eye!": "עין של נשר!", "Superb!": "מצוין!", "Perfect list!": "רשימה מושלמת!", "Well remembered!": "זכרתם יפה!", "Keep practising!": "המשיכו להתאמן!",
+  "Nothing gets past you!": "שום דבר לא חומק מכם!", "Sharp eyes!": "עיניים חדות!", "Brilliant focus!": "ריכוז מבריק!", "Every detail!": "כל פרט ופרט!", "Good memory!": "זיכרון טוב!",
+  "Lightning fast!": "מהיר כמו ברק!", "Word wizard!": "קוסם מילים!", "Well spelled!": "איות יפה!", "All words found!": "כל המילים נמצאו!", "Picture complete!": "התמונה הושלמה!",
+  "Solved!": "נפתר!", "Time's up!": "הזמן נגמר!", "Watch…": "צפו…", "Your turn": "תורכם", "Steps": "צעדים", "Right!": "נכון!", "Not quite. Watch again…": "לא בדיוק. צפו שוב…",
+  "Squares": "ריבועים", "Missed one": "פספוס", "Out of lives": "נגמרו החיים", "Digits": "ספרות", "Remember this number": "זכרו את המספר", "Type it backwards": "הקלידו הפוך",
+  "Type the number": "הקלידו את המספר", "Last digit first": "הספרה האחרונה ראשונה", "What was the number?": "מה היה המספר?", "Not quite": "לא בדיוק", "The answer was": "התשובה הייתה",
+  "Remember the list": "זכרו את הרשימה", "Which were on the list?": "מה היה ברשימה?", "See your score": "לתוצאה", "Round": "סיבוב", "Tap what changed": "הקישו על מה שהשתנה",
+  "That one changed": "זה מה שהשתנה", "Remember this one": "זכרו את התמונה", "Same as": "האם היא כמו", "the one before": "התמונה הקודמת", "two pictures ago": "התמונה של לפני שתיים",
+  "three pictures ago": "התמונה של לפני שלוש", "Picture": "תמונה", "No": "לא", "Same": "כן, אותה", "Read the story": "קראו את הסיפור", "I've read it": "קראתי", "Question": "שאלה",
+  "Sum": "תרגיל", "Word": "מילה", "Hint": "רמז", "Skip": "דלגו", "Not a match. Try again": "לא מתאים. נסו שוב", "It was": "זו הייתה", "Take a letter back": "החזרת אות",
+  "Filled": "מלאים", "Fill": "מילוי", "Mark empty": "סימון ריק", "Mistakes": "טעויות", "What a tap does": "מה הקשה עושה", "Game code": "קוד משחק",
+  "Back": "חזרה", "Backwards": "הפוך", "Pick 4": "בחרו מתוך 4",
+  // level descriptions
+  "slow": "איטי", "medium speed": "מהירות בינונית", "fast": "מהיר", "long look": "מבט ארוך", "short look": "מבט קצר", "backwards": "הפוך", "one replaced": "אחד מתחלף",
+  "replaced or gone": "מתחלף או נעלם", "replaced, gone or swapped": "מתחלף, נעלם או מחליף מקום", "two before": "שתיים אחורה", "three before": "שלוש אחורה", "medium": "בינוני", "quick": "מהיר",
+  "add up to 18": "חיבור עד 18", "add and take away up to 20": "חיבור וחיסור עד 20", "add and take away up to 50": "חיבור וחיסור עד 50", "times tables 2 to 5, add, take away": "לוח הכפל 2 עד 5, חיבור וחיסור",
+  "times tables to 10, sharing": "לוח הכפל עד 10, חילוק", "all four, up to 100": "ארבע הפעולות, עד 100", "two steps": "שני שלבים", "bigger numbers": "מספרים גדולים יותר",
+  "also slanting": "גם באלכסון", "also backwards": "גם הפוך", "every way": "בכל הכיוונים", "fewer filled": "פחות מלאים",
+  // how to play
+  "All the cards lie face down. Tap two cards to turn them over. If they match, they stay open. If not, they turn back: remember where they were! Find every pair in as few turns as you can.":
+    "כל הקלפים הפוכים. הקישו על שני קלפים כדי להפוך אותם. אם הם תואמים, הם נשארים פתוחים. אם לא, הם מתהפכים בחזרה: זכרו איפה הם היו! מצאו את כל הזוגות בכמה שפחות תורות.",
+  "The numbered pads light up one after another, each with its own sound. When it says “Your turn”, tap them in the same order. Every round adds one more step. How long a sequence can you repeat?":
+    "הכפתורים הממוספרים נדלקים בזה אחר זה, כל אחד עם צליל משלו. כשכתוב „תורכם”, הקישו עליהם באותו סדר. בכל סיבוב נוסף צעד. על רצף כמה ארוך תצליחו לחזור?",
+  "Some squares in the grid light up for a moment. When they go dark, tap the same squares, in any order. Each time you get them all, one more lights up. A wrong square costs a life; you have three.":
+    "כמה ריבועים בלוח נדלקים לרגע. כשהם כבים, הקישו על אותם ריבועים, בכל סדר. בכל פעם שתמצאו את כולם, יידלק עוד אחד. ריבוע שגוי עולה בחיים; יש לכם שלושה.",
+  "A number appears for a few seconds. When it disappears, type it back. Each right answer makes the next number one digit longer. On the harder levels you type the digits backwards, last one first.":
+    "מספר מופיע לכמה שניות. כשהוא נעלם, הקלידו אותו. כל תשובה נכונה מאריכה את המספר הבא בספרה אחת. בשלבים הקשים מקלידים את הספרות הפוך, מהאחרונה לראשונה.",
+  "A shopping list appears. Take a good look at it. Then the list hides and you see a mix of things: tap every one that was on your list, then Check. Each wrong pick takes off a point.":
+    "מופיעה רשימת קניות. הסתכלו עליה טוב. אחר כך הרשימה נעלמת ורואים ערבוב של דברים: הקישו על כל מה שהיה ברשימה, ואז על „בדיקה”. כל בחירה שגויה מורידה נקודה.",
+  "Look at the things on the table. They hide for a moment, then come back with one change: something new, something gone, or two that swapped places. Tap the square that changed. Eight rounds.":
+    "הסתכלו על הדברים על השולחן. הם נעלמים לרגע וחוזרים עם שינוי אחד: משהו חדש, משהו שנעלם, או שניים שהחליפו מקום. הקישו על הריבוע שהשתנה.",
+  "Look at the things on the table. They hide for a moment, then come back with one change: something new, something gone, or two that swapped places. Tap the square that changed.":
+    "הסתכלו על הדברים על השולחן. הם נעלמים לרגע וחוזרים עם שינוי אחד: משהו חדש, משהו שנעלם, או שניים שהחליפו מקום. הקישו על הריבוע שהשתנה.",
+  "Pictures appear one at a time. For each one, answer: is it the same as the picture before? On harder levels you compare it with the picture two or three before.":
+    "תמונות מופיעות אחת אחרי השנייה. על כל אחת ענו: האם היא כמו התמונה הקודמת? בשלבים הקשים משווים לתמונה של לפני שתיים או שלוש.",
+  "Read a short story about someone's day, as slowly as you like. Then it hides, and you answer a few questions about it. A new story every time.":
+    "קראו סיפור קצר על היום של מישהו, לאט ככל שתרצו. אחר כך הוא נעלם, ועונים על כמה שאלות עליו. סיפור חדש בכל פעם.",
+  "Work out the sum in your head and give the answer: pick it from four, or type it (Settings). With the clock on, get as many right as you can before it runs out. Without the clock: fifteen sums at your own pace.":
+    "פתרו את התרגיל בראש ותנו תשובה: בחרו מתוך ארבע, או הקלידו (בהגדרות). עם שעון: כמה שיותר תשובות נכונות לפני שהזמן נגמר. בלי שעון: חמישה עשר תרגילים בקצב שלכם.",
+  "The letters of a word are mixed up. Tap them in the right order to spell the word. Tap ⌫ to take a letter back. Stuck? “Hint” shows the next letter, “Skip” moves on.":
+    "האותיות של מילה מבולבלות. הקישו עליהן בסדר הנכון כדי לכתוב את המילה. ⌫ מחזיר אות. נתקעתם? „רמז” מראה את האות הבאה, „דלגו” עובר הלאה.",
+  "Words are hidden in the grid: across, down, and on harder levels slanting or backwards. Tap the first letter of a word, then its last letter. Find them all as quickly as you can.":
+    "מילים מוסתרות בלוח: לרוחב, לאורך, ובשלבים הקשים גם באלכסון או הפוך. הקישו על האות הראשונה של מילה ואז על האות האחרונה שלה. מצאו את כולן הכי מהר שתוכלו.",
+  "The numbers beside each row and above each column tell you the runs of filled squares in that line, in order. “3 1” means three filled in a row, a gap, then one. Tap a square to fill it. Switch to ✕ to mark squares you know are empty. Every puzzle can be solved without guessing.":
+    "המספרים ליד כל שורה ומעל כל עמודה מראים את רצפי הריבועים המלאים בשורה, לפי הסדר. „3 1” פירושו שלושה מלאים ברצף, רווח, ואז אחד. הקישו על ריבוע כדי למלא אותו. עברו ל-✕ כדי לסמן ריבועים שאתם יודעים שהם ריקים. כל פאזל נפתר בלי לנחש.",
+  "Fill the grid so every row and every column has each number once (1 to 4 on a 4×4 grid, and so on). The thick lines make cages: the small number in a cage is what its squares add up to. Tap a square, then a number.":
+    "מלאו את הלוח כך שבכל שורה ובכל עמודה כל מספר מופיע פעם אחת (1 עד 4 בלוח 4×4, וכן הלאה). הקווים העבים יוצרים כלובים: המספר הקטן בכלוב הוא סכום הריבועים שבו. הקישו על ריבוע ואז על מספר.",
+  // game settings
+  "Standard": "רגיל", "By level": "לפי השלב", "Off": "כבוי", "On": "פועל", "Yes": "כן", "Short": "קצר", "Long": "ארוך", "1 second": "שנייה אחת", "Until my next tap": "עד ההקשה הבאה",
+  "Mixed": "מעורב", "Food": "אוכל", "Animals": "חיות", "Speed": "מהירות", "Slow": "איטי", "Medium": "בינוני", "Fast": "מהיר", "None": "בלי", "Second chances": "הזדמנויות נוספות",
+  "After a mistake, watch the same sequence again.": "אחרי טעות, צופים שוב באותו רצף.", "Pad sounds": "צלילי הכפתורים", "How long the squares show": "כמה זמן הריבועים מוצגים",
+  "Until I tap Ready": "עד שאקיש „מוכן”", "Lives": "חיים", "How long the number shows": "כמה זמן המספר מוצג", "Until I'm ready": "עד שאהיה מוכן", "Tries": "ניסיונות",
+  "Show digits in groups of three": "הצגת ספרות בקבוצות של שלוש", "For example 123 456 instead of 123456.": "למשל 123 456 במקום 123456.", "Time to look at the list": "זמן להסתכל ברשימה",
+  "Show the items as": "הצגת הפריטים", "Pictures and words": "תמונות ומילים", "Words only": "רק מילים", "Pictures only": "רק תמונות", "Time to look": "זמן להסתכל", "Rounds": "סיבובים",
+  "Wait for my answer": "לחכות לתשובה שלי", "Pictures in a game": "תמונות במשחק", "Answers to choose from": "תשובות לבחירה", "Reading time": "זמן קריאה", "No limit": "בלי הגבלה",
+  "No clock (15 sums)": "בלי שעון (15 תרגילים)", "How to answer": "איך עונים", "Pick from 4": "בחירה מתוך 4", "Type it": "הקלדה", "Words in a game": "מילים במשחק", "Hint button": "כפתור רמז",
+  "Word list": "רשימת המילים", "Hidden: you know the theme and how many words, not which ones.": "מוסתרת: יודעים את הנושא וכמה מילים, אבל לא אילו.", "Show": "להציג", "Hide (harder)": "להסתיר (קשה יותר)",
+  "Show mistakes": "הצגת טעויות", "A square filled by mistake turns into a red ✕ straight away.": "ריבוע שמולא בטעות הופך מיד ל-✕ אדום.", "Cross out finished lines": "סימון ✕ בשורות שהושלמו",
+  "When a line matches its numbers, its other squares get a ✕.": "כששורה מתאימה למספרים שלה, שאר הריבועים בה מקבלים ✕.", "Same number twice in a line shows red": "אותו מספר פעמיים בשורה מוצג באדום",
+  "Shade the cage of the selected square": "הצללת הכלוב של הריבוע הנבחר", "Find every pair before the time runs out.": "מצאו את כל הזוגות לפני שהזמן נגמר.", "A wrong pair stays open": "זוג שגוי נשאר פתוח",
+  "Pictures": "תמונות",
+  // shopping items
+  "Apples": "תפוחים", "Bananas": "בננות", "Grapes": "ענבים", "Strawberries": "תותים", "Lemons": "לימונים", "Watermelon": "אבטיח", "Pineapple": "אננס", "Carrots": "גזרים", "Corn": "תירס",
+  "Mushrooms": "פטריות", "Potatoes": "תפוחי אדמה", "Tomatoes": "עגבניות", "Cucumber": "מלפפון", "Aubergine": "חציל", "Cheese": "גבינה", "Eggs": "ביצים", "Milk": "חלב", "Bread": "לחם",
+  "Croissants": "קרואסונים", "Honey": "דבש", "Chocolate": "שוקולד", "Cookies": "עוגיות", "Cake": "עוגה", "Ice cream": "גלידה", "Pizza": "פיצה", "Chicken": "עוף", "Fish": "דג", "Rice": "אורז",
+  "Coffee": "קפה", "Tea": "תה", "Wine": "יין", "Flowers": "פרחים", "Batteries": "סוללות", "Light bulbs": "נורות", "Envelopes": "מעטפות", "Newspaper": "עיתון", "Pencils": "עפרונות",
+  "Balloons": "בלונים", "A present": "מתנה", "Trainers": "נעלי ספורט", "An umbrella": "מטריה", "Paper clips": "מהדקים", "Scissors": "מספריים", "Cherries": "דובדבנים", "Peanuts": "בוטנים",
+  "Avocados": "אבוקדו", "Chillies": "פלפל חריף", "Peaches": "אפרסקים", "Pears": "אגסים", "Oranges": "תפוזים", "Chestnuts": "ערמונים", "A baguette": "באגט", "Pasta": "פסטה",
+  // Sudoku screen
+  "Start page": "דף הבית", "Change difficulty": "שינוי רמת קושי", "Pause": "השהיה", "numbers given": "מספרים נתונים", "Undo": "ביטול", "Notes": "הערות", "OFF": "כבוי", "ON": "פועל",
+  "New game": "משחק חדש", "Paused": "מושהה", "Continue": "המשך", "The race goes on: the clock keeps running": "המרוץ נמשך: השעון ממשיך לרוץ", "Same puzzle · first to finish wins": "אותו פאזל · הראשון שמסיים מנצח",
+  "Beginner": "מתחילים", "Easy": "קל", "Easy+": "קל+", "Medium+": "בינוני+", "Hard": "קשה", "Hard+": "קשה+", "Expert": "מומחה", "Master": "אלוף", "Extreme": "קיצוני", "Daily": "יומי",
+  "Difficulty": "רמת קושי", "Keep playing": "המשך לשחק", "About": "בערך", "out of 81.": "מתוך 81.", "Every step can be found by looking at one row, column or box.": "כל צעד אפשר למצוא כשמסתכלים על שורה, עמודה או ריבוע אחד.",
+  "Needs advanced techniques: some steps can't be seen from a single row, column or box.": "דורש טכניקות מתקדמות: חלק מהצעדים לא רואים משורה, עמודה או ריבוע אחד.",
+  "Some steps may need advanced techniques.": "חלק מהצעדים עשויים לדרוש טכניקות מתקדמות.", "Change level": "שינוי שלב", "New best time! Before:": "זמן שיא חדש! קודם:",
+  "Your first win at this level": "הניצחון הראשון שלכם בשלב הזה", "All games": "כל המשחקים", "Daily puzzle": "פאזל יומי", "Pick how hard: level 1 to 10": "בחרו רמת קושי: שלב 1 עד 10",
+  "Play a friend": "משחק נגד חבר", "Same puzzle on two phones · first to finish wins": "אותו פאזל בשני טלפונים · הראשון שמסיים מנצח", "Stats & badges": "סטטיסטיקה ותגים",
+  "Size, colours, sound": "גודל, צבעים, צלילים", "Continue the other game": "המשך את המשחק השני", "see today's times": "הזמנים של היום", "new every day": "חדש כל יום", "continue": "המשך",
+  "solved today": "פתרתם היום", "solve one today to keep it": "פתרו אחד היום כדי לשמור עליו", "solve one today to start a streak": "פתרו אחד היום כדי להתחיל רצף",
+  "Ten levels, from Beginner to Extreme": "עשרה שלבים, ממתחילים ועד קיצוני",
+  // settings sheet
+  "Your name (friends see it in races and daily times)": "השם שלכם (חברים רואים אותו במרוצים ובזמנים היומיים)", "Your name": "השם שלכם", "Board size": "גודל הלוח", "Normal": "רגיל",
+  "Large": "גדול", "Extra large": "גדול מאוד", "Phone": "כמו בטלפון", "Light": "בהיר", "Dark": "כהה", "Light or dark": "בהיר או כהה", "High contrast": "ניגודיות גבוהה",
+  "Your numbers": "המספרים שלכם", "Colour of the numbers you enter": "צבע המספרים שאתם מכניסים", "Printed": "כמו מודפס", "Blue": "כחול", "Green": "ירוק", "Purple": "סגול",
+  "Highlight colour": "צבע הדגשה", "Colour of the squares with the same number": "צבע הריבועים עם אותו מספר", "Yellow": "צהוב", "Pink": "ורוד", "Orange": "כתום",
+  "Highlight the same numbers": "הדגשת מספרים זהים", "Show mistakes in red": "הצגת טעויות באדום", "Sounds": "צלילים", "Relaxed: more time to look, no rush": "רגוע: יותר זמן להסתכל, בלי לחץ",
+  // play a friend
+  "You both get the same puzzle, each on your own phone, and see how far the other has got.": "שניכם מקבלים אותו פאזל, כל אחד בטלפון שלו, ורואים כמה השני התקדם.",
+  "The first to finish wins.": "הראשון שמסיים מנצח.", "No hints. Needs internet.": "בלי רמזים. צריך אינטרנט.", "So your friend knows it's you": "כדי שהחבר ידע שזה אתם",
+  "Make a game": "יצירת משחק", "You get a code to give your friend": "תקבלו קוד לתת לחבר", "Join a game": "הצטרפות למשחק", "Type the code your friend got": "הקלידו את הקוד שהחבר קיבל",
+  "Rematch": "משחק חוזר", "Waiting for your friend": "מחכים לחבר", "Give your friend this code. On their phone:": "תנו לחבר את הקוד. בטלפון שלו:", ", then": ", ואז",
+  ". The race starts when they join. Level:": ". המרוץ מתחיל כשהוא מצטרף. שלב:", "Cancel": "ביטול", "Copy code": "העתקת קוד", "Copied": "הועתק", "Waiting": "מחכים",
+  "Type the code shown on your friend's phone.": "הקלידו את הקוד שמופיע בטלפון של החבר.", "CODE": "קוד", "Join": "הצטרפות", "Looking for the game…": "מחפשים את המשחק…",
+  "Found it! Starting…": "נמצא! מתחילים…", "The code has 5 letters and numbers.": "בקוד יש 5 אותיות ומספרים.", "No game with this code. Check the letters with your friend.": "אין משחק עם הקוד הזה. בדקו את האותיות עם החבר.",
+  "This game already has two players.": "במשחק הזה כבר יש שני שחקנים.", "Your friend cancelled this game.": "החבר ביטל את המשחק.", "Couldn't reach the internet. Check the connection and try again.": "אין חיבור לאינטרנט. בדקו את החיבור ונסו שוב.",
+  "No thanks": "לא תודה", "Play": "לשחק", "Starting…": "מתחילים…", "Keep going to finish the puzzle and get your own time, or ask for a rematch.": "המשיכו כדי לסיים את הפאזל ולקבל זמן משלכם, או בקשו משחק חוזר.",
+  "Checking who was first…": "בודקים מי היה ראשון…", "You won!": "ניצחתם!", "You": "אתם", "Against friends:": "נגד חברים:", "won": "ניצחונות", "lost": "הפסדים", "Leave the race": "יציאה מהמרוץ",
+  "No hints when you play a friend.": "אין רמזים במשחק נגד חבר.", "Race": "מרוץ", "Solved in": "נפתר תוך", "Your friend finished": "החבר סיים", "Ask for": "לבקש",
+  "Saying yes ends this puzzle.": "הסכמה תסיים את הפאזל הזה.", "If you leave, you can still finish this puzzle on your own, but the race ends.": "אם תצאו, תוכלו לסיים את הפאזל לבד, אבל המרוץ ייגמר.",
+  "The free relay is full for this internet connection today (about 250 messages a day). Try another connection, or play again tomorrow.": "שירות ההודעות החינמי מלא היום בחיבור הזה (בערך 250 הודעות ביום). נסו חיבור אחר, או שחקו שוב מחר.",
+  "Updated!": "עודכן!", "Nice": "נחמד", "New version ready": "גרסה חדשה מוכנה", "Update now: your game stays where it is.": "עדכנו עכשיו: המשחק שלכם נשאר במקום.", "Later": "אחר כך", "Update": "עדכון",
+  "Updating...": "מעדכן...", "Couldn't update right now. It tries again later.": "אי אפשר לעדכן כרגע. ננסה שוב אחר כך.",
+  // daily
+  "Getting today's puzzle…": "מביאים את הפאזל של היום…", "Daily puzzle solved!": "הפאזל היומי נפתר!", "Today's times": "הזמנים של היום", "Your name, so friends know which time is yours": "השם שלכם, כדי שחברים יידעו איזה זמן שלכם",
+  "A new puzzle every day at midnight: easy on Monday, harder each day, Expert on Sunday.": "פאזל חדש כל יום בחצות: קל ביום שני, קשה יותר מיום ליום, מומחה ביום ראשון.",
+  "No times yet.": "עוד אין זמנים.", "Friends who play today's puzzle show up here.": "חברים שמשחקים בפאזל של היום יופיעו כאן.", "Player": "שחקן",
+  "Sunday": "יום ראשון", "Monday": "יום שני", "Tuesday": "יום שלישי", "Wednesday": "יום רביעי", "Thursday": "יום חמישי", "Friday": "יום שישי", "Saturday": "שבת", "Today": "היום", "Yesterday": "אתמול",
+  "kept going today": "המשכתם גם היום",
+  // stats
+  "Stats": "סטטיסטיקה", "Badges": "תגים", "Day streak": "רצף ימים", "Best streak": "הרצף הטוב ביותר", "Daily puzzles": "פאזלים יומיים", "Races won–lost": "מרוצים: ניצחון–הפסד",
+  "Levels solved": "שלבים שנפתרו", "Best": "שיא", "Average": "ממוצע", "Mistakes, avg": "טעויות, ממוצע", "Hints, avg": "רמזים, ממוצע", "older": "ישן יותר", "latest": "אחרון", "best": "שיא",
+  "Recent solves": "פתרונות אחרונים", "Solve a puzzle and your times show up here, level by level.": "פתרו פאזל והזמנים שלכם יופיעו כאן, שלב אחרי שלב.", "Best times": "זמני שיא",
+  "Played": "שיחקתם", "Level now": "השלב עכשיו", "Time played": "זמן משחק", "Recent games": "משחקים אחרונים", "Just one so far. Tap the dot.": "רק אחד עד עכשיו. הקישו על הנקודה.",
+  "daily": "יומי", "race": "מרוץ", "Game": "משחק", "Back to the start page": "חזרה לדף הבית",
+  // badges
+  "New badge:": "תג חדש:", "First solve": "פתרון ראשון", "Solve any puzzle": "פתרו פאזל כלשהו", "Ten down": "עשרה", "Solve 10 puzzles": "פתרו 10 פאזלים", "Fifty": "חמישים",
+  "Solve 50 puzzles": "פתרו 50 פאזלים", "Hundred": "מאה", "Solve 100 puzzles": "פתרו 100 פאזלים", "Clean sheet": "בלי טעויות", "Medium or harder with no mistakes": "בינוני ומעלה בלי טעויות",
+  "On your own": "לבד", "Hard or harder with no hints": "קשה ומעלה בלי רמזים", "Quick": "זריז", "Easy or harder in under 4 minutes": "קל ומעלה בפחות מ-4 דקות", "Speedy": "מהיר",
+  "Medium or harder in under 8 minutes": "בינוני ומעלה בפחות מ-8 דקות", "Hard nut": "אגוז קשה", "Solve a Hard puzzle": "פתרו פאזל קשה", "Solve an Expert puzzle": "פתרו פאזל מומחה",
+  "Solve a Master puzzle": "פתרו פאזל אלוף", "Extreme!": "קיצוני!", "Solve an Extreme puzzle": "פתרו פאזל קיצוני", "Flawless": "מושלם", "Expert or harder: no mistakes, no hints": "מומחה ומעלה: בלי טעויות ובלי רמזים",
+  "Daily player": "שחקן יומי", "Solve a daily puzzle": "פתרו פאזל יומי", "Seven dailies": "שבעה יומיים", "Solve 7 daily puzzles": "פתרו 7 פאזלים יומיים", "On a roll": "בתנופה",
+  "3 days in a row": "3 ימים ברצף", "One week": "שבוע", "7 days in a row": "7 ימים ברצף", "One month": "חודש", "30 days in a row": "30 ימים ברצף", "First race": "מרוץ ראשון",
+  "Win a race against a friend": "נצחו במרוץ נגד חבר", "Champion": "אלוף", "Win 10 races": "נצחו ב-10 מרוצים", "Night owl": "ינשוף לילה", "Solve one between midnight and 5 am": "פתרו פאזל בין חצות ל-5 בבוקר",
+  "Early bird": "משכימים קום", "Solve one between 5 and 7 am": "פתרו פאזל בין 5 ל-7 בבוקר", "Explorer": "סייר", "Play 5 different games": "שחקו ב-5 משחקים שונים", "Sharp memory": "זיכרון חד",
+  "Pairs, 8 or more: in 1.5 turns per pair": "זוגות, 8 ומעלה: עד 1.5 תורות לזוג", "Long tune": "מנגינה ארוכה", "Repeat a sequence of 10": "חזרו על רצף של 10", "Remember 10 squares": "זכרו 10 ריבועים",
+  "Number whiz": "גאון מספרים", "Remember 9 digits": "זכרו 9 ספרות", "Good listener": "קורא קשוב", "Story level 4+: every question right": "סיפור משלב 4: כל השאלות נכונות",
+  "Workout": "אימון", "Finish a daily workout": "סיימו אימון יומי", "Workout week": "שבוע אימונים", "Finish 7 daily workouts": "סיימו 7 אימונים יומיים", "All-rounder": "כל-יכול", "Play every game": "שחקו בכל המשחקים",
+  // suggestions
+  "What would make the app better for you? A new game, a setting, something that's hard to see or tap… Every message is read.": "מה ישפר לכם את האפליקציה? משחק חדש, הגדרה, משהו שקשה לראות או להקיש… כל הודעה נקראת.",
+  "What is it about?": "על מה מדובר?", "New idea": "רעיון חדש", "Make a game better": "לשפר משחק", "Something's wrong": "משהו לא עובד", "Something else": "משהו אחר", "Which game?": "איזה משחק?",
+  "The whole app": "כל האפליקציה", "A game that isn't here yet": "משחק שעוד אין כאן", "Your message": "ההודעה שלכם", "Write your idea here": "כתבו כאן את הרעיון", "Your name (if you like)": "השם שלכם (אם תרצו)",
+  "Please don't write private details such as phone numbers: messages travel through a public message service.": "נא לא לכתוב פרטים אישיים כמו מספרי טלפון: ההודעות עוברות דרך שירות הודעות ציבורי.",
+  "Close": "סגירה", "Send": "שליחה", "You sent": "שלחתם", "Please write a few words first.": "כתבו קודם כמה מילים.", "That's 5 ideas today, thank you! Send more tomorrow.": "זה 5 רעיונות היום, תודה! שלחו עוד מחר.",
+  "Sending…": "שולחים…", "Thank you! Your idea was sent.": "תודה! הרעיון נשלח.", "Couldn't send right now. Check the internet and try again.": "אי אפשר לשלוח כרגע. בדקו את האינטרנט ונסו שוב.",
+  "Eagle eye": "עין של נשר", "Appearance": "מראה", "Which game": "איזה משחק", "filled": "מלאים", "A": "פאזל", "You asked for a": "ביקשתם משחק חוזר ברמה", "Language": "שפה",
+  "Have an idea for the app? Tap “Suggest an idea” at the bottom of the menu.": "יש לכם רעיון לאפליקציה? הקישו על „הציעו רעיון” בתחתית התפריט.",
+});
+const tt = s => { const r = trCore(s); return r == null ? s : r; };
+const heNum = (n, one, many) => +n === 1 ? one : `${n} ${many}`;
+HE_PATS.push(
+  [/^Level (\d+) of (\d+)$/, "שלב $1 מתוך $2"], [/^Level (\d+)$/, "שלב $1"], [/^Lv (\d+)$/, "שלב $1"], [/^(\d+) of (\d+)$/, "$1 מתוך $2"], [/^(\d+) of (\d+) done$/, "$1 מתוך $2 הושלמו"],
+  [/^(\d+) of (\d+) badges$/, "$1 מתוך $2 תגים"], [/^(\d+) of (\d+) earned$/, "$1 מתוך $2 הושגו"], [/^Badges (\d+)\/(\d+)$/, "תגים $1/$2"], [/^(\d+) of 81 filled$/, "$1 מתוך 81 מלאים"],
+  [/^(\d+)-day streak$/, (m, n) => +n === 1 ? "רצף של יום אחד" : `רצף של ${n} ימים`], [/^come back tomorrow for (\d+)$/, "חזרו מחר בשביל $1"],
+  [/^(\d+) puzzles? solved$/, (m, n) => +n === 1 ? "פאזל אחד נפתר" : `${n} פאזלים נפתרו`],
+  [/^(\d+) turns$/, "$1 תורות"], [/^(\d+) steps?$/, (m, n) => heNum(n, "צעד אחד", "צעדים")], [/^(\d+) squares$/, "$1 ריבועים"], [/^(\d+) digits$/, "$1 ספרות"],
+  [/^(\d+) points?$/, (m, n) => heNum(n, "נקודה אחת", "נקודות")], [/^(\d+) right$/, "$1 נכונות"], [/^(\d+) solved$/, "$1 נפתרו"], [/^(\d+) mistakes?$/, (m, n) => heNum(n, "טעות אחת", "טעויות")],
+  [/^(\d+) hints?$/, (m, n) => heNum(n, "רמז אחד", "רמזים")], [/^(\d+) wrong$/, "$1 שגויות"], [/^(\d+) pairs$/, "$1 זוגות"], [/^(\d+) pads$/, "$1 כפתורים"], [/^start with (\d+)$/, "מתחילים עם $1"],
+  [/^start with (\d+) digits$/, "מתחילים עם $1 ספרות"], [/^(\d+) things to remember$/, "$1 דברים לזכור"], [/^(\d+) things$/, "$1 דברים"], [/^(\d+) sentences$/, "$1 משפטים"], [/^(\d+) questions$/, "$1 שאלות"],
+  [/^(\d+)-letter words$/, "מילים של $1 אותיות"], [/^mixed, (\d+) to (\d+) letters$/, "מעורב, $1 עד $2 אותיות"], [/^(\d+) words$/, "$1 מילים"], [/^cages up to (\d+)$/, "כלובים עד $1"],
+  [/^(\d+) back$/, "$1 אחורה"], [/^(\d+) min$/, "$1 דק׳"], [/^(\d+) s$/, "$1 שנ׳"], [/^(\d+) seconds$/, "$1 שניות"], [/^(\d+) lives$/, "$1 חיים"], [/^(\d+) tries left$/, "נשארו $1 ניסיונות"],
+  [/^Pick (\d+)$/, "בחרו $1"], [/^Check \((\d+) picked\)$/, "בדיקה ($1 נבחרו)"], [/^(\d+) of (\d+) found$/, "$1 מתוך $2 נמצאו"], [/^It was pad (\d+)$/, "זה היה כפתור $1"],
+  [/^You typed (\d+)$/, "הקלדתם $1"], [/^The fewest possible is (\d+) turns\.$/, "הכי מעט שאפשר: $1 תורות."], [/^The story: ([\s\S]+)$/, "הסיפור: $1"],
+  [/^Try level (\d+)$/, "לנסות את שלב $1"], [/^Workout (\d+) of 3: (.+)$/, (m, n, g) => `אימון ${n} מתוך 3: ${tt(g)}`], [/^(.+) · level (\d+)$/, (m, g, n) => `${tt(g)} · שלב ${n}`],
+  [/^(.+) · level (\d+) of (\d+)$/, (m, g, n, k) => `${tt(g)} · שלב ${n} מתוך ${k}`], [/^(.+), level (\d+)$/, (m, g, n) => `${tt(g)}, שלב ${n}`], [/^(.+), level (\d+) of (\d+)\.$/, (m, g, n, k) => `${tt(g)}, שלב ${n} מתוך ${k}.`],
+  [/^(.+): your times$/, (m, g) => `${tt(g)}: הזמנים שלכם`], [/^Your last (\d+) (solves|games), oldest on the left\. Tap a dot\.$/, "$1 האחרונים שלכם, הישן ביותר משמאל. הקישו על נקודה."],
+  [/^Last (\d+)$/, "$1 אחרונים"], [/^(\S+) played$/, "$1 משחק"], [/^Play (.+) and your scores show up here\.$/, (m, g) => `שחקו ב${tt(g)} והתוצאות יופיעו כאן.`],
+  [/^Number (\d)$/, "מספר $1"], [/^Card (\d+)$/, "קלף $1"], [/^Pad (\d+)$/, "כפתור $1"], [/^Square (\d+)$/, "ריבוע $1"], [/^Row (\d+), column (\d+)(, cage sum (\d+))?$/, (m, r, c, x, s) => `שורה ${r}, עמודה ${c}${s ? `, סכום הכלוב ${s}` : ""}`],
+  [/^Row (\d+), letter (.)$/, "שורה $1, האות $2"], [/^(\d+) numbers given$/, "$1 מספרים נתונים"], [/^Start ([A-Z][\s\S]*)$/, (m, l) => `התחלה: ${tt(l)}`], [/^Making a (.+) puzzle…$/, (m, l) => `מכינים פאזל ${tt(l)}…`],
+  [/^Make a (.+) game$/, (m, l) => `יצירת משחק ${tt(l)}`], [/^Ask for (.+)$/, (m, l) => `לבקש ${tt(l)}`], [/^Version ([\d.]+)$/, "גרסה $1"], [/^game of (.+)$/, "משחק מ-$1"],
+  [/^Solved in (.+)$/, "נפתר תוך $1"], [/^vs (.+)$/, "נגד $1"], [/^Against (.+)$/, "נגד $1"], [/^against (.+)$/, "נגד $1"], [/^Race against (.+)$/, "מרוץ נגד $1"], [/^Racing (.+)$/, "מרוץ נגד $1"],
+  [/^Waiting for (.+)$/, "מחכים ל$1"], [/^(.+) wants a rematch$/, "$1 רוצה משחק חוזר"], [/^(.+) finished first$/, "$1 סיים ראשון"], [/^(.+) won$/, "הניצחון של $1"], [/^in (.+)$/, "תוך $1"],
+  [/^(.+) has left the game\.$/, "$1 עזב את המשחק."], [/^(.+) left the game\. You can finish this puzzle on your own\.$/, "$1 עזב את המשחק. אפשר לסיים את הפאזל לבד."],
+  [/^(.+) doesn't want a rematch now\.$/, "$1 לא רוצה משחק חוזר עכשיו."], [/^(\d+) hidden words? to find$/, "נשארו $1 מילים מוסתרות"], [/^New badge: (.+)$/, (m, b) => `תג חדש: ${tt(b)}`],
+  [/^(\d+) of (\d+) done$/, "$1 מתוך $2 הושלמו"], [/^(\d+) wrong$/, "$1 שגויות"],
+  [/^(.+): best (.+), latest (.+)$/, (m, g, b, l) => `${tt(g)}: שיא ${tt(b)}, אחרון ${tt(l)}`], [/^(.+) settings$/, (m, g) => `הגדרות: ${tt(g)}`],
+  [/^Your settings: (.+):$/, (m, l) => `ההגדרות שלכם: ${tt(l)}:`], [/^rematch\. It starts as soon as (.+) says yes\.$/, ". המשחק יתחיל ברגע ש$1 יסכים."],
+  [/^puzzle \(level (\d+) of (\d+)\)\.$/, "(שלב $1 מתוך $2)."], [/^You're in a race against$/, "אתם במרוץ נגד"],
+);
+
 /* ---------- brain games ----------
    A shared frame for every game except Sudoku: a menu tile, an intro page (how to play + level), the play screen
    (header, a status line, the game's area) and a result sheet that records the score, best per level, streak and badges.
@@ -2355,7 +2701,7 @@ addGame({
   levelName: l => { const [f, q] = ST_LV[l - 1]; return `${f} sentences · ${q} questions`; },
   fmt: s => s + " right",
   start(c) {
-    const [nf, nq] = ST_LV[c.lv - 1], st = makeStory(nf), qs = pickN(st.qs, nq);
+    const [nf, nq] = ST_LV[c.lv - 1], st = isHe() ? heStory(nf) : makeStory(nf), qs = pickN(st.qs, nq);
     let qi = 0, right = 0, mode = "read";
     mgCur.peek = () => ({ mode, answer: mode === "q" ? qs[qi][1] : null, text: st.text });
     c.stat(`<b>Read the story</b>`);
@@ -2478,11 +2824,11 @@ const sortLetters = w => [...w].sort().join("");
 addGame({
   id: "anagram", name: "Anagrams", icon: "🔤", sec: "think", blurb: "Unscramble the letters into a word", levels: 6, better: "high",
   how: "The letters of a word are mixed up. Tap them in the right order to spell the word. Tap ⌫ to take a letter back. Stuck? “Hint” shows the next letter, “Skip” moves on.",
-  levelName: l => AN_LV[l - 1].length > 1 ? "mixed, 5 to 8 letters" : `${AN_LV[l - 1][0]}-letter words`,
+  levelName: l => { const L = (isHe() ? HE_AN_LV : AN_LV)[l - 1]; return L.length > 1 ? `mixed, ${L[0]} to ${L[L.length - 1]} letters` : `${L[0]}-letter words`; },
   fmt: s => s + " solved",
   start(c) {
-    const lens = AN_LV[c.lv - 1], W = c.set("count"), hintsOn = !!c.set("hints"), words = [], used = new Set();
-    while (words.length < W) { const w = pick1(WORDS[pick1(lens)]); if (!used.has(w)) { used.add(w); words.push(w); } }
+    const lens = (isHe() ? HE_AN_LV : AN_LV)[c.lv - 1], WL = isHe() ? HE_WORDS : WORDS, W = c.set("count"), hintsOn = !!c.set("hints"), words = [], used = new Set();
+    while (words.length < W) { const w = pick1(WL[pick1(lens)]); if (!used.has(w)) { used.add(w); words.push(w); } }
     let wi = -1, word = "", tiles = [], typed = [], solved = 0, hints = 0, mode = "wait";
     mgCur.peek = () => ({ word, mode, letters: tiles.map(t => t.ch) });
     const upd = () => c.stat(`<span>Word <b>${wi + 1} of ${W}</b></span><span>Solved <b>${solved}</b></span>`);
@@ -2512,7 +2858,7 @@ addGame({
     function del() { if (mode !== "type" || !typed.length) return; typed.pop().used = false; draw(); }
     function check() {
       const got = typed.map(t => t.ch).join("");
-      if (got === word || (ALLWORDS.has(got) && sortLetters(got) === sortLetters(word))) {
+      if (got === word || ((isHe() ? HE_SET : ALLWORDS).has(got) && sortLetters(got) === sortLetters(word))) {
         mode = "wait"; solved++; sfx("group"); $("amsg").textContent = "Right!"; $("amsg").className = "mgmsg ok"; upd(); c.later(next, 1000);
       } else { sfx("err"); buzz(60); $("amsg").textContent = "Not a match. Try again"; $("amsg").className = "mgmsg bad"; c.later(() => { if (mode === "type") { typed.forEach(t => t.used = false); typed = []; draw(); $("amsg").textContent = ""; } }, 900); }
     }
@@ -2543,14 +2889,15 @@ const WS_LV = [[6, 4, 2], [7, 5, 2], [8, 6, 3], [9, 7, 5], [10, 8, 8], [10, 10, 
 const WS_DIRS = [[0, 1], [1, 0], [1, 1], [0, -1], [-1, 0], [-1, -1], [1, -1], [-1, 1]];
 function wsMake(size, nWords, nDirs) {
   for (let tries = 0; tries < 50; tries++) {
-    const theme = pick1(Object.keys(WS_THEMES)), pool = shuffle(WS_THEMES[theme].split(" ").filter(w => w.length <= size)).slice(0, nWords).sort((a, b) => b.length - a.length);
+    const TH = isHe() ? HE_WS_THEMES : WS_THEMES, DIRS = isHe() ? HE_WS_DIRS : WS_DIRS;
+    const theme = pick1(Object.keys(TH)), pool = shuffle(TH[theme].split(" ").filter(w => w.length <= size)).slice(0, nWords).sort((a, b) => b.length - a.length);
     if (pool.length < nWords) continue;
     const g = range(size * size).map(() => ""), placed = [];
     let ok = true;
     for (const w of pool) {
       let done = false;
       for (let t = 0; t < 300 && !done; t++) {
-        const [dr, dc] = WS_DIRS[randInt(nDirs)], r0 = randInt(size), c0 = randInt(size), r1 = r0 + dr * (w.length - 1), c1 = c0 + dc * (w.length - 1);
+        const [dr, dc] = DIRS[randInt(nDirs)], r0 = randInt(size), c0 = randInt(size), r1 = r0 + dr * (w.length - 1), c1 = c0 + dc * (w.length - 1);
         if (r1 < 0 || r1 >= size || c1 < 0 || c1 >= size) continue;
         const cells = range(w.length).map(k => (r0 + dr * k) * size + c0 + dc * k);
         if (cells.some((ci, k) => g[ci] && g[ci] !== w[k])) continue;
@@ -2559,7 +2906,7 @@ function wsMake(size, nWords, nDirs) {
       if (!done) { ok = false; break; }
     }
     if (!ok) continue;
-    const fill = "EEEAAAIIOOTTNNSSRRLLHDDCUMPGBYFWK";
+    const fill = isHe() ? HE_FILL : "EEEAAAIIOOTTNNSSRRLLHDDCUMPGBYFWK";
     for (let i = 0; i < g.length; i++) if (!g[i]) g[i] = fill[randInt(fill.length)];
     return { theme, g, placed };
   }
@@ -2976,7 +3323,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "A tidier menu: every game on one screen, and your last games under “Play again”. Stats and Settings are next to the title.";   // change with each update
+const NEWS = "Hebrew is here: Settings → Language. · עכשיו גם בעברית: הגדרות ← שפה.";   // change with each update
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
@@ -2986,6 +3333,7 @@ if (G && G.done && !G.vs) G = null;
 if (opts.shelf && opts.shelf.done) opts.shelf = null;
 if (!opts.badges) { opts.badges = {}; checkBadges(null); }   // first time with badges: earn what earlier play already shows, quietly
 applyTheme();
+applyLang(false);   // English or Hebrew (Settings); Hebrew turns the page right-to-left and translates text as it appears
 fitBoard();
 let resume = false; try { resume = sessionStorage.getItem("sudoku.resume") === "1"; } catch (e) {}
 if (G) render();
@@ -2994,7 +3342,7 @@ if (V) { vsConnect(); if (counting()) vsCount(); }
 if (window.GAME_BUILD) {
   if (hadSave && opts.seenBuild !== window.GAME_BUILD) {
     const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
-    n.innerHTML = `<div><b>Updated!</b><span>${NEWS}</span></div><button>Nice</button>`;
+    n.innerHTML = `<div><b>Updated!</b><span data-notr>${NEWS}</span></div><button>Nice</button>`;
     n.querySelector("button").onclick = () => n.remove(); document.body.appendChild(n); setTimeout(() => n.remove(), 9000);
   }
   opts.seenBuild = window.GAME_BUILD; save();
