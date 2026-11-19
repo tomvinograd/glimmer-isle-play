@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795108767;</script>
+<script>window.GAME_BUILD = 1795111905;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -5482,7 +5482,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const roomGone = () => { const o = roomOther(); return !!o && R.log.some(x => x.t === "bye" && x.pid === o.pid); };
   function roomSync() {
     if (!R) return; const O = olState(), h = roomHost();
-    if (!R.host && h && !R.kind) { R.kind = h.kind; if (!roomIn()) { if (roomPlayers().length >= 2) { toast("That room is full"); roomClose(false); render(); return; } roomPost({ t: "hello", kind: R.kind }); } }
+    if (!R.host && h && !roomIn() && !R.helloSent) {  // a guest (typed code, invite or rematch) says hello once the host is there
+      if (roomPlayers().length >= 2) { toast("That room is full"); roomClose(false); render(); return; }
+      R.kind = h.kind; R.helloSent = true; roomPost({ t: "hello", kind: R.kind });
+      if (olOnPage() && /^ol(duel|trade)$/.test(arenaSub)) arenaSub = R.kind === "duel" ? "olduel" : "oltrade"; }
     const again = R.log.find(o => o.t === "again"); if (again && !R.moved) { R.moved = true; const k = R.kind, mine = again.pid === O.pid; setTimeout(() => { roomOpen(again.room, k, mine); render(); }, 400); return; }
     if (R.kind === "duel") duelSync(); if (R.kind === "trade") tradeSync();
     olRefresh();
