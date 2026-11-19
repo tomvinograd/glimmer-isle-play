@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795115874;</script>
+<script>window.GAME_BUILD = 1795116610;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1718,6 +1718,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 #splash.poster .sp-pct, #splash.poster .sp-tip { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); } #splash.poster .sp-bar { background: rgba(40,25,15,.45); box-shadow: inset 0 1px 3px rgba(0,0,0,.4), 0 0 0 2px rgba(255,255,255,.75); }
 #splash.poster .sp-ver { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); text-align: center; color: #fff; opacity: .85; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
 #splash .sp-logo { display: block; width: min(78vw, 360px); margin: 0 auto; filter: drop-shadow(0 4px 10px rgba(60,40,20,.35)); }
+.minepick { position: fixed; z-index: 60; pointer-events: none; transform-origin: 84% 86%; } .minepick > svg, .minepick > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.minepick .mswoosh { opacity: 0; transform: rotate(-6deg) scale(1.15); transform-origin: 84% 86%; } .minechip { position: fixed; z-index: 60; pointer-events: none; } .minechip svg, .minechip img { width: 100%; height: 100%; display: block; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2773,12 +2775,62 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     pouch: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="90" rx="38" ry="7" fill="#6b4a2a" opacity=".3"/><path d="M38 40c-16 14-20 44 22 48 42-4 38-34 22-48z" fill="#c9935f" stroke="#7a5638" stroke-width="3" stroke-linejoin="round"/><path d="M44 30c6 6 26 6 32 0l-6 12H50z" fill="#b07a48" stroke="#7a5638" stroke-width="3" stroke-linejoin="round"/><path d="M42 42h36" stroke="#7a5638" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="64" r="11" fill="#ffd13b" stroke="#c4901a" stroke-width="3"/><path d="M60 58v12" stroke="#c4901a" stroke-width="3" stroke-linecap="round"/><circle cx="34" cy="86" r="7" fill="#ffd13b" stroke="#c4901a" stroke-width="2"/><circle cx="88" cy="84" r="6" fill="#ffd13b" stroke="#c4901a" stroke-width="2"/></svg>',
     crystal: '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="88" rx="40" ry="8" fill="#3d8fb0" opacity=".3"/><path d="M58 86l-6-50 10-24 10 24-6 50z" fill="#7fe7ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M40 86l-12-34 6-14 12 14 4 34z" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M76 86l4-30 12-12 6 16-10 26z" fill="#a8f0ff" stroke="#2f8fb3" stroke-width="3" stroke-linejoin="round"/><path d="M62 18l-3 50" stroke="#e8fbff" stroke-width="3" stroke-linecap="round"/></svg>',
   };
-  for (const [k, a] of [["bush", "item-bush"], ["herb", "item-herb"], ["ore", "item-ore"], ["crystal", "item-crystal"], ["pouch", "item-pouch"]]) if (ART[a]) GATHER_SVG[k] = artIcon(a);
+  // the stone to mine (Tom 19 Nov: a plain rock, no gold): Gemini art item-rock / item-rock-cracked / item-pickaxe when they come, drawn until then
+  const ROCK_SVG = '<svg viewBox="0 0 120 100"><ellipse cx="60" cy="90" rx="46" ry="7" fill="#6b5a4a" opacity=".3"/><path d="M18 88 L22 52 L38 28 L68 18 L94 32 L104 62 L100 88Z" fill="#aaa49e" stroke="#5f554d" stroke-width="3" stroke-linejoin="round"/><path d="M38 28 L52 52 L68 18 M52 52 L94 32 M52 52 L46 88 M52 52 L104 62" fill="none" stroke="#8d857e" stroke-width="2.5" stroke-linejoin="round"/><path d="M42 32 L50 47 M72 24 L88 33" stroke="#dcd6d0" stroke-width="4" stroke-linecap="round"/></svg>';
+  const CRACK_SVG = '<svg viewBox="0 0 120 100" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><path d="M76 24 L66 40 L74 48 L60 62 L66 72 L56 86 M66 40 L54 36 M74 48 L88 52" fill="none" stroke="#3f3732" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const PICK_SVG = '<svg viewBox="0 0 100 100"><path d="M84 86 L40 38" stroke="#6e4a2c" stroke-width="10" stroke-linecap="round"/><path d="M84 86 L40 38" stroke="#c48a55" stroke-width="5" stroke-linecap="round"/><path d="M10 58 Q16 24 50 8 L58 16 Q34 30 22 62Z" fill="#9aa5b1" stroke="#4d5560" stroke-width="3" stroke-linejoin="round"/><path d="M20 50 Q26 30 46 18" stroke="#dfe6ee" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="34" y="30" width="16" height="12" rx="3" transform="rotate(45 42 36)" fill="#6b737d" stroke="#3f454c" stroke-width="2"/></svg>';
+  const CHIP_SVG = '<svg viewBox="0 0 20 20"><path d="M3 12 L6 4 L14 3 L18 10 L13 17 L5 16Z" fill="#aaa49e" stroke="#5f554d" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 6 L12 5" stroke="#dcd6d0" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  for (const [k, a] of [["bush", "item-bush"], ["herb", "item-herb"], ["crystal", "item-crystal"], ["pouch", "item-pouch"]]) if (ART[a]) GATHER_SVG[k] = artIcon(a);
+  GATHER_SVG.ore = ART["item-rock"] ? artIcon("item-rock") : ROCK_SVG;
+  // mining like the big games: a pickaxe winds up and strikes with a golden swoosh, chips fly and the rock cracks; the 2nd
+  // strike bursts it into chunks (Auto / quick: one strike). Returns the stage point the coins come out of.
+  async function mineRock(el) {
+    const fast = RM || S.auto || (typeof quickNow !== "undefined" && quickNow), box = el.querySelector(".bounce") || el, r = box.getBoundingClientRect();
+    const hx = r.left + r.width * .6, hy = r.top + r.height * .38, W = r.width * .78;
+    const pk = document.createElement("div"); pk.className = "minepick";
+    pk.style.cssText = `left:${r.left + r.width * .5}px;top:${r.top - W * .62}px;width:${W}px;height:${W}px`;
+    pk.innerHTML = (ART["item-pickaxe"] ? `<img src="${ART["item-pickaxe"]}" alt="">` : PICK_SVG) + `<svg class="mswoosh" viewBox="0 0 100 100"><defs><linearGradient id="mswg" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8" stop-opacity="0"/><stop offset=".6" stop-color="#ffd34d"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><path d="M60 -6 A 62 62 0 0 0 4 48" fill="none" stroke="url(#mswg)" stroke-width="9" stroke-linecap="round"/></svg>`;
+    document.body.appendChild(pk); const sw = pk.querySelector(".mswoosh");
+    await anim(pk, [{ opacity: 0, transform: "rotate(10deg) scale(.6)" }, { opacity: 1, transform: "rotate(0) scale(1)" }], { duration: fast ? 90 : 180, easing: "ease-out", fill: "forwards" });
+    const strike = async last => {
+      await anim(pk, [{ transform: "rotate(0)" }, { transform: "rotate(38deg)" }], { duration: fast ? 110 : 260, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });  // wind up
+      sw.animate([{ opacity: 0 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: fast ? 160 : 260 });
+      await anim(pk, [{ transform: "rotate(38deg)" }, { transform: "rotate(-44deg)" }], { duration: fast ? 80 : 110, easing: "cubic-bezier(.6,0,1,.6)", fill: "forwards" });  // strike
+      sfx("tap"); fxRing(hx, hy, "#fff6c8", last ? 120 : 70, .35, 0, 6); fxBurst(hx, hy, last ? 6 : 10, ["#aaa49e", "#8d857e", "#dcd6d0", "#fff6c8"], last ? 160 : 210);
+      if (!last) {
+        box.style.position = "relative";
+        if (ART["item-rock-cracked"]) box.innerHTML = artIcon("item-rock-cracked"); else box.insertAdjacentHTML("beforeend", CRACK_SVG);
+        anim(box, [{ transform: "none" }, { transform: "translateX(-5px) scale(1.04,.95)" }, { transform: "translateX(4px)" }, { transform: "translateX(-2px)" }, { transform: "none" }], { duration: 260 });
+        await anim(pk, [{ transform: "rotate(-44deg)" }, { transform: "rotate(-26deg)" }, { transform: "rotate(0)" }], { duration: 230, easing: "ease-out", fill: "forwards" });
+      }
+    };
+    if (!fast) await strike(false);
+    await strike(true);
+    // the rock bursts into chunks that tumble out and fade; the pickaxe leaves
+    const cx = r.left + r.width / 2, cy = r.top + r.height * .6;
+    anim(box, [{ transform: "none", opacity: 1 }, { transform: "scale(1.12,.9)", opacity: 1, offset: .3 }, { transform: "scale(.6)", opacity: 0 }], { duration: fast ? 120 : 200, fill: "forwards" });
+    anim(pk, [{ opacity: 1 }, { opacity: 0, transform: "rotate(-60deg) translateY(10px)" }], { duration: 260, fill: "forwards" }).then(() => pk.remove());
+    setTimeout(() => pk.isConnected && pk.remove(), 1200);
+    if (!RM) {
+      fxRing(cx, cy, "#ffffff", 150, .4, 0, 8);
+      const n = fast ? 5 : 9;
+      for (let i = 0; i < n; i++) {
+        const c = document.createElement("div"); c.className = "minechip"; const sz = 14 + Math.random() * 16;
+        c.style.cssText = `left:${cx - sz / 2}px;top:${cy - sz / 2}px;width:${sz}px;height:${sz}px`; c.innerHTML = ART["fx-rock-chip"] ? `<img src="${ART["fx-rock-chip"]}" alt="">` : CHIP_SVG; document.body.appendChild(c);
+        const a = -Math.PI * (.1 + .8 * i / (n - 1)) + (Math.random() - .5) * .3, d = 60 + Math.random() * 70, dx = Math.cos(a) * d, dy = Math.sin(a) * d;
+        c.animate([{ transform: "translate(0,0) rotate(0)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) rotate(${(Math.random() - .5) * 400}deg)`, opacity: 1, offset: .55 }, { transform: `translate(${dx * 1.15}px,${dy + 70}px) rotate(${(Math.random() - .5) * 600}deg)`, opacity: 0 }], { duration: fast ? 420 : 720, easing: "cubic-bezier(.2,.7,.4,1)" });
+        setTimeout(() => c.remove(), fast ? 450 : 760);
+      }
+    }
+    await wait(fast ? 120 : 260);
+    return stageXY(box);
+  }
   async function gatherNode() {
     if (!E || E.type !== "gather" || busy) return; busy = true;
     const el = document.querySelector("#gatherActor .spr"); let [x, y] = el ? stageXY(el) : [180, 300];
     const sack = E.kind === "pouch" && el && ART["item-pouch-open"] && !RM && !(typeof quickNow !== "undefined" && quickNow);
     if (sack) [x, y] = await lootOpen(el, "item-pouch-open");
+    else if (el && E.kind === "ore") [x, y] = await mineRock(el);
     else if (el) await anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(-8deg)" }, { transform: "rotate(8deg)" }, { transform: "scale(1.15)", opacity: 0 }], { duration: RM ? 80 : 520, fill: "forwards" });
     const g = E; track("gather"); sfx("coin");
     if (g.kind === "bush" && g.treat) { S.treats += g.n; flyIcons(IC.treat, 2, x, y, null); floatText(x, y - 50, "+1 treat", true); await wait(500); E = null; busy = false; save(); render(); return; }
