@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795067347;</script>
+<script>window.GAME_BUILD = 1795068026;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -635,6 +635,15 @@ input { user-select: text; -webkit-user-select: text; }
 [dir="rtl"] .sec, [dir="rtl"] .sheet h3, [dir="rtl"] .hrec h3, [dir="rtl"] .hlook h3, [dir="rtl"] .mark, [dir="rtl"] .htitle b { letter-spacing: 0; }
 [lang="he"] .item.missed::after { content: "פוספס"; }
 [dir="rtl"] .tools { direction: rtl; }
+
+/* What's new */
+#hnews { position: relative; }
+.newdot { position: absolute; top: 8px; inset-inline-end: 10px; font-style: normal; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--err); color: #fff; }
+.upd-list { display: grid; gap: 10px; }
+.upd-item { background: var(--bg); border-radius: 14px; padding: 12px 14px; display: grid; gap: 4px; }
+.upd-item b { font-size: calc(17px * var(--fs)); font-weight: 800; }
+.upd-item ul { margin: 0; padding-inline-start: 1.2em; display: grid; gap: 4px; font-size: calc(15.5px * var(--fs)); line-height: 1.45; }
+:root[data-contrast="high"] .upd-item { border: 2px solid var(--edge); }
 /* ==== GAMES CSS END ==== */
 </style>
 </head>
@@ -2056,7 +2065,7 @@ Object.assign(HE_TEXT, {
   "Please don't write private details such as phone numbers: messages travel through a public message service.": "נא לא לכתוב פרטים אישיים כמו מספרי טלפון: ההודעות עוברות דרך שירות הודעות ציבורי.",
   "Close": "סגירה", "Send": "שליחה", "You sent": "שלחתם", "Please write a few words first.": "כתבו קודם כמה מילים.", "That's 5 ideas today, thank you! Send more tomorrow.": "זה 5 רעיונות היום, תודה! שלחו עוד מחר.",
   "Sending…": "שולחים…", "Thank you! Your idea was sent.": "תודה! הרעיון נשלח.", "Couldn't send right now. Check the internet and try again.": "אי אפשר לשלוח כרגע. בדקו את האינטרנט ונסו שוב.",
-  "Eagle eye": "עין של נשר", "Appearance": "מראה", "Which game": "איזה משחק", "filled": "מלאים", "A": "פאזל", "You asked for a": "ביקשתם משחק חוזר ברמה", "Language": "שפה",
+  "Eagle eye": "עין של נשר", "What's new": "מה חדש", "Recent updates": "עדכונים אחרונים", "New": "חדש", "Tell us what you'd like": "ספרו לנו מה תרצו", "Appearance": "מראה", "Which game": "איזה משחק", "filled": "מלאים", "A": "פאזל", "You asked for a": "ביקשתם משחק חוזר ברמה", "Language": "שפה",
   "Have an idea for the app? Tap “Suggest an idea” at the bottom of the menu.": "יש לכם רעיון לאפליקציה? הקישו על „הציעו רעיון” בתחתית התפריט.",
 });
 const tt = s => { const r = trCore(s); return r == null ? s : r; };
@@ -2173,7 +2182,8 @@ function drawHub() {
     ${recent.length ? `<p class="sec">Play again</p><div class="again">${recent.map(g => `<button data-g="${g.id}" id="r-${g.id}"><i aria-hidden="true">${g.icon}</i><span>${g.name}</span></button>`).join("")}</div>` : ""}
     <p class="sec">Memory</p><div class="gtiles c3">${GAMES.filter(g => g.sec === "mem").map(tile).join("")}</div>
     <p class="sec">Puzzles</p><div class="gtiles c3">${tile(SUDOKU_TILE)}${GAMES.filter(g => g.sec === "think").map(tile).join("")}</div>
-    <button class="hbtn slim" id="hidea"><span><b>💡 Suggest an idea</b><small>A new game, a setting, something hard to use…</small></span><i>›</i></button>
+    <div class="hrow"><button class="hbtn sm" id="hnews"><span><b>🆕 What's new</b><small>Recent updates</small></span>${newsUnread() ? `<em class="newdot">New</em>` : ""}</button>
+      <button class="hbtn sm" id="hidea"><span><b>💡 Suggest an idea</b><small>Tell us what you'd like</small></span></button></div>
     <p class="hfoot">${verLabel()}</p></div>`;
   h.hidden = false;
   const openId = id => { if (id === "sudoku") { homeView = "sudoku"; showHome(); h.scrollTop = 0; } else mgOpen(id); };
@@ -2185,6 +2195,7 @@ function drawHub() {
   $("hstats").onclick = () => openStats("stats");
   $("hset").onclick = openSettings;
   $("hidea").onclick = openSuggest;
+  $("hnews").onclick = openWhatsNew;
 }
 
 /* one game: intro, play, result */
@@ -3235,6 +3246,44 @@ function openSuggest() {
     } catch (e) { $("ssend").disabled = false; msg("Couldn't send right now. Check the internet and try again.", true); }
   };
 }
+
+
+/* ---------- What's new: the app's updates, newest first, in English and Hebrew ----------
+   Add an entry at the top with every update that players would notice (and change NEWS in index.html). */
+const UPDATES = [
+  { d: "2026-11-19", t: ["What's new", "מה חדש"], b: [["This page: after every update, read here what was added.", "העמוד הזה: אחרי כל עדכון אפשר לקרוא כאן מה נוסף."]] },
+  { d: "2026-11-19", t: ["Hebrew", "עברית"], b: [["The whole app in Hebrew, right to left: Settings → Language.", "כל האפליקציה בעברית, מימין לשמאל: הגדרות ← שפה."],
+    ["Story questions, Anagrams and Word search have their own Hebrew stories and words.", "לשאלות על סיפור, לאותיות מבולבלות ולתפזורת יש סיפורים ומילים משלהם בעברית."]] },
+  { d: "2026-11-19", t: ["A tidier menu", "תפריט מסודר יותר"], b: [["Every game fits on one screen, and your last games wait under “Play again”.", "כל המשחקים נכנסים במסך אחד, והמשחקים האחרונים שלכם מחכים תחת „לשחק שוב”."],
+    ["Stats and Settings moved next to the title.", "סטטיסטיקה והגדרות עברו ליד הכותרת."]] },
+  { d: "2026-11-19", t: ["Suggest an idea", "הציעו רעיון"], b: [["Send your ideas for the app from the bottom of the menu. Every message is read.", "שלחו רעיונות לאפליקציה מתחתית התפריט. כל הודעה נקראת."]] },
+  { d: "2026-11-18", t: ["Settings for every game", "הגדרות לכל משחק"], b: [["Each game has its own settings: a timer for Pairs, how long the squares show, typing answers in Quick sums, and more.", "לכל משחק הגדרות משלו: טיימר לזוגות, כמה זמן הריבועים מוצגים, הקלדת תשובות בחשבון מהיר, ועוד."],
+    ["The app is now called Thinking games.", "האפליקציה נקראת עכשיו משחקי חשיבה."]] },
+  { d: "2026-11-18", t: ["Daily workout", "אימון יומי"], b: [["Three short games a day, the same three for everyone.", "שלושה משחקים קצרים ביום, אותם שלושה לכולם."],
+    ["Stats for every game, and new badges.", "סטטיסטיקה לכל משחק, ותגים חדשים."]] },
+  { d: "2026-11-18", t: ["Twelve new games", "שנים עשר משחקים חדשים"], b: [["Memory: Pairs, Repeat the sequence, Remember the squares, Number memory, Shopping list, What changed?, Same as before? and Story questions.", "זיכרון: זוגות, חזרו על הרצף, זכרו את הריבועים, זיכרון מספרים, רשימת קניות, מה השתנה?, כמו הקודמת? ושאלות על סיפור."],
+    ["Puzzles: Quick sums, Anagrams, Word search, Picture logic and Number cages.", "חידות: חשבון מהיר, אותיות מבולבלות, תפזורת, תמונה בהיגיון וכלובי מספרים."],
+    ["Relaxed mode in Settings: more time to look, no rush.", "מצב רגוע בהגדרות: יותר זמן להסתכל, בלי לחץ."]] },
+  { d: "2026-11-18", t: ["Daily puzzle and streaks", "פאזל יומי ורצפים"], b: [["A new Sudoku every day, the same for everyone, with your friends' times.", "סודוקו חדש כל יום, אותו אחד לכולם, עם הזמנים של החברים."],
+    ["Streaks, badges, a stats page, sounds and confetti.", "רצפים, תגים, עמוד סטטיסטיקה, צלילים וקונפטי."]] },
+  { d: "2026-11-18", t: ["Play a friend", "משחק נגד חבר"], b: [["Race a friend on the same puzzle, each on your own phone.", "מרוץ נגד חבר על אותו פאזל, כל אחד בטלפון שלו."]] },
+  { d: "2026-11-18", t: ["Easier to see", "קל יותר לראות"], b: [["Bigger board sizes, high contrast, light or dark, and your own colours.", "לוח גדול יותר, ניגודיות גבוהה, בהיר או כהה, וצבעים משלכם."],
+    ["Updates arrive by themselves, even in the middle of a game.", "עדכונים מגיעים לבד, גם באמצע משחק."]] },
+];
+const newsUnread = () => !opts.newsSeen || UPDATES[0].d > opts.newsSeen || (UPDATES[0].d === opts.newsSeen && (opts.newsCount || 0) < UPDATES.filter(u => u.d === UPDATES[0].d).length);
+function openWhatsNew() {
+  sheet = "whatsnew"; const he = isHe() ? 1 : 0;
+  opts.newsSeen = UPDATES[0].d; opts.newsCount = UPDATES.filter(u => u.d === UPDATES[0].d).length; save();
+  const day = d => keyDate(d).toLocaleDateString(he ? "he-IL" : "en-GB", { day: "numeric", month: "long", year: "numeric" });
+  let last = "";
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="What's new">
+    <h2>🆕 What's new</h2>
+    <div class="upd-list" data-notr>${UPDATES.map(u => { const head = u.d !== last ? `<p class="sec">${day(u.d)}</p>` : ""; last = u.d;
+      return `${head}<div class="upd-item"><b>${u.t[he]}</b><ul>${u.b.map(x => `<li>${x[he]}</li>`).join("")}</ul></div>`; }).join("")}</div>
+    <div class="row2"><button class="big go" data-close>Close</button></div></div>`;
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (homeOn) showHome(); });
+  if (homeOn) { const dot = document.querySelector("#hnews .newdot"); if (dot) dot.remove(); }
+}
 /* ==== GAMES JS END ==== */
 /* ---------- controls ---------- */
 $("undo").onclick = undo; $("erase").onclick = erase; $("hint").onclick = hint;
@@ -3258,6 +3307,7 @@ const tickId = setInterval(() => {
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { if (G && !G.done) paused = true; save(); render(); } });
 // the phone's back button (app): close what is open; false = leave the app
 window.appBack = () => {
+  if (sheet === "whatsnew") { closeSheet(); if (homeOn) showHome(); return true; }
   if (sheet === "suggest") { closeSheet(); if (homeOn) showHome(); return true; }
   if (sheet === "mghelp") { closeSheet(); return true; }
   if (sheet === "mgres") { $("mgmenu").click(); return true; }
@@ -3323,7 +3373,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = "Hebrew is here: Settings → Language. · עכשיו גם בעברית: הגדרות ← שפה.";   // change with each update
+const NEWS = () => isHe() ? "חדש: עמוד „מה חדש” עם כל העדכונים." : "New: a “What's new” page with every update.";   // change with each update (and add it to UPDATES in game/src/games.js)
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
@@ -3342,8 +3392,8 @@ if (V) { vsConnect(); if (counting()) vsCount(); }
 if (window.GAME_BUILD) {
   if (hadSave && opts.seenBuild !== window.GAME_BUILD) {
     const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
-    n.innerHTML = `<div><b>Updated!</b><span data-notr>${NEWS}</span></div><button>Nice</button>`;
-    n.querySelector("button").onclick = () => n.remove(); document.body.appendChild(n); setTimeout(() => n.remove(), 9000);
+    n.innerHTML = `<div><b>Updated!</b><span data-notr>${NEWS()}</span></div><button>What's new</button>`;
+    n.querySelector("button").onclick = () => { n.remove(); openWhatsNew(); }; document.body.appendChild(n); setTimeout(() => n.remove(), 12000);
   }
   opts.seenBuild = window.GAME_BUILD; save();
 }
