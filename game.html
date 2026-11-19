@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795111905;</script>
+<script>window.GAME_BUILD = 1795113805;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -3557,7 +3557,11 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (!E || E.type !== "luck" || busy || S[res] < stake) return Promise.resolve();
     busy = true; const el = document.querySelector("#luckActor .spr"), r = 1 + rnd(0, 10) / 10, back = Math.round(stake * r);
     S[res] += back - stake; renderActions();
-    return (el && !RM ? anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(1080deg)" }], { duration: 900, easing: "cubic-bezier(.2,.8,.3,1)" }) : Promise.resolve()).then(() => new Promise(done => {
+    // the lantern lights up from inside (no spinning, Tom 19 Nov): a small squash, warm glow swells, sparks rise out of its top
+    const lit = () => { if (!el || RM) return Promise.resolve(); const r = el.getBoundingClientRect();
+      setTimeout(() => fxRise(r.left + r.width / 2, r.top + r.height * .25, r.width * .4, 14, ["#fff6c8", "#ffd34d", "#ffb627"]), 380);
+      return anim(el, [{ transform: "none", filter: "brightness(1)" }, { transform: "scale(1.06,.94)", offset: .18 }, { transform: "translateY(-5px) scale(.98,1.03)", filter: "brightness(1.45) drop-shadow(0 0 16px #ffd34d)", offset: .55 }, { transform: "none", filter: "brightness(1.3) drop-shadow(0 0 12px #ffcf6b)" }], { duration: 1000, easing: "ease-out", fill: "forwards" }); };
+    return lit().then(() => new Promise(done => {
       const [x, y] = el ? stageXY(el) : [180, 300]; floatText(x, y - 60, `x${r.toFixed(1)} · +${back}`, true); sfx("coin");
       flyIcons(res === "coins" ? IC.coin : IC.glow, 4, x, y, $(res === "coins" ? "hudCoins" : "hudGlow"));
       setTimeout(() => { E = null; busy = false; save(); render(); done(); }, 900);
