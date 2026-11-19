@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795116705;</script>
+<script>window.GAME_BUILD = 1795117338;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1719,7 +1719,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 #splash.poster .sp-ver { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); text-align: center; color: #fff; opacity: .85; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
 #splash .sp-logo { display: block; width: min(78vw, 360px); margin: 0 auto; filter: drop-shadow(0 4px 10px rgba(60,40,20,.35)); }
 .minepick { position: fixed; z-index: 60; pointer-events: none; transform-origin: 84% 86%; } .minepick > svg, .minepick > img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.minepick .mswoosh { opacity: 0; transform: rotate(-6deg) scale(1.15); transform-origin: 84% 86%; } .minechip { position: fixed; z-index: 60; pointer-events: none; } .minechip svg, .minechip img { width: 100%; height: 100%; display: block; }
+.minepick.art, .minepick.art .mswoosh { transform-origin: 89% 93%; } .minepick .mswoosh { opacity: 0; transform: rotate(-6deg) scale(1.15); transform-origin: 84% 86%; } .minechip { position: fixed; z-index: 60; pointer-events: none; } .minechip svg, .minechip img { width: 100%; height: 100%; display: block; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2787,7 +2787,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   async function mineRock(el) {
     const fast = RM || S.auto || (typeof quickNow !== "undefined" && quickNow), box = el.querySelector(".bounce") || el, r = box.getBoundingClientRect();
     const hx = r.left + r.width * .6, hy = r.top + r.height * .38, W = r.width * .78;
-    const pk = document.createElement("div"); pk.className = "minepick";
+    const pk = document.createElement("div"); pk.className = "minepick" + (ART["item-pickaxe"] ? " art" : "");
     pk.style.cssText = `left:${r.left + r.width * .5}px;top:${r.top - W * .62}px;width:${W}px;height:${W}px`;
     pk.innerHTML = (ART["item-pickaxe"] ? `<img src="${ART["item-pickaxe"]}" alt="">` : PICK_SVG) + `<svg class="mswoosh" viewBox="0 0 100 100"><defs><linearGradient id="mswg" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8" stop-opacity="0"/><stop offset=".6" stop-color="#ffd34d"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><path d="M60 -6 A 62 62 0 0 0 4 48" fill="none" stroke="url(#mswg)" stroke-width="9" stroke-linecap="round"/></svg>`;
     document.body.appendChild(pk); const sw = pk.querySelector(".mswoosh");
@@ -2816,7 +2816,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       const n = fast ? 5 : 9;
       for (let i = 0; i < n; i++) {
         const c = document.createElement("div"); c.className = "minechip"; const sz = 14 + Math.random() * 16;
-        c.style.cssText = `left:${cx - sz / 2}px;top:${cy - sz / 2}px;width:${sz}px;height:${sz}px`; c.innerHTML = ART["fx-rock-chip"] ? `<img src="${ART["fx-rock-chip"]}" alt="">` : CHIP_SVG; document.body.appendChild(c);
+        c.style.cssText = `left:${cx - sz / 2}px;top:${cy - sz / 2}px;width:${sz}px;height:${sz}px`; c.innerHTML = ART["item-rock-chip"] ? `<img src="${ART["item-rock-chip"]}" alt="">` : CHIP_SVG; document.body.appendChild(c);
         const a = -Math.PI * (.1 + .8 * i / (n - 1)) + (Math.random() - .5) * .3, d = 60 + Math.random() * 70, dx = Math.cos(a) * d, dy = Math.sin(a) * d;
         c.animate([{ transform: "translate(0,0) rotate(0)", opacity: 1 }, { transform: `translate(${dx}px,${dy}px) rotate(${(Math.random() - .5) * 400}deg)`, opacity: 1, offset: .55 }, { transform: `translate(${dx * 1.15}px,${dy + 70}px) rotate(${(Math.random() - .5) * 600}deg)`, opacity: 0 }], { duration: fast ? 420 : 720, easing: "cubic-bezier(.2,.7,.4,1)" });
         setTimeout(() => c.remove(), fast ? 450 : 760);
