@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795099180;</script>
+<script>window.GAME_BUILD = 1795099342;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1164,6 +1164,8 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .cards .gcard.q2, .cards .tile.q2 { background: var(--card-q2) center/cover no-repeat; }
   .cards .gcard.q3, .cards .tile.q3 { background: var(--card-q3) center/cover no-repeat; }
   .cards .gcard.q4 { background: var(--card-q4) center/cover no-repeat; }
+  .cards .tcard.q1 { background: var(--card-q1) center/cover no-repeat; } .cards .tcard.q2 { background: var(--card-q2) center/cover no-repeat; }
+  .cards .tcard.q3 { background: var(--card-q3) center/cover no-repeat; } .cards .tcard.q4 { background: var(--card-q4) center/cover no-repeat; }
   .cards .tile.q4 { background: var(--card-q4) center/cover no-repeat padding-box, linear-gradient(var(--ra, 0deg), #ff8a8a, #ffd36b, #8ae68a, #7fd4ff, #c79bff, #ff8a8a) border-box; }
   /* islander with a speech bubble */
   .islander { display: flex; align-items: end; gap: 8px; }
@@ -1488,7 +1490,7 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
 .gsearch { width: 100%; height: 38px; border-radius: 10px; border: 0; padding: 0 12px; font: 700 15px var(--body); box-shadow: 0 0 0 2.5px var(--ink); background: #fffdf8; }
 .tcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 2px 2px 86px; }
 .tcard { position: relative; aspect-ratio: 3 / 4; border: 0; padding: 0; border-radius: 12px; overflow: hidden; isolation: isolate;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--ec) 35%, #fff), color-mix(in srgb, var(--ec) 75%, #4a3020));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--gc) 35%, #fff), color-mix(in srgb, var(--gc) 75%, #4a3020));
   box-shadow: 0 0 0 3px var(--gc), 0 0 0 5px #fff, 0 0 0 7px rgba(90,58,34,.55), 0 4px 8px rgba(40,25,10,.3); margin: 7px 4px 4px; }
 .tcard .tpat { position: absolute; inset: 0; z-index: -1; opacity: .22; background:
   repeating-linear-gradient(45deg, rgba(255,255,255,.9) 0 1.5px, transparent 1.5px 13px), repeating-linear-gradient(-45deg, rgba(255,255,255,.9) 0 1.5px, transparent 1.5px 13px); }
