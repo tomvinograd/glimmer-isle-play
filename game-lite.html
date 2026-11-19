@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795096877;</script>
+<script>window.GAME_BUILD = 1795097739;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -284,7 +284,7 @@
   #aview > .autochip { top: calc(48px + env(safe-area-inset-top, 0px)); left: 50%; right: auto; transform: translateX(-50%); }
   .glowpill { position: relative; }
   .gnext { position: absolute; right: 0; top: calc(100% + 2px); font-family: var(--body); font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(30,40,60,.6); white-space: nowrap; }
-  .glowchest { filter: drop-shadow(0 0 14px #7fe7ff) drop-shadow(0 0 6px #fff) hue-rotate(160deg) saturate(1.2); }
+  .glowchest { filter: drop-shadow(0 0 14px #7fe7ff) drop-shadow(0 0 6px #fff) hue-rotate(160deg) saturate(1.2); } .glowchest.art { filter: drop-shadow(0 0 14px #7fe7ff) drop-shadow(0 0 6px #fff); }  /* the painted glowing chest keeps its wood color */
   /* living compass */
   .compass { overflow: visible; isolation: isolate; }
   .compass > svg, .compass .cneedle-wrap { position: absolute; inset: 0; margin: auto; pointer-events: none; }
@@ -2402,7 +2402,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (!cmpAway || E || BT) return; cmpAway = false;
     const w = document.querySelector("#actions .cwrap"); if (w && !RM) moPlay(w, [{ transform: "translateY(190px)", opacity: 0 }, { transform: "translateY(-10px)", opacity: 1, offset: .7 }, { transform: "none", opacity: 1 }], { duration: 420, easing: "ease-out" });
   }
-  function payoffBurst(x, y, icon, n, target) {  // the find bursts into pieces that fly to the counter while a number counts up (x, y: stage coordinates)
+  function payoffBurst(x, y, icon, n, target, up) {  // up: a fountain out of an opened chest / sack  // the find bursts into pieces that fly to the counter while a number counts up (x, y: stage coordinates)
     if (RM || (typeof quickNow !== "undefined" && quickNow)) { flyIcons(icon, 6, x, y, target); floatText(x, y - 50, "+" + n, true); return wait(400); }
     const quick = S.auto, k = Math.max(4, Math.min(10, n)), layer = fxLayer(), st = fxRoot().getBoundingClientRect();
     let tx = st.width / 2, ty = -30; if (target) { const r = target.getBoundingClientRect(); tx = r.left + r.width / 2 - st.left; ty = r.top + r.height / 2 - st.top; }
@@ -2411,9 +2411,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const out = quick ? 220 : 380, gap = quick ? 30 : 60, flyT = quick ? 360 : 520;
     for (let i = 0; i < k; i++) {
       const d = document.createElement("div"); d.className = "fly"; d.innerHTML = icon; d.style.left = x + "px"; d.style.top = y + "px"; layer.appendChild(d);
-      const an = (i / k) * Math.PI * 2 + Math.random() * .5, r = 50 + Math.random() * 40, sx = Math.cos(an) * r, sy = Math.sin(an) * r * .7 - 20;
+      const an = (i / k) * Math.PI * 2 + Math.random() * .5, r = 50 + Math.random() * 40, sx = up ? (i / (k - 1 || 1) - .5) * 150 + (Math.random() - .5) * 30 : Math.cos(an) * r, sy = up ? -(95 + Math.random() * 85) : Math.sin(an) * r * .7 - 20;
       d.animate([{ transform: "translate(0,0) scale(.3)" }, { transform: `translate(${sx}px,${sy}px) scale(1.15) rotate(${(Math.random() - .5) * 60}deg)`, offset: .28 },
-        { transform: `translate(${sx}px,${sy + 6}px) scale(1)`, offset: (out + i * gap) / (out + i * gap + flyT) },
+        { transform: `translate(${sx}px,${sy + (up ? 34 : 6)}px) scale(1) rotate(${up ? (Math.random() - .5) * 200 : 0}deg)`, offset: (out + i * gap) / (out + i * gap + flyT) },
         { transform: `translate(${tx - x}px,${ty - y}px) scale(.6)`, opacity: .9 }], { duration: out + i * gap + flyT, easing: "cubic-bezier(.3,.7,.4,1)" }).onfinish = () => {
           d.remove(); num.textContent = "+" + Math.round(n * (i + 1) / k); if (target) target.animate([{ transform: "scale(1)" }, { transform: "scale(1.15)" }, { transform: "scale(1)" }], { duration: 160 }); };
     }
@@ -2487,16 +2487,30 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (performance.now() - compassSpin.t0 < SPIN_MS) playCompassSpin(); else n.style.transform = `rotate(${compassSpin.to % 360}deg)`;
   }
   function oldSpinNeedle() { const n = document.querySelector(".needle"); if (n) { const r = (+n.dataset.r || 0) + 360 + rnd(-40, 40); n.dataset.r = r; n.style.transform = `rotate(${r}deg)`; } }
+  async function lootOpen(el, key) {  // rattle, then pop into the open picture; returns the opening's stage point
+    const q = S.auto ? .6 : 1, box = el.querySelector(".bounce"); let [x, y] = stageXY(el); const h = el.getBoundingClientRect().height;
+    await anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(-7deg)" }, { transform: "rotate(6deg)" }, { transform: "rotate(-5deg) translateY(-4px)" }, { transform: "rotate(4deg)" }, { transform: "rotate(0)" }], { duration: 440 * q, easing: "ease-in-out" });
+    if (box) box.innerHTML = artIcon(key);
+    el.animate([{ transform: "scale(1.2,.8)" }, { transform: "scale(.93,1.1) translateY(-6px)", offset: .45 }, { transform: "scale(1)" }], { duration: 380 * q, easing: "ease-out" });
+    sfx("coin"); const st = fxRoot().getBoundingClientRect(), pic = box && box.querySelector("svg"), pr = pic ? pic.getBoundingClientRect() : null;  // the drawn picture, not the whole tap button
+    if (pr && pr.width) { x = pr.left + pr.width / 2 - st.left; y = pr.top + pr.height / 2 - st.top; }
+    const oy = y - Math.min(pr ? pr.width : h, pr ? pr.height : h) * .14;
+    fxBurst(x + st.left, oy + st.top, 18, GOLDS, 220); fxRing(x + st.left, oy + st.top, "#fff3b0", 80, .4, 0, 6);
+    await wait(160 * q); return [x, oy];
+  }
   async function openChest() {
     if (!E || E.type !== "chest" || busy) return; busy = true;
-    const el = document.querySelector("#chestActor .spr"); const [x, y] = el ? stageXY(el) : [180, 300];
-    if (el) el.animate([{ transform: "scale(1)" }, { transform: "scale(1.2,0.85)" }, { transform: "scale(.9,1.15)" }, { transform: "scale(1.4)", opacity: 0 }], { duration: RM ? 100 : 500, fill: "forwards" });
-    await wait(380);
+    const el = document.querySelector("#chestActor .spr"); let [x, y] = el ? stageXY(el) : [180, 300];
+    const openKey = E.glow ? "item-chest-glow-open" : "item-chest-open", opens = el && ART[openKey] && !RM && !(typeof quickNow !== "undefined" && quickNow);
+    if (opens) [x, y] = await lootOpen(el, openKey);
+    else { if (el) el.animate([{ transform: "scale(1)" }, { transform: "scale(1.2,0.85)" }, { transform: "scale(.9,1.15)" }, { transform: "scale(1.4)", opacity: 0 }], { duration: RM ? 100 : 500, fill: "forwards" }); await wait(380); }
     const rays = document.createElement("div"); rays.className = "rays"; rays.style.left = x + "px"; rays.style.top = y + "px"; rays.style.margin = "-260px 0 0 -260px"; $("fx").appendChild(rays);
     const c = E.chestCopy = E; track("chest"); sfx("coin"); S.coins += c.coins; if (c.glow) S.glow += c.glow;
     if (Math.random() < .03) { const ch = addCharm(null, 0); setTimeout(() => toast(`Found a ${CHARM[ch.k].n} in the chest!`), 900); }
     if (c.glow) { flyIcons(IC.glow, 6, x, y, $("hudGlow")); toast("A glowing chest! +" + c.glow + " energy"); }
-    await payoffBurst(x, y, IC.coin, c.coins, $("hudCoins")); rays.remove(); E = null; busy = false; save(); render();
+    await payoffBurst(x, y, IC.coin, c.coins, $("hudCoins"), opens); rays.remove();
+    if (opens && el.isConnected) await anim(el, [{ opacity: 1 }, { opacity: 0, transform: "scale(.92)" }], { duration: S.auto ? 140 : 240, fill: "forwards" });
+    E = null; busy = false; save(); render();
   }
 
   // ---------- catching ----------
@@ -2673,12 +2687,14 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   for (const [k, a] of [["bush", "item-bush"], ["herb", "item-herb"], ["ore", "item-ore"], ["crystal", "item-crystal"], ["pouch", "item-pouch"]]) if (ART[a]) GATHER_SVG[k] = artIcon(a);
   async function gatherNode() {
     if (!E || E.type !== "gather" || busy) return; busy = true;
-    const el = document.querySelector("#gatherActor .spr"); const [x, y] = el ? stageXY(el) : [180, 300];
-    if (el) await anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(-8deg)" }, { transform: "rotate(8deg)" }, { transform: "scale(1.15)", opacity: 0 }], { duration: RM ? 80 : 520, fill: "forwards" });
+    const el = document.querySelector("#gatherActor .spr"); let [x, y] = el ? stageXY(el) : [180, 300];
+    const sack = E.kind === "pouch" && el && ART["item-pouch-open"] && !RM && !(typeof quickNow !== "undefined" && quickNow);
+    if (sack) [x, y] = await lootOpen(el, "item-pouch-open");
+    else if (el) await anim(el, [{ transform: "rotate(0)" }, { transform: "rotate(-8deg)" }, { transform: "rotate(8deg)" }, { transform: "scale(1.15)", opacity: 0 }], { duration: RM ? 80 : 520, fill: "forwards" });
     const g = E; track("gather"); sfx("coin");
     if (g.kind === "bush" && g.treat) { S.treats += g.n; flyIcons(IC.treat, 2, x, y, null); floatText(x, y - 50, "+1 treat", true); await wait(500); E = null; busy = false; save(); render(); return; }
     if (g.kind === "herb" || g.kind === "bush") { S.leaves += g.n; await payoffBurst(x, y, IC.leaf, g.n, $("hudLeaves")); }
-    else if (g.kind === "ore" || g.kind === "pouch") { S.coins += g.n; await payoffBurst(x, y, IC.coin, g.n, $("hudCoins")); }
+    else if (g.kind === "ore" || g.kind === "pouch") { S.coins += g.n; await payoffBurst(x, y, IC.coin, g.n, $("hudCoins"), sack); if (sack && el.isConnected) await anim(el, [{ opacity: 1 }, { opacity: 0, transform: "scale(.92)" }], { duration: S.auto ? 140 : 240, fill: "forwards" }); }
     else { S.glow += g.n; await payoffBurst(x, y, IC.glow, g.n, $("hudGlow")); }
     E = null; busy = false; save(); render();
   }
@@ -2855,7 +2871,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
         ${tough(w) && !E.fought ? "" : `<div class="target"></div><div class="ring" id="ring"></div>`}<div class="shadow"></div>
         <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>`;
     }
-    if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? " glowchest" : ""}" style="width:130px">${E.glow && ART["item-chest-glow"] ? artIcon("item-chest-glow") : IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
+    if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? (ART["item-chest-glow"] ? " glowchest art" : " glowchest") : ""}" style="width:130px">${E.glow && ART["item-chest-glow"] ? artIcon("item-chest-glow") : IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
     if (E.type === "rival") return `<div class="actor" style="left:50%;top:72%"><div class="spr pop"><div class="row" style="flex-wrap:nowrap;align-items:flex-end"><div style="width:74px">${trainerSVG(E.color || "#ff8a8a", false)}</div>${E.foes.map(f => art(f.sp, f.evo, 76)).join("")}</div></div><div class="shadow"></div><div class="tag">${IC.sword.replace("<svg", '<svg width="16" height="16"')} ${E.name}</div></div>`;
     if (E.type === "luck") return `<div class="actor" id="luckActor" style="left:50%;top:72%"><div class="spr pop"><div class="idle" style="width:90px">${IC.lantern}</div></div><div class="shadow"></div><div class="tag">x1 - x2 ${IC.glow.replace("<svg", '<svg width="16" height="16"')} or ${IC.coin.replace("<svg", '<svg width="16" height="16"')}</div></div>`;
     return "";
