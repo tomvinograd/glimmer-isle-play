@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795098311;</script>
+<script>window.GAME_BUILD = 1795099180;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -403,6 +403,8 @@
   .q0 { background: var(--g0); } .q1 { background: var(--g1); } .q2 { background: var(--g2); } .q3 { background: var(--g3); }
   .q4 { background: linear-gradient(90deg, #ff8a8a, #ffc94d, #6fd38a, #5aa8ff, #a77bff); }
   .el { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.el.elic { background: none; box-shadow: none !important; border-radius: 0; width: 18px; height: 18px; vertical-align: middle; flex: none; } .el.elic svg { width: 100%; height: 100%; display: block; }
+.tcard .tname .el.elic, .hmeta .el.elic { width: 16px; height: 16px; } .pmon .el.elic { width: 13px; height: 13px; }
   .stats { display: flex; gap: 10px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
   .mini-btns { display: flex; gap: 6px; flex-wrap: wrap; }
   .mb { height: 36px; border-radius: 7px; border: 0; background: #f2f0f9; font-family: var(--display); font-weight: 800; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; padding: 0 10px; }
@@ -838,7 +840,7 @@ nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr; }
 .lctl select { padding: 6px 8px; border: 1.5px solid #e3d3bd; border-radius: 9px; background: #fff; font: 800 13px var(--display); color: var(--brown); }
 .lchips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; } .lchips::-webkit-scrollbar { display: none; }
 .lchip { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border: 1.5px solid #e3d3bd; border-radius: 8px; background: #fff; color: var(--brown); font: 800 12px var(--display); }
-.lchip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); } .lchip.on { border-color: var(--c); background: var(--c); color: #fff; } .lchip.on i { background: #fff; }
+.lchip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); } .lchip i.lic { width: 16px; height: 16px; border-radius: 0; background: none !important; } .lchip i.lic svg { width: 100%; height: 100%; display: block; } .lchip.on { border-color: var(--c); background: var(--c); color: #fff; } .lchip.on i { background: #fff; }
 .newdot { position: absolute; top: 4px; right: 4px; z-index: 2; padding: 1px 5px; border-radius: 5px; background: #e5484d; color: #fff; font: 900 9px/14px var(--display); }
 .cell { position: relative; }
 .cmph { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .cmpc { display: grid; justify-items: center; gap: 3px; } .cmpc b { font: 900 15px var(--display); color: var(--brown); } .cmpc small { font: 700 11px var(--display); color: #8a6d55; }
@@ -940,7 +942,8 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .gname { position: absolute; left: 70px; top: 22px; font: 800 20px var(--display); color: var(--brown); }
 .gwhere { position: absolute; right: 10px; top: 10px; padding: 3px 12px; border-radius: 7px; background: #e8574a; color: #fff; font: 800 13px var(--display); }
 .gtags { position: absolute; left: 12px; bottom: 14px; display: flex; gap: 6px; align-items: center; }
-.gel { height: 24px; padding: 0 9px; border-radius: 7px; display: grid; place-items: center; font: 800 12.5px var(--display); color: #fff; text-shadow: 0 1px 2px rgba(40,30,20,.35); box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
+.gel .gelic { display: inline-block; width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; filter: drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1px #fff); } .gel .gelic svg { width: 100%; height: 100%; display: block; }
+.gel { height: 24px; padding: 0 9px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font: 800 12.5px var(--display); color: #fff; text-shadow: 0 1px 2px rgba(40,30,20,.35); box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
 .gart { position: absolute; left: 0; right: 0; top: 52px; bottom: 30px; display: grid; place-items: center; } .gart > * { filter: drop-shadow(0 6px 8px rgba(40,30,20,.2)); }
 .gstars { position: absolute; right: 14px; bottom: 50px; display: flex; gap: 1px; } .gstars i { font-style: normal; font-size: 16px; color: rgba(91,70,54,.25); } .gstars i.on { color: #ffb627; }
 .glv { position: absolute; right: 14px; bottom: 8px; font: 900 34px/1 var(--display); color: var(--brown); } .glv small { font-size: 14px; margin-right: 2px; }
@@ -1504,6 +1507,7 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
 .tcard .trib.new { background: #4f9be0; -webkit-text-stroke-color: #1f4f80; }
 .tcard .tfoot { position: absolute; left: 5px; right: 5px; bottom: 4px; z-index: 2; display: flex; align-items: center; gap: 4px; }
 .tcard .tel { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--ink); }
+.tcard .tel.telic { width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1.5px var(--ink); display: grid; place-items: center; } .tcard .tel.telic svg { width: 15px; height: 15px; display: block; }
 .tcard .tfav { color: #ff5a7a; font-size: 14px; -webkit-text-stroke: 1.5px #fff; }
 .tcard .tlock svg { width: 13px; height: 13px; color: #fff; }
 .tcard .tlv { margin-left: auto; font: 800 16px var(--display); color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
@@ -1741,7 +1745,9 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const CHARM_R = ["Common", "Rare", "Epic"], CHARM_RC = ["#b9a68f", "#4f9cff", "#a46bff"];
   const charmOf = m => m && m.charm && S && S.charms ? S.charms.find(c => c.id === m.charm) || null : null;
   const charmB = (m, k) => { if (!m || !m.charm || m.wild) return 0; const c = charmOf(m); return c && c.k === k ? CHARM[c.k].b[c.r] : 0; };
-  const charmSvg = (k, r) => `<svg viewBox="0 0 24 24"><path d="M7 3.5 12 8l5-4.5" fill="none" stroke="#8a6d55" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="14" r="7.5" fill="${CHARM_RC[r || 0]}" stroke="#5b4636" stroke-width="1.3"/><circle cx="12" cy="14" r="5" fill="${CHARM[k || "atk"].c}"/>${(r || 0) >= 1 ? '<path d="M12 10.6l1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#fff"/>' : '<circle cx="10" cy="12" r="1.6" fill="#fff" opacity=".8"/>'}</svg>`;
+  const CHARM_ART = { atk: "item-charm-power", def: "item-charm-guard", hp: "item-charm-life", en: "item-charm-spark" };
+  const charmSvg = (k, r) => ART[CHARM_ART[k]] ? `<svg viewBox="0 0 24 24">${r ? `<circle cx="12" cy="14.5" r="10.5" fill="${CHARM_RC[r]}" opacity=".5"/><circle cx="12" cy="14.5" r="10.5" fill="none" stroke="${CHARM_RC[r]}" stroke-width="1.4"/>` : ""}<image href="${ART[CHARM_ART[k]]}" x="2" y="0" width="20" height="24" preserveAspectRatio="xMidYMid meet"/></svg>` : charmSvgDrawn(k, r);
+  const charmSvgDrawn = (k, r) => `<svg viewBox="0 0 24 24"><path d="M7 3.5 12 8l5-4.5" fill="none" stroke="#8a6d55" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="14" r="7.5" fill="${CHARM_RC[r || 0]}" stroke="#5b4636" stroke-width="1.3"/><circle cx="12" cy="14" r="5" fill="${CHARM[k || "atk"].c}"/>${(r || 0) >= 1 ? '<path d="M12 10.6l1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z" fill="#fff"/>' : '<circle cx="10" cy="12" r="1.6" fill="#fff" opacity=".8"/>'}</svg>`;
   const charmUser = id => S.mons.find(m => m.charm === id) || null;
   function addCharm(k, r) { S.charms = S.charms || []; S.charmId = (S.charmId || 0) + 1; const c = { id: S.charmId, k: k || pickOf(Object.keys(CHARM)), r: r || 0 }; S.charms.push(c); return c; }
   // team bonus by elements (4): set on fighters as m.tb = { a, h, txt } only while a fight or a forecast runs
@@ -1880,6 +1886,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     }
   })();
   // pictures for icons (art/ui-*.webp): wrapped in the drawn icon's 24x24 SVG shape so sizes and tweaks still apply
+  const EL_ART = { ember: "ui-el-fire", tide: "ui-el-water", leaf: "ui-el-forest", spark: "ui-el-electric", stone: "ui-el-earth", shade: "ui-el-spirit" };
+  const elDot = e => ART[EL_ART[e]] ? `<span class="el elic" title="${EL[e].name}">${artIcon(EL_ART[e])}</span>` : `${elDot(e)}`;
   const artIcon = k => `<svg viewBox="0 0 24 24"><image href="${ART[k]}" x="0" y="0" width="24" height="24" preserveAspectRatio="xMidYMid meet"/></svg>`;
   // grade cards as CSS variables; the logo on the loading screen
   { const C = { 1: "card-blue", 2: "card-purple", 3: "card-gold", 4: "card-rainbow" }; let n = 0;
@@ -1890,7 +1898,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (ART["fx-cloudpad"]) { document.documentElement.style.setProperty("--cloudpad", `url(${ART["fx-cloudpad"]})`); document.body.classList.add("cpad"); }
     const ld = document.getElementById("spDrop"); if (ld && ART["ui-loadbar"]) { ld.classList.add("loadstar"); ld.style.backgroundImage = `url(${ART["ui-loadbar"]})`; } }
   const ICON_ART = { glow: "ui-energy", coin: "ui-coin", leaf: "ui-leaf", fruit: "ui-moonfruit", treat: "ui-treat", keepsake: "ui-keepsake", core: "ui-star-core",
-    lock: "ui-lock", crown: "ui-crown", gear: "ui-settings", map: "ui-map", lantern: "ui-lantern", sword: "ui-sword", flag: "ui-flag", auto: "ui-auto", fast: "ui-speed", home: "ui-home", chest: "item-chest" };
+    lock: "ui-lock", crown: "ui-crown", gear: "ui-settings", map: "ui-map", lantern: "ui-lantern", sword: "ui-sword", flag: "ui-flag", auto: "ui-auto", fast: "ui-speed", home: "ui-home", chest: "item-chest", star: "ui-star", balloon: "ui-balloon" };
   Object.assign(ICON_ART, { tasks: "ui-tasks", bag: "ui-backpack", clock: "ui-clock", book: "ui-book" });
   for (const k in ICON_ART) if (ART[ICON_ART[k]]) IC[k] = artIcon(ICON_ART[k]);
   if (ART["ui-book"]) TABI.book = artIcon("ui-book");
@@ -1901,8 +1909,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   if (ART["ui-home"]) TABI.home = artIcon("ui-home");
   if (ART["ui-glumis"]) TABI.team = artIcon("ui-glumis");
   { const JAR_ART = { [JARS[0].c]: "item-jar-plain", [JARS[1].c]: "item-jar-bright", [JARS[2].c]: "item-jar-star" }, drawnJar = IC.jar;
-    IC.jar = c => c === "prism" ? `<svg viewBox="0 0 24 24"><defs><linearGradient id="pj${Math.random().toString(36).slice(2, 7)}" x1="0" y1="0" x2="1" y2="1"></linearGradient></defs><rect x="7" y="2.5" width="10" height="3.5" rx="1.2" fill="#fff3c4" stroke="#c79bff" stroke-width=".8"/><clipPath id="pjc"><path d="M6 8c0-1.2 1-2 2-2h8c1 0 2 .8 2 2v10a3.5 3.5 0 01-3.5 3.5h-5A3.5 3.5 0 016 18z"/></clipPath><g clip-path="url(#pjc)"><rect x="5" y="6" width="3" height="16" fill="#ff8a8a"/><rect x="7.6" y="6" width="3" height="16" fill="#ffd36b"/><rect x="10.2" y="6" width="3" height="16" fill="#8ae68a"/><rect x="12.8" y="6" width="3" height="16" fill="#7fd4ff"/><rect x="15.4" y="6" width="3" height="16" fill="#c79bff"/></g><path d="M12 10.5l1.1 2.4 2.4 1.1-2.4 1.1L12 17.5l-1.1-2.4-2.4-1.1 2.4-1.1z" fill="#fff"/></svg>` : ART[JAR_ART[c]] ? artIcon(JAR_ART[c]) : drawnJar(c); }
-  const EGG_ART = { 1: "egg-blue", 2: "egg-purple", 3: "egg-gold" };
+    IC.jar = c => c === "prism" && ART["item-jar-prism"] ? artIcon("item-jar-prism") : c === "prism" ? `<svg viewBox="0 0 24 24"><defs><linearGradient id="pj${Math.random().toString(36).slice(2, 7)}" x1="0" y1="0" x2="1" y2="1"></linearGradient></defs><rect x="7" y="2.5" width="10" height="3.5" rx="1.2" fill="#fff3c4" stroke="#c79bff" stroke-width=".8"/><clipPath id="pjc"><path d="M6 8c0-1.2 1-2 2-2h8c1 0 2 .8 2 2v10a3.5 3.5 0 01-3.5 3.5h-5A3.5 3.5 0 016 18z"/></clipPath><g clip-path="url(#pjc)"><rect x="5" y="6" width="3" height="16" fill="#ff8a8a"/><rect x="7.6" y="6" width="3" height="16" fill="#ffd36b"/><rect x="10.2" y="6" width="3" height="16" fill="#8ae68a"/><rect x="12.8" y="6" width="3" height="16" fill="#7fd4ff"/><rect x="15.4" y="6" width="3" height="16" fill="#c79bff"/></g><path d="M12 10.5l1.1 2.4 2.4 1.1-2.4 1.1L12 17.5l-1.1-2.4-2.4-1.1 2.4-1.1z" fill="#fff"/></svg>` : ART[JAR_ART[c]] ? artIcon(JAR_ART[c]) : drawnJar(c); }
+  const EGG_ART = { 1: "egg-blue", 2: "egg-purple", 3: "egg-gold", 4: "egg-rainbow" };
   const DRAGON_SLOTS = [2, 14, 20];  // the dragon families keep their drawn dragons until their art exists
   // moving parts: a sprite cut into layers (tools/make_rig.py); parts sit behind the body and swing around a pivot
   // ---------- poses: whole pictures of the same Glumi (blink, happy, attack, hurt) swapped in for a moment (Tom 18 Nov) ----------
@@ -2594,7 +2602,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (quickNow) return Promise.resolve();
     return new Promise(res => {
       const sh = document.createElement("div"); sh.className = "shade";
-      sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">${title}</div><div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${live(m.sp, m.evo, 130, { cls: "joy" })}<div class="nm">${fname(m.sp, m.evo)}</div><div class="nmrow" style="font-size:14px"><span class="grade q${m.q}">${GRADES[m.q].name}</span><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</div></div></div></div>`;
+      sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">${title}</div><div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${live(m.sp, m.evo, 130, { cls: "joy" })}<div class="nm">${fname(m.sp, m.evo)}</div><div class="nmrow" style="font-size:14px"><span class="grade q${m.q}">${GRADES[m.q].name}</span>${elDot(SP[m.sp].el)}Lv ${m.lvl}</div></div></div></div>`;
       $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
       poseShow(sh, "happy", 1800, 300);
       setTimeout(() => { const cd = sh.querySelector(".reveal"); if (!cd || !sh.isConnected) return; const [x, y] = elXY(cd), big = m.q >= 3;
@@ -3091,7 +3099,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const midnight = new Date(); midnight.setHours(24, 0, 0, 0);
     const list = TASKS[tasksTab].map(t => ({ t, done: !!T.done[tasksTab + ":" + t.id], have: Math.min(t.need, t.got(T)) })).sort((a, b) => (a.done - b.done) || ((b.have >= b.t.need) - (a.have >= a.t.need)));
     const card = ({ t, done, have }) => { const ok = have >= t.need, [ic, nm] = RW[t.r.k];
-      return `<div class="tcard${done ? " done" : ""}"><b class="tname">${t.el ? `<span class="el" style="background:${EL[t.el].color}"></span>` : ""}${t.name}</b><span class="trew">${ic}<b>${t.r.n}</b></span>
+      return `<div class="tcard${done ? " done" : ""}"><b class="tname">${t.el ? `${elDot(t.el)}` : ""}${t.name}</b><span class="trew">${ic}<b>${t.r.n}</b></span>
         <small>${t.about}</small><span class="tbar"><i style="width:${Math.round(have / t.need * 100)}%"></i><em>${have}/${t.need}</em></span>
         ${done ? `<span class="stamp">\u2713</span>` : `<button class="mb${ok ? " gold" : ""}" data-act="taskclaim:${tasksTab}:${t.id}" ${ok ? "" : "disabled"}>${ok ? "Claim" : "Not yet"}</button>`}</div>`; };
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">‹ Back</button><h3>Tasks</h3><span></span></div>
@@ -3386,7 +3394,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       const P = prep, mine = team(), od = fightOdds(mine, P.foes);
       const edge = (m, others, mineSide) => { const e = SP[m.sp].el, up = others.some(o => mult(e, SP[o.sp].el) > 1), down = others.some(o => mult(SP[o.sp].el, e) > 1);
         return up && !down ? `<em class="pedge up" title="Strong here">\u25B2</em>` : down && !up ? `<em class="pedge dn" title="Weak here">\u25BC</em>` : ""; };
-      const mon2 = (m, mineSide) => `<div class="pmon">${art(m.sp, m.evo, 58)}${mineSide ? edge(m, P.foes) : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span><span class="pel" style="color:${EL[SP[m.sp].el].color}">${EL[SP[m.sp].el].name}</span>${gChip(m.q)}</div>`;
+      const mon2 = (m, mineSide) => `<div class="pmon">${art(m.sp, m.evo, 58)}${mineSide ? edge(m, P.foes) : ""}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span><span class="pel" style="color:${EL[SP[m.sp].el].color}">${EL[SP[m.sp].el].name}</span>${gChip(m.q)}</div>`;
       return `${back(P.back)}<h3>${P.title}</h3><span></span></div>
         <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><small class="ppow">Power ${teamPower(P.foes).toLocaleString("en")}${teamBonus(P.foes) ? ` \u00B7 ${teamBonus(P.foes).txt}` : ""}</small><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
           <div class="pvs">VS</div>
@@ -3772,7 +3780,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     let shown = false; const timers = [];
     const card = () => { if (shown) return; shown = true; timers.forEach(clearTimeout); sfx("claim");
       ov.classList.add("done");
-      ov.innerHTML = `<div class="hrays on"></div><div class="hcard q${m.q}" style="--gc:${GRADES[m.q].c}"><span class="hpow${m.q === 4 ? " q4" : ""}">${GRADES[m.q].name}</span><div class="hart">${art(m.sp, m.evo, 190)}</div><b>${fname(m.sp, m.evo)}</b><span class="hmeta"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>${EL[SP[m.sp].el].name} · Lv 1</span></div><p class="htap">Tap to close</p>`;
+      ov.innerHTML = `<div class="hrays on"></div><div class="hcard q${m.q}" style="--gc:${GRADES[m.q].c}"><span class="hpow${m.q === 4 ? " q4" : ""}">${GRADES[m.q].name}</span><div class="hart">${art(m.sp, m.evo, 190)}</div><b>${fname(m.sp, m.evo)}</b><span class="hmeta">${elDot(SP[m.sp].el)}${EL[SP[m.sp].el].name} · Lv 1</span></div><p class="htap">Tap to close</p>`;
       setTimeout(() => ov.addEventListener("click", () => { ov.remove(); render(); }, { once: true }), 400); };
     let started = !wait;
     ov.addEventListener("click", () => { if (!started) { started = true; ov.classList.remove("wait"); const p = ov.querySelector(".htap"); if (p) p.textContent = "Tap to hatch faster"; go(); } else if (!shown) card(); });
@@ -3820,7 +3828,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
   }
   function pageStart() {
-    return `<div class="head"><h2>Choose a buddy</h2></div><div class="starters">${[0, 3, 6].map(sp => `<button class="card starter" data-act="start:${sp}">${art(sp, 0, 84)}<span class="nmrow" style="font-size:16px">${SP[sp].name}</span><span class="el" style="background:${EL[SP[sp].el].color}"></span></button>`).join("")}</div>`;
+    return `<div class="head"><h2>Choose a buddy</h2></div><div class="starters">${[0, 3, 6].map(sp => `<button class="card starter" data-act="start:${sp}">${art(sp, 0, 84)}<span class="nmrow" style="font-size:16px">${SP[sp].name}</span>${elDot(SP[sp].el)}</button>`).join("")}</div>`;
   }
   function monCard(m, i, inTeam) {
     const s = SP[m.sp], cost = 5 + m.lvl * 3, b = [];
@@ -3830,7 +3838,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (inTeam && S.team.length > 1) b.push(`<button class="mb" data-act="den:${m.uid}">${IC.home}</button>`);
     if (!inTeam) b.push(`<button class="mb" data-act="join:${m.uid}" ${S.team.length >= slots() ? "disabled" : ""}>+ Team</button>`);
     if (!inTeam) b.push(`<button class="mb" data-act="release:${m.uid}">${confirmRelease === m.uid ? "Sure?" : "Release"} ${IC.glow}${5 * (m.q + 1)}</button>`);
-    return `<div class="card mon${inTeam && i === 0 ? " lead" : ""}">${art(m.sp, m.evo, 76)}<div class="info"><div class="nmrow">${fname(m.sp, m.evo)}${gChip(m.q)}<span class="el" style="background:${EL[s.el].color}"></span></div><div class="stats"><span>Lv ${m.lvl}</span><span>HP ${maxHp(m)}</span><span>ATK ${atk(m)}</span><span>DEF ${def(m)}</span></div><div class="mini-btns">${b.join("")}</div></div></div>`;
+    return `<div class="card mon${inTeam && i === 0 ? " lead" : ""}">${art(m.sp, m.evo, 76)}<div class="info"><div class="nmrow">${fname(m.sp, m.evo)}${gChip(m.q)}${elDot(s.el)}</div><div class="stats"><span>Lv ${m.lvl}</span><span>HP ${maxHp(m)}</span><span>ATK ${atk(m)}</span><span>DEF ${def(m)}</span></div><div class="mini-btns">${b.join("")}</div></div></div>`;
   }
   let sheetTab = "stats", sheetMulti = false, sheetShown = null;  // sheetShown: the Glumi whose page is already on screen
   let ladHelp = false;  // the Ladder rules text, opened from "?"
@@ -3871,14 +3879,14 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function teamSlot(i) {
     const m = team()[i];
     if (!m) return `<button class="slot empty${swapIn ? " swapping" : ""}" data-act="pickslot:${i}"><span class="plus">+</span><span class="cap">${swapIn ? "Put here" : "Empty spot"}</span></button>`;
-    return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${live(m.sp, m.evo, 78, { seed: i })}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span></button>`;
+    return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${live(m.sp, m.evo, 78, { seed: i })}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span></button>`;
   }
   function monTile(m) {  // a trading card (Tom 18 Nov)
     const s = SP[m.sp], tag = S.team[0] === m.uid ? "Leader" : S.team.includes(m.uid) ? "Team" : m.isNew ? "New" : (typeof workingAt === "function" && workingAt(m.uid)) ? "Working" : (typeof isAway === "function" && isAway(m.uid)) ? "Away" : "";
     return `<button class="tcard q${m.q}" data-act="sheet:${m.uid}" style="--gc:${GRADES[m.q].c};--ec:${EL[s.el].color}" aria-label="${nameOf(m)}, level ${m.lvl}">
       <span class="tpat"></span><span class="tpow" title="Power">${monPower(m)}</span>${tag ? `<span class="trib${tag === "Leader" ? " lead" : tag === "New" ? " new" : ""}">${tag}</span>` : ""}
       <span class="tart">${art(m.sp, m.evo, 99)}</span>
-      <span class="tfoot"><span class="tel" style="background:${EL[s.el].color}"></span>${m.fav ? '<span class="tfav">\u2665</span>' : ""}${m.lock ? `<span class="tlock">${IC.lock || ""}</span>` : ""}<span class="tlv">Lv.${m.lvl}</span></span>
+      <span class="tfoot">${ART[EL_ART[s.el]] ? `<span class="tel telic">${artIcon(EL_ART[s.el])}</span>` : `<span class="tel" style="background:${EL[s.el].color}"></span>`}${m.fav ? '<span class="tfav">\u2665</span>' : ""}${m.lock ? `<span class="tlock">${IC.lock || ""}</span>` : ""}<span class="tlv">Lv.${m.lvl}</span></span>
       ${m.stars ? `<span class="tstars">${"\u2605".repeat(m.stars)}</span>` : ""}</button>`;
   }
   let tq = "", bq = "", tEl = null, tQ = null, tSpare = false, cmpA = null;
@@ -3904,7 +3912,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   function filterPage() {
     return `<div class="sheethead"><button class="mb" data-act="tsub:list" aria-label="Back">\u2039 Back</button><h3>Filter</h3><span></span></div>
-      <h3 class="grouph">Element</h3><div class="lchips">${ELK.map(k => `<button class="lchip${tEl === k ? " on" : ""}" data-act="tel:${k}" style="--c:${EL[k].color}"><i></i>${EL[k].name}</button>`).join("")}</div>
+      <h3 class="grouph">Element</h3><div class="lchips">${ELK.map(k => `<button class="lchip${tEl === k ? " on" : ""}" data-act="tel:${k}" style="--c:${EL[k].color}">${ART[EL_ART[k]] ? `<i class="lic">${artIcon(EL_ART[k])}</i>` : "<i></i>"}${EL[k].name}</button>`).join("")}</div>
       <h3 class="grouph">Grade</h3><div class="lchips">${[1, 2, 3, 4].map(q => `<button class="lchip${tQ === q ? " on" : ""}" data-act="tq:${q}" style="--c:${GRADES[q].c}"><i></i>${GRADES[q].name}</button>`).join("")}</div>
       <h3 class="grouph">Other</h3><div class="lchips"><button class="lchip${tSpare ? " on" : ""}" data-act="tspare" style="--c:#8a6d55">Spares only</button></div>
       <div class="row" style="gap:8px;margin-top:6px"><button class="mb" data-act="tclear" ${filtersOn() ? "" : "disabled"}>Clear all</button><button class="mb gold" data-act="tsub:list">Show ${listMons().length} Glumis</button></div>`;
@@ -3948,7 +3956,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const mark = m => { const e = SP[m.sp].el, up = P.foes.some(o => mult(e, SP[o.sp].el) > 1), dn = P.foes.some(o => mult(SP[o.sp].el, e) > 1); return up && !dn ? '<em class="pedge up">\u25B2</em>' : dn && !up ? '<em class="pedge dn">\u25BC</em>' : ""; };
     const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<div class="popbg"></div><div class="popup pswap" role="dialog"><h3>${cur ? `Swap ${nameOf(cur)} for` : "Add to the team"}</h3>
-      <div class="pslist">${list.map(m => `<button class="pmon pspick" data-act="prepswap:${i}-${m.uid}">${art(m.sp, m.evo, 52)}${mark(m)}<span class="lv"><span class="el" style="background:${EL[SP[m.sp].el].color}"></span>Lv ${m.lvl}</span><small>${monPower(m).toLocaleString("en")}</small></button>`).join("") || '<p class="hint">No other Glumis.</p>'}</div>
+      <div class="pslist">${list.map(m => `<button class="pmon pspick" data-act="prepswap:${i}-${m.uid}">${art(m.sp, m.evo, 52)}${mark(m)}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span><small>${monPower(m).toLocaleString("en")}</small></button>`).join("") || '<p class="hint">No other Glumis.</p>'}</div>
       <div class="popbtns"><button class="mb" data-act="nickcancel">Cancel</button></div></div>`;
     document.body.appendChild(d);
   }
@@ -4044,7 +4052,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
              <button class="gx" data-act="lvpopen:${m.uid}" aria-label="Level up to any level" ${m.lvl < lvTop(m) ? "" : "disabled"}>\u2303\u2303</button></div>`;
       body = `<div class="gcard q${m.q}" style="--gc:${GRADES[m.q].c}">
           <span class="gpow">${power}</span><b class="gname">${m.nick || fname(m.sp, m.evo)}<button class="gnick" data-act="nickopen:${m.uid}" aria-label="Rename"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button></b>${where ? `<span class="gwhere">${where}</span>` : ""}
-          <span class="gtags"><span class="gel" style="background:${EL[s.el].color}">${EL[s.el].name}</span>${gChip(m.q)}</span>
+          <span class="gtags"><span class="gel" style="background:${EL[s.el].color}">${ART[EL_ART[s.el]] ? `<i class="gelic">${artIcon(EL_ART[s.el])}</i>` : ""}${EL[s.el].name}</span>${gChip(m.q)}</span>
           <div class="gart">${live(m.sp, m.evo, 210, { tap: 1 })}</div>
           <span class="gstars">${Array.from({ length: MAX_STARS }, (_, k) => `<i class="${k < (m.stars || 0) ? "on" : ""}">\u2605</i>`).join("")}</span>
           <span class="glv"><small>Lv.</small>${m.lvl}</span>
@@ -4609,7 +4617,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       const sp = atlasPin, s0 = SP[sp], boss = s0.tier === 3, has0 = S.caught[key(sp, 0)], has1 = s0.evo && S.caught[key(sp, 1)], known = has0 || S.seen[key(sp, 0)];
       const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Can appear on the path now" : `Appears once every Glumi here is caught (${caughtIn(z)} of ${Z.sp.length})`) : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
       info = `<div class="card pininfo lzinfo" data-act="atlaspin:${sp}"><div class="${known ? "" : "sil"}">${art(sp, 0, 70)}</div><div style="display:grid;gap:4px"><span class="nmrow">${known ? s0.name : "???"}</span>
-        <div class="tags" style="justify-content:flex-start"><span class="tag2"><span class="el" style="background:${EL[s0.el].color}"></span>${EL[s0.el].name}</span><span class="tag2">${TIER[s0.tier].name}</span></div>
+        <div class="tags" style="justify-content:flex-start"><span class="tag2">${elDot(s0.el)}${EL[s0.el].name}</span><span class="tag2">${TIER[s0.tier].name}</span></div>
         <span class="stats"><span>${status}</span></span>${s0.evo ? `<div class="forms"><span>${has0 ? "\u2713" : "\u25cb"} ${known ? s0.name : "???"}</span><span>\u2192</span><span>${has1 ? "\u2713 " + s0.evo : "\u25cb Evolved form"}</span></div>` : ""}</div></div>`;
     }
     const cards = ZONES.map((ZZ, i) => `<button class="zcard${i === z ? " sel" : ""}" data-act="atlaszone:${i}"><span class="zpic" style="--sky:${ZZ.sky[0]};--gr:${ZZ.ground}${ART["bg-" + i] ? `;background:url(${ART["bg-" + i]}) center 55%/cover` : ""}">
