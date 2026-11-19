@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795117338;</script>
+<script>window.GAME_BUILD = 1795118096;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1701,7 +1701,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .dpres b { font: 900 30px var(--display); text-align: center; padding: 0 20px; text-shadow: 0 3px 0 rgba(0,0,0,.35); } .dpres.win b { color: #ffd34d; } .dpres small { font: 900 40px var(--display); } .dpres em { font: 800 14px var(--display); font-style: normal; opacity: .85; }
 .olemofly { position: fixed; left: 50%; top: 40%; z-index: 99; transform: translateX(-50%); font: 900 54px var(--display); color: #fff; text-shadow: 0 3px 8px rgba(0,0,0,.35); pointer-events: none; animation: olemo 2.2s ease-out forwards; }
 @keyframes olemo { 0% { transform: translate(-50%, 30px) scale(.5); opacity: 0; } 15% { transform: translate(-50%, 0) scale(1.15); opacity: 1; } 75% { opacity: 1; } 100% { transform: translate(-50%, -90px) scale(1); opacity: 0; } }
-.amode .aimg.a-online { background-image: linear-gradient(135deg, #7fc8ff, #c49bff 60%, #ff9ad1); }
+.a-online { background-image: linear-gradient(135deg, #7fc8ff, #c49bff 60%, #ff9ad1); }
 /* ===== fixed pages fit a phone without scrolling (Tom 19 Nov) ===== */
 .prep { gap: 6px; } .prep .pel { display: none; } .pside { padding: 6px 8px; } .ptr { width: 38px; height: 60px; }
 .pvs { margin: -9px 0; font-size: 20px; } .podds { padding: 6px 12px; } .pbtns { flex-wrap: nowrap; } .pbtns .mb { padding: 0 14px; } .pbtns .pbig { padding: 0 26px; }
@@ -3943,7 +3943,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function paintCss() {  // zone paintings as backgrounds for the zone card, the Atlas card and the wide bottom tile (set once)
     if (zoneCss) return; zoneCss = true;
     const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
-      + [["a-online", "banner-online", "", "60% 45%"], ["a-gym", "banner-gyms", "bg-arena", "72% 55%"], ["a-duel", "banner-ladder", "bg-2", "70% 28%"], ["a-tower", "banner-cloud-climb", "bg-7", "78% 40%"], ["a-race", "banner-island-race", "bg-5", "78% 45%"]]
+      + [["a-online", "banner-online", "", "50% 50%"], ["a-gym", "banner-gyms", "bg-arena", "72% 55%"], ["a-duel", "banner-ladder", "bg-2", "70% 28%"], ["a-tower", "banner-cloud-climb", "bg-7", "78% 40%"], ["a-race", "banner-island-race", "bg-5", "78% 45%"]]
         .map(([c, b, z, pos]) => ART[b] ? `.aimg.${c}{background-image:url(${ART[b]});background-position:${pos}}` : ART[z] ? `.aimg.${c}{background-image:url(${ART[z]})}` : "").join("");
     const el = document.createElement("style"); el.textContent = r; document.body.appendChild(el);  // after the game style, wherever that is
   }
