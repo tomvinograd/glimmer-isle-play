@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795097739;</script>
+<script>window.GAME_BUILD = 1795098311;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -3606,6 +3606,19 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   // ================= SKY ENTRANCE =================
   const nightImg = ART["bg-night"] ? Object.assign(new Image(), { src: ART["bg-night"] }) : null;  // the night-sky painting for the falling-stars entrance, loaded at start
   const GRADE_TRAIL = ["#6fd38a", "#5aa8ff", "#a67cff", "#ffc94a", "#ff9ad1"];  // Green, Blue, Purple, Gold, Rainbow
+  let cometImg = null; const cometTint = {};  // Tom's painted comet, one tinted copy per grade
+  const COMET_HEAD = [752, 140], COMET_TAIL0 = 84;  // star centre and tail start in the 900x300 picture
+  function cometFor(q) {
+    if (!ART["fx-comet"]) return null; if (!cometImg) cometImg = Object.assign(new Image(), { src: ART["fx-comet"] });
+    if (!cometImg.complete || !cometImg.naturalWidth) return null; if (cometTint[q]) return cometTint[q];
+    const c = document.createElement("canvas"); c.width = cometImg.naturalWidth; c.height = cometImg.naturalHeight; const x = c.getContext("2d");
+    x.drawImage(cometImg, 0, 0); x.globalCompositeOperation = "multiply";
+    if (q === 4) { const g = x.createLinearGradient(0, 0, c.width, 0); ["#ff8a8a", "#ffc46b", "#8ae68a", "#7fc8ff", "#c49bff", "#ffd1ec"].forEach((col, k) => g.addColorStop(k / 5, col)); x.fillStyle = g; }
+    else x.fillStyle = GRADE_TRAIL[q];
+    x.fillRect(0, 0, c.width, c.height);
+    x.globalCompositeOperation = "lighter"; x.globalAlpha = .14; x.drawImage(cometImg, 0, 0);   // the white-hot core comes back
+    return cometTint[q] = c;
+  }
   let skyCloud = null; const skyCloudImg = () => skyCloud || (skyCloud = Object.assign(new Image(), { src: ART["fx-cloudbank"] }));
   function skyIntro(list) {
     return new Promise(done => {
@@ -3656,7 +3669,13 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
             let L = c.len * Math.min(1, .35 + p), fade = 1;
             if (t > 780) { fade = 1 - clamp((t - 780) / 380); L *= .4 + .6 * fade; }
             const tx = hx - dx * L, ty = hy - dy * L, nx = -dy, ny = dx, w = c.wid;
-            const col = GRADE_TRAIL[c.q];
+            const col = GRADE_TRAIL[c.q], art = cometFor(c.q);
+            if (art) {   // the painted comet, added as light
+              const sc = [.27, .29, .33, .4, .4][c.q] * Math.min(1.4, W / 360), [cx0, cy0] = COMET_HEAD, sx0 = Math.max(COMET_TAIL0, cx0 - L / sc);
+              ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = fade; ctx.translate(hx, hy); ctx.rotate(ANG);
+              ctx.drawImage(art, sx0, 0, art.width - sx0, art.height, -(cx0 - sx0) * sc, -cy0 * sc, (art.width - sx0) * sc, art.height * sc);
+              ctx.restore(); continue;
+            }
             ctx.save(); ctx.globalAlpha = fade;
             const g = c.q === 4 ? rainbow(0, tx, ty, hx, hy) : ctx.createLinearGradient(tx, ty, hx, hy);
             if (c.q !== 4) { g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(.6, col + "99"); g.addColorStop(1, col); }
