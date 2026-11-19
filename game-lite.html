@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795096137;</script>
+<script>window.GAME_BUILD = 1795096877;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -624,6 +624,12 @@ body.menubg .page::before { content: ""; position: absolute; inset: 0; z-index: 
   .actor.wildg:nth-child(2n) { animation-duration: 3.4s; } .actor.wildg:nth-child(3n) { animation-duration: 2.7s; }
   .cloudpad { position: relative; z-index: 2; width: 120%; height: 38px; margin-top: -26px; pointer-events: none;
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 44'><path d='M18 38c-10 0-14-10-6-15 0-9 11-13 18-8 3-9 17-12 24-4 6-9 23-8 27 2 7-5 20-2 21 7 9-1 15 6 12 12 8 3 6 12-3 12z' fill='%23ffffff' stroke='%23c9daf0' stroke-width='2'/><path d='M22 34c18 4 70 4 96 0' stroke='%23dbe7f6' stroke-width='3' fill='none' stroke-linecap='round'/></svg>") center / 100% 100% no-repeat; filter: drop-shadow(0 4px 4px rgba(110,140,185,.3)); }
+  .cloudback { display: none; }
+  body.cpad .actor.wildg > .spr { grid-row: 1; grid-column: 1; } body.cpad .actor.wildg > .tag { grid-row: 3; grid-column: 1; }
+  body.cpad .actor.wildg > .cloudpad, body.cpad .actor.wildg > .cloudback { display: block; grid-row: 2; grid-column: 1; width: 120%; height: auto; aspect-ratio: 360 / 163; margin-top: -25%;
+    background: var(--cloudpad) center / 100% 100% no-repeat; }
+  body.cpad .actor.wildg > .cloudback { position: relative; z-index: -1; filter: drop-shadow(0 5px 6px rgba(110,140,185,.35)); }
+  body.cpad .actor.wildg > .cloudpad { z-index: 2; filter: none; clip-path: polygon(0 32%, 22% 38%, 38% 44%, 50% 46%, 62% 44%, 78% 38%, 100% 32%, 100% 100%, 0 100%); }
   @keyframes cloudbob { 0%, 100% { margin-top: 0; } 50% { margin-top: -6px; } }
   .iscene { position: relative; aspect-ratio: 360 / 460; border-radius: 10px; overflow: hidden; box-shadow: 0 3px 12px rgba(91,70,54,.14); }
   .iscene .iland { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -1881,6 +1887,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (n === 4) document.body.classList.add("cards");
     if (ART["map-world"]) document.documentElement.style.setProperty("--wmap", `url(${ART["map-world"]})`);
     const t = document.querySelector("#splash .sp-title h1"); if (t && ART.logo) t.innerHTML = `<img class="splogo" src="${ART.logo}" alt="Glimmer Isle">`;
+    if (ART["fx-cloudpad"]) { document.documentElement.style.setProperty("--cloudpad", `url(${ART["fx-cloudpad"]})`); document.body.classList.add("cpad"); }
     const ld = document.getElementById("spDrop"); if (ld && ART["ui-loadbar"]) { ld.classList.add("loadstar"); ld.style.backgroundImage = `url(${ART["ui-loadbar"]})`; } }
   const ICON_ART = { glow: "ui-energy", coin: "ui-coin", leaf: "ui-leaf", fruit: "ui-moonfruit", treat: "ui-treat", keepsake: "ui-keepsake", core: "ui-star-core",
     lock: "ui-lock", crown: "ui-crown", gear: "ui-settings", map: "ui-map", lantern: "ui-lantern", sword: "ui-sword", flag: "ui-flag", auto: "ui-auto", fast: "ui-speed", home: "ui-home", chest: "item-chest" };
@@ -2836,7 +2843,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (!E) return "";
     if (E.type === "wild" && E.list.length > 1) {
       const n = E.list.length, POS = [[50, 50], [21, 56], [79, 56], [34, 67], [66, 67]], size = n === 2 ? 118 : 96;
-      return E.list.map((w, k) => `<div class="actor wildg${E.intro ? " intro" : ""}" id="wildActor${k}" style="left:${POS[k][0]}%;top:${POS[k][1]}%;--d:${introD(k)}s"><div class="spr"><div class="pop"><div class="idle" style="animation-delay:-${k * .37}s">${live(w.sp, w.evo, size, { seed: k })}</div></div></div><div class="cloudpad" style="animation-delay:-${k * .37}s"></div>
+      return E.list.map((w, k) => `<div class="actor wildg${E.intro ? " intro" : ""}" id="wildActor${k}" style="left:${POS[k][0]}%;top:${POS[k][1]}%;--d:${introD(k)}s"><div class="spr"><div class="pop"><div class="idle" style="animation-delay:-${k * .37}s">${live(w.sp, w.evo, size, { seed: k })}</div></div></div><div class="cloudpad" style="animation-delay:-${k * .37}s"></div><div class="cloudback"></div>
         <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span><span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span></div></div>`).join("")
         + (E.waves && E.waves.length ? `<div class="wavetag">Next wave: ${E.waves[0].length}</div>` : "");
     }
@@ -3583,9 +3590,11 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   // ================= SKY ENTRANCE =================
   const nightImg = ART["bg-night"] ? Object.assign(new Image(), { src: ART["bg-night"] }) : null;  // the night-sky painting for the falling-stars entrance, loaded at start
   const GRADE_TRAIL = ["#6fd38a", "#5aa8ff", "#a67cff", "#ffc94a", "#ff9ad1"];  // Green, Blue, Purple, Gold, Rainbow
+  let skyCloud = null; const skyCloudImg = () => skyCloud || (skyCloud = Object.assign(new Image(), { src: ART["fx-cloudbank"] }));
   function skyIntro(list) {
     return new Promise(done => {
-      const SPEED = S.auto ? 1.5 * autoSpd() / 2 : 1, END = 1950, W = innerWidth, H = innerHeight, dpr = Math.min(2, devicePixelRatio || 1);
+      const cloudImg = ART["fx-cloudbank"] ? skyCloudImg() : null, cloudOk = () => cloudImg && cloudImg.complete && cloudImg.naturalWidth;
+      const SPEED = S.auto ? 1.5 * autoSpd() / 2 : 1, END = cloudImg ? 2150 : 1950, W = innerWidth, H = innerHeight, dpr = Math.min(2, devicePixelRatio || 1);
       const cv = document.createElement("canvas"); cv.id = "skyfx"; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr); document.body.appendChild(cv);
       let seed = 1234567; const rr = () => (seed = seed * 16807 % 2147483647) / 2147483647;
@@ -3670,7 +3679,14 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
           }
         }
         // clouds open from the middle
-        if (t >= 1450) {
+        if (t >= 1450 && cloudOk()) {   // two painted cloud walls (picture + mirror) roll apart; the white behind them fades first
+          const u = clamp((t - 1450) / 680), cp = u * u * (3 - 2 * u);
+          ctx.globalAlpha = clamp(1 - u * 3); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+          const bh = H * (1.08 + .12 * cp), bw = cloudImg.naturalWidth * bh / cloudImg.naturalHeight, x0 = W * .6 + bw * .3, xr = x0 + (-W * .02 - x0) * cp;  // the wall's typical edge sits ~30% in from its tip: start past the middle, end off screen
+          ctx.drawImage(cloudImg, xr - bw, (H - bh) / 2 - H * .04 * cp, bw, bh);
+          ctx.save(); ctx.translate(W, 0); ctx.scale(-1, 1); ctx.drawImage(cloudImg, xr - bw, (H - bh) / 2 + H * .04 * cp + H * .03, bw, bh); ctx.restore();
+        }
+        else if (t >= 1450) {
           const u = clamp((t - 1450) / 480), cp = u * u * (3 - 2 * u), cx = W / 2, cy = H * .55, diag = Math.hypot(W, H);
           const R = diag * (.03 + .62 * cp), pr = 80 + 50 * cp;
           ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.moveTo(cx + R, cy); ctx.arc(cx, cy, R, 0, Math.PI * 2, true); ctx.closePath(); ctx.fill("evenodd");
