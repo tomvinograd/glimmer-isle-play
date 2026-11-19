@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795114129;</script>
+<script>window.GAME_BUILD = 1795114573;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1701,6 +1701,15 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .olemofly { position: fixed; left: 50%; top: 40%; z-index: 99; transform: translateX(-50%); font: 900 54px var(--display); color: #fff; text-shadow: 0 3px 8px rgba(0,0,0,.35); pointer-events: none; animation: olemo 2.2s ease-out forwards; }
 @keyframes olemo { 0% { transform: translate(-50%, 30px) scale(.5); opacity: 0; } 15% { transform: translate(-50%, 0) scale(1.15); opacity: 1; } 75% { opacity: 1; } 100% { transform: translate(-50%, -90px) scale(1); opacity: 0; } }
 .amode .aimg.a-online { background-image: linear-gradient(135deg, #7fc8ff, #c49bff 60%, #ff9ad1); }
+/* ===== fixed pages fit a phone without scrolling (Tom 19 Nov) ===== */
+.prep { gap: 6px; } .prep .pel { display: none; } .pside { padding: 6px 8px; } .ptr { width: 38px; height: 60px; }
+.pvs { margin: -9px 0; font-size: 20px; } .podds { padding: 6px 12px; } .pbtns { flex-wrap: nowrap; } .pbtns .mb { padding: 0 14px; } .pbtns .pbig { padding: 0 26px; }
+.olrow { padding-top: 4px !important; padding-bottom: 4px !important; } .olrow .gpic { height: 40px; } .olme { padding: 8px 12px; } .olme input { height: 34px; }
+.head .mgear { width: 40px; padding: 0; justify-content: center; } .head .mgear svg { width: 22px; height: 22px; }
+.stgrid { grid-template-columns: 1fr 1fr 1fr; gap: 6px; } .sttile { padding: 8px 9px; } .sttile b { font-size: 17px; } .sttile small { display: block; font-size: 11px; line-height: 1.2; }
+.gcard { height: 318px; } .gacts { min-height: 0 !important; } .gacts > * { min-height: 0 !important; padding-top: 3px !important; padding-bottom: 3px !important; } .gcbars { gap: 3px !important; } .sheet .btns .big2 { padding-top: 8px; padding-bottom: 8px; }
+.gpair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .gpair .gcharm { min-width: 0; padding-left: 8px; padding-right: 8px; gap: 6px; } .gpair .gcharm > i { display: none; } .gpair .gct { min-width: 0; } .gpair .gct b, .gpair .gct small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mtiles { gap: 8px !important; } .mtile { padding: 10px 4px 8px !important; } .olrow .gpic { height: 36px !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3471,7 +3480,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
           <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}${teamBonus(mine) ? ` \u00B7 <span class="ptb">${teamBonus(mine).txt}</span>` : ""}</small><div class="pmons">${[0, 1, 2].map(i => mine[i] ? `<button class="pmbtn" data-act="prepslot:${i}" aria-label="Swap ${nameOf(mine[i])}">${mon2(mine[i], true)}</button>` : `<button class="pmbtn padd" data-act="prepslot:${i}" aria-label="Add a Glumi">+</button>`).join("")}</div></div></div></div>
         ${P.note ? `<p class="hint pnote">${P.note}</p>` : ""}${od ? `<div class="podds ${od.cls}"><span>Forecast</span><b>${od.label}</b><div class="pobar"><i style="width:${od.fill}%"></i></div></div>` : ""}
         ${P.rewards.length ? `<div class="prew"><span>Reward</span>${rchips(P.rewards)}</div>` : `<p class="hint" style="margin:0">Already beaten: no reward this time.</p>`}
-        <div class="pbtns"><button class="mb" data-act="view:team">Change team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick battle</button>` : ""}</div>`;
+        <div class="pbtns"><button class="mb" data-act="view:team">Team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick</button>` : ""}</div>`;
     }
     if (arenaSub === "gym") {
       const z = gymZ, d = gymD, Z = ZONES[z], open = ZONES.map((_, i) => i).filter(zoneOpen);
@@ -3517,7 +3526,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
         return `<div class="cnode ${side(x)} ${st}"><span class="cimg">${trainerSVG(TCOLORS[x % TCOLORS.length], false)}${st === "done" ? '<em class="cok">\u2713</em>' : st === "lock" ? `<em class="clock">${IC.lock}</em>` : ""}</span><span class="cnum">${x}</span><span class="rchips">${rchips(climbRewards(x))}</span></div>`; };
       return `${back("hub")}<h3>Cloud Climb</h3><span></span></div>
         <div class="climb"><svg class="cpath" viewBox="0 0 100 400" preserveAspectRatio="none"><path d="M30 0 C 90 60, 90 90, 70 130 S 10 200, 30 260 S 90 340, 70 400" fill="none" stroke="#e8d7bd" stroke-width="3" stroke-dasharray="2 4"/></svg>
-          ${[f + 1, f, f - 1, f - 2].filter(x => x >= 1).map(node).join("")}</div>
+          ${[f + 1, f, f - 1].filter(x => x >= 1).map(node).join("")}</div>
         <div class="cbtns"><button class="mb gold pbig" data-act="${S.climbAuto ? "climbauto" : "towergo"}" ${climbing ? "disabled" : ""}>${climbing ? "Climbing..." : "Challenge"}</button>
           <button class="swrow mini" data-act="climbswitch" role="switch" aria-checked="${!!S.climbAuto}"><span><b>Auto</b></span><i class="sw${S.climbAuto ? " on" : ""}"><em></em></i></button></div>
         <p class="hint" style="margin:0">Best: floor ${S.tower || 0}. Every 5th floor gives a star jar and energy. Auto keeps climbing with quick battles until a loss.</p>`;
@@ -3892,7 +3901,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (settingsPage) return pageSettings();
     const z = S.zone, openN = ZONES.filter((_, i) => zoneOpen(i)).length, reqs = Array.isArray(S.requests) ? S.requests : [];
     const reqCan = reqs.some(r => !r.done && reqMatches(r).length);
-    return `<div class="head"><h2>Menu</h2></div>
+    return `<div class="head"><h2>Menu</h2><button class="mb mgear" data-act="settings:main" aria-label="Settings">${IC.gear}</button></div>
       <button class="mcard soft claimall" data-act="claimall"><span class="mic">${IC.gift || IC.star}</span><span><b>Claim all</b><small>${claimReady() ? "Rewards waiting" : "Every ready reward in one tap"}</small></span>${claimReady() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard wide z${z}" data-act="map"><span><b>Atlas</b><small>${openN} of ${ZONES.length} zones open</small></span></button>
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
@@ -3900,7 +3909,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       <div class="mrow"><button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} waiting` : "Update gifts"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
       <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>${S.shards || 0} star shards</small></span></button></div>
       ${(() => { const ev = eventNow(); return ev ? `<div class="evcard"><b>${ev.name}</b><small>${ev.about} \u00B7 ends in ${mmss(ev.end - Date.now())}</small></div>` : ""; })()}
-      <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="olgo:olfriends">${IC.gift || IC.star}<span>Friends</span>${olWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="settings:main">${IC.gear}<span>Settings</span></button></div>`;
+      <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="olgo:olfriends">${IC.gift || IC.star}<span>Friends</span>${olWaiting() ? '<em class="bang">!</em>' : ""}</button></div>`;
   }
   function pageStart() {
     return `<div class="head"><h2>Choose a buddy</h2></div><div class="starters">${[0, 3, 6].map(sp => `<button class="card starter" data-act="start:${sp}">${art(sp, 0, 84)}<span class="nmrow" style="font-size:16px">${SP[sp].name}</span>${elDot(SP[sp].el)}</button>`).join("")}</div>`;
@@ -4087,7 +4096,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     const stats = `<div class="stats2">${statBar("HP", maxHp(m), 260, "#43c59e")}${statBar("Attack", atk(m), 70, "#ff8a4c")}${statBar("Defense", def(m), 60, "#5aa8ff")}</div>`;
     let body;
     if (sheetPage === "level") body = `${back("Level up")}${mini}${stats}
-      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a Glumi must ascend to keep growing. Ascending costs ${s.name} keepsakes (you have ${keeps}); past level 100 it also takes Glimmerstones (you have ${S.gstone || 0}).</p>
+      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a Glumi must ascend: ${s.name} keepsakes (you have ${keeps}), past level 100 also Glimmerstones (${S.gstone || 0}).</p>
       <div class="btns">${L.join("")}</div>`;
     else if (sheetPage === "stars") {
       const next = st < MAX_STARS ? Object.assign({}, m, { stars: st + 1 }) : null;
@@ -4121,7 +4130,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
              ${[["Attack", atk(m), 70, IC.sword], ["Defense", def(m), 60, IC.flag], ["HP", maxHp(m), 260, IC.heart || IC.star], ["Work", Math.round(workBest), 30, IC.home]].map(([n, v, mx, ic]) =>
                `<div class="gcbar"><span class="gcbi">${ic}</span><b>${n}</b><span class="gctrack"><i style="width:${Math.min(100, v / mx * 100)}%"></i></span><em>${v}${n === "Work" ? "/h" : ""}</em></div>`).join("")}
            </div><button class="gcnav" data-act="sheetnav:1" aria-label="Next Glumi">\u203A</button></div>
-           ${charmRow(m)}<button class="gcharm cmpbtn" data-act="cmpstart:${m.uid}"><span class="gci"><svg viewBox="0 0 24 24" fill="none" stroke="#8a6d55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span><span class="gct"><b>Compare</b><small>Side by side with another Glumi</small></span><i>\u203A</i></button><div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
+           <div class="gpair">${charmRow(m)}<button class="gcharm cmpbtn" data-act="cmpstart:${m.uid}"><span class="gci"><svg viewBox="0 0 24 24" fill="none" stroke="#8a6d55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span><span class="gct"><b>Compare</b><small>With another Glumi</small></span><i>\u203A</i></button></div><div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
              ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
              ${bigBtn}
              <button class="gx" data-act="lvpopen:${m.uid}" aria-label="Level up to any level" ${m.lvl < lvTop(m) ? "" : "disabled"}>\u2303\u2303</button></div>`;
@@ -5696,8 +5705,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
         ${row("olduel", "Live duel", "Best of 3 with a friend, live", 0, IC.sword)}
         ${row("oltrade", "Trade", "Swap a spare Glumi with a friend, live", 0, '<b class="olswap">⇄</b>')}</div>
       <button class="mcard soft" data-act="olideas"><span class="mic">${IC.star}</span><span><b>Suggest an idea</b><small>Goes straight to the game maker</small></span></button>
-      <button class="swrow" data-act="olsharesw" role="switch" aria-checked="${!!O.share}"><span><b>Share my team</b><small>Other players can meet your team in the Ladder and your friends can battle it</small></span><i class="sw${O.share ? " on" : ""}"><em></em></i></button>
-      <p class="hint">Online features use a free public message service. Only your name, friend code and team are shared.</p>`;
+      <button class="swrow" data-act="olsharesw" role="switch" aria-checked="${!!O.share}"><span><b>Share my team</b><small>Players meet it in the Ladder; friends can battle it</small></span><i class="sw${O.share ? " on" : ""}"><em></em></i></button>
+      <p class="hint">Only your name, friend code and team are shared, through a free public message service.</p>`;
   }
   // ---------- taps ----------
   document.addEventListener("click", e => {
