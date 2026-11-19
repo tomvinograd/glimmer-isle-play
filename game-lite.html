@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795118096;</script>
+<script>window.GAME_BUILD = 1795118198;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -3301,6 +3301,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   const CODES = { GLUMI: { k: "coins", n: 100 }, STARJAR: { k: "star", n: 1 }, MOONFRUIT: { k: "fruit", n: 1 }, GLOWUP: { k: "glow", n: 50 } };
   function redeem(code) {
     code = (code || "").trim().toUpperCase(); if (!S.codes) S.codes = {};
+    if (code === "ROCK") {  // test code (Tom 19 Nov): put a rock to mine on the path, any time, as often as wanted
+      if (E || BT || busy) { toast("Finish what's on the path first"); return; }
+      S.auto = false; autoSession = false; view = "explore"; settingsPage = null; showMap = false; showAuto = false;
+      E = { type: "gather", kind: "ore", n: rnd(5, 10) * curM().m }; render(); setTimeout(() => { try { findLands(); } catch {} }, 60); toast("A rock to mine is on the path"); return; }
     const r = CODES[code]; if (!r) { toast("That code doesn't work"); return; } if (S.codes[code]) { toast("Already used"); return; }
     S.codes[code] = 1; giveReward(r); sfx("claim"); save(); toast(`Got ${r.n} ${RW[r.k][1]}`); render();
   }
