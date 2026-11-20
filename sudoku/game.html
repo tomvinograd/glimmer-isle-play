@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795164564;</script>
+<script>window.GAME_BUILD = 1795168550;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -99,7 +99,13 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
   padding-block: 20px calc(20px + env(safe-area-inset-bottom, 0px)); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
   display: flex; flex-direction: column; gap: 16px; animation: up .25s cubic-bezier(.2,1,.4,1); max-height: 92%; overflow-y: auto; }
 @keyframes up { from { transform: translateY(40%); opacity: 0; } }
-.sheet.still, .scrim.still { animation: none; }   /* a sheet redrawn in place doesn't slide in again (see the layer watcher) */
+.sheet.still, .scrim.still { animation: none; }
+/* the X in the corner of every sheet (Tom 20 Nov: a close button on every popup); sticky so it stays reachable when a long sheet scrolls */
+.xclose { position: sticky; top: 0; z-index: 3; flex: none; align-self: flex-end; width: 40px; height: 40px; margin-block: -8px -48px; margin-inline: auto -8px;
+  display: grid; place-items: center; border-radius: 50%; background: var(--btn); color: var(--ink); box-shadow: 0 1px 3px var(--shade); }
+.xclose:active { background: var(--btn-press); }
+.sheet > h2 { padding-inline-end: 36px; } .sheet > .winhead { padding-inline: 36px; }
+.news .nx { flex: none; width: 32px; height: 32px; padding: 0; display: grid; place-items: center; border-radius: 50%; background: transparent; color: var(--bg); }   /* a sheet redrawn in place doesn't slide in again (see the layer watcher) */
 .sheet h2 { margin: 0; font-size: 20px; font-weight: 800; }
 .lvbig { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .lvbig b { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
@@ -558,6 +564,7 @@ input { user-select: text; -webkit-user-select: text; }
 .ncc b { font-size: calc(var(--cell) * .5); font-weight: 600; color: var(--user); }
 .ncc.peer { background: var(--peer); } .ncc.same { background: var(--same); } .ncc.sel { background: var(--sel); }
 .ncc.clash b { color: var(--err); }
+.ncc.cbad { background: color-mix(in srgb, var(--err) 14%, var(--paper)); } .ncc.cbad small { color: var(--err); }   /* a full cage with the wrong sum */
 .ncc.won { animation: wave .5s ease-out both; }
 .nkp button { font-size: calc(28px * var(--fs)); }
 
@@ -1083,6 +1090,21 @@ new MutationObserver(ms => {
   if (!ms.some(m => [...m.removedNodes].some(n => n.classList && (n.classList.contains("sheet") || n.classList.contains("scrim"))))) return;
   layer.querySelectorAll(":scope > .sheet, :scope > .scrim").forEach(e => e.classList.add("still"));
 }).observe(layer, { childList: true });
+// Every sheet gets an X in its corner that does what the sheet's own Back/Close/Done does, or else what the phone's back button does.
+// Only "please wait" sheets (making a puzzle, checking who was first) have none: they close by themselves in a moment.
+const X_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>';
+new MutationObserver(() => {
+  const s = layer.querySelector(":scope > .sheet");
+  if (!s || s.querySelector(":scope > .xclose") || sheet === "making" || sheet === "vschk") return;
+  const b = document.createElement("button"); b.className = "xclose"; b.setAttribute("aria-label", "Close"); b.innerHTML = X_SVG;
+  b.onclick = sheetX; s.prepend(b);
+}).observe(layer, { childList: true });
+function sheetX() {
+  const own = layer.querySelector(".sheet [data-close]") || layer.querySelector("[data-close]");
+  if (own) { own.click(); return; }
+  if (sheet === "vswait") { $("vscancel").click(); return; }
+  if (window.appBack) window.appBack();
+}
 function closeSheet() { sheet = null; layer.innerHTML = ""; }
 // Draw a sheet. While a level bar is being dragged (keepId), everything else in the open sheet is replaced but the bar itself
 // stays: replacing the bar under the finger ends the drag, so it could only move one step at a time (Tom, 20 Nov).
@@ -1091,8 +1113,9 @@ function setSheet(html, keepId) {
   if (!cur || !live || !cur.contains(live)) { layer.innerHTML = html; return; }
   const tmp = document.createElement("div"); tmp.innerHTML = html;
   const fresh = tmp.querySelector(".sheet");
-  if (!fresh || fresh.children.length !== cur.children.length) { layer.innerHTML = html; return; }
-  [...cur.children].forEach((el, i) => { if (el !== live) el.replaceWith(fresh.children[i].cloneNode(true)); });
+  const kids = [...cur.children].filter(el => !el.classList.contains("xclose"));   // the X is added after drawing (see above)
+  if (!fresh || fresh.children.length !== kids.length) { layer.innerHTML = html; return; }
+  kids.forEach((el, i) => { if (el !== live) el.replaceWith(fresh.children[i].cloneNode(true)); });
 }
 function openNew() {
   sheet = "new"; newMode = "solo"; pickLv = G ? G.level : opts.level; drawNew();
@@ -1504,7 +1527,9 @@ let vlog = [], vseen = new Set(), vlast = "", ves = null, vready = false, vconn 
 let vpTimer = 0, vpSent = "", vpLast = 0, vFullTold = false;
 
 function toast(html) {
-  const n = document.createElement("div"); n.className = "news" + (sheet ? " attop" : ""); n.setAttribute("role", "status");
+  // at the top while a sheet is open or a game is being played, so it never covers buttons or the number keys
+  let playing = false; try { playing = mgView === "play" || (!homeOn && !!G && !G.done); } catch (e) {}
+  const n = document.createElement("div"); n.className = "news" + (sheet || playing ? " attop" : ""); n.setAttribute("role", "status");
   n.innerHTML = `<div><span>${html}</span></div><button>OK</button>`;
   n.querySelector("button").onclick = () => n.remove(); document.body.appendChild(n); setTimeout(() => n.remove(), 7000);
 }
@@ -2038,7 +2063,7 @@ Object.assign(HE_TEXT, {
   "Word list": "רשימת המילים", "Hidden: you know the theme and how many words, not which ones.": "מוסתרת: יודעים את הנושא וכמה מילים, אבל לא אילו.", "Show": "להציג", "Hide (harder)": "להסתיר (קשה יותר)",
   "Show mistakes": "הצגת טעויות", "A square filled by mistake turns into a red ✕ straight away.": "ריבוע שמולא בטעות הופך מיד ל-✕ אדום.", "Cross out finished lines": "סימון ✕ בשורות שהושלמו",
   "When a line matches its numbers, its other squares get a ✕.": "כששורה מתאימה למספרים שלה, שאר הריבועים בה מקבלים ✕.", "Same number twice in a line shows red": "אותו מספר פעמיים בשורה מוצג באדום",
-  "Shade the cage of the selected square": "הצללת הכלוב של הריבוע הנבחר", "Find every pair before the time runs out.": "מצאו את כל הזוגות לפני שהזמן נגמר.", "A wrong pair stays open": "זוג שגוי נשאר פתוח",
+  "Shade the cage of the selected square": "הצללת הכלוב של הריבוע הנבחר", "Mistakes show red (same number twice in a line, a full cage that doesn't add up)": "טעויות מוצגות באדום (אותו מספר פעמיים בשורה, כלוב מלא שלא מסתכם נכון)", "All squares are filled, but it isn't solved yet: some cages don't add up and a number repeats in a line.": "כל הריבועים מלאים, אבל זה עוד לא פתור: יש כלובים שלא מסתכמים נכון ומספר שחוזר בשורה.", "All squares are filled, but it isn't solved yet: some cages don't add up to their number.": "כל הריבועים מלאים, אבל זה עוד לא פתור: יש כלובים שלא מסתכמים למספר שלהם.", "All squares are filled, but it isn't solved yet: a number repeats in a row or column.": "כל הריבועים מלאים, אבל זה עוד לא פתור: מספר חוזר בשורה או בעמודה.", "Find every pair before the time runs out.": "מצאו את כל הזוגות לפני שהזמן נגמר.", "A wrong pair stays open": "זוג שגוי נשאר פתוח",
   "Pictures": "תמונות",
   // shopping items
   "Apples": "תפוחים", "Bananas": "בננות", "Grapes": "ענבים", "Strawberries": "תותים", "Lemons": "לימונים", "Watermelon": "אבטיח", "Pineapple": "אננס", "Carrots": "גזרים", "Corn": "תירס",
@@ -3176,13 +3201,16 @@ addGame({
     const kp = document.createElement("div"); kp.className = "kpad nkp"; kp.style.gridTemplateColumns = `repeat(${n <= 4 ? n + 1 : Math.ceil((n + 1) / 2)}, 1fr)`;
     kp.innerHTML = range(n).map(d => `<button data-k="${d + 1}">${d + 1}</button>`).join("") + `<button data-k="0" aria-label="Erase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/></svg></button>`;
     kp.querySelectorAll("button").forEach(b => b.onclick = () => put(+b.dataset.k)); c.foot.appendChild(kp);
+    // a full cage whose numbers don't add up to its sum (Tom 20 Nov: a filled grid with a wrong cage just sat there)
+    const cageBad = () => P.cages.map(k => k.cells.every(i => vals[i]) && k.cells.reduce((a, i) => a + vals[i], 0) !== k.sum);
     function draw() {
-      const sv = sel >= 0 ? vals[sel] : 0;
+      const sv = sel >= 0 ? vals[sel] : 0, bad = cageBad();
       els.forEach((b, i) => {
         const r = Math.floor(i / n), col = i % n, v = vals[i];
         let clash = false; if (v) for (let j = 0; j < n; j++) { if (j !== col && vals[r * n + j] === v) clash = true; if (j !== r && vals[j * n + col] === v) clash = true; }
         b.classList.toggle("sel", i === sel); b.classList.toggle("peer", showCage && sel >= 0 && i !== sel && (P.cage[i] === P.cage[sel]));
         b.classList.toggle("same", !!sv && v === sv && i !== sel); b.classList.toggle("clash", showClash && clash);
+        b.classList.toggle("cbad", showClash && bad[P.cage[i]]);
         b.querySelector("b").textContent = v || "";
       });
       c.stat(`<span>Filled <b>${vals.filter(v => v).length} of ${n * n}</b></span><span>${n}×${n}</span>`);
@@ -3192,6 +3220,10 @@ addGame({
       vals[sel] = v; sfx(v ? "tap" : "note"); draw();
       if (vals.every((x, i) => x === P.sol[i])) { mode = "over"; sel = -1; draw(); els.forEach(e => e.classList.add("won")); sfx("group");
         c.later(() => c.done({ score: c.secs(), up: c.secs() <= 90 * c.lv, good: true, title: "Solved!", lines: [[fmt(c.secs()), "Time"], [`${n}×${n}`, "Size"], [P.cages.length, "Cages"]] }), 1200); }
+      else if (v && vals.every(x => x)) {   // every square filled but not solved: tell what is wrong
+        const sumBad = cageBad().some(x => x), lineBad = range(n * n).some(i => { const r = Math.floor(i / n), col = i % n; for (let j = 0; j < n; j++) if ((j !== col && vals[r * n + j] === vals[i]) || (j !== r && vals[j * n + col] === vals[i])) return true; return false; });
+        sfx("lose"); toast(sumBad && lineBad ? "All squares are filled, but it isn't solved yet: some cages don't add up and a number repeats in a line." : sumBad ? "All squares are filled, but it isn't solved yet: some cages don't add up to their number." : "All squares are filled, but it isn't solved yet: a number repeats in a row or column.");
+      }
     }
     draw();
   },
@@ -3252,7 +3284,7 @@ MGI.nonogram.settings = [
   { key: "autox", label: "Cross out finished lines", help: "When a line matches its numbers, its other squares get a ✕.", opts: [[1, "Yes"], [0, "No"]], def: 1 },
 ];
 MGI.cages.settings = [
-  { key: "clash", label: "Same number twice in a line shows red", opts: [[1, "Yes"], [0, "No"]], def: 1 },
+  { key: "clash", label: "Mistakes show red (same number twice in a line, a full cage that doesn't add up)", opts: [[1, "Yes"], [0, "No"]], def: 1 },
   { key: "cage", label: "Shade the cage of the selected square", opts: [[1, "Yes"], [0, "No"]], def: 1 },
 ];
 
@@ -3305,7 +3337,9 @@ function openSuggest() {
 const UPDATES = [
   { d: "2026-11-20", t: ["Daily puzzle: pick your level", "פאזל יומי: בחרו רמה"], b: [["Tap Daily puzzle and choose any level, from Beginner to Extreme. Your choice is kept for the next days.", "הקישו על פאזל יומי ובחרו כל רמה, ממתחילים ועד קיצוני. הבחירה נשמרת לימים הבאים."],
     ["Every level has its own daily puzzle, the same for everyone who picks it, and friends' times are shown per level.", "לכל רמה יש פאזל יומי משלה, אותו פאזל לכל מי שבוחר בה, והזמנים של החברים מוצגים לפי רמה."],
-    ["Windows no longer slide down and up again when you move a bar or tap a choice in them.", "חלונות כבר לא יורדים ועולים שוב כשמזיזים בהם פס או בוחרים אפשרות."]] },
+    ["Windows no longer slide down and up again when you move a bar or tap a choice in them.", "חלונות כבר לא יורדים ועולים שוב כשמזיזים בהם פס או בוחרים אפשרות."],
+    ["Every window has an X in its corner to close it.", "לכל חלון יש X בפינה לסגירה."],
+    ["Number cages: a full cage that doesn't add up to its number shows red, and a filled grid that isn't right yet says what's wrong.", "כלובי מספרים: כלוב מלא שלא מסתכם למספר שלו מוצג באדום, ולוח מלא שעוד לא נכון אומר מה לא בסדר."]] },
   { d: "2026-11-19", t: ["What's new", "מה חדש"], b: [["This page: after every update, read here what was added.", "העמוד הזה: אחרי כל עדכון אפשר לקרוא כאן מה נוסף."]] },
   { d: "2026-11-19", t: ["Hebrew", "עברית"], b: [["The whole app in Hebrew, right to left: Settings → Language.", "כל האפליקציה בעברית, מימין לשמאל: הגדרות ← שפה."],
     ["Story questions, Anagrams and Word search have their own Hebrew stories and words.", "לשאלות על סיפור, לאותיות מבולבלות ולתפזורת יש סיפורים ומילים משלהם בעברית."]] },
@@ -3365,6 +3399,7 @@ window.appBack = () => {
   if (sheet === "whatsnew") { closeSheet(); if (homeOn) showHome(); return true; }
   if (sheet === "suggest") { closeSheet(); if (homeOn) showHome(); return true; }
   if (sheet === "mghelp") { closeSheet(); return true; }
+  if (sheet === "mgset") { closeSheet(); mgIntro(); return true; }
   if (sheet === "mgres") { $("mgmenu").click(); return true; }
   if (!sheet && mgView === "play") { mgIntro(); return true; }
   if (!sheet && mgView === "intro") { mgClose(); return true; }
@@ -3428,7 +3463,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = () => isHe() ? "חלונות כבר לא קופצים כשמזיזים את פס הרמה." : "Windows no longer jump when you move the level bar.";   // change with each update (and add it to UPDATES in game/src/games.js)
+const NEWS = () => isHe() ? "לכל חלון יש X בפינה, ובכלובי מספרים טעות בכלוב מוצגת באדום." : "Every window has an X in its corner, and Number cages now shows a cage that doesn't add up.";   // change with each update (and add it to UPDATES in game/src/games.js)
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
@@ -3447,8 +3482,8 @@ if (V) { vsConnect(); if (counting()) vsCount(); }
 if (window.GAME_BUILD) {
   if (hadSave && opts.seenBuild !== window.GAME_BUILD) {
     const n = document.createElement("div"); n.className = "news"; n.setAttribute("role", "status");
-    n.innerHTML = `<div><b>Updated!</b><span data-notr>${NEWS()}</span></div><button>What's new</button>`;
-    n.querySelector("button").onclick = () => { n.remove(); openWhatsNew(); }; document.body.appendChild(n); setTimeout(() => n.remove(), 12000);
+    n.innerHTML = `<div><b>Updated!</b><span data-notr>${NEWS()}</span></div><button class="nw">What's new</button><button class="nx" aria-label="Close">${X_SVG}</button>`;
+    n.querySelector(".nw").onclick = () => { n.remove(); openWhatsNew(); }; n.querySelector(".nx").onclick = () => n.remove(); document.body.appendChild(n); setTimeout(() => n.remove(), 12000);
   }
   opts.seenBuild = window.GAME_BUILD; save();
 }
