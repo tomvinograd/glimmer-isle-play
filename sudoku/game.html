@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795162895;</script>
+<script>window.GAME_BUILD = 1795163761;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -99,6 +99,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); ou
   padding-block: 20px calc(20px + env(safe-area-inset-bottom, 0px)); padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
   display: flex; flex-direction: column; gap: 16px; animation: up .25s cubic-bezier(.2,1,.4,1); max-height: 92%; overflow-y: auto; }
 @keyframes up { from { transform: translateY(40%); opacity: 0; } }
+.sheet.still, .scrim.still { animation: none; }   /* a sheet redrawn in place doesn't slide in again (see the layer watcher) */
 .sheet h2 { margin: 0; font-size: 20px; font-weight: 800; }
 .lvbig { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .lvbig b { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
@@ -1075,6 +1076,13 @@ function confetti(big) {
 
 /* ---------- sheets ---------- */
 const layer = $("layer");
+// Sheets are drawn by replacing the whole layer, also when a slider moves or a chip/tab is tapped inside an open sheet.
+// Only a sheet that opens on an empty layer slides in; one that replaces a sheet already showing appears in place.
+// (The watcher runs before the screen is painted, so the slide never starts.)
+new MutationObserver(ms => {
+  if (!ms.some(m => [...m.removedNodes].some(n => n.classList && (n.classList.contains("sheet") || n.classList.contains("scrim"))))) return;
+  layer.querySelectorAll(":scope > .sheet, :scope > .scrim").forEach(e => e.classList.add("still"));
+}).observe(layer, { childList: true });
 function closeSheet() { sheet = null; layer.innerHTML = ""; }
 function openNew() {
   sheet = "new"; newMode = "solo"; pickLv = G ? G.level : opts.level; drawNew();
@@ -3286,7 +3294,8 @@ function openSuggest() {
    Add an entry at the top with every update that players would notice (and change NEWS in index.html). */
 const UPDATES = [
   { d: "2026-11-20", t: ["Daily puzzle: pick your level", "פאזל יומי: בחרו רמה"], b: [["Tap Daily puzzle and choose any level, from Beginner to Extreme. Your choice is kept for the next days.", "הקישו על פאזל יומי ובחרו כל רמה, ממתחילים ועד קיצוני. הבחירה נשמרת לימים הבאים."],
-    ["Every level has its own daily puzzle, the same for everyone who picks it, and friends' times are shown per level.", "לכל רמה יש פאזל יומי משלה, אותו פאזל לכל מי שבוחר בה, והזמנים של החברים מוצגים לפי רמה."]] },
+    ["Every level has its own daily puzzle, the same for everyone who picks it, and friends' times are shown per level.", "לכל רמה יש פאזל יומי משלה, אותו פאזל לכל מי שבוחר בה, והזמנים של החברים מוצגים לפי רמה."],
+    ["Windows no longer slide down and up again when you move a bar or tap a choice in them.", "חלונות כבר לא יורדים ועולים שוב כשמזיזים בהם פס או בוחרים אפשרות."]] },
   { d: "2026-11-19", t: ["What's new", "מה חדש"], b: [["This page: after every update, read here what was added.", "העמוד הזה: אחרי כל עדכון אפשר לקרוא כאן מה נוסף."]] },
   { d: "2026-11-19", t: ["Hebrew", "עברית"], b: [["The whole app in Hebrew, right to left: Settings → Language.", "כל האפליקציה בעברית, מימין לשמאל: הגדרות ← שפה."],
     ["Story questions, Anagrams and Word search have their own Hebrew stories and words.", "לשאלות על סיפור, לאותיות מבולבלות ולתפזורת יש סיפורים ומילים משלהם בעברית."]] },
@@ -3409,7 +3418,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = () => isHe() ? "חדש: בפאזל היומי אפשר לבחור רמת קושי." : "New: pick how hard the daily puzzle is.";   // change with each update (and add it to UPDATES in game/src/games.js)
+const NEWS = () => isHe() ? "חלונות כבר לא קופצים כשמזיזים את פס הרמה." : "Windows no longer jump when you move the level bar.";   // change with each update (and add it to UPDATES in game/src/games.js)
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
