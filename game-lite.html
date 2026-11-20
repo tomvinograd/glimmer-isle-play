@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795170397;</script>
+<script>window.GAME_BUILD = 1795170946;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1875,6 +1875,12 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
 /* shop cards: a long price never sticks out of its card */
 .scard { min-width: 0; }
 .scard .price { flex-wrap: wrap; gap: 2px 4px; padding-left: 6px; padding-right: 6px; min-width: 0; max-width: 100%; box-sizing: border-box; }
+
+/* decorated insides (Tom 20 Nov): frame pictures with an open middle, the paper pattern shows through */
+.paperart #page { border-width: 20px; border-image: var(--art-pframe) 96 fill / 50px / 0 stretch;
+  background: var(--art-ppage) 0 0 / 187px auto repeat, #fbf2de; background-clip: padding-box; background-origin: padding-box; }
+.paperart .popwrap .popup, .paperart .popwrap .popup.gift, .paperart .qres { border-width: 20px; border-image: var(--art-frame) 68 fill / 48px / 0 stretch;
+  background: var(--art-ppop) 0 0 / 150px auto repeat, #fbf2de; background-clip: padding-box; background-origin: padding-box; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -4836,6 +4842,12 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     if (!V.every(([, k]) => ART[k])) return;
     for (const [v, k] of V) document.documentElement.style.setProperty(v, `url("${ART[k]}")`);
     document.documentElement.classList.add("popart");
+  })();
+  (function paperArt() {
+    const V = [["--art-pframe", "ui-page-frame"], ["--art-frame", "ui-panel-frame"], ["--art-ppage", "ui-paper-page"], ["--art-ppop", "ui-paper-pop"]];
+    if (!document.documentElement.classList.contains("popart") || !V.every(([, k]) => ART[k])) return;
+    for (const [v, k] of V) document.documentElement.style.setProperty(v, `url("${ART[k]}")`);
+    document.documentElement.classList.add("paperart");
   })();
   const GX_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>';
   function gxAdd(el, act, cls) {
