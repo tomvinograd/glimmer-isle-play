@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795186687;</script>
+<script>window.GAME_BUILD = 1795187020;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1705,6 +1705,17 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .thrower .tjar svg, .thrower .tjar img { width: 100% !important; height: 100% !important; }
 .thrower[data-pose="ready"] { --jx: 71%; --jy: 50%; } .thrower[data-pose="windup"] { --jx: 93%; --jy: 55%; } .thrower[data-pose="release"] { --jx: 92%; --jy: 31%; }
 .thrower.empty .tjar { visibility: hidden; }
+.jthrow.fp > .compass { background: none !important; box-shadow: none !important; }
+.jthrow.fp > .compass > div { width: 74px !important; filter: drop-shadow(0 4px 3px rgba(40,25,10,.35)); }
+.jthrow.fp > .compass:disabled { opacity: 1; filter: none; }
+.jthrow.fp.throwing > .compass > div { visibility: hidden; }
+.fphand { position: absolute; width: 245px; aspect-ratio: 385 / 420; left: calc(50% - 74px); top: calc(50% - 114px); z-index: -1; pointer-events: none; }
+.fphand img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 8px rgba(40,25,10,.3)); }
+.fphand .tjar { position: absolute; width: 27%; aspect-ratio: 1; left: var(--jx); top: var(--jy); transform: translate(-50%, -50%); }
+.fphand .tjar svg, .fphand .tjar img { width: 100% !important; height: 100% !important; }
+.fphand[data-pose="ready"] { --jx: 30%; --jy: 43%; } .fphand[data-pose="windup"] { --jx: 19%; --jy: 33%; } .fphand[data-pose="release"] { --jx: 21%; --jy: 14%; }
+.fphand.empty .tjar { visibility: hidden; }
+.jthrow.fp { z-index: 0; } .dock > .side { position: relative; z-index: 1; }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -2888,10 +2899,12 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     floatText(cx, cy - 90, timing === 1.5 ? "Perfect!" : timing > 1 ? "Nice!" : "Okay", timing === 1.5);
     const jar = document.createElement("div"); jar.className = "fly"; jar.style.width = jar.style.height = "54px"; jar.style.margin = "-27px 0 0 -27px"; jar.innerHTML = IC.jar(JARS.find(j => j.k === E.jar).c);
     let sx = st.clientWidth * .55, sy = st.clientHeight + 30;
-    const thr = cfxOn() && document.querySelector("#actors .thrower");
-    if (thr) {   // the avatar winds up, then lets go: the jar leaves from the hand
+    const thr = cfxOn() && document.querySelector("#actions .fphand");
+    if (thr) {   // the hand winds up (a fist round the jar), then opens: the jar leaves from the hand
+      thr.parentElement.classList.add("throwing");
       thrPose(thr, "windup"); await wait(190); const tj = thr.querySelector(".tjar"); if (tj) [sx, sy] = stageXY(tj);
-      thrPose(thr, "release"); sfx("tap"); setTimeout(() => { if (thr.isConnected) thrPose(thr, "ready", true); }, 560);
+      thrPose(thr, "release"); sfx("tap"); thr.animate([{ transform: "translateY(0)" }, { transform: "translateY(-14px)", offset: .35 }, { transform: "translateY(0)" }], { duration: 420, easing: "ease-out" });
+      setTimeout(() => { if (thr.isConnected) thrPose(thr, "ready", true); }, 560);
     }
     jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar);
     const flight = await anim(jar, [{ transform: "translate(0,0) rotate(0) scale(1.2)" }, { transform: `translate(${(cx - sx) * .5}px,${(cy - sy) - 120}px) rotate(300deg) scale(.9)`, offset: .55 }, { transform: `translate(${cx - sx}px,${cy - sy}px) rotate(720deg) scale(.8)` }], { duration: RM ? 120 : 600, easing: "ease-in", fill: "forwards" });
@@ -2950,15 +2963,15 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const close = () => { if (!sh.isConnected || sh.classList.contains("out")) return; sh.classList.add("out"); setTimeout(() => sh.remove(), 230); };
     sh.addEventListener("click", e => { const c = e.target.closest(".jcard");
       if (c) { const k = c.dataset.jk; if (!S.jars[k]) return toast(`No ${JAR_CARD[k].toLowerCase()} jars: get them in the Shop`); if (E && E.type === "wild") { E.jar = k; save(); sfx("tap"); } }
-      close(); renderStage(); renderActions(); });
+      close(); renderActions(); });
   }
   // ---------- the thrower: the player's avatar (from behind) holding the chosen jar ----------
-  function throwerHTML() {
-    if (!ART["fp-hand-ready"] || !E || E.type !== "wild") return "";   // first-person hands (Tom 20 Nov: not the avatar) const J = JARS.find(j => j.k === E.jar) || JARS[0];
-    return `<div class="thrower" data-pose="ready"><img src="${ART["tr-throw-ready"]}" alt="" draggable="false"><span class="tjar">${IC.jar(J.c)}</span></div>`;
+  function fphandHTML(J) {   // your own hand reaching up from the bottom of the screen; the jar in it is the throw button
+    if (!ART["fp-hand-ready"]) return "";
+    return `<div class="fphand empty" data-pose="ready" aria-hidden="true"><img src="${ART["fp-hand-ready"]}" alt="" draggable="false"><span class="tjar">${IC.jar(J.c)}</span></div>`;
   }
   function thrPose(thr, pose, empty) {
-    const img = thr.querySelector("img"), k = "tr-throw-" + pose; if (img && ART[k]) img.src = ART[k];
+    const img = thr.querySelector("img"), k = "fp-hand-" + pose; if (img && ART[k]) img.src = ART[k];
     thr.dataset.pose = pose; thr.classList.toggle("empty", !!empty || pose === "release");
   }
   function nextWild() { if (E && E.type === "wild" && E.i + 1 < E.list.length) { E.i++; E.treat = false; E.fought = false; E.hpFrac = 1; E.t0 = performance.now(); } else if (E && E.waves && E.waves.length) return void nextWave(); else E = null; save(); render(); }
@@ -3292,7 +3305,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const gc = E.boss ? "#ffd36b" : GRADES[w.q].c;
       return `${E.intro ? `<div class="flashfx"></div>` : ""}<div class="actor${E.intro ? " intro" : ""}" id="wildActor" style="left:50%;top:72%;--d:${introD(0)}s">${E.intro ? `<div class="excl">!</div>` : ""}<div class="spr"><div class="pop">${live(w.sp, w.evo, E.boss ? 180 : 150)}</div></div>
         ${tough(w) && !E.fought ? "" : `<div class="target"></div><div class="ring" id="ring"></div>`}<div class="shadow"></div>
-        <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>${throwerHTML()}`;
+        <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>`;
     }
     if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? (ART["item-chest-glow"] ? " glowchest art" : " glowchest") : ""}" style="width:130px">${E.glow && ART["item-chest-glow"] ? artIcon("item-chest-glow") : IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
     if (E.type === "rival") return `<div class="actor" style="left:50%;top:72%"><div class="spr pop"><div class="row" style="flex-wrap:nowrap;align-items:flex-end"><div style="width:74px">${trainerSVG(E.color || "#ff8a8a", false)}</div>${E.foes.map(f => art(f.sp, f.evo, 76)).join("")}</div></div><div class="shadow"></div><div class="tag">${IC.sword.replace("<svg", '<svg width="16" height="16"')} ${E.name}</div></div>`;
@@ -3318,7 +3331,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const nJar = JARS.filter(j => S.jars[j.k]).length, J2 = JARS.find(j => j.k !== E.jar && S.jars[j.k]) || J;
       A.innerHTML = `<div class="dock"><div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round" data-act="treat" aria-label="Give treat" ${!S.treats || E.treat || must || busy ? "disabled" : ""}>${IC.treat}${S.treats}</button><span class="cap">Treat</span></div>
           <div class="capw"><button class="round${S.quickCatch ? " on" : ""}" data-act="quickcatch" aria-label="Quick catch">${IC.fast}</button><span class="cap">Quick</span></div></div>
-        <div class="jthrow">${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>
+        <div class="jthrow${ART["fp-hand-ready"] && !(noJars && !must) ? " fp" : ""}">${noJars && !must ? "" : fphandHTML(J)}${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>
           <button class="jswap" data-act="jarfan" aria-label="Change jar" ${busy || nJar < 1 ? "disabled" : ""}><span>${IC.jar(J.c)}</span><span>${IC.jar(J2.c)}</span><i>Jars</i></button>`}
         </div>
         <div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div>
@@ -4295,6 +4308,8 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   function navArtCss() {   // the painted bottom buttons (Gemini sheet-nav, 20 Nov): the tile is the picture, its icon is in it; the name stays written on top
     const tiles = [['[data-act="view:menu"]', "nav-menu"], ['[data-act="view:team"]', "nav-glumis"], ['[data-act="view:shop"]', "nav-shop"], ['[data-act="view:arena"]', "nav-arena"], [".navx", "nav-close"]];
     let c = tiles.map(([q, k]) => ART[k] ? `nav button${q}{background:url(${ART[k]}) center/100% 100% no-repeat !important;box-shadow:none !important;border-radius:14px !important;filter:drop-shadow(0 4px 0 rgba(61,39,22,.45)) drop-shadow(0 8px 8px rgba(30,20,10,.25))}nav button${q}>svg,nav button${q}>img{visibility:hidden}nav button${q}:disabled{filter:grayscale(.6) brightness(.95) drop-shadow(0 4px 0 rgba(61,39,22,.45)) !important}` : "").join("");
+    if (ART["ui-level-ring"]) c += `.xbadge{width:56px !important;height:52px !important;background:url(${ART["ui-level-ring"]}) center/100% 100% no-repeat !important;box-shadow:none !important;filter:drop-shadow(0 3px 3px rgba(40,25,10,.35))}.xbadge span{width:auto !important;height:auto !important;margin-top:5px;background:none !important;color:#5b3f2a !important;font:900 21px/1 var(--display) !important;-webkit-text-stroke:0 !important;text-shadow:0 1px 0 #fff !important}`;
+    if (ART["ui-xp-frame"]) c += `.xbar{width:56px !important;height:16px !important;border-radius:0 !important;background:none !important;box-shadow:none !important;overflow:visible !important;border:7px solid transparent;border-image:url(${ART["ui-xp-frame"]}) 48 fill / 8px stretch;box-sizing:border-box;padding:0;margin-top:-4px;position:relative}.xbar i{position:absolute;left:-3px;top:-3px;bottom:-3px;max-width:calc(100% + 6px);min-width:6px;border-radius:0 !important;background:${ART["ui-xp-fill"] ? "none" : "linear-gradient(#8fe07a,#4fb85a)"} !important;${ART["ui-xp-fill"] ? `border:5px solid transparent;border-image:url(${ART["ui-xp-fill"]}) 34 fill / 5px stretch;box-sizing:border-box;` : ""}}`;
     if (ART["nav-wide-frame"]) c += `nav .navwide{box-shadow:0 6px 0 1px rgba(61,39,22,.45),0 9px 12px rgba(30,20,10,.25) !important;border-radius:18px !important}nav .navwide::after{content:"";position:absolute;inset:-5px;border:18px solid transparent;border-image:url(${ART["nav-wide-frame"]}) 74 / 18px stretch;pointer-events:none;z-index:1}nav .navwide span{z-index:2}nav .navwide .bang{z-index:3}`;
     return c;
   }
