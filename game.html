@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795182364;</script>
+<script>window.GAME_BUILD = 1795183574;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1888,6 +1888,21 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   background: var(--art-ppage) 0 0 / 187px auto repeat, #fbf2de; background-clip: padding-box; background-origin: padding-box; }
 .paperart .popwrap .popup, .paperart .popwrap .popup.gift, .paperart .qres { border-width: 20px; border-image: var(--art-frame) 68 fill / 48px / 0 stretch;
   background: var(--art-ppop) 0 0 / 150px auto repeat, #fbf2de; background-clip: padding-box; background-origin: padding-box; }
+/* NAVFLOAT: no bar at the bottom; each button is its own tile standing on the scene (Tom 20 Nov) */
+nav { background: none !important; border-top: 0 !important; box-shadow: none !important; padding: 0 8px calc(8px + env(safe-area-inset-bottom, 0px)) !important; pointer-events: none; }
+nav .tabs { gap: 7px !important; align-items: end; }
+nav button { pointer-events: auto; }
+nav button:not(.navwide), nav button.navx { height: 66px !important; border-radius: 15px !important; padding: 5px 0 4px !important; align-content: space-between !important; gap: 0 !important;
+  box-shadow: 0 0 0 3px #3d2716, inset 0 0 0 2px rgba(255,255,255,.55), inset 0 4px 0 rgba(255,255,255,.35), inset 0 -6px 0 rgba(0,0,0,.16), 0 6px 0 2px rgba(61,39,22,.55), 0 9px 14px rgba(30,20,10,.28) !important; }
+nav button:not(.navwide) svg, nav button:not(.navwide) img { width: 38px !important; height: 38px !important; margin: 0 auto -2px !important; filter: drop-shadow(0 2px 0 rgba(61,39,22,.75)) !important; }
+nav .navwide { height: 66px !important; border-radius: 15px !important; box-shadow: 0 0 0 3px #3d2716, inset 0 0 0 3px rgba(255,255,255,.8), 0 6px 0 2px rgba(61,39,22,.55), 0 9px 14px rgba(30,20,10,.28) !important; }
+nav .navwide span { padding: 18px 0 6px !important; }
+nav button:active:not(:disabled) { transform: translateY(3px); }
+nav button:disabled { opacity: .7 !important; filter: grayscale(.6) brightness(.95); }
+.stage { height: 100dvh !important; }
+.actions { bottom: calc(106px + env(safe-area-inset-bottom, 0px) * 2) !important; }
+.stage .scene::after, #stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; pointer-events: none; z-index: 1; background: linear-gradient(rgba(40,30,20,0), rgba(40,30,20,.16)); }
+.toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
