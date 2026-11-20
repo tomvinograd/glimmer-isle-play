@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795168555;</script>
+<script>window.GAME_BUILD = 1795170397;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1827,6 +1827,54 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
 
 /* card stars on the left, above the element and grade chips (Tom 20 Nov) */
 .gstars { left: 14px; right: auto; }
+
+/* Island Race with real players (Tom 20 Nov) */
+.rtag { font: 800 10px/14px var(--display); font-style: normal; color: #fff; background: #3f9de0; padding: 0 6px; border-radius: 6px; margin-left: 6px; vertical-align: 2px; }
+.rrow.real { background: #eaf5ff; }
+.racedone > span:first-child { grid-column: 1 / -1; }
+.racedone { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: linear-gradient(90deg, #fff1b8, #ffe2b0); box-shadow: 0 0 0 2px #f5b23c; }
+.racedone b { display: block; font: 800 14px var(--display); color: var(--brown); } .racedone small { font-size: 12px; color: #8a6d55; }
+.racedone .mb { height: 34px; }
+
+/* ===== popup art (Gemini sheet-popups, Tom 20 Nov) - wooden panel 9-slice, ribbon titles, art X and buttons ===== */
+.popart .popwrap .popup, .popart .qres { background: none; box-shadow: none; border-radius: 0; border: 22px solid transparent;
+  border-image: var(--art-panel) 60 fill / 42px / 0 stretch; filter: drop-shadow(0 10px 16px rgba(40,30,20,.35)); }
+.popart .popwrap .popup { padding: 6px 6px 8px; }
+.popart .popwrap .popup > h3, .popart .ghead h3 { justify-self: center; min-width: 180px; max-width: 100%; box-sizing: border-box; margin: -4px auto 2px; padding: 7px 38px 15px;
+  background: var(--art-ribbon) center / 100% 100% no-repeat; color: #fff; font: 800 18px/1.15 var(--display); text-shadow: 0 2px 0 rgba(150,80,0,.55), 0 0 6px rgba(150,80,0,.3); }
+.popart .popwrap .popup .mb { background: none; box-shadow: none; border-radius: 0; border-style: solid; border-color: transparent; border-width: 0 18px;
+  border-image: var(--art-btn-cream) 0 54 fill / 0 18px / 0 stretch; height: 42px; padding: 0 4px 3px; color: var(--brown); }
+.popart .popwrap .popup .mb { white-space: nowrap; padding: 0 2px 3px; }
+.popart .popwrap .popbtns { flex-wrap: wrap; justify-content: center; row-gap: 6px; }
+.popart .popwrap .popup .mb.gold { border-image-source: var(--art-btn-gold); color: #fff; text-shadow: 0 1px 2px rgba(150,80,0,.65); }
+.popart .popwrap .popup .mb.pbig { height: 48px; border-width: 0 20px; border-image-width: 0 20px; font-size: 17px; }
+.popart .popwrap .popup .mb:disabled { filter: grayscale(.7); opacity: .6; }
+.popart .popx { background: var(--art-close) center / contain no-repeat; box-shadow: none; border-radius: 50%; }
+.popart .popx svg { display: none; }
+.popart .popwrap .popup > .popx, .popart .qres > .popx { top: -26px; right: -26px; width: 42px; height: 42px; }
+.popart .popx.screen { width: 48px; height: 48px; background-color: transparent; filter: drop-shadow(0 3px 6px rgba(40,25,10,.4)); }
+.popart .news .nx, .popart .lvpick > .popx { width: 36px; height: 36px; }
+/* Daily gift: the painted gift box on the rays, title on the ribbon */
+.popart .popup.gift { overflow: visible; padding: 0 0 8px; background: none; }
+.popart .ghead { background: none; padding: 4px 6px 6px; border-radius: 10px; }
+.popart .ghead::before { background: repeating-conic-gradient(rgba(255,200,90,.35) 0 9deg, transparent 9deg 24deg); }
+.popart .gbox { width: 104px; height: 104px; filter: drop-shadow(0 6px 8px rgba(150,80,0,.3)); } .popart .gbox img { width: 104px !important; height: 104px !important; object-fit: contain; }
+.popart .ghead .gsub { background: #fff4d6; box-shadow: 0 1px 3px rgba(150,80,0,.25); }
+.popart .ggrid { padding: 0 6px; }
+/* catch result card: same frame, ribbon title */
+.popart .qres { padding: 36px 6px 8px; }
+.popart .qres > .qtitle { top: -36px; padding: 8px 44px 18px; border-radius: 0; background: var(--art-ribbon) center / 100% 100% no-repeat; box-shadow: none; }
+.popart .qres.none > .qtitle { filter: grayscale(.85) brightness(1.08); }
+
+/* page panels: the painted wooden panel (Tom 20 Nov) */
+.popart #page { background: none; box-shadow: none; border-radius: 0; border: 20px solid transparent; border-image: var(--art-panel) 60 fill / 42px / 0 stretch;
+  padding: 8px 8px 10px; }   /* NO filter here: a filter on #page breaks the position:fixed card sheet inside it */
+.popart #page.ahubpg { grid-template-rows: auto repeat(4, minmax(0, 1fr)); gap: 8px; } .popart #page.ahubpg .amode { min-height: 0; } .popart #page.ahubpg .aimg { min-height: 0; padding: 6px 10px; }
+.popart #page.ahubpg .head h2 { margin: 0; } .popart body.bigtext #page.ahubpg { gap: 5px; padding-top: 4px; padding-bottom: 6px; }
+.popart body.menubg #page::before, body.menubg.popart #page::before { display: none; }
+/* shop cards: a long price never sticks out of its card */
+.scard { min-width: 0; }
+.scard .price { flex-wrap: wrap; gap: 2px 4px; padding-left: 6px; padding-right: 6px; min-width: 0; max-width: 100%; box-sizing: border-box; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3093,7 +3141,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     const found = Object.keys(S.caught).length;
     const ico = (act, icon, label, bang, timer) => `<button class="sico" data-act="${act}" aria-label="${label}"><span class="sic">${icon}</span><span class="sil">${label}</span>${timer ? `<span class="sit">${timer}</span>` : ""}${bang ? '<em class="bang">!</em>' : ""}</button>`;
     return `<div class="sidecol l">${ico("view:shop", TABI.shop, "Shop")}${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}${mailWaiting() ? ico("view:mail", IC.gift || IC.star, "Mail", true, "") : ""}${giftReady() ? ico("giftopen", IC.gift || IC.star, "Daily gift", true, "") : ""}</div>
-      <div class="sidecol r">${ico("gobook", TABI.book, "Book", false, found ? found + " found" : "")}${ico("map", TABI.atlas, "Atlas")}${(() => { const R = raceState(), over = Date.now() >= R.end; return ico("gorace", IC.flag, "Race #" + (raceBoard().findIndex(r => r.me) + 1), over); })()}</div>`;
+      <div class="sidecol r">${ico("gobook", TABI.book, "Book", false, found ? found + " found" : "")}${ico("map", TABI.atlas, "Atlas")}${(() => { const R = raceState(), over = !!S.raceDone; return ico("gorace", IC.flag, "Race #" + (raceBoard(R).findIndex(r => r.me) + 1), over); })()}</div>`;
   }
   function zoneCard() {  // the zone painting with its name and 3 stars: every Glumi caught, guardian beaten, every reward claimed
     const z = S.zone, Z = ZONES[z], st = S.zones[z], stars = [Z.sp.every(sp => st.caught[sp]), !!st.cleared, (st.claimed || 0) >= milestones(z).length];
@@ -3286,7 +3334,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     const tile = (r, i) => { const got = i < L.n || weekDone, now = i === L.n && ready, big = i === LOGIN_REW.length - 1;
       return `<div class="gday${got ? " got" : ""}${now ? " now" : ""}${big ? " big" : ""}">${now ? '<i class="gtoday">Today</i>' : ""}<span class="gic">${RW[r.k][0]}</span><small>Day ${i + 1}</small><b>${big ? "Purple egg" : "+" + r.n.toLocaleString("en")}</b>${got ? `<em class="gchk">${tick}</em>` : ""}</div>`; };
     const sub = ready ? `Day ${L.n + 1} of 7` : weekDone ? "Week done! New week tomorrow" : `Next gift in ${left()}`;
-    d.innerHTML = `<div class="popbg"></div><div class="popup gift" role="dialog" aria-label="Daily gift"><div class="ghead"><div class="gbox">${IC.gift || IC.star}</div><h3>Daily gift</h3><span class="gsub">${sub}</span></div>
+    d.innerHTML = `<div class="popbg"></div><div class="popup gift" role="dialog" aria-label="Daily gift"><div class="ghead"><div class="gbox">${ART["pop-gift"] ? `<img src="${ART["pop-gift"]}" alt="">` : IC.gift || IC.star}</div><h3>Daily gift</h3><span class="gsub">${sub}</span></div>
       <div class="ggrid">${LOGIN_REW.map(tile).join("")}</div>
       <p class="gnote">A gift every day. Day 7 is a Purple egg, then the week starts again.</p>
       <div class="popbtns">${ready ? `<button class="mb gold pbig" data-act="giftclaim">Claim day ${L.n + 1}</button>` : `<button class="mb" data-act="giftclose">Come back tomorrow</button>`}</div></div>`;
@@ -3682,11 +3730,14 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     }
     const timer = ms => `<span class="atimer">${CLOCK}${mmss(ms)}</span>`;
     if (arenaSub === "race") {
-      const R = raceState(), over = Date.now() >= R.end, board = raceBoard(), myRank = board.findIndex(r => r.me);
+      const R = raceState(), D = S.raceDone, board = raceBoard(R), realN = Object.keys(R.others || {}).length;
+      const dRank = D ? raceBoard(D).findIndex(r => r.me) : -1;
+      const row = (r, i) => `<div class="rrow${r.me ? " me" : ""}${r.real ? " real" : ""} p${i + 1}"><span class="rpos">${i + 1}</span><span class="rav">${r.me ? (team()[0] ? art(team()[0].sp, team()[0].evo, 40) : "") : art(r.sp, 0, 40)}</span><span class="rname"><b>${olEsc(r.name)}${r.real ? '<em class="rtag">Player</em>' : ""}</b><small>${r.pts.toLocaleString("en")} points</small></span><span class="rchips">${rchips(RACE_REW[i])}</span></div>`;
       return `<div class="sheethead"><button class="mb" data-act="raceback" aria-label="Back">‹ Back</button><h3>Island Race</h3><span></span></div>
-        <div class="racehead">${over ? `<span class="atimer">Finished</span>` : timer(R.end - Date.now())}<b>Win fights to earn race points</b><small>Every fight you win counts: path trainers 20, gyms 40, Ladder and Cloud Climb 30. Top places get the best rewards.</small></div>
-        <div class="race">${board.map((r, i) => `<div class="rrow${r.me ? " me" : ""} p${i + 1}"><span class="rpos">${i + 1}</span><span class="rav">${r.me ? (team()[0] ? art(team()[0].sp, team()[0].evo, 40) : "") : art(r.sp, 0, 40)}</span><span class="rname"><b>${r.name}</b><small>${r.pts.toLocaleString("en")} points</small></span><span class="rchips">${rchips(RACE_REW[i])}</span></div>`).join("")}</div>
-        ${over ? `<button class="mb gold pbig" data-act="raceclaim">Claim place ${myRank + 1} reward and start a new race</button>` : `<button class="mb gold pbig" data-act="arenasub:ladder">Go win fights</button>`}`;
+        ${D ? `<div class="racedone"><span><b>${raceDayKey(D.start) === raceDayKey(R.start - 1) ? "Yesterday's race" : "Your last race"}: place ${dRank + 1} of 5</b><small>${D.me.toLocaleString("en")} points</small></span><span class="rchips">${rchips(RACE_REW[dRank])}</span><button class="mb gold" data-act="raceclaim">Claim</button></div>` : ""}
+        <div class="racehead">${timer(R.end - Date.now())}<b>Today's race: win fights to earn points</b><small>Path trainers 20, gyms 40, Ladder and Cloud Climb 30. Everyone who plays today is in today's race${realN ? ` · ${realN} other player${realN > 1 ? "s" : ""} racing` : ""}. Ends at midnight.</small></div>
+        <div class="race">${board.map(row).join("")}</div>
+        <button class="mb gold pbig" data-act="arenasub:ladder">Go win fights</button>`;
     }
     if (arenaSub === "ladder") {
       const L = ladderState(), nextR = DRANKS.find(r => r[0] > L.pts), weekEnd = (weekId() + 1) * 7 * 86400000 + 4 * 86400000;
@@ -3793,17 +3844,64 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   }
   // ================= ISLAND RACE: a day-long race against four islanders =================
   const RACE_REW = [[{ k: "egg3", n: 1 }, { k: "star", n: 2 }, { k: "glow", n: 200 }], [{ k: "egg2", n: 1 }, { k: "star", n: 1 }, { k: "glow", n: 150 }], [{ k: "egg1", n: 1 }, { k: "bright", n: 2 }, { k: "glow", n: 100 }], [{ k: "plain", n: 5 }, { k: "glow", n: 50 }], [{ k: "coins", n: 100 }]];
+  // One race per calendar day for everyone (Tom 20 Nov): real players who race today + islanders to fill the board up to 5.
+  // Islanders are matched to the player's pace: their day totals come from the player's own last races (middle value).
+  const RACE_BOT_K = [1.3, 1, .75, .5], RACE_POST_MS = 15 * 60000;
+  const raceDayKey = t => { const d = new Date(t); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); };
+  function raceBase() { const h2 = (S.raceHist || []).filter(x => x > 0).slice(-5).sort((a, b) => a - b); return h2.length ? Math.max(300, h2[Math.floor(h2.length / 2)]) : 900; }
   function newRace() {
-    const names = [...TNAMES].sort(() => Math.random() - .5).slice(0, 4), pool = Object.keys(SP).map(Number).filter(k => SP[k].tier < 3);
-    return { start: Date.now(), end: Date.now() + 24 * 3600000, me: 0, done: false, bots: names.map((n, i) => ({ name: n, sp: pool[rnd(0, pool.length - 1)], total: Math.round([620, 470, 340, 210][i] * (.8 + Math.random() * .4)) })) };
+    const s = new Date(); s.setHours(0, 0, 0, 0); const e = new Date(s); e.setDate(e.getDate() + 1);
+    let me = ""; try { me = olName().toLowerCase(); } catch {}
+    const names = TNAMES.filter(n => n.toLowerCase() !== me && !me.startsWith(n.toLowerCase() + " ")).sort(() => Math.random() - .5).slice(0, 4), pool = Object.keys(SP).map(Number).filter(k => SP[k].tier < 3), base = raceBase();
+    return { d: raceDayKey(s.getTime()), start: s.getTime(), end: e.getTime(), me: 0, others: {}, postT: 0, posted: 0,
+      bots: names.map((n, i) => ({ name: n, sp: pool[rnd(0, pool.length - 1)], total: Math.max(30, Math.round(base * RACE_BOT_K[i] * (.85 + Math.random() * .3) / 10) * 10) })) };
   }
-  function raceState() { if (!S.race) S.race = newRace(); return S.race; }
-  function raceAdd(p) { const R = raceState(); if (Date.now() < R.end) R.me += p; }
-  function raceBoard() {
-    const R = raceState(), f = Math.min(1, (Date.now() - R.start) / (R.end - R.start));
-    const rows = R.bots.map(b => ({ name: b.name, sp: b.sp, pts: Math.round(b.total * Math.pow(f, .9) / 10) * 10 })).concat([{ name: "You", me: true, pts: R.me }]);
-    return rows.sort((a, b) => b.pts - a.pts || (a.me ? -1 : 1));
+  function raceState() {
+    let R = S.race; if (!R) R = S.race = newRace();
+    if (Date.now() >= R.end) {   // the day is over: keep it to claim, today's race starts
+      if (S.raceDone) raceClaim(true);
+      S.raceDone = R; S.raceHist = (S.raceHist || []).concat(R.me).slice(-7); R = S.race = newRace(); save();
+    } else if (!R.d) { const n = newRace(); n.me = R.me; R = S.race = n; }   // a race from before the update: its points move into today's race
+    return R;
   }
+  function raceAdd(p) { const R = raceState(); R.me += p; try { racePost(); } catch {} }
+  function raceBoard(R = raceState()) {
+    const f = Math.min(1, Math.max(0, (Date.now() - R.start) / (R.end - R.start)));
+    const real = Object.entries(R.others || {}).map(([pid, o]) => ({ name: o.name, sp: o.lead, pts: o.pts, real: true, pid }));
+    real.sort((a, b) => Math.abs(a.pts - R.me) - Math.abs(b.pts - R.me));   // the players nearest to you
+    const pick = real.slice(0, 4), bots = R.bots.slice(0, 4 - pick.length).map(b => ({ name: b.name, sp: b.sp, pts: Math.round(b.total * Math.pow(f, .9) / 10) * 10 }));
+    return pick.concat(bots, [{ name: "You", me: true, pts: R.me }]).sort((a, b) => b.pts - a.pts || (a.me ? -1 : 1));
+  }
+  function raceClaim(quiet) {
+    const D = S.raceDone; if (!D) return; const i = raceBoard(D).findIndex(r => r.me);
+    (RACE_REW[i] || []).forEach(giveReward); S.raceDone = null; save();
+    if (!quiet) { sfx("claim"); toast(`Place ${i + 1}: rewards collected`); }
+  }
+  // real players: each phone posts its points (at most every 15 min, ntfy allows ~250 posts a day) and keeps every score it saw
+  let racePosting = false;
+  async function racePost(gap = RACE_POST_MS, again = false) {
+    const R = raceState(); if (!R.d || R.me <= 0 || racePosting) return;
+    if (!again && (R.me === R.posted || Date.now() - (R.postT || 0) < gap)) return;
+    racePosting = true;
+    try { const O = olState(); if (await olPost("race-" + R.d, { t: "r", pid: O.pid, code: O.code, name: olName(), pts: R.me, lead: team()[0] ? team()[0].sp : 0 })) { R.posted = R.me; R.postT = Date.now(); save(); } }
+    finally { racePosting = false; }
+  }
+  async function raceSync(R) {
+    if (!R || !R.d) return; const list = await olRead("race-" + R.d); if (!list) return;
+    const O = olState(); let ch = false; R.others = R.others || {};
+    for (const o of list) {
+      if (o.t !== "r" || !o.pid || o.pid === O.pid) continue; const pts = clampN(o.pts, 0, 1e6), cur = R.others[o.pid], lead = Number.isInteger(+o.lead) && SP[+o.lead] ? +o.lead : 0;
+      if (!cur || cur.pts < pts) { R.others[String(o.pid).slice(0, 20)] = { name: String(o.name || "Islander").slice(0, 20), code: String(o.code || "").slice(0, 8), pts, lead }; ch = true; }
+    }
+    if (ch) { save(); if (view === "arena" && arenaSub === "race" && !document.querySelector(".popwrap")) render(); }
+  }
+  function raceTick() {
+    if (!S.started) return; const R = raceState();
+    raceSync(R); if (S.raceDone) raceSync(S.raceDone);
+    if (R.me > 0 && R.postT && Date.now() - R.postT > 10 * 3600000) racePost(0, true); else racePost(60000);   // the relay forgets after ~12 h: say it again
+  }
+  setInterval(() => { if (view === "arena" && arenaSub === "race") raceTick(); }, 60000);   // while the race page is open
+  setInterval(() => raceTick(), 10 * 60000); setTimeout(() => raceTick(), 8000);         // now and then, so the place on the island is right
   // ================= LADDER: weekly wins and rank =================
   // weekly track: ladder points (win 10, loss 3) toward 7 rewards, each given as soon as it is reached
   const LADDER_WIN = 10, LADDER_LOSS = 3, LADDER_MS = [40, 100, 180, 280, 400, 560, 800];
@@ -4373,6 +4471,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   let shopTab = "jars";
   let resetSure = null;
   const resetGain = m => { let leaves = 0; for (let l = 1; l < m.lvl; l++) leaves += 5 + l * 3; let paid = 0; for (let a = 0; a < (m.asc || 0); a++) paid += ASC_COST[a]; const shards = Math.min(paid, m.ascShards || 0); let stones = 0; for (let a = 0; a < (m.asc || 0); a++) stones += ASC_STONES[a] || 0; return { leaves, keeps: paid - shards, shards, stones }; };
+  const shortN = n => n >= 1e6 ? +(n / 1e6).toFixed(n >= 1e7 ? 0 : 2) + "M" : n >= 1e5 ? Math.round(n / 1000) + "K" : n.toLocaleString("en");
   // ================= MAILBOX: update gifts =================
   const MAIL = [
     { id: "upd-2026-11-17-charms", title: "Charms are here", text: "Glumis can now wear a charm (on their card). Gym leaders and Cloud Climb now give charms, so here are some for the fights you already won.", rew: [{ k: "charm", n: 1, r: 1 }, { k: "charm", n: 2, r: 0 }] },
@@ -4416,7 +4515,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     if (shopTab === "requests") return pageRequests(tabs);
     if (shopTab === "market") return pageMarket(tabs);
     const row = (k, icon, name, about, price, ok = true) => `<div class="scard"><span class="sci">${icon}</span><b>${name}</b><small>${about.replace(/ · you have (\d+)/, "")}</small><small class="have">${(about.match(/you have (\d+)/) || [])[1] !== undefined ? "You have " + about.match(/you have (\d+)/)[1] : ""}</small>
-      <button class="price" data-act="buy:${k}" ${S.coins >= price * buyQ() && ok ? "" : "disabled"}>${buyQ() > 1 ? `<em class="bq">×${buyQ()}</em>` : ""}${IC.coin}${(price * buyQ()).toLocaleString("en")}</button></div>`;
+      <button class="price" data-act="buy:${k}" ${S.coins >= price * buyQ() && ok ? "" : "disabled"}>${buyQ() > 1 ? `<em class="bq">×${buyQ()}</em>` : ""}${IC.coin}${shortN(price * buyQ())}</button></div>`;
     const items = {
       jars: [row("plain", IC.jar(JARS[0].c), "Plain jar", `A simple jar · you have ${S.jars.plain}`, 15),
              row("bright", IC.jar(JARS[1].c), "Bright jar", `Catches more easily · you have ${S.jars.bright}`, 45),
@@ -4732,6 +4831,12 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   // Every popup gets an X in its corner (Tom 20 Nov: no more tapping the space above or the phone's back button). The X does what the
   // popup's own Close / Not now / Cancel does; a popup without one closes the way the back button closes it. Full-screen cards
   // (Caught!, Victory, evolving) get an X in the screen corner; tapping it is a tap on the card, which closes it.
+  (function popArt() {
+    const V = [["--art-panel", "ui-panel"], ["--art-ribbon", "ui-ribbon"], ["--art-close", "ui-close"], ["--art-btn-gold", "ui-btn-gold"], ["--art-btn-cream", "ui-btn-cream"]];
+    if (!V.every(([, k]) => ART[k])) return;
+    for (const [v, k] of V) document.documentElement.style.setProperty(v, `url("${ART[k]}")`);
+    document.documentElement.classList.add("popart");
+  })();
   const GX_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>';
   function gxAdd(el, act, cls) {
     if (el.querySelector(":scope > .popx")) return;
@@ -5033,6 +5138,8 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     const nv = document.querySelector("nav"); if (!nv) return;
     const r = pg.getBoundingClientRect(), want = nv.getBoundingClientRect().top - 12 - r.top;
     if (r.height > 0 && want > r.height + 2) pg.style.minHeight = Math.floor(pg.offsetHeight * want / r.height) + "px";
+    const over = pg.getBoundingClientRect().bottom - (nv.getBoundingClientRect().top - 12);   // big text zooms the page: correct the guess once
+    if (pg.style.minHeight && Math.abs(over) > 1) pg.style.minHeight = Math.floor(parseFloat(pg.style.minHeight) - over * pg.offsetHeight / pg.getBoundingClientRect().height) + "px";
   }
   addEventListener("resize", () => fillArenaHub());
   function paintBattle() {
@@ -5293,12 +5400,12 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     else if (a === "evclaim") { const k = arg, E2 = evState()[k], t = evTarget(k, E2.tier);
       if (E2.pts >= t) evClaimAll(k);
       else toast(`${EVBARS[k].how} · ${t - E2.pts} to go`); }
-    else if (a === "raceclaim") { const R = raceState(); if (Date.now() >= R.end) { const i = raceBoard().findIndex(r => r.me); (RACE_REW[i] || []).forEach(giveReward); sfx("claim"); toast(`Place ${i + 1}: rewards collected`); S.race = newRace(); save(); render(); } }
+    else if (a === "raceclaim") { raceClaim(false); render(); }
     else if (a === "laddergo") prepLadder();
     else if (a === "ladclaim" && false) { const L = ladderState(), k = L.claimed; if (k < LADDER_MS.length && L.wins >= LADDER_MS[k]) { giveReward(LADDER_REW[k]); L.claimed++; sfx("claim"); save(); toast(`Got ${LADDER_REW[k].n} ${RW[LADDER_REW[k].k][1]}`); render(); } }
     else if (a === "climbswitch") { S.climbAuto = !S.climbAuto; save(); render(); }
     else if (a === "climbauto") autoClimb();
-    else if (a === "gorace") { view = "arena"; arenaSub = "race"; prep = null; render(); window.scrollTo(0, 0); }
+    else if (a === "gorace") { view = "arena"; arenaSub = "race"; prep = null; render(); window.scrollTo(0, 0); raceTick(); }
     else if (a === "raceback") { view = "explore"; arenaSub = "hub"; render(); window.scrollTo(0, 0); }
     else if (a === "arenasub") { arenaSub = arg; if (arg !== "prep") prep = null; render(); window.scrollTo(0, 0); }
     else if (a === "gymz") { if (zoneOpen(n)) { gymZ = n; if (!gymDiffOpen(n, gymD)) gymD = 0; arenaSub = "gym"; render(); window.scrollTo(0, 0); } }
