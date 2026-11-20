@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795185620;</script>
+<script>window.GAME_BUILD = 1795185986;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1674,6 +1674,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .mmspin { width: 46px; height: 46px; display: grid; place-items: center; margin: 0 auto 4px; color: #c47f0a; animation: mmspin 1.4s ease-in-out infinite; } .mmspin svg { width: 40px; height: 40px; }
 @keyframes mmspin { 0%, 100% { transform: rotate(-14deg) scale(1); } 50% { transform: rotate(14deg) scale(1.12); } }
 .olor { text-align: center; color: #9c7f66; font-size: 12px; margin: 2px 0 6px; }
+.jcrack { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -2859,12 +2860,19 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const sx = st.clientWidth * .55, sy = st.clientHeight + 30; jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar);
     const flight = await anim(jar, [{ transform: "translate(0,0) rotate(0) scale(1.2)" }, { transform: `translate(${(cx - sx) * .5}px,${(cy - sy) - 120}px) rotate(300deg) scale(.9)`, offset: .55 }, { transform: `translate(${cx - sx}px,${cy - sy}px) rotate(720deg) scale(.8)` }], { duration: RM ? 120 : 600, easing: "ease-in", fill: "forwards" });
     jar.style.transform = `translate(${cx - sx}px,${cy - sy}px) scale(.8)`; flight.cancel();
+    if (spr && cfxOn()) {   // the Glumi turns to light, then is pulled into the jar
+      const [px, py] = elXY(spr); fxRing(px, py, "#ffffff", 95, .45); fxBurst(px, py, 14, ["#ffffff", "#eaf7ff", GRADES[w.q].c], 170);
+      await anim(spr, [{ filter: "brightness(1)" }, { filter: "brightness(0) invert(1) drop-shadow(0 0 10px #fff) drop-shadow(0 0 18px #fff)" }], { duration: 170, fill: "forwards" });
+    }
     if (spr) await anim(spr, MO_IN, { duration: RM ? 80 : 420, easing: "ease-in", fill: "forwards" });
     await anim(jar, [{ transform: jar.style.transform }, { transform: `translate(${cx - sx}px,${cy - sy + 50}px) scale(.8)` }], { duration: RM ? 40 : 220, easing: "cubic-bezier(.5,0,.7,1.4)" });
     jar.style.transform = `translate(${cx - sx}px,${cy - sy + 50}px) scale(.8)`;
+    if (cfxOn()) { const [jx, jy, jr] = elXY(jar); fxBurst(jx, jy + jr.height * .4, 10, ["#efe2c4", "#dcc79f", "#ffffff"], 95); }   // dust where it lands
     const c = chance(w, E.jar, timing), ok = Math.random() < c, wobbles = ok ? 3 : rnd(1, 2);
-    for (let k = 0; k < wobbles; k++) { await wait(250); await anim(jar, [{ transform: jar.style.transform + " rotate(0)" }, { transform: jar.style.transform + " rotate(-22deg)" }, { transform: jar.style.transform + " rotate(18deg)" }, { transform: jar.style.transform + " rotate(0)" }], { duration: RM ? 60 : 420 }); }
+    for (let k = 0; k < wobbles; k++) { await wait(250); if (!ok && k === wobbles - 1 && cfxOn()) jarCrack(jar); await anim(jar, [{ transform: jar.style.transform + " rotate(0)" }, { transform: jar.style.transform + " rotate(-22deg)" }, { transform: jar.style.transform + " rotate(18deg)" }, { transform: jar.style.transform + " rotate(0)" }], { duration: RM ? 60 : 420 }); }
     if (ok) {
+      if (cfxOn()) { const [jx, jy] = elXY(jar); jar.animate([{ filter: "none" }, { filter: "brightness(1.5) drop-shadow(0 0 14px #ffd34d)" }], { duration: 260, fill: "forwards" });
+        fxRing(jx, jy, "#ffd34d", 110, .55); fxBurst(jx, jy, 22, [...GOLDS, "#ffffff"], 230); await wait(260); }
       flyIcons(IC.star, 6, cx, cy + 50, null); jar.remove();
       keepMon(w); if (quickNow) qCaught.push(w); track("catch", w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(E.boss ? 20 : 5); if (autoThrow) autoStat.caught++;
       let cleared = false; if (E.boss) { const z = S.zone; S.zones[z].cleared = true; S.fruit += 2; cleared = true; }
@@ -2872,13 +2880,25 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       if (cleared) banners.push(S.zone + 1 < ZONES.length ? `${ZONES[S.zone + 1].name} open!` : "All zones cleared!");
       nextWild(); await flushBanners();
     } else {
-      jar.animate([{ transform: jar.style.transform, opacity: 1 }, { transform: jar.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => jar.remove(), 260);
+      if (cfxOn()) { const [jx, jy] = elXY(jar); jarShatter(jx, jy); jar.remove(); }   // the jar breaks into glass
+      else { jar.animate([{ transform: jar.style.transform, opacity: 1 }, { transform: jar.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => jar.remove(), 260); }
       if (spr) spr.animate(MO_OUT, { duration: RM ? 60 : 560, easing: "ease-out", fill: "forwards" });
+      if (spr && cfxOn()) spr.animate([{ filter: "brightness(0) invert(1) drop-shadow(0 0 10px #fff)" }, { filter: "brightness(0) invert(1) drop-shadow(0 0 10px #fff)", offset: .35 }, { filter: "none" }], { duration: 520, fill: "forwards" });   // bursts out as light, then its colors come back
       w.miss = (w.miss || 0) + 1; const left = E.boss ? 99 : FLEE_AFTER[w.q] - w.miss; await wait(RM ? 450 : 580);
       if (left <= 0) { if (quickNow) qFled++; if (spr) await anim(spr, MO_RUN, { duration: RM ? 60 : 650, easing: "ease-in-out", fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
       else { busy = false; E.t0 = performance.now(); render(); floatText(cx, cy - 60, left <= 3 ? `Broke free! ${left} ${left === 1 ? "try" : "tries"} left` : "Broke free!"); }
     }
     save();
+  }
+  const cfxOn = () => !quickNow && !moOff() && !RM;   // the catch effects (not in Quick catch or reduced motion)
+  function jarCrack(jar) {   // a crack runs down the jar just before it breaks
+    if (jar.querySelector(".jcrack")) return;
+    jar.insertAdjacentHTML("beforeend", `<svg class="jcrack" viewBox="0 0 54 54" aria-hidden="true"><path d="M30 11 L25 21 L31 27 L24 37 L28 45 M25 21 L19 24 M31 27 L37 30" fill="none" stroke="#5b3f2a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 11 L25 21 L31 27 L24 37 L28 45 M25 21 L19 24 M31 27 L37 30" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+    sfx("tap");
+  }
+  function jarShatter(x, y) {
+    fxRing(x, y, "#ffffff", 100, .4); fxBurst(x, y, 10, ["#ffffff", "#dff3ff"], 160);
+    for (let i = 0; i < 16; i++) { const an = -Math.PI / 2 + rr(-1.5, 1.5), v = rr(160, 380); pfxAdd({ kind: "confetti", x, y, vx: Math.cos(an) * v, vy: Math.sin(an) * v, g: 900, drag: 1.2, vr: rr(-12, 12), life: rr(.7, 1.1), size: rr(6, 11), c: pk(["#ffffff", "#d6f0ff", "#b7e2f7", "#eaf8ff"]) }); }
   }
   function nextWild() { if (E && E.type === "wild" && E.i + 1 < E.list.length) { E.i++; E.treat = false; E.fought = false; E.hpFrac = 1; E.t0 = performance.now(); } else if (E && E.waves && E.waves.length) return void nextWave(); else E = null; save(); render(); }
   function reveal(m, title) {
