@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795186270;</script>
+<script>window.GAME_BUILD = 1795186687;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1699,6 +1699,12 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .jcard.on { box-shadow: 0 0 0 3px #3d2716, 0 0 0 7px #ffd34d, inset 0 0 0 3px rgba(255,255,255,.75), 0 6px 14px rgba(245,166,35,.55); }
 .jcard.none { filter: grayscale(.85) brightness(.92); }
 .jfhint { position: fixed; left: 0; right: 0; margin: 0; text-align: center; font: 800 20px var(--display); color: #fff; -webkit-text-stroke: 4px #3d2716; paint-order: stroke fill; pointer-events: none; }
+.thrower { position: absolute; left: -18px; bottom: 23%; height: 25%; aspect-ratio: 397 / 512; z-index: 3; pointer-events: none; }
+.thrower img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 5px 6px rgba(40,25,10,.28)); }
+.thrower .tjar { position: absolute; width: 24%; aspect-ratio: 1; left: var(--jx); top: var(--jy); transform: translate(-50%, -50%) rotate(-8deg); }
+.thrower .tjar svg, .thrower .tjar img { width: 100% !important; height: 100% !important; }
+.thrower[data-pose="ready"] { --jx: 71%; --jy: 50%; } .thrower[data-pose="windup"] { --jx: 93%; --jy: 55%; } .thrower[data-pose="release"] { --jx: 92%; --jy: 31%; }
+.thrower.empty .tjar { visibility: hidden; }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -1931,8 +1937,8 @@ nav button:disabled { opacity: .7 !important; filter: grayscale(.6) brightness(.
 .stage .scene::after, #stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; pointer-events: none; z-index: 1; background: linear-gradient(rgba(40,30,20,0), rgba(40,30,20,.16)); }
 .toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
 /* NAVTILES: squarer tiles, big icon on top, the name across the bottom edge (Tom 20 Nov, 'adjust them') */
-nav { padding: 0 8px calc(13px + env(safe-area-inset-bottom, 0px)) !important; }
-nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.95fr !important; gap: 6px !important; }
+nav { padding: 0 11px calc(13px + env(safe-area-inset-bottom, 0px)) !important; }
+nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr !important; gap: 11px !important; }
 nav button:not(.navwide), nav button.navx { position: relative; overflow: visible !important; height: 58px !important; padding: 0 !important; align-content: start !important; justify-items: center; border-radius: 13px !important; }
 nav button:not(.navwide) svg, nav button:not(.navwide) img { width: 44px !important; height: 44px !important; margin: 3px auto 0 !important; }
 nav button.navx svg { width: 34px !important; height: 34px !important; margin-top: 7px !important; }
@@ -2881,7 +2887,13 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const [cx, cy] = spr ? stageXY(spr) : [180, 280]; const st = $("stage");
     floatText(cx, cy - 90, timing === 1.5 ? "Perfect!" : timing > 1 ? "Nice!" : "Okay", timing === 1.5);
     const jar = document.createElement("div"); jar.className = "fly"; jar.style.width = jar.style.height = "54px"; jar.style.margin = "-27px 0 0 -27px"; jar.innerHTML = IC.jar(JARS.find(j => j.k === E.jar).c);
-    const sx = st.clientWidth * .55, sy = st.clientHeight + 30; jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar);
+    let sx = st.clientWidth * .55, sy = st.clientHeight + 30;
+    const thr = cfxOn() && document.querySelector("#actors .thrower");
+    if (thr) {   // the avatar winds up, then lets go: the jar leaves from the hand
+      thrPose(thr, "windup"); await wait(190); const tj = thr.querySelector(".tjar"); if (tj) [sx, sy] = stageXY(tj);
+      thrPose(thr, "release"); sfx("tap"); setTimeout(() => { if (thr.isConnected) thrPose(thr, "ready", true); }, 560);
+    }
+    jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar);
     const flight = await anim(jar, [{ transform: "translate(0,0) rotate(0) scale(1.2)" }, { transform: `translate(${(cx - sx) * .5}px,${(cy - sy) - 120}px) rotate(300deg) scale(.9)`, offset: .55 }, { transform: `translate(${cx - sx}px,${cy - sy}px) rotate(720deg) scale(.8)` }], { duration: RM ? 120 : 600, easing: "ease-in", fill: "forwards" });
     jar.style.transform = `translate(${cx - sx}px,${cy - sy}px) scale(.8)`; flight.cancel();
     if (spr && cfxOn()) {   // the Glumi turns to light, then is pulled into the jar
@@ -2938,7 +2950,16 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const close = () => { if (!sh.isConnected || sh.classList.contains("out")) return; sh.classList.add("out"); setTimeout(() => sh.remove(), 230); };
     sh.addEventListener("click", e => { const c = e.target.closest(".jcard");
       if (c) { const k = c.dataset.jk; if (!S.jars[k]) return toast(`No ${JAR_CARD[k].toLowerCase()} jars: get them in the Shop`); if (E && E.type === "wild") { E.jar = k; save(); sfx("tap"); } }
-      close(); renderActions(); });
+      close(); renderStage(); renderActions(); });
+  }
+  // ---------- the thrower: the player's avatar (from behind) holding the chosen jar ----------
+  function throwerHTML() {
+    if (!ART["fp-hand-ready"] || !E || E.type !== "wild") return "";   // first-person hands (Tom 20 Nov: not the avatar) const J = JARS.find(j => j.k === E.jar) || JARS[0];
+    return `<div class="thrower" data-pose="ready"><img src="${ART["tr-throw-ready"]}" alt="" draggable="false"><span class="tjar">${IC.jar(J.c)}</span></div>`;
+  }
+  function thrPose(thr, pose, empty) {
+    const img = thr.querySelector("img"), k = "tr-throw-" + pose; if (img && ART[k]) img.src = ART[k];
+    thr.dataset.pose = pose; thr.classList.toggle("empty", !!empty || pose === "release");
   }
   function nextWild() { if (E && E.type === "wild" && E.i + 1 < E.list.length) { E.i++; E.treat = false; E.fought = false; E.hpFrac = 1; E.t0 = performance.now(); } else if (E && E.waves && E.waves.length) return void nextWave(); else E = null; save(); render(); }
   function reveal(m, title) {
@@ -3271,7 +3292,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const gc = E.boss ? "#ffd36b" : GRADES[w.q].c;
       return `${E.intro ? `<div class="flashfx"></div>` : ""}<div class="actor${E.intro ? " intro" : ""}" id="wildActor" style="left:50%;top:72%;--d:${introD(0)}s">${E.intro ? `<div class="excl">!</div>` : ""}<div class="spr"><div class="pop">${live(w.sp, w.evo, E.boss ? 180 : 150)}</div></div>
         ${tough(w) && !E.fought ? "" : `<div class="target"></div><div class="ring" id="ring"></div>`}<div class="shadow"></div>
-        <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>`;
+        <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>${throwerHTML()}`;
     }
     if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? (ART["item-chest-glow"] ? " glowchest art" : " glowchest") : ""}" style="width:130px">${E.glow && ART["item-chest-glow"] ? artIcon("item-chest-glow") : IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
     if (E.type === "rival") return `<div class="actor" style="left:50%;top:72%"><div class="spr pop"><div class="row" style="flex-wrap:nowrap;align-items:flex-end"><div style="width:74px">${trainerSVG(E.color || "#ff8a8a", false)}</div>${E.foes.map(f => art(f.sp, f.evo, 76)).join("")}</div></div><div class="shadow"></div><div class="tag">${IC.sword.replace("<svg", '<svg width="16" height="16"')} ${E.name}</div></div>`;
