@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795184964;</script>
+<script>window.GAME_BUILD = 1795185620;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1900,8 +1900,10 @@ nav .navwide { height: 66px !important; border-radius: 15px !important; box-shad
 nav .navwide span { padding: 18px 0 6px !important; }
 nav button:active:not(:disabled) { transform: translateY(3px); }
 nav button:disabled { opacity: .7 !important; filter: grayscale(.6) brightness(.95); }
-.stage { height: 100dvh !important; }
-.actions { bottom: calc(106px + env(safe-area-inset-bottom, 0px) * 2) !important; }
+.stage { height: 100dvh !important; margin-bottom: calc(-64px - env(safe-area-inset-bottom, 0px)); }
+#actions, .actions { background: none !important; }
+#actions .compass.hero .chero { -webkit-mask-image: linear-gradient(#000 72%, transparent 97%); mask-image: linear-gradient(#000 72%, transparent 97%); }
+.actions { bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important; }
 .stage .scene::after, #stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; pointer-events: none; z-index: 1; background: linear-gradient(rgba(40,30,20,0), rgba(40,30,20,.16)); }
 .toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
 /* NAVTILES: squarer tiles, big icon on top, the name across the bottom edge (Tom 20 Nov, 'adjust them') */
@@ -4205,7 +4207,13 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
       + [["a-online", "banner-online", "", "50% 50%"], ["a-gym", "banner-gyms", "bg-arena", "72% 55%"], ["a-duel", "banner-ladder", "bg-2", "70% 28%"], ["a-tower", "banner-cloud-climb", "bg-7", "78% 40%"], ["a-race", "banner-island-race", "bg-5", "78% 45%"]]
         .map(([c, b, z, pos]) => ART[b] ? `.aimg.${c}{background-image:url(${ART[b]});background-position:${pos}}` : ART[z] ? `.aimg.${c}{background-image:url(${ART[z]})}` : "").join("");
-    const el = document.createElement("style"); el.textContent = r; document.body.appendChild(el);  // after the game style, wherever that is
+    const el = document.createElement("style"); el.textContent = r + navArtCss(); document.body.appendChild(el);  // after the game style, wherever that is
+  }
+  function navArtCss() {   // the painted bottom buttons (Gemini sheet-nav, 20 Nov): the tile is the picture, its icon is in it; the name stays written on top
+    const tiles = [['[data-act="view:menu"]', "nav-menu"], ['[data-act="view:team"]', "nav-glumis"], ['[data-act="view:shop"]', "nav-shop"], ['[data-act="view:arena"]', "nav-arena"], [".navx", "nav-close"]];
+    let c = tiles.map(([q, k]) => ART[k] ? `nav button${q}{background:url(${ART[k]}) center/100% 100% no-repeat !important;box-shadow:none !important;border-radius:14px !important;filter:drop-shadow(0 4px 0 rgba(61,39,22,.45)) drop-shadow(0 8px 8px rgba(30,20,10,.25))}nav button${q}>svg,nav button${q}>img{visibility:hidden}nav button${q}:disabled{filter:grayscale(.6) brightness(.95) drop-shadow(0 4px 0 rgba(61,39,22,.45)) !important}` : "").join("");
+    if (ART["nav-wide-frame"]) c += `nav .navwide{box-shadow:0 6px 0 1px rgba(61,39,22,.45),0 9px 12px rgba(30,20,10,.25) !important;border-radius:18px !important}nav .navwide::after{content:"";position:absolute;inset:-5px;border:18px solid transparent;border-image:url(${ART["nav-wide-frame"]}) 74 / 18px stretch;pointer-events:none;z-index:1}nav .navwide span{z-index:2}nav .navwide .bang{z-index:3}`;
+    return c;
   }
   function renderTabs() {
     paintCss();
