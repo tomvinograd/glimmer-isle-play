@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795118198;</script>
+<script>window.GAME_BUILD = 1795168555;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1719,6 +1719,113 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 #splash .sp-logo { display: block; width: min(78vw, 360px); margin: 0 auto; filter: drop-shadow(0 4px 10px rgba(60,40,20,.35)); }
 .minepick { position: fixed; z-index: 60; pointer-events: none; transform-origin: 84% 86%; } .minepick > svg, .minepick > img { position: absolute; inset: 0; width: 100%; height: 100%; }
 .minepick.art, .minepick.art .mswoosh { transform-origin: 89% 93%; } .minepick .mswoosh { opacity: 0; transform: rotate(-6deg) scale(1.15); transform-origin: 84% 86%; } .minechip { position: fixed; z-index: 60; pointer-events: none; } .minechip svg, .minechip img { width: 100%; height: 100%; display: block; }
+
+/* ===== popups 20 Nov: X on every popup, catch results on top, Daily gift ===== */
+.popx { position: absolute; top: 8px; right: 8px; z-index: 6; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center;
+  background: #f1e4d0; color: #5b4636; box-shadow: 0 1px 3px rgba(91,70,54,.25); -webkit-tap-highlight-color: transparent; }
+.popx svg { width: 15px; height: 15px; display: block; }
+.popx:active { transform: scale(.9); }
+.popx.screen { position: fixed; top: calc(14px + env(safe-area-inset-top, 0px)); right: 14px; width: 42px; height: 42px; background: rgba(255,255,255,.94); box-shadow: 0 3px 10px rgba(40,25,10,.3); }
+.popx.screen svg { width: 18px; height: 18px; }
+.popup > h3 { padding: 0 30px; }
+.sheet > .popx { top: 14px; right: 14px; }
+.lvpick > .popx { top: 12px; right: 12px; }
+body > .shade { position: fixed; z-index: 85; }
+/* catch result card */
+.qres { width: min(320px, calc(100vw - 40px)); padding: 44px 14px 16px; margin-top: 18px; border-radius: 22px; gap: 12px;
+  background: linear-gradient(#fffdf7, #fff1d6); box-shadow: 0 0 0 3px #ffd77a, 0 16px 44px rgba(40,25,10,.45); animation: qresin .38s cubic-bezier(.3,1.45,.5,1); }
+@keyframes qresin { from { transform: scale(.7) translateY(20px); opacity: 0; } }
+.qres > .qtitle { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 6px 26px 4px; border-radius: 14px;
+  background: linear-gradient(var(--gold-1), var(--gold-2)); color: #fff; font: 800 25px/1.1 var(--display); text-shadow: 0 2px 0 rgba(150,80,0,.45);
+  box-shadow: 0 4px 0 #c9801a, 0 8px 16px rgba(150,80,0,.3); }
+.qres.none > .qtitle { background: linear-gradient(#c9d3e3, #8d9bb4); box-shadow: 0 4px 0 #6d7891, 0 8px 16px rgba(60,70,90,.3); text-shadow: 0 2px 0 rgba(50,60,80,.4); }
+.qres .qmons { gap: 10px; max-width: 100%; max-height: 46vh; overflow-y: auto; padding: 4px 2px; }
+.qres .qmons span { width: 82px; gap: 3px; padding: 6px 4px 7px; border-radius: 16px; background: linear-gradient(#fff, color-mix(in srgb, var(--gc) 22%, #fff));
+  box-shadow: inset 0 0 0 2.5px var(--gc), 0 3px 8px rgba(91,70,54,.15); animation: qpop .42s cubic-bezier(.3,1.6,.5,1) backwards; animation-delay: var(--d, 0ms); }
+@keyframes qpop { from { transform: scale(.3); opacity: 0; } }
+.qres .qmons .qnm { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 12px var(--display); color: var(--brown); }
+.qres .qmons i { font-size: 10px; padding: 1px 8px; border-radius: 6px; }
+.qstats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.qstats span { padding: 3px 10px; border-radius: 999px; background: #f6ead3; color: var(--brown); font: 800 12px var(--display); }
+.qstats span.ok { background: #dcf4d2; color: #2f7a35; }
+/* Daily gift */
+.popup.gift { width: min(340px, calc(100vw - 32px)); max-width: none; padding: 0 0 16px; gap: 12px; overflow: hidden; background: linear-gradient(#fff7e6, #fffaf3 30%); }
+.ghead { position: relative; width: 100%; display: grid; justify-items: center; gap: 2px; padding: 16px 14px 14px; overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #ffe9a8, #ffc65a 55%, #f39c1f); }
+.ghead::before { content: ""; position: absolute; left: 50%; top: 42%; width: 420px; height: 420px; margin: -210px 0 0 -210px; border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255,255,255,.28) 0 9deg, transparent 9deg 24deg); animation: spin 14s linear infinite; }
+.ghead > * { position: relative; }
+.gbox { width: 76px; height: 76px; display: grid; place-items: center; filter: drop-shadow(0 6px 8px rgba(150,80,0,.35)); animation: gbob 2.2s ease-in-out infinite; }
+.gbox img, .gbox svg { width: 76px !important; height: 76px !important; }
+@keyframes gbob { 50% { transform: translateY(-5px) rotate(-3deg); } }
+.ghead h3 { padding: 0; color: #fff; font: 800 26px/1.1 var(--display); text-shadow: 0 2px 0 rgba(150,80,0,.5), 0 4px 10px rgba(150,80,0,.3); }
+.ghead .gsub { padding: 2px 12px; border-radius: 999px; background: rgba(255,255,255,.85); color: #a0611a; font: 800 12.5px var(--display); }
+.ggrid { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 14px; }
+.gday { position: relative; display: grid; justify-items: center; gap: 1px; padding: 8px 4px 7px; border-radius: 14px; background: #fff; color: var(--brown);
+  box-shadow: 0 2px 7px rgba(91,70,54,.13), inset 0 0 0 1.5px #f1e4d0; }
+.gday small { font: 800 11px var(--display); color: #a08670; }
+.gday .gic { width: 36px; height: 36px; display: grid; place-items: center; } .gday .gic svg, .gday .gic img { width: 34px !important; height: 34px !important; }
+.gday b { font: 800 15px/1.1 var(--display); }
+.gday.got { background: #eef8e8; box-shadow: inset 0 0 0 1.5px #bfe5b0; } .gday.got .gic, .gday.got b { opacity: .45; }
+.gday .gchk { position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  background: #4cb648; color: #fff; box-shadow: 0 2px 5px rgba(40,110,40,.35); font-style: normal; }
+.gday .gchk svg { width: 14px; height: 14px; }
+.gday.now { background: linear-gradient(#fffbe9, #ffefc2); box-shadow: 0 0 0 3px #f5a623, 0 4px 14px rgba(245,166,35,.45); animation: gnow 1.6s ease-in-out infinite; }
+@keyframes gnow { 50% { box-shadow: 0 0 0 3px #f5a623, 0 4px 22px rgba(245,166,35,.8); transform: translateY(-2px); } }
+.gday .gtoday { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 1px 8px; border-radius: 7px; background: #e8574a; color: #fff;
+  font: 800 10px/14px var(--display); font-style: normal; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.gday.big { grid-column: 1 / -1; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: center; justify-items: start; column-gap: 12px; padding: 8px 16px;
+  background: linear-gradient(110deg, #f6eeff, #e3d1ff); box-shadow: 0 2px 8px rgba(110,70,170,.18), inset 0 0 0 1.5px #d6c0f5; }
+.gday.big .gic { grid-row: 1 / 3; width: 54px; height: 54px; } .gday.big .gic svg, .gday.big .gic img { width: 52px !important; height: 52px !important; }
+.gday.big small { color: #8a64c2; align-self: end; } .gday.big b { color: #5a3a8c; font-size: 17px; align-self: start; }
+.gday.big.now { background: linear-gradient(110deg, #fff6dc, #f3dcff); }
+.gday.claimed { animation: gclaim .6s ease-out forwards; }
+@keyframes gclaim { 30% { transform: scale(1.15); } 100% { transform: scale(.96); background: #eef8e8; } }
+.gnote { padding: 0 18px; font-size: 12.5px !important; color: #8a6d55 !important; }
+.popup.gift .popbtns { margin-top: 0; }
+body.bigtext .popup.gift { width: min(340px, calc((100vw - 32px) / 1.12)); }   /* big text zooms popups 1.12x */
+
+/* Arena hub fills the screen down to the bottom bar (Tom 20 Nov: empty space under the cards) */
+#page.ahubpg { grid-template-rows: auto repeat(4, minmax(104px, 1fr)); box-sizing: border-box; }
+#page.ahubpg .amode { height: 100%; align-items: stretch; }
+#page.ahubpg .aimg { height: auto; min-height: 104px; }
+#page.ahubpg .ago svg { width: 40px; height: 40px; }
+
+/* stars are the painted star picture (Tom 20 Nov), 1em big so each row keeps its own size */
+.stari { width: 1.1em; height: 1.1em; object-fit: contain; vertical-align: -.16em; display: inline-block; }
+.stari.off { filter: grayscale(1) brightness(1.25); opacity: .38; }
+.stari.off.art { filter: none; opacity: 1; }
+.starrow span.on .stari { filter: drop-shadow(0 0 6px rgba(255,200,80,.75)); }
+.zcs i, .tcard .tstars, .mstars { font-size: 14px; } .gstars i { font-size: 18px; }
+.tcard .tstars .stari { filter: drop-shadow(0 1px 1px rgba(90,50,10,.6)); margin: 0 -1px; }
+
+/* level picker tile next to Level up (was a bare ^^) */
+.gacts { grid-template-columns: 52px 52px 1fr 52px; }
+.gx { display: grid; place-items: center; align-content: center; gap: 1px; padding: 4px 0; background: linear-gradient(#ffe08a, #f5a623); color: #fff; box-shadow: 0 3px 0 #c9801a; }
+.gx svg { width: 24px; height: 24px; filter: drop-shadow(0 1px 1px rgba(150,80,0,.45)); } .gx small { font: 800 10.5px var(--display); text-shadow: 0 1px 1px rgba(150,80,0,.5); }
+/* hold to repeat: no text selection or phone menu while a finger rests on the button */
+button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.holding { transform: scale(.96); filter: brightness(1.08); }
+/* Book goals */
+.bgbtn { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; height: 32px; padding: 0 10px; border: 0; border-radius: 16px; background: #eef7ff; color: #2f6f9c; font: 800 13px var(--display); box-shadow: 0 1px 4px rgba(60,90,120,.2); position: relative; }
+.bgbtn svg, .bgbtn img { width: 20px !important; height: 20px; }
+.bgbtn .newdot { top: -6px; right: -6px; }
+.bglist { display: grid; gap: 8px; }
+.bgrow { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: #fff; box-shadow: 0 2px 8px rgba(91,70,54,.12); }
+.bgrow.done { background: #eef8e8; } .bgrow.lock { opacity: .6; }
+.bgrow .bgic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--gc) 30%, #fff); box-shadow: inset 0 0 0 2px var(--gc); }
+.bgrow.rb .bgic { background: linear-gradient(135deg, #ffd0d0, #fff3c4, #d4f7d4, #d4efff, #eadcff); }
+.bgrow .bgic svg, .bgrow .bgic img { width: 28px !important; height: 28px; }
+.bgrow b { font: 800 15px var(--display); color: var(--brown); display: block; } .bgrow small { font-size: 12px; color: #8a6d55; display: block; }
+.bgbar { height: 6px; border-radius: 4px; background: #efe5d6; overflow: hidden; margin-top: 4px; } .bgbar i { display: block; height: 100%; background: var(--gc); border-radius: 4px; }
+.bgrow.rb .bgbar i { background: linear-gradient(90deg, #ff9a9a, #ffd76a, #8fe08f, #7fc8ff, #c9a2ff); }
+.bgrow .bgrew { display: grid; justify-items: center; gap: 3px; }
+.bgrow .bgrew span { display: inline-flex; align-items: center; gap: 2px; font: 800 13px var(--display); color: #2f6f9c; } .bgrow .bgrew span svg, .bgrow .bgrew span img { width: 18px !important; height: 18px; }
+.bgrow .bgrew .mb { height: 30px; padding: 0 12px; font-size: 13px; }
+.bgrow .bgok { color: #2f9e5a; font: 900 18px var(--display); }
+
+/* card stars on the left, above the element and grade chips (Tom 20 Nov) */
+.gstars { left: 14px; right: auto; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2184,7 +2291,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return new Promise(res => {
       const sh = document.createElement("div"); sh.className = "shade evo";
       sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div class="evobox"><div class="evo-a">${art(m.sp, 0, 170)}</div><div class="evo-b">${art(m.sp, 1, 170)}</div><div class="evoflash"></div></div>`;
-      $("stage").appendChild(sh);
+      document.body.appendChild(sh);
       const a = sh.querySelector(".evo-a"), b = sh.querySelector(".evo-b"), fl = sh.querySelector(".evoflash"); let done = false;
       const finish = () => { if (done) return; done = true; sh.remove(); res(); };
       sh.addEventListener("click", finish);
@@ -2634,9 +2741,12 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   function quickResult(caught, fled, tries, left, autoThrow) {
     return new Promise(res => { const sh = document.createElement("div"); sh.className = "shade";
-      sh.innerHTML = `<div class="qres"><b>${caught.length ? "Caught!" : fled ? "Ran away" : "Out of jars"}</b>${caught.length ? `<div class="qmons">${caught.map(m => `<span style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 64)}<i>${GRADES[m.q].name}</i></span>`).join("")}</div>` : ""}`
-        + `<small>${[caught.length ? `${caught.length} caught` : "", fled ? `${fled} ran away` : "", left ? `${left} still here` : "", `${tries} jar${tries > 1 ? "s" : ""} thrown`].filter(Boolean).join(" · ")}</small></div>`;
-      $("stage").appendChild(sh); const close = () => { if (sh.isConnected) { sh.remove(); res(); } };
+      const title = caught.length ? (caught.length > 1 ? `Caught ${caught.length}!` : "Caught!") : fled ? "Ran away" : "Out of jars";
+      const chips = [caught.length ? `<span class="ok">${caught.length} caught</span>` : "", fled ? `<span>${fled} ran away</span>` : "", left ? `<span>${left} still here</span>` : "", `<span>${tries} jar${tries > 1 ? "s" : ""} thrown</span>`].join("");
+      sh.innerHTML = `${caught.length ? '<div class="rays" style="left:50%;top:50%"></div>' : ""}<div class="qres${caught.length ? "" : " none"}"><b class="qtitle">${title}</b>`
+        + (caught.length ? `<div class="qmons">${caught.map((m, i) => `<span style="--gc:${GRADES[m.q].c};--d:${Math.min(i, 8) * 70}ms">${art(m.sp, m.evo, 60)}<small class="qnm">${fname(m.sp, m.evo)}</small><i>${GRADES[m.q].name}</i></span>`).join("")}</div>` : "")
+        + `<div class="qstats">${chips}</div></div>`;
+      document.body.appendChild(sh); const close = () => { if (sh.isConnected) { sh.remove(); res(); } };
       sh.addEventListener("click", close); setTimeout(close, autoThrow ? 1300 : 2200); });
   }
   async function throwJar(autoThrow) {
@@ -2685,7 +2795,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     return new Promise(res => {
       const sh = document.createElement("div"); sh.className = "shade";
       sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">${title}</div><div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${live(m.sp, m.evo, 130, { cls: "joy" })}<div class="nm">${fname(m.sp, m.evo)}</div><div class="nmrow" style="font-size:14px"><span class="grade q${m.q}">${GRADES[m.q].name}</span>${elDot(SP[m.sp].el)}Lv ${m.lvl}</div></div></div></div>`;
-      $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
+      document.body.appendChild(sh); const close = () => { sh.remove(); res(); };
       poseShow(sh, "happy", 1800, 300);
       setTimeout(() => { const cd = sh.querySelector(".reveal"); if (!cd || !sh.isConnected) return; const [x, y] = elXY(cd), big = m.q >= 3;
         fxBurst(x, y, big ? 34 : 16, m.q === 4 ? RAINB : [GRADES[m.q].c, "#fff", "#ffd34d"], big ? 300 : 220); if (big) { fxRing(x, y, GRADES[m.q].c, 170); fxConfetti(x, y, 45); } }, 280);
@@ -2718,7 +2828,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       const sh = document.createElement("div"); sh.className = "shade";
       sh.innerHTML = `<div class="rays" style="left:50%;top:50%"></div><div style="position:relative;display:grid;justify-items:center;gap:10px"><div class="banner" style="position:static;transform:none">Caught ${list.length}!</div>
         <div class="grouprev">${list.map(m => `<div class="reveal q${m.q}" style="--gc:${GRADES[m.q].c}"><div class="in">${live(m.sp, m.evo, 64, { cls: "joy", seed: m.uid })}<div class="nm">${fname(m.sp, m.evo)}</div><span class="grade q${m.q}">${GRADES[m.q].name}</span></div></div>`).join("")}</div></div>`;
-      $("stage").appendChild(sh); const close = () => { sh.remove(); res(); };
+      document.body.appendChild(sh); const close = () => { sh.remove(); res(); };
       sh.addEventListener("click", close); setTimeout(() => { if (sh.isConnected) close(); }, quickNow ? 700 : 2800);
     });
   }
@@ -2987,7 +3097,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function zoneCard() {  // the zone painting with its name and 3 stars: every Glumi caught, guardian beaten, every reward claimed
     const z = S.zone, Z = ZONES[z], st = S.zones[z], stars = [Z.sp.every(sp => st.caught[sp]), !!st.cleared, (st.claimed || 0) >= milestones(z).length];
     const ms = milestones(z), mk = st.claimed || 0, zReady = ms[mk] && reached(z, ms[mk]);
-    return `<button class="zcard z${z}" data-act="map" aria-label="${Z.name}, open the Atlas">${zReady ? '<em class="bang">!</em>' : ""}<span class="zcn">${Z.name}</span><span class="zcs">${stars.map(on => `<i class="${on ? "on" : ""}">\u2605</i>`).join("")}</span></button>`;
+    return `<button class="zcard z${z}" data-act="map" aria-label="${Z.name}, open the Atlas">${zReady ? '<em class="bang">!</em>' : ""}<span class="zcn">${Z.name}</span><span class="zcs">${stars.map(on => `<i class="${on ? "on" : ""}">${starIc(on)}</i>`).join("")}</span></button>`;
   }
   function actorsHTML() {
     if (BT) return "";
@@ -3169,8 +3279,15 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   function giftPopup(then) {
     closePopup(); const L = loginState(), ready = giftReady(), d = document.createElement("div"); d.className = "popwrap";
-    d.innerHTML = `<div class="popbg"></div><div class="popup gift" role="dialog"><h3>Daily gift</h3><p>Come back every day. Day 7 gives a Purple egg, then the week starts again.</p>
-      <div class="lgrid">${LOGIN_REW.map((r, i) => `<span class="lday${i < L.n ? " got" : i === L.n && ready ? " now" : ""}"><small>Day ${i + 1}</small>${RW[r.k][0]}<b>${r.n}</b>${i < L.n ? '<em>\u2713</em>' : ""}</span>`).join("")}</div>
+    const left = () => { const m = Math.max(1, Math.ceil((nextMidnight() - Date.now()) / 60000)); return m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`; };
+    const tick = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+    const weekDone = !ready && L.n === 0 && L.last === today();
+    const tile = (r, i) => { const got = i < L.n || weekDone, now = i === L.n && ready, big = i === LOGIN_REW.length - 1;
+      return `<div class="gday${got ? " got" : ""}${now ? " now" : ""}${big ? " big" : ""}">${now ? '<i class="gtoday">Today</i>' : ""}<span class="gic">${RW[r.k][0]}</span><small>Day ${i + 1}</small><b>${big ? "Purple egg" : "+" + r.n.toLocaleString("en")}</b>${got ? `<em class="gchk">${tick}</em>` : ""}</div>`; };
+    const sub = ready ? `Day ${L.n + 1} of 7` : weekDone ? "Week done! New week tomorrow" : `Next gift in ${left()}`;
+    d.innerHTML = `<div class="popbg"></div><div class="popup gift" role="dialog" aria-label="Daily gift"><div class="ghead"><div class="gbox">${IC.gift || IC.star}</div><h3>Daily gift</h3><span class="gsub">${sub}</span></div>
+      <div class="ggrid">${LOGIN_REW.map(tile).join("")}</div>
+      <p class="gnote">A gift every day. Day 7 is a Purple egg, then the week starts again.</p>
       <div class="popbtns">${ready ? `<button class="mb gold pbig" data-act="giftclaim">Claim day ${L.n + 1}</button>` : `<button class="mb" data-act="giftclose">Come back tomorrow</button>`}</div></div>`;
     document.body.appendChild(d); popThen = then || null;
   }
@@ -4026,7 +4143,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   function teamSlot(i) {
     const m = team()[i];
     if (!m) return `<button class="slot empty${swapIn ? " swapping" : ""}" data-act="pickslot:${i}"><span class="plus">+</span><span class="cap">${swapIn ? "Put here" : "Empty spot"}</span></button>`;
-    return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${live(m.sp, m.evo, 78, { seed: i })}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${"\u2605".repeat(m.stars)}</span>` : ""}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span></button>`;
+    return `<button class="slot${swapIn ? " swapping" : ""}" data-act="${swapIn ? "swapto:" + i : "sheet:" + m.uid}" style="--gc:${GRADES[m.q].c}">${i === 0 ? `<span class="leadtag">${IC.star}Leader</span>` : ""}${live(m.sp, m.evo, 78, { seed: i })}<span class="nm">${fname(m.sp, m.evo)}</span>${m.stars ? `<span class="mstars">${starIc(1).repeat(m.stars)}</span>` : ""}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span></button>`;
   }
   function monTile(m) {  // a trading card (Tom 18 Nov)
     const s = SP[m.sp], tag = S.team[0] === m.uid ? "Leader" : S.team.includes(m.uid) ? "Team" : m.isNew ? "New" : (typeof workingAt === "function" && workingAt(m.uid)) ? "Working" : (typeof isAway === "function" && isAway(m.uid)) ? "Away" : "";
@@ -4034,7 +4151,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       <span class="tpat"></span><span class="tpow" title="Power">${monPower(m)}</span>${tag ? `<span class="trib${tag === "Leader" ? " lead" : tag === "New" ? " new" : ""}">${tag}</span>` : ""}
       <span class="tart">${art(m.sp, m.evo, 99)}</span>
       <span class="tfoot">${ART[EL_ART[s.el]] ? `<span class="tel telic">${artIcon(EL_ART[s.el])}</span>` : `<span class="tel" style="background:${EL[s.el].color}"></span>`}${m.fav ? '<span class="tfav">\u2665</span>' : ""}${m.lock ? `<span class="tlock">${IC.lock || ""}</span>` : ""}<span class="tlv">Lv.${m.lvl}</span></span>
-      ${m.stars ? `<span class="tstars">${"\u2605".repeat(m.stars)}</span>` : ""}</button>`;
+      ${m.stars ? `<span class="tstars">${starIc(1).repeat(m.stars)}</span>` : ""}</button>`;
   }
   let tq = "", bq = "", tEl = null, tQ = null, tSpare = false, cmpA = null;
   const SORTS = [["best", "Best first"], ["level", "Level"], ["power", "Power"], ["grade", "Grade"], ["element", "Element"], ["newest", "Newest"], ["name", "Name"]];
@@ -4090,7 +4207,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   const claimReady = () => tasksWaiting() + mailWaiting() + (giftReady() ? 1 : 0) + (homeAlert() ? 1 : 0);
   let spendKey = null, spendT = 0;
-  function sureSpend(key, p) { if (spendKey === key && Date.now() - spendT < 4000) { spendKey = null; return true; } spendKey = key; spendT = Date.now(); toast(`Tap again to spend ${p.toLocaleString("en")} coins`); return false; }
+  function sureSpend(key, p) { if (holdAct && holdN > 0) return true;  // holding the button is the 'are you sure'
+    if (spendKey === key && Date.now() - spendT < 4000) { spendKey = null; return true; } spendKey = key; spendT = Date.now(); toast(`Tap again to spend ${p.toLocaleString("en")} coins`); return false; }
   let lastGone = null;
   function showUndo(text) {
     let u = $("undobar"); if (!u) { u = document.createElement("div"); u.id = "undobar"; document.body.appendChild(u); }
@@ -4164,7 +4282,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (sheetPage === "stars") {
       const next = st < MAX_STARS ? Object.assign({}, m, { stars: st + 1 }) : null;
       body = `${back("Stars")}${mini}
-      <div class="starrow big" aria-label="${st} of ${MAX_STARS} stars">${Array.from({ length: MAX_STARS }, (_, k) => `<span class="${k < st ? "on" : ""}">\u2605</span>`).join("")}</div>
+      <div class="starrow big" aria-label="${st} of ${MAX_STARS} stars">${Array.from({ length: MAX_STARS }, (_, k) => `<span class="${k < st ? "on" : ""}">${starIc(k < st)}</span>`).join("")}</div>
       <p class="hint" style="margin:0">Each star adds ${Math.round(STAR_BONUS * 100)}% HP, Attack and Defense. Star cores come from releasing a Rainbow ${s.name}: ${RAINBOW_STAR_CORES} each. You have <b>${cores}</b>.</p>
       ${next ? `<div class="card nextstar"><b>With ${st + 1} star${st ? "s" : ""}</b><span>HP ${maxHp(m)} \u2192 ${maxHp(next)}</span><span>Attack ${atk(m)} \u2192 ${atk(next)}</span><span>Defense ${def(m)} \u2192 ${def(next)}</span></div>` : ""}
       <div class="btns">${ST.join("")}</div>`;
@@ -4196,12 +4314,12 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
            <div class="gpair">${charmRow(m)}<button class="gcharm cmpbtn" data-act="cmpstart:${m.uid}"><span class="gci"><svg viewBox="0 0 24 24" fill="none" stroke="#8a6d55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span><span class="gct"><b>Compare</b><small>With another Glumi</small></span><i>\u203A</i></button></div><div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
              ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
              ${bigBtn}
-             <button class="gx" data-act="lvpopen:${m.uid}" aria-label="Level up to any level" ${m.lvl < lvTop(m) ? "" : "disabled"}>\u2303\u2303</button></div>`;
+             <button class="gx" data-act="lvpopen:${m.uid}" aria-label="Level up to any level" ${m.lvl < lvTop(m) ? "" : "disabled"}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l6-6 6 6"/><path d="M6 19l6-6 6 6"/></svg><small>Levels</small></button></div>`;
       body = `<div class="gcard q${m.q}" style="--gc:${GRADES[m.q].c}">
           <span class="gpow">${power}</span><b class="gname">${m.nick || fname(m.sp, m.evo)}<button class="gnick" data-act="nickopen:${m.uid}" aria-label="Rename"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button></b>${where ? `<span class="gwhere">${where}</span>` : ""}
           <span class="gtags"><span class="gel" style="background:${EL[s.el].color}">${ART[EL_ART[s.el]] ? `<i class="gelic">${artIcon(EL_ART[s.el])}</i>` : ""}${EL[s.el].name}</span>${gChip(m.q)}</span>
           <div class="gart">${live(m.sp, m.evo, 210, { tap: 1 })}</div>
-          <span class="gstars">${Array.from({ length: MAX_STARS }, (_, k) => `<i class="${k < (m.stars || 0) ? "on" : ""}">\u2605</i>`).join("")}</span>
+          <span class="gstars">${Array.from({ length: MAX_STARS }, (_, k) => `<i class="${k < (m.stars || 0) ? "on" : ""}">${starIc(k < (m.stars || 0))}</i>`).join("")}</span>
           <span class="glv"><small>Lv.</small>${m.lvl}</span>
           <div class="gside">
             <button class="gsb fav${m.fav ? " on" : ""}" data-act="favmon:${m.uid}" aria-label="${m.fav ? "Not a favorite" : "Favorite"}"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 20.5 4.6 13.4a4.6 4.6 0 0 1 6.5-6.5l.9.9.9-.9a4.6 4.6 0 0 1 6.5 6.5z" fill="${m.fav ? "#ff5d8f" : "none"}" stroke="${m.fav ? "#ff5d8f" : "currentColor"}" stroke-width="2.4" stroke-linejoin="round"/></svg></button>
@@ -4209,7 +4327,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
             ${!inTeam ? `<button class="gsb" data-act="addteam:${m.uid}" aria-label="Add to team">+</button>` : !lead ? `<button class="gsb" data-act="lead:${m.uid}" aria-label="Make leader">${IC.star}</button>` : ""}
             ${inTeam && S.team.length > 1 ? `<button class="gsb" data-act="den:${m.uid}" aria-label="Remove from team">\u2212</button>` : ""}
             ${!inTeam ? `<button class="gsb" data-act="spage:bye" aria-label="Sell or release">${IC.coin}</button>` : ""}
-            ${m.lvl > 1 ? `<button class="gsb${resetSure === m.uid ? " warn" : ""}" data-act="lvlreset:${m.uid}" aria-label="Reset levels"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg></button>` : ""}
+            
           </div></div>
         ${tabBody}
         <div class="gtabs">${[["stats", "Stats"], ["skill", "Skill"], ["info", "Info"]].map(([k, n]) => `<button class="${sheetTab === k ? "on" : ""}" data-act="sheettab:${k}">${n}</button>`).join("")}</div>`;
@@ -4219,11 +4337,37 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       ${body}
       ${mainPg ? `<button class="gclose" data-act="closesheet" aria-label="Close">✕</button>` : `<button class="mb" data-act="closesheet" style="justify-self:center;min-width:120px">Close</button>`}</div>${lvPick === m.uid ? lvPopup(m) : ""}`;
   }
+  // ---------- Book goals: the only steady way to earn Glimmerstones (Tom 20 Nov: hard and creative, not bought) ----------
+  let bookGoals = false;
+  const bookTotal = () => SP.reduce((n, s) => n + (s.evo ? 2 : 1), 0);
+  function bookGoalList() {
+    const B = bestQ(), L = [], all = ZONES.flatMap(Z => Z.sp);
+    ZONES.forEach((Z, z) => { for (const [g, n] of [[3, 2], [4, 5]]) { const open = zoneOpen(z);
+      L.push({ id: `z${z}g${g}`, g, n, open, title: open ? `${Z.name} in ${GRADES[g].name}` : `A hidden island in ${GRADES[g].name}`, sub: `Every kind from ${open ? Z.name : "this island"} as ${GRADES[g].name}${g < 4 ? " or Rainbow" : ""}`,
+        have: Z.sp.filter(sp => (B[sp] || 0) >= g).length, need: Z.sp.length }); } });
+    L.push({ id: "book", g: 2, n: 5, open: true, title: "The whole Book", sub: "Catch every Glumi and every evolved form", have: Object.keys(S.caught).length, need: bookTotal() });
+    for (const [g, n] of [[3, 10], [4, 30]]) L.push({ id: `all${g}`, g, n, open: true, title: `The whole Book in ${GRADES[g].name}`, sub: `Every kind on every island as ${GRADES[g].name}${g < 4 ? " or Rainbow" : ""}`, have: all.filter(sp => (B[sp] || 0) >= g).length, need: all.length });
+    const got = S.bookGoals || {};
+    L.forEach(x => { x.done = !!got[x.id]; x.ready = !x.done && x.have >= x.need; });
+    return L;
+  }
+  const bookGoalsReady = () => bookGoalList().filter(x => x.ready).length;
+  function pageBookGoals() {
+    const L = bookGoalList(), sum = L.filter(x => x.done).reduce((a, x) => a + x.n, 0), max = L.reduce((a, x) => a + x.n, 0);
+    const row = x => `<div class="bgrow${x.done ? " done" : ""}${x.open ? "" : " lock"}${x.g === 4 ? " rb" : ""}" style="--gc:${GRADES[x.g].c}"><span class="bgic">${x.id === "book" ? (IC.book || IC.star) : IC.gstone}</span>
+      <span><b>${x.title}</b><small>${x.sub}</small><small>${Math.min(x.have, x.need)} of ${x.need}</small><span class="bgbar"><i style="width:${Math.min(100, x.have / x.need * 100)}%"></i></span></span>
+      <span class="bgrew"><span>${IC.gstone}${x.n}</span>${x.done ? '<em class="bgok">\u2713</em>' : x.ready ? `<button class="mb gold" data-act="bgclaim:${x.id}">Claim</button>` : ""}</span></div>`;
+    return `<div class="sheethead"><button class="mb" data-act="bookgoals:0" aria-label="Back">\u2039 Back</button><h3>Book goals</h3><span></span></div>
+      <p class="hint" style="margin:0">Glimmerstones ascend Glumis past level 100. Collect a whole island, or the whole Book, in Gold or Rainbow to earn them. You have ${S.gstone || 0} · earned here ${sum} of ${max}.</p>
+      <div class="bglist">${L.map(row).join("")}</div>`;
+  }
   function pageBook() {
+    if (bookGoals) return pageBookGoals();
     const total = SP.reduce((n, s) => n + (s.evo ? 2 : 1), 0), got = Object.keys(S.caught).length;
     const fresh = S.bookNew || {}; setTimeout(() => { if (view === "team" || view === "book") { S.bookNew = {}; } }, 2500);
     const cell = (sp, evo) => { const k = key(sp, evo), boss = SP[sp].tier === 3, dn = `data-n="${S.seen[k] ? fname(sp, evo).toLowerCase() : ""}"`; return S.caught[k] ? `<div class="cell got${boss ? " boss" : ""}" ${dn}>${fresh[k] ? '<span class="newdot">New</span>' : ""}${art(sp, evo, 54)}<span class="nm">${fname(sp, evo)}</span></div>` : S.seen[k] ? `<div class="cell sil${boss ? " boss" : ""}" ${dn}>${art(sp, evo, 54)}<span class="nm">${fname(sp, evo)}</span></div>` : `<div class="cell${boss ? " boss" : ""}" data-n=""><div class="q">?</div><span class="nm">???</span></div>`; };
-    return `<div class="head"><h2>Book</h2><span class="pill">${got}/${total}</span></div><div class="lctl"><input id="bq" type="search" placeholder="Search the Book" autocomplete="off"></div>` + ZONES.map((Z, i) => `<div class="bookzone"><h3>${zoneOpen(i) ? Z.name : "???"}</h3><div class="book">${Z.sp.flatMap(sp => [cell(sp, 0), cell(sp, 1)]).join("")}${cell(Z.boss, 0)}</div></div>`).join("");
+    const gr = bookGoalsReady();
+    return `<div class="head"><h2>Book</h2><span class="pill">${got}/${total}</span><button class="bgbtn" data-act="bookgoals:1">${IC.gstone}Goals${gr ? `<span class="newdot">${gr}</span>` : ""}</button></div><div class="lctl"><input id="bq" type="search" placeholder="Search the Book" autocomplete="off"></div>` + ZONES.map((Z, i) => `<div class="bookzone"><h3>${zoneOpen(i) ? Z.name : "???"}</h3><div class="book">${Z.sp.flatMap(sp => [cell(sp, 0), cell(sp, 1)]).join("")}${cell(Z.boss, 0)}</div></div>`).join("");
   }
   let shopTab = "jars";
   let resetSure = null;
@@ -4231,7 +4375,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   // ================= MAILBOX: update gifts =================
   const MAIL = [
     { id: "upd-2026-11-17-charms", title: "Charms are here", text: "Glumis can now wear a charm (on their card). Gym leaders and Cloud Climb now give charms, so here are some for the fights you already won.", rew: [{ k: "charm", n: 1, r: 1 }, { k: "charm", n: 2, r: 0 }] },
-    { id: "upd-2026-11-19-lv150", title: "Glumis grow to level 150", text: "Glumis can now go past level 100, up to 150. Each ascension past 100 needs Glimmerstones, a rare new stone from the Daily and World Boss, Cloud Climb floors 50+, Rainbow releases and the Shop. Here are your first ones.", rew: [{ k: "gstone", n: 3 }] },
+    { id: "upd-2026-11-19-lv150", title: "Glumis grow to level 150", text: "Glumis can now go past level 100, up to 150. Each ascension past 100 needs Glimmerstones, a rare new stone from Book goals, the Daily and World Boss, Cloud Climb floors 50+ and Rainbow releases. Here are your first ones.", rew: [{ k: "gstone", n: 3 }] },
     { id: "upd-2026-11-17-moonfruit", title: "Moonfruit gift", text: "New explorers now start with 20 moonfruit. You started before that, so here are yours!", rew: [{ k: "fruit", n: 20 }] },
   ];
   function mailSync() {  // put every letter not delivered yet into the inbox
@@ -4249,7 +4393,6 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   const BUY_QS = [1, 5, 10, 50], buyQ = () => BUY_QS.includes(S.buyQ) ? S.buyQ : 1;
   const EPACK = { n: 15, price: 120, perDay: 3 };
-  const GSTONE_PRICE = 2500, gstoneLeft = () => S.gsbuy === today() ? 0 : 1;  // one Glimmerstone a day from the shop
   const epackLeft = () => { const P = S.epack; return P && P.d === today() ? Math.max(0, EPACK.perDay - P.n) : EPACK.perDay; };
   function pageBoost(tabs) {
     const left = epackLeft();
@@ -4261,9 +4404,6 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       <h4 class="bsec">Energy</h4>
       <div class="brow"><span class="bmx">${IC.glow}</span><span class="gct"><b>Energy pack: ${EPACK.n} energy</b><small>${left} of ${EPACK.perDay} left today${S.glow >= glowCap() ? " \u00B7 can go above your cap" : ""}</small></span>
         <button class="price" data-act="buyepack" ${left && S.coins >= EPACK.price ? "" : "disabled"}>${IC.coin}${EPACK.price}</button></div>
-      <h4 class="bsec">Rare</h4>
-      <div class="brow"><span class="bmx">${IC.gstone}</span><span class="gct"><b>Glimmerstone</b><small>Ascends Glumis past level 100 \u00B7 ${gstoneLeft()} left today \u00B7 you have ${S.gstone || 0}</small></span>
-        <button class="price" data-act="buygstone" ${gstoneLeft() && S.coins >= GSTONE_PRICE ? "" : "disabled"}>${IC.coin}${GSTONE_PRICE.toLocaleString("en")}</button></div>
       <h4 class="bsec">Multipliers</h4>
       <div class="blist">${MULTS.filter(M => MULT_PRICE[M.m]).map(mrow).join("")}</div>
       <p class="hint" style="margin:0">A multiplier makes each step cost more energy and gives rarer Glumis and bigger rewards. Without buying it, you can only pick it while you have the energy shown in its card saved up.</p>`;
@@ -4447,6 +4587,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
         <span class="row" style="gap:6px"><button class="price" data-act="updcheck">Check now</button>${/^New version ready/.test(appStatus()) ? `<button class="price" data-act="updrestart">Restart</button>` : ""}</span></div></div>` : ""}
       ${appCan("schedule") ? `<h3 class="grouph">Phone</h3><div class="slist">${sw("notify", S.opt.notify !== false, "Reminders", "Energy full, buildings full, expeditions back, daily gift (never at night)")}</div>` : ""}
       <h3 class="grouph">Game</h3>
+      <div class="slist">${sw("hold", S.opt.hold !== false, "Hold to repeat", "Keep your finger on Buy or Level up to buy or level up again and again")}</div>
       <div class="slist"><button class="setrow" data-act="settings:backup"><span>Save backup</span><b>Move to another phone</b><i>›</i></button><button class="setrow" data-act="hintsreset"><span>Show tips again</span><b></b><i>›</i></button><button class="setrow" data-act="settings:code"><span>Gift code</span><b></b><i>›</i></button><button class="setrow" data-act="settings:delete"><span>Delete my data</span><b></b><i>›</i></button></div>
       <p class="saved">${saveNote || "Saved on this device"}<br>${versionText()}</p>`;
   }
@@ -4581,7 +4722,30 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   let confirmBuy = null;
   const kindPrice = (k, q) => marketPrice(q, k.lvl) * (k.boss ? 3 : 1);
   const marketPrice = (q, lvl) => q >= 3 ? 150 + lvl * 10 : 50 + lvl * 5;  // 16 Nov: much cheaper (Purple 55, Gold 160 at level 1)
+  // one star: the painted star picture (empty = 'ui-star-empty' picture, or a faded star), the text star only without art
+  function starIc(on) {
+    if (!ART["ui-star"]) return "\u2605";
+    return on ? `<img class="stari" src="${ART["ui-star"]}" alt="">` : ART["ui-star-empty"] ? `<img class="stari off art" src="${ART["ui-star-empty"]}" alt="">` : `<img class="stari off" src="${ART["ui-star"]}" alt="">`;
+  }
   function closePopup() { const p = document.querySelector(".popwrap"); if (p) p.remove(); }
+  // Every popup gets an X in its corner (Tom 20 Nov: no more tapping the space above or the phone's back button). The X does what the
+  // popup's own Close / Not now / Cancel does; a popup without one closes the way the back button closes it. Full-screen cards
+  // (Caught!, Victory, evolving) get an X in the screen corner; tapping it is a tap on the card, which closes it.
+  const GX_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>';
+  function gxAdd(el, act, cls) {
+    if (el.querySelector(":scope > .popx")) return;
+    const b = document.createElement("button"); b.type = "button"; b.className = "popx" + (cls ? " " + cls : ""); b.setAttribute("aria-label", "Close"); b.innerHTML = GX_ICON;
+    if (act) b.dataset.act = act; else if (act === false) b.addEventListener("click", e => { e.stopPropagation(); if (window.glimmerBack) window.glimmerBack(); });
+    el.prepend(b);
+  }
+  function gxAll() {
+    document.querySelectorAll(".popwrap > .popup").forEach(p => { const own = p.querySelector('[data-act="closepop"],[data-act="nickcancel"],[data-act="awayclose"],[data-act="giftclose"]'); gxAdd(p, own ? own.dataset.act : false); });
+    document.querySelectorAll(".lvpick").forEach(p => gxAdd(p, "lvpclose"));
+    document.querySelectorAll(".sheet:not(.cardpage)").forEach(p => gxAdd(p, "closesheet"));
+    document.querySelectorAll("body > .shade").forEach(p => { const q = p.querySelector(".qres"); gxAdd(q || p, null, q ? "" : "screen"); });
+    document.querySelectorAll("body > .result").forEach(p => gxAdd(p, null, "screen"));
+  }
+  new MutationObserver(gxAll).observe(document.body, { childList: true, subtree: true });
   const JAR_NAME = { plain: "plain", bright: "bright", star: "star", prism: "prism" }, JAR_PRICE = { plain: 15, bright: 45, star: 120, prism: 5000 };
   function jarPopup(k, w) {
     closePopup(); const n = 5, cost = JAR_PRICE[k] * n;
@@ -4858,7 +5022,18 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (ART["bg-menu"]) { document.body.style.setProperty("--menubg", `url(${view === "shrine" && ART["bg-star"] ? ART["bg-star"] : ART["bg-menu"]})`); document.body.classList.toggle("menubg", !onStage); }
     if (onStage) { if (!$("pr0")) initProps(); renderStage(); renderActions(); placeProps(); }
     else $("page").innerHTML = !S.started ? pageStart() : showAuto ? pageAuto() : showMap || view === "atlas" ? pageAtlas() : view === "home" ? pageHome() : view === "menu" ? pageMenu() : view === "release" ? pageRelease() : view === "shrine" ? pageShrine() : view === "mail" ? pageMail() : view === "charms" ? pageCharms() : view === "stats" ? pageStats() : view === "log" ? pageLog() : view === "timers" ? pageTimers() : view === "arena" ? pageArena() : view === "tasks" ? pageTasks() : view === "bag" ? pageBag() : view === "team" ? teamSeg() + (teamTab === "book" ? pageBook() : pageTeam()) : view === "book" ? pageBook() : pageShop();
+    fillArenaHub();
   }
+  // the Arena hub reaches down to the bottom bar; measured, because big text zooms the page
+  function fillArenaHub() {
+    const pg = $("page"); if (!pg) return;
+    const on = !pg.hidden && S.started && view === "arena" && arenaSub === "hub" && !showAuto && !showMap;
+    pg.classList.toggle("ahubpg", on); pg.style.minHeight = ""; if (!on) return;
+    const nv = document.querySelector("nav"); if (!nv) return;
+    const r = pg.getBoundingClientRect(), want = nv.getBoundingClientRect().top - 12 - r.top;
+    if (r.height > 0 && want > r.height + 2) pg.style.minHeight = Math.floor(pg.offsetHeight * want / r.height) + "px";
+  }
+  addEventListener("resize", () => fillArenaHub());
   function paintBattle() {
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
     $("meHp").innerHTML = bar(me.hp, maxHp(me)); $("foeHp").innerHTML = bar(foe.hp, maxHp(foe)); $("foeEn").innerHTML = segs(BT.foe.e); $("meSegs").innerHTML = segs(BT.me.e); $("eNum").textContent = Math.floor(BT.me.e / 10);
@@ -5016,7 +5191,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   }
   document.addEventListener("pointerup", e => {
     const b = e.target.closest && e.target.closest("button[disabled][data-act]"); if (!b) return; const w = whyLocked(b.dataset.act); if (!w) return;
-    if (BT && /^(cast|shield)/.test(b.dataset.act)) { toast(w[0]); return; }
+    if ((BT && /^(cast|shield)/.test(b.dataset.act)) || holdN > 0) { toast(w[0]); return; }   // after a hold: just say why it stopped
     closePopup(); const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<div class="popbg"></div><div class="popup" role="dialog"><h3>Not yet</h3><p>${w[0]}</p><div class="popbtns"><button class="mb" data-act="nickcancel">OK</button>${w[1] ? `<button class="mb gold" data-act="whygo:${w[1]}">${w[2] || "Take me there"}</button>` : ""}</div></div>`;
     document.body.appendChild(d);
@@ -5029,6 +5204,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     if (BT) { toast("Tap Give up to leave the fight"); return true; }
     if (lvPick) { lvPick = null; render(); return true; }
     if (sheetUid) { sheetUid = null; render(); return true; }
+    if (bookGoals && view === "team") { bookGoals = false; render(); return true; }
     if (cmpA) { cmpA = null; render(); return true; }
     if (showAuto) { showAuto = false; autoPick = null; render(); return true; }
     if (showMap || view === "atlas") { showMap = false; view = "explore"; atlasZone = null; atlasPin = null; render(); return true; }
@@ -5056,6 +5232,27 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
   window.glimmerPause = () => { try { save(); const a = appCan("schedule"); if (a) a.schedule(JSON.stringify(reminders())); } catch {} };
   window.glimmerResume = () => { try { const a = appCan("schedule"); if (a) a.schedule("[]"); } catch {} };
   setTimeout(() => { try { const a = appCan("askNotify"); if (a && S.started && !S.notifyAsked && !(S.opt && S.opt.notify === false) && !a.canNotify()) { S.notifyAsked = 1; save(); a.askNotify(); } } catch {} }, 20000);
+  // ---------- hold to repeat (Tom 20 Nov): keep a finger on Buy or Level up and it goes again and again, faster and faster ----------
+  const HOLD_ACTS = /^(buy|buyepack|lvl|lvlmax|lvpstep)(:|$)/;
+  let holdT = 0, holdAct = null, holdN = 0, holdSwallow = false;
+  const holdOn = () => !S.opt || S.opt.hold !== false;
+  function holdStop() { clearTimeout(holdT); holdT = 0; holdAct = null; document.querySelectorAll(".holding").forEach(x => x.classList.remove("holding")); }
+  function holdTick() {
+    if (!holdAct) return;
+    const b = document.querySelector(`button[data-act="${CSS.escape(holdAct)}"]`);
+    if (!b || b.disabled) { holdStop(); return; }
+    holdN++; actNow(holdAct); holdSwallow = true;
+    const nb = document.querySelector(`button[data-act="${CSS.escape(holdAct || "")}"]`); if (nb) nb.classList.add("holding");
+    holdT = setTimeout(holdTick, Math.max(50, 260 - holdN * 25));
+  }
+  document.addEventListener("pointerdown", e => {
+    holdStop(); holdSwallow = false; holdN = 0;
+    const b = e.target.closest && e.target.closest("button[data-act]"); if (!b || b.disabled || !holdOn() || !HOLD_ACTS.test(b.dataset.act)) return;
+    holdAct = b.dataset.act; holdT = setTimeout(holdTick, 450);
+  }, true);
+  for (const ev of ["pointerup", "pointercancel"]) document.addEventListener(ev, () => holdStop(), true);
+  document.addEventListener("contextmenu", e => { if (e.target.closest && e.target.closest("button[data-act]")) e.preventDefault(); });
+  document.addEventListener("click", e => { if (holdSwallow && e.isTrusted) { holdSwallow = false; e.stopPropagation(); e.preventDefault(); } }, true);   // the tap that ends a hold is not one more buy
   // ---------- input ----------
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
@@ -5069,6 +5266,8 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "settings") { bkSure = false; settingsPage = arg || null; view = "menu"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); }
     else if (a === "close") { view = "explore"; showMap = false; showAuto = false; sheetUid = null; swapIn = null; settingsPage = null; homePlace = null; homePick = false; render(); window.scrollTo(0, 0); }
     else if (a === "goreq") { if (!E && !BT && !busy) { view = "shop"; shopTab = "requests"; showMap = false; showAuto = false; render(); window.scrollTo(0, 0); } }
+    else if (a === "bookgoals") { bookGoals = n === 1 || arg === "1"; render(); window.scrollTo(0, 0); }
+    else if (a === "bgclaim") { const x = bookGoalList().find(y => y.id === arg); if (!x || !x.ready) return; S.bookGoals = S.bookGoals || {}; S.bookGoals[x.id] = 1; giveReward({ k: "gstone", n: x.n }); sfx("claim"); save(); toast(`+${x.n} Glimmerstone${x.n > 1 ? "s" : ""}: ${x.title}`); render(); }
     else if (a === "gobook") { if (!E && !BT && !busy) { view = "team"; teamTab = "book"; showMap = false; showAuto = false; sheetUid = null; render(); window.scrollTo(0, 0); } }
     else if (a === "wipe") wipeData();
     else if (a === "rivalquick") quickRival(false);
@@ -5136,7 +5335,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "lockmon") { const m = mon(n); if (m) { m.lock = !(m.lock || m.fav); save(); toast(m.lock ? "Locked: it can't be sold or released" : "Unlocked"); render(); } }
     else if (a === "lvlmax") { const m = mon(n); if (m) { const k = levelsAffordable(m); if (k) { S.leaves -= levelsCost(m, k); m.lvl += k; m.hp = maxHp(m); for (let j = 0; j < k; j++) track("lvl"); sfx("up"); save(); toast(`+${k} levels`); render(); moHero(); } } }
     else if (a === "taskstab") { tasksTab = arg; render(); }
-    else if (a === "giftclaim") { if (!giftReady()) return; const L = loginState(), r = LOGIN_REW[L.n % 7]; giveReward(r); L.last = today(); L.n = (L.n + 1) % 7; sfx("claim"); save(); closePopup(); toast(`Daily gift: ${r.n} ${RW[r.k][1]}`); render(); const f = popThen; popThen = null; if (f) f(); }
+    else if (a === "giftclaim") { if (!giftReady()) return; const L = loginState(), r = LOGIN_REW[L.n % 7]; giveReward(r); L.last = today(); L.n = (L.n + 1) % 7; sfx("claim"); save();
+      const done = () => { closePopup(); toast(`Daily gift: ${r.n} ${RW[r.k][1]}`); render(); const f = popThen; popThen = null; if (f) f(); };
+      const t = document.querySelector(".gday.now"), cb = document.querySelector('[data-act="giftclaim"]'); if (cb) cb.disabled = true;
+      if (t && !moOff()) { t.classList.remove("now"); t.classList.add("claimed"); const rc = t.getBoundingClientRect(); try { fxBurst(rc.left + rc.width / 2, rc.top + rc.height / 2, 22, ["#ffd34d", "#fff", "#f5a623"], 220); } catch (e) {} setTimeout(done, 650); } else done(); }
     else if (a === "giftclose" || a === "awayclose") { closePopup(); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "awaycollect") { homeTick(); let got = []; for (const k in PLACES) { const n2 = collectPlace(k); if (n2) got.push(`${n2} ${PLACES[k].unit}`); } save(); closePopup(); if (got.length) toast("Collected " + got.join(", ")); render(); const f = popThen; popThen = null; if (f) f(); }
     else if (a === "giftopen") giftPopup();
@@ -5187,7 +5389,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "charmmerge") { const [k, r] = arg.split("-"), G = charmGroups().find(g => g.k === k && g.r === +r); if (G && G.free.length >= 3 && +r < 2) {
         const gone = G.free.slice(0, 3).map(c => c.id); S.charms = S.charms.filter(c => !gone.includes(c.id)); const nc = addCharm(k, +r + 1); save(); sfx("claim"); toast(`Made a ${CHARM_R[nc.r]} ${CHARM[k].n}!`); render(); } }
     else if (a === "bagpick") { bagPick = bagPick === arg ? null : arg; render(); }
-    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music" || arg === "vibe" || arg === "notify") S.opt[arg] = S.opt[arg] === false; else S.opt[arg] = !S.opt[arg]; if (arg === "notify" && S.opt.notify !== false) { const ap = appCan("askNotify"); if (ap && !ap.canNotify()) ap.askNotify(); } document.body.classList.toggle("bigtext", !!S.opt.big); if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
+    else if (a === "opt") { if (!S.opt) S.opt = {}; if (arg === "sound" || arg === "music" || arg === "vibe" || arg === "notify" || arg === "hold") S.opt[arg] = S.opt[arg] === false; else S.opt[arg] = !S.opt[arg]; if (arg === "notify" && S.opt.notify !== false) { const ap = appCan("askNotify"); if (ap && !ap.canNotify()) ap.askNotify(); } document.body.classList.toggle("bigtext", !!S.opt.big); if (arg === "music") { if (S.opt.music === false) stopMusic(); else startMusic(); } RM = RM_SYS || !!S.opt.calm; document.body.classList.toggle("calm", RM); save(); render(); if (arg === "sound") sfx("tap"); }
     else if (a === "updcheck") { const g = appBridge(); if (g) { g.checkNow(); toast("Checking for updates..."); } }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
@@ -5219,7 +5421,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "autospd") { S.autoSpd = AUTO_SPEEDS[(AUTO_SPEEDS.indexOf(autoSpd()) + 1) % AUTO_SPEEDS.length]; save(); toast(`Auto speed ×${autoSpd()}`); render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
     else if (a === "backtocatch") { view = "explore"; if (E) E.t0 = performance.now(); render(); window.scrollTo(0, 0); }
-    else if (a === "teamtab") { teamTab = arg; sheetUid = null; render(); window.scrollTo(0, 0); }
+    else if (a === "teamtab") { teamTab = arg; sheetUid = null; bookGoals = false; render(); window.scrollTo(0, 0); }
     else if (a === "homeplace") {
       let got = 0, icon = null, unit = "";
       homeTick(); standTick();
@@ -5327,7 +5529,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const p = sellPrice(m); S.coins += p; lastGone = { m: JSON.parse(JSON.stringify(m)), keeps: 0, cores: 0, coins: p, t: Date.now() }; showUndo(`Sold ${nameOf(m)}`); S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
-      if (as < MAX_ASC && m.lvl >= ascTop(m) && (S.gstone || 0) < ASC_STONES[as]) { toast(`Ascending past level ${ascTop(m)} needs ${ASC_STONES[as]} Glimmerstones (you have ${S.gstone || 0}). Find them in the Daily and World Boss, Cloud Climb, Rainbow releases and the Shop`); return; }
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && (S.gstone || 0) < ASC_STONES[as]) { toast(`Ascending past level ${ascTop(m)} needs ${ASC_STONES[as]} Glimmerstones (you have ${S.gstone || 0}). Find them in Book goals, the Daily and World Boss, Cloud Climb and Rainbow releases`); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { S.gstone = (S.gstone || 0) - ASC_STONES[as]; const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); setTimeout(() => fxPower("Ascended!"), 30); } } }
     else if (a === "mailclaim") { const ids = arg === "all" ? (S.mail || []).map(x => x.id) : [arg], got = {};
@@ -5335,7 +5537,6 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       S.mail = (S.mail || []).filter(x => !ids.includes(x.id)); sfx("claim"); save(); render(); toast("Got " + Object.entries(got).map(([k, n]) => `${n} ${RW[k] ? RW[k][1] : k}`).join(", ")); }
     else if (a === "buyq") { S.buyQ = n; save(); render(); }
     else if (a === "buymult") { const p = MULT_PRICE[n]; if (!p || S.coins < p || (S.multOwned && S.multOwned[n])) return; if (p >= 1000 && !sureSpend("mult:" + n, p)) return; S.coins -= p; S.multOwned = S.multOwned || {}; S.multOwned[n] = 1; sfx("claim"); save(); render(); toast(`x${n} is yours: pick it with the knob on the compass`); }
-    else if (a === "buygstone") { if (!gstoneLeft() || S.coins < GSTONE_PRICE) return; if (!sureSpend("gstone", GSTONE_PRICE)) return; S.coins -= GSTONE_PRICE; S.gsbuy = today(); S.gstone = (S.gstone || 0) + 1; sfx("claim"); save(); render(); toast("+1 Glimmerstone"); }
     else if (a === "buyepack") { if (!epackLeft() || S.coins < EPACK.price) return; if (!S.epack || S.epack.d !== today()) S.epack = { d: today(), n: 0 }; S.epack.n++; S.coins -= EPACK.price; S.glow += EPACK.n; sfx("coin"); save(); render(); toast(`+${EPACK.n} energy`); }
     else if (a === "buy") {
       const prices = { plain: 15, bright: 45, star: 120, prism: 5000, treat: 25, leaves: 20 }, q = S.jars[arg] !== undefined ? buyQ() : 1, p = prices[arg] * q;
@@ -5747,7 +5948,7 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
       }
       const T = tradeState(), mine = T && T.mine, theirs = T && T.theirs, done = O.done[R.code];
       const card = (o, who) => { if (!o) return `<div class="oltc empty"><small>${who === "me" ? "Pick a Glumi to put up" : "Waiting for " + olEsc(other.name) + "..."}</small></div>`; const g = snapFoe(o.mon); if (!g) return ""; delete g.real;
-        return `<div class="oltc" style="--gc:${GRADES[g.q].c}">${art(g.sp, g.evo, 76)}<b>${fname(g.sp, g.evo)}</b><small>${GRADES[g.q].name} · Lv ${g.lvl}${g.stars ? " · " + "★".repeat(g.stars) : ""}</small><small>Power ${monPower(g)}</small></div>`; };
+        return `<div class="oltc" style="--gc:${GRADES[g.q].c}">${art(g.sp, g.evo, 76)}<b>${fname(g.sp, g.evo)}</b><small>${GRADES[g.q].name} · Lv ${g.lvl}${g.stars ? " · " + starIc(1).repeat(g.stars) : ""}</small><small>Power ${monPower(g)}</small></div>`; };
       if (done) return `${head}<div class="olroom"><b>Trade done!</b><small>Your new Glumi is in your Glumis list.</small></div><div class="pbtns"><button class="mb" data-act="arenasub:olleave">Leave</button><button class="mb gold pbig" data-act="olagain">Trade again</button></div>`;
       if (tradePickOn) { const L = S.mons.filter(isSpare).sort((a, b) => b.q - a.q || b.lvl - a.lvl);
         return `${head}<p class="hint" style="margin:4px 0">Pick a spare Glumi to put up (not in your team, not locked or a favorite).</p>
