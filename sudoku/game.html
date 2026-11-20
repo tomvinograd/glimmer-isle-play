@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795068026;</script>
+<script>window.GAME_BUILD = 1795162895;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -387,6 +387,7 @@ input { user-select: text; -webkit-user-select: text; }
 .drow b { font-variant-numeric: tabular-nums; } .drow small { color: var(--muted); font-weight: 600; display: block; font-size: 12px; }
 .drow.me { box-shadow: inset 0 0 0 2px var(--accent); }
 .drow .rk { color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; }
+.dlv { margin: 6px 2px -2px; font-size: 13px; font-weight: 800; color: var(--muted); }   /* level heading in the daily times */
 .hint2 { margin: 0; color: var(--muted); font-size: 13px; font-weight: 600; text-align: center; }
 .badges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .badge { background: var(--paper); border-radius: 14px; padding: 10px 6px; text-align: center; display: grid; gap: 3px; box-shadow: 0 1px 3px var(--shade); align-content: start; }
@@ -789,9 +790,12 @@ const keyDate = k => { const [y, m, d] = k.split("-").map(Number); return new Da
 const addDays = (k, n) => { const d = keyDate(k); d.setDate(d.getDate() + n); return dayKey(d); };
 const dailyLevel = k => DAILY_LV[keyDate(k).getDay()];
 const dayLabel = k => k === dayKey() ? "Today" : k === addDays(dayKey(), -1) ? "Yesterday" : keyDate(k).toLocaleDateString(isHe() ? "he-IL" : "en-GB", { day: "numeric", month: "short" });
-function makeDaily(k) {
-  const lv = dailyLevel(k), L = LEVELS[lv - 1], was = rnd; let best = null;
-  rnd = seeded(hashStr("tvsudoku-daily-" + k));
+// The player can pick any level for the daily: each level has its own puzzle that day, the same for everyone who picks it.
+// The day's own level keeps the old seed, so it stays the same puzzle as before the level choice existed.
+const dailyMyLv = k => opts.dailyLv || dailyLevel(k);   // opts.dailyLv: the player's own daily level (empty = follow the week)
+function makeDaily(k, lv = dailyLevel(k)) {
+  const L = LEVELS[lv - 1], was = rnd; let best = null;
+  rnd = seeded(hashStr("tvsudoku-daily-" + k + (lv === dailyLevel(k) ? "" : "-L" + lv)));
   try { for (let n = 0; n < 200 && !(best && best.score === 0); n++) { const r = tryPuzzle(L); if (!best || r.score < best.score) best = r; } }
   finally { rnd = was; }
   return Object.assign({ lv }, best);
@@ -943,7 +947,7 @@ function recordSolve(kind) {
   if (G.daily) {
     opts.daily = opts.daily || {};
     if (!(opts.daily[G.daily] || {}).done) opts.dailyWins = (opts.dailyWins || 0) + 1;
-    opts.daily[G.daily] = { done: true, t: G.t, m: G.mistakes, h: G.hints };
+    opts.daily[G.daily] = { done: true, t: G.t, m: G.mistakes, h: G.hints, lv: G.level };
     for (const d of Object.keys(opts.daily)) if (d < addDays(k, -60)) delete opts.daily[d];
     dailyPost(G.daily);
   }
@@ -1137,18 +1141,40 @@ function openDaily() {
   if (rec && rec.done) return openDailyDone(k);
   if (G && G.daily === k && !G.done) { paused = false; hideHome(); render(); return; }
   if (opts.shelf && opts.shelf.daily === k && !opts.shelf.done) return useShelf();
+  dPick = dailyMyLv(k); dFollow = !opts.dailyLv; sheet = "dpick"; drawDailyPick();
+}
+// how hard today's daily is: today's level (easy Monday .. Expert Sunday) or the player's own; the choice is kept for the next days
+let dPick = 4, dFollow = true;
+function drawDailyPick() {
+  const k = dayKey(), dl = dailyLevel(k), L = LEVELS[dPick - 1];
+  const presets = [[2, "Easy"], [4, "Medium"], [6, "Hard"], [8, "Expert"], [10, "Extreme"]];
+  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Daily puzzle">
+    <h2>Daily puzzle</h2>
+    <div class="lvbig"><b>${L.name}</b><small>Level ${dPick} of 10${dPick === dl ? " · today's level" : ""}</small></div>
+    <input class="range" id="dlvrange" type="range" min="1" max="10" step="1" value="${dPick}" aria-label="Difficulty">
+    <div class="ticks">${LEVELS.map((_, n) => `<span>${n + 1}</span>`).join("")}</div>
+    <div class="presets"><button id="dtoday" class="${dFollow ? "on" : ""}">Today's level</button>${presets.map(([n, t]) => `<button data-dlv="${n}" class="${!dFollow && n === dPick ? "on" : ""}">${t}</button>`).join("")}</div>
+    <p class="about">Today's level is <b>${LEVELS[dl - 1].name}</b>: easy on Monday, harder each day, Expert on Sunday. Every level has its own puzzle today, the same for everyone who picks it.</p>
+    <div class="row2"><button class="big" data-close>Back</button><button class="big go" id="dstart">Start ${L.name}</button></div></div>`;
+  $("dlvrange").oninput = e => { dPick = +e.target.value; dFollow = false; drawDailyPick(); $("dlvrange").focus(); };
+  $("dtoday").onclick = () => { dPick = dl; dFollow = true; drawDailyPick(); };
+  layer.querySelectorAll("[data-dlv]").forEach(b => b.onclick = () => { dPick = +b.dataset.dlv; dFollow = false; drawDailyPick(); });
+  $("dstart").onclick = () => { opts.dailyLv = dFollow ? 0 : dPick; save(); startDaily(k, dPick); };
+  layer.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (homeOn) showHome(); });
+}
+function startDaily(k, lv) {
   if (V) vsStop(true);
   sheet = "making";
   layer.innerHTML = `<div class="scrim"></div><div class="sheet"><div class="making"><div class="spin"></div>Getting today's puzzle…</div></div>`;
   setTimeout(() => {
-    const r = makeDaily(k);
+    const r = makeDaily(k, lv);
     shelve("daily");
     G = { level: r.lv, givens: r.p, sol: r.sol, cells: r.p.slice(), notes: new Array(81).fill(0), t: 0, mistakes: 0, hints: 0, done: false, hist: [], clues: r.givens, daily: k };
     sel = -1; notesMode = false; paused = false; dropFocus(); closeSheet(); hideHome(); render(); save(); refitSoon();
   }, 60);
 }
 function openDailyDone(k, r) {
-  const rec = (opts.daily || {})[k] || {}, lv = dailyLevel(k);
+  const rec = (opts.daily || {})[k] || {}, lv = rec.lv || dailyLevel(k);
   sheet = "daily";
   layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Daily puzzle">
     <div class="winhead"><b>${r ? "Daily puzzle solved!" : "Daily puzzle ✓"}</b><span>${WEEKDAY[keyDate(k).getDay()]} · ${LEVELS[lv - 1].name}</span></div>
@@ -1157,7 +1183,7 @@ function openDailyDone(k, r) {
     <p class="sec">Today's times</p>
     <div class="list" id="dboard">${dboardHtml(k)}</div>
     ${opts.name ? "" : `<label class="fld"><span>Your name, so friends know which time is yours</span><input id="dname" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Your name"></label>`}
-    <p class="hint2">A new puzzle every day at midnight: easy on Monday, harder each day, Expert on Sunday.</p>
+    <p class="hint2">A new puzzle every day at midnight, at any level you like. Everyone on the same level gets the same puzzle.</p>
     <div class="row2"><button class="big go" data-close>Done</button></div></div>`;
   layer.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { closeSheet(); if (r) showHome(); else if (homeOn) showHome(); });
   const dn = $("dname"); if (dn) dn.onchange = () => { opts.name = dn.value.trim().slice(0, 14); save(); if (opts.name) dailyPost(k); };
@@ -1165,13 +1191,16 @@ function openDailyDone(k, r) {
 }
 const DAILY_TOPIC = k => RELAY + "tvsudoku-daily-" + k;
 function dboardHtml(k) {
-  const me = myId(), rows = Object.entries((opts.dboard || {})[k] || {}).map(([id, x]) => Object.assign({ id }, x));
-  const mine = (opts.daily || {})[k];
-  if (mine && mine.done && !rows.some(x => x.id === me)) rows.push({ id: me, n: opts.name, s: mine.t, m: mine.m, h: mine.h });
-  rows.sort((a, b) => a.s - b.s);
+  // times without a level come from game versions before the level choice: those played the day's own level
+  const me = myId(), dl = dailyLevel(k), rows = Object.entries((opts.dboard || {})[k] || {}).map(([id, x]) => Object.assign({ id }, x, { lv: x.lv || dl }));
+  const mine = (opts.daily || {})[k], myLv = (mine && mine.lv) || dl;
+  if (mine && mine.done && !rows.some(x => x.id === me)) rows.push({ id: me, n: opts.name, s: mine.t, m: mine.m, h: mine.h, lv: myLv });
   if (!rows.length) return `<p class="hint2">No times yet.</p>`;
   const extra = x => [x.m ? `${x.m} mistake${x.m === 1 ? "" : "s"}` : "", x.h ? `${x.h} hint${x.h === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ");
-  return rows.map((x, i) => `<div class="drow${x.id === me ? " me" : ""}"><span class="rk">${i + 1}</span><span>${x.id === me ? "You" : esc(x.n || "Player")}${extra(x) ? `<small>${extra(x)}</small>` : ""}</span><b>${fmt(x.s | 0)}</b></div>`).join("")
+  // one ranked list per level: your own level first, then the others from easy to hard; level names only when there are several
+  const lvs = [...new Set(rows.map(x => x.lv))].sort((a, b) => (b === myLv) - (a === myLv) || a - b);
+  return lvs.map(lv => (lvs.length > 1 ? `<p class="dlv">${LEVELS[lv - 1].name}</p>` : "") + rows.filter(x => x.lv === lv).sort((a, b) => a.s - b.s)
+    .map((x, i) => `<div class="drow${x.id === me ? " me" : ""}"><span class="rk">${i + 1}</span><span>${x.id === me ? "You" : esc(x.n || "Player")}${extra(x) ? `<small>${extra(x)}</small>` : ""}</span><b>${fmt(x.s | 0)}</b></div>`).join("")).join("")
     + (rows.length === 1 ? `<p class="hint2">Friends who play today's puzzle show up here.</p>` : "");
 }
 // everyone's result for the day goes to one relay topic; each phone keeps what it has seen (the relay forgets after ~12 hours,
@@ -1179,7 +1208,7 @@ function dboardHtml(k) {
 const dailyReposted = {};
 async function dailyPost(k) {
   const mine = (opts.daily || {})[k]; if (!mine || !mine.done) return;
-  const body = JSON.stringify({ t: "daily", from: myId(), name: opts.name || "", s: mine.t, m: mine.m | 0, h: mine.h | 0 });
+  const body = JSON.stringify({ t: "daily", from: myId(), name: opts.name || "", s: mine.t, m: mine.m | 0, h: mine.h | 0, lv: mine.lv || dailyLevel(k) });
   try { await fetch(DAILY_TOPIC(k), { method: "POST", body }); } catch (e) {}
   setTimeout(() => dailyFetch(k, true), 800);
 }
@@ -1191,7 +1220,7 @@ async function dailyFetch(k, noRepost) {
     if (!l.trim()) continue;
     try { const m = JSON.parse(l); if (m.event !== "message") continue; const o = JSON.parse(m.message);
       if (o.t !== "daily" || !o.from || !(o.s >= 0)) continue; if (o.from === me) seenMe = true;
-      day[o.from] = { n: String(o.name || "").slice(0, 14), s: o.s | 0, m: o.m | 0, h: o.h | 0 }; } catch (e) {}
+      day[o.from] = { n: String(o.name || "").slice(0, 14), s: o.s | 0, m: o.m | 0, h: o.h | 0, lv: o.lv >= 1 && o.lv <= 10 ? o.lv | 0 : dailyLevel(k) }; } catch (e) {}
   }
   for (const d of Object.keys(b)) if (d < addDays(dayKey(), -2)) delete b[d];
   save();
@@ -1211,7 +1240,7 @@ function useShelf() {
   opts.shelf = G && !G.done && !G.vs ? G : null;
   G = s; sel = -1; notesMode = false; paused = false; hideHome(); render(); save(); refitSoon();
 }
-const gameLine = g => g.daily ? `Daily puzzle · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled` : `${LEVELS[g.level - 1].name} · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled`;
+const gameLine = g => g.daily ? `Daily puzzle · ${LEVELS[g.level - 1].name} · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled` : `${LEVELS[g.level - 1].name} · ${fmt(g.t)} · ${g.cells.filter(v => v).length} of 81 filled`;
 
 /* ---------- stats & badges page ---------- */
 let statOn = false, statTab = "stats", statLv = 0, statGame = "sudoku", statMgLv = 0;
@@ -1341,8 +1370,9 @@ function showHome() {
   const h = $("home"), live = G && !G.done;
   const filled = live ? G.cells.filter(v => v).length : 0;
   const vsLive = live && G.vs && V;
-  const k = dayKey(), dRec = (opts.daily || {})[k], dDone = !!(dRec && dRec.done), dLv = dailyLevel(k);
+  const k = dayKey(), dRec = (opts.daily || {})[k], dDone = !!(dRec && dRec.done);
   const dLive = (G && G.daily === k && !G.done) || (opts.shelf && opts.shelf.daily === k && !opts.shelf.done);
+  const dLv = G && G.daily === k && !G.done ? G.level : dLive ? opts.shelf.level : dailyMyLv(k);   // the level being played, or the one you'd start
   const shelf = opts.shelf && !opts.shelf.done && !vsLive && !(opts.shelf.daily === k) ? opts.shelf : null;
   const st = streakNow(), today = (opts.days || []).includes(k);
   const sub = st ? `🔥 ${st}-day streak${today ? " · solved today ✓" : " · solve one today to keep it"}` : opts.wins ? `${opts.wins} puzzle${opts.wins > 1 ? "s" : ""} solved · solve one today to start a streak` : "Ten levels, from Beginner to Extreme";
@@ -2036,6 +2066,10 @@ Object.assign(HE_TEXT, {
   // daily
   "Getting today's puzzle…": "מביאים את הפאזל של היום…", "Daily puzzle solved!": "הפאזל היומי נפתר!", "Today's times": "הזמנים של היום", "Your name, so friends know which time is yours": "השם שלכם, כדי שחברים יידעו איזה זמן שלכם",
   "A new puzzle every day at midnight: easy on Monday, harder each day, Expert on Sunday.": "פאזל חדש כל יום בחצות: קל ביום שני, קשה יותר מיום ליום, מומחה ביום ראשון.",
+  "Today's level": "הרמה של היום", "today's level": "הרמה של היום", "Today's level is": "הרמה של היום היא",
+  "easy on Monday, harder each day, Expert on Sunday.": "קל ביום שני, קשה יותר מיום ליום, מומחה ביום ראשון.",
+  "Every level has its own puzzle today, the same for everyone who picks it.": "לכל רמה יש היום פאזל משלה, אותו פאזל לכל מי שבוחר בה.",
+  "A new puzzle every day at midnight, at any level you like.": "פאזל חדש כל יום בחצות, בכל רמה שתרצו.", "Everyone on the same level gets the same puzzle.": "כל מי שבאותה רמה מקבל את אותו פאזל.",
   "No times yet.": "עוד אין זמנים.", "Friends who play today's puzzle show up here.": "חברים שמשחקים בפאזל של היום יופיעו כאן.", "Player": "שחקן",
   "Sunday": "יום ראשון", "Monday": "יום שני", "Tuesday": "יום שלישי", "Wednesday": "יום רביעי", "Thursday": "יום חמישי", "Friday": "יום שישי", "Saturday": "שבת", "Today": "היום", "Yesterday": "אתמול",
   "kept going today": "המשכתם גם היום",
@@ -3251,6 +3285,8 @@ function openSuggest() {
 /* ---------- What's new: the app's updates, newest first, in English and Hebrew ----------
    Add an entry at the top with every update that players would notice (and change NEWS in index.html). */
 const UPDATES = [
+  { d: "2026-11-20", t: ["Daily puzzle: pick your level", "פאזל יומי: בחרו רמה"], b: [["Tap Daily puzzle and choose any level, from Beginner to Extreme. Your choice is kept for the next days.", "הקישו על פאזל יומי ובחרו כל רמה, ממתחילים ועד קיצוני. הבחירה נשמרת לימים הבאים."],
+    ["Every level has its own daily puzzle, the same for everyone who picks it, and friends' times are shown per level.", "לכל רמה יש פאזל יומי משלה, אותו פאזל לכל מי שבוחר בה, והזמנים של החברים מוצגים לפי רמה."]] },
   { d: "2026-11-19", t: ["What's new", "מה חדש"], b: [["This page: after every update, read here what was added.", "העמוד הזה: אחרי כל עדכון אפשר לקרוא כאן מה נוסף."]] },
   { d: "2026-11-19", t: ["Hebrew", "עברית"], b: [["The whole app in Hebrew, right to left: Settings → Language.", "כל האפליקציה בעברית, מימין לשמאל: הגדרות ← שפה."],
     ["Story questions, Anagrams and Word search have their own Hebrew stories and words.", "לשאלות על סיפור, לאותיות מבולבלות ולתפזורת יש סיפורים ומילים משלהם בעברית."]] },
@@ -3313,7 +3349,7 @@ window.appBack = () => {
   if (sheet === "mgres") { $("mgmenu").click(); return true; }
   if (!sheet && mgView === "play") { mgIntro(); return true; }
   if (!sheet && mgView === "intro") { mgClose(); return true; }
-  if (sheet === "daily") { closeSheet(); if (homeOn) showHome(); return true; }
+  if (sheet === "daily" || sheet === "dpick") { closeSheet(); if (homeOn) showHome(); return true; }
   if (statOn && !sheet) { closeStats(); return true; }
   if (sheet === "new" && newMode !== "solo") { $("newback").click(); return true; }
   if (sheet === "vs" || sheet === "vslost" || sheet === "vsleave") { closeSheet(); return true; }
@@ -3373,7 +3409,7 @@ window.__sd = { get G() { return G; }, get sel() { return sel; }, get notesMode(
   startGame, showHome, enter, render, checkUpdate, vsRounds, openDaily, openStats, makeDaily, dayKey, streakNow, setSel(i) { sel = i; } };
 
 /* ---------- start ---------- */
-const NEWS = () => isHe() ? "חדש: עמוד „מה חדש” עם כל העדכונים." : "New: a “What's new” page with every update.";   // change with each update (and add it to UPDATES in game/src/games.js)
+const NEWS = () => isHe() ? "חדש: בפאזל היומי אפשר לבחור רמת קושי." : "New: pick how hard the daily puzzle is.";   // change with each update (and add it to UPDATES in game/src/games.js)
 let hadSave = false; try { hadSave = !!localStorage.getItem(KEY); } catch (e) {}
 load();
 if (V && (V.joining || !V.code)) V = null;              // was still looking for a game: start that again by hand
