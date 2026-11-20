@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795181814;</script>
+<script>window.GAME_BUILD = 1795182364;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1671,6 +1671,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .lvtag.off { background: rgba(90,90,110,.9); }
 .lvnote { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 6; font: 900 22px var(--display); color: #fff; text-shadow: 0 2px 0 rgba(60,30,10,.6), 0 0 14px rgba(0,0,0,.45); pointer-events: none; white-space: nowrap; }
 .lvnote.big { font-size: 86px; }
+.mmbox { gap: 4px; padding: 18px 12px; } .mmbox #mmT { font: 900 26px var(--display); color: #c47f0a; }
+.mmspin { width: 46px; height: 46px; display: grid; place-items: center; margin: 0 auto 4px; color: #c47f0a; animation: mmspin 1.4s ease-in-out infinite; } .mmspin svg { width: 40px; height: 40px; }
+@keyframes mmspin { 0%, 100% { transform: rotate(-14deg) scale(1); } 50% { transform: rotate(14deg) scale(1.12); } }
+.olor { text-align: center; color: #9c7f66; font-size: 12px; margin: 2px 0 6px; }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -5919,7 +5923,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   }
   // ---------- live rooms (duel or trade): both phones read the same message list, so both work out the same state ----------
   let R = null;
-  function roomOpen(code, kind, host) { roomClose(false); R = { code, kind, host, lres: {}, log: [], seen: new Set(), last: "", t0: Date.now(), net: true, played: {} }; roomConnect(); if (host) roomPost({ t: "hello", kind }); else setTimeout(() => { if (R && R.code === code && !roomHost()) { roomClose(false); toast("No room with that code. Check the code and try again"); render(); } }, 9000); }
+  function roomOpen(code, kind, host, mm) { roomClose(false); R = { code, kind, host, mm: !!mm, lres: {}, log: [], seen: new Set(), last: "", t0: Date.now(), net: true, played: {} }; roomConnect(); if (host) { roomPost({ t: "hello", kind }); if (mm) setTimeout(() => { if (R && R.code === code && !roomOther()) { roomClose(false); toast("The other player is gone. Looking again..."); mmStart(); render(); } }, 20000); } else setTimeout(() => { if (R && R.code === code && !roomHost()) { const mm = R.mm; roomClose(false); if (mm) { toast("The other player is gone. Looking again..."); mmStart(); } else toast("No room with that code. Check the code and try again"); render(); } }, 9000); }
   function roomConnect() {   // Firebase streams the room: first the whole list ("put" at /), then each new message
     const r = R; if (!r) return; const ES = window.GLIMMER_ES || window.EventSource; if (!ES) return;
     const retry = ms => setTimeout(() => { if (R === r && !r.es) roomConnect(); }, ms);
@@ -5971,6 +5975,67 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     const O = olState(), F = olFriend(code); if (!F || !R) return;
     const ok = await olPost("in-" + code, { t: "invite", code: O.code, name: olName(), room: R.code, kind: R.kind }); toast(ok ? `Invite sent to ${F.name}` : "Couldn't send the invite");
   }
+  // ---------- find a match: everyone looking writes "seek" to today's list mm-<day>; every phone reads the list in the same
+  // order and pairs the same way (a new seek meets the oldest open seek of another player from the last minute; the older one
+  // hosts the room named in its seek), so no phone has to answer anyone. A search writes a fresh seek every 45 s.
+  let MM = null;
+  const MM_FRESH = 60000, MM_RENEW = 45000;
+  function mmPairs(log) {
+    const open = new Map(), pairs = [];
+    for (const o of log) {
+      if (o.t === "stop") { open.delete(o.pid); continue; }
+      if (o.t !== "seek" || !/^[A-Z0-9]{5}$/.test(o.room || "")) continue;
+      open.delete(o.pid); let best = null;
+      for (const s of open.values()) if (o._t - s._t < MM_FRESH && (!best || s._id < best._id)) best = s;
+      if (best) { open.delete(best.pid); pairs.push({ host: best, guest: o }); } else open.set(o.pid, o);
+    }
+    return { pairs, open: [...open.values()].filter(s => srvNow() - s._t < MM_FRESH) };
+  }
+  function mmStart() {
+    if (MM || R || !S.started) return; if (!team().length) return toast("Put Glumis in your team first");
+    MM = { t0: Date.now(), day: OL_DAY(), log: [], seen: new Set(), rooms: new Set(), es: null, renewT: 0, looking: 0 }; mmConnect(); mmSeek();
+  }
+  function mmStop(say) { const M = MM; if (!M) return; MM = null; if (M.es) try { M.es.close(); } catch {} if (say) olPost("mm-" + M.day, { t: "stop", pid: olState().pid }); }
+  async function mmSeek() {
+    const M = MM; if (!M) return; const O = olState(), room = olRid(5); M.rooms.add(room); M.renewT = Date.now();
+    const ok = await olPost("mm-" + M.day, { t: "seek", pid: O.pid, code: O.code, name: olName(), room, pow: teamPower(team()), v: window.GAME_BUILD || 0 });
+    if (MM === M) { if (!ok) toast("Couldn't reach the match list: check the internet"); mmCheck(); }
+  }
+  function mmCheck() {
+    const M = MM; if (!M) return; const me = olState().pid, P = mmPairs(M.log); M.looking = P.open.filter(s => s.pid !== me).length;
+    for (const p of P.pairs) {
+      const side = p.host.pid === me && M.rooms.has(p.host.room) ? "host" : p.guest.pid === me && M.rooms.has(p.guest.room) ? "guest" : ""; if (!side) continue;
+      const other = side === "host" ? p.guest : p.host; mmStop(false);
+      roomOpen(p.host.room, "duel", side === "host", true); arenaSub = "olduel"; if (!BT && !busy && !E) { view = "arena"; showMap = false; showAuto = false; }
+      sfx("claim"); toast(`Match found: ${String(other.name || "a player").slice(0, 20)}!`); render(); return;
+    }
+    if (olOnPage() && arenaSub === "olduel") { const n = $("mmN"); if (n) n.textContent = mmLookingText(); }
+  }
+  const mmLookingText = () => !MM ? "" : MM.looking ? `${MM.looking} other player${MM.looking > 1 ? "s" : ""} looking now` : "Nobody else is looking right now";
+  function mmConnect() {   // today's list as a live stream: the whole list first, then each new line
+    const M = MM; if (!M) return; const ES = window.GLIMMER_ES || window.EventSource; if (!ES) return;
+    fbTok().then(tok => {
+      if (MM !== M || M.es) return; let es; try { es = new ES(FB.db + "/t/mm-" + M.day + ".json?auth=" + encodeURIComponent(tok)); } catch { return; } M.es = es;
+      const take = e => {
+        if (MM !== M || M.es !== es) return; let d; try { d = JSON.parse(e.data); } catch { return; } if (!d || typeof d !== "object") return;
+        const parts = String(d.path || "/").split("/").filter(Boolean);
+        const one = (k, v) => { if (!v || typeof v !== "object" || typeof v.m !== "string" || M.seen.has(k)) return; M.seen.add(k); let o; try { o = JSON.parse(v.m); } catch { return; } if (!o || !o.t || !o.pid) return; o._id = k; o._t = +v.t || 0; M.log.push(o); };
+        if (!parts.length) { const o = d.data && typeof d.data === "object" ? d.data : {}; for (const k of Object.keys(o)) one(k, o[k]); } else if (parts.length === 1) one(parts[0], d.data);
+        M.log.sort((x, y) => x._id < y._id ? -1 : x._id > y._id ? 1 : 0); mmCheck();
+      };
+      const again = ms => { if (M.es !== es) return; try { es.close(); } catch {} M.es = null; if (MM === M) setTimeout(() => { if (MM === M && !M.es) mmConnect(); }, ms); };
+      es.addEventListener("put", take); es.addEventListener("patch", take);
+      es.addEventListener("auth_revoked", () => { fbExp = 0; again(300); }); es.addEventListener("cancel", () => again(4000));
+      es.onerror = () => { if (MM === M && es.readyState === 2) again(4000); };
+    }).catch(() => { if (MM === M) setTimeout(() => { if (MM === M && !M.es) mmConnect(); }, 4000); });
+  }
+  setInterval(() => {   // while looking: a fresh seek now and then, a new list at midnight, the clock on the page
+    const M = MM; if (!M) return;
+    if (OL_DAY() !== M.day) { if (M.es) try { M.es.close(); } catch {} M.es = null; M.day = OL_DAY(); M.log = []; M.seen = new Set(); mmConnect(); mmSeek(); return; }
+    if (Date.now() - M.renewT > MM_RENEW) mmSeek();
+    const t = $("mmT"); if (t) { const s = Math.floor((Date.now() - M.t0) / 1000); t.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+    const n = $("mmN"); if (n) n.textContent = mmLookingText();
+  }, 1000);
   // ---------- live duel: best of 3 rounds; each round both pick up to 3 Glumis and fight it out live ----------
   // Both phones run the same fight tick by tick (0.1 s); side 0 is the room's host, side 1 the guest. Only taps travel, as room
   // messages {t:"act", r, k: tick, a}. A tap counts LDELAY ticks after it was made, so it usually reaches the other phone in time;
@@ -6267,9 +6332,14 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     if (arenaSub === "olduel" || arenaSub === "oltrade") {
       const kind = arenaSub === "olduel" ? "duel" : "trade", title = kind === "duel" ? "Live duel" : "Trade";
       const head = `${olBack(R && R.kind === kind ? "olleave" : "online")}<h3>${title}</h3><span></span></div>${olNetNote()}`;
+      if (kind === "duel" && MM && !R) return `${olBack("online")}<h3>${title}</h3><span></span></div>${olNetNote()}
+        <div class="olroom mmbox"><span class="mmspin">${IC.sword}</span><b>Looking for a player...</b><small id="mmT">0:00</small><small id="mmN">${mmLookingText()}</small></div>
+        <p class="hint">You can keep playing: the duel opens as soon as someone is found.</p>
+        <button class="mb pbig" data-act="olfindstop">Stop looking</button>`;
       if (!R || (R.kind && R.kind !== kind)) return `${head}
         <p class="hint" style="margin:6px 0 10px">${kind === "duel" ? "Both phones at the same time: best of 3 rounds. Pick 3 Glumis each round, then fight live: skills, shield and switching, until one team falls." : "Both phones at the same time: each puts up one spare Glumi, both say OK, and they swap."}</p>
-        <button class="mb gold pbig" data-act="olmake:${kind}">Make a room</button>
+        ${kind === "duel" ? `<button class="mb gold pbig" data-act="olfind">Find match</button><p class="hint" style="margin:4px 0 12px">Fight anyone who is looking right now.</p><p class="olor">or play a friend</p>` : ""}
+        <button class="mb ${kind === "duel" ? "" : "gold "}pbig" data-act="olmake:${kind}">Make a room</button>
         <div class="oladd"><input id="olroom" maxlength="6" placeholder="Room code" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="mb" data-act="olenter:${kind}">Join</button></div>`;
       const P = roomPlayers(), other = roomOther();
       if (!R.kind || !roomIn()) return `${head}<p class="hint" style="margin:24px 0">Joining room ${R.code}...</p>`;
@@ -6282,6 +6352,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
         const score = `<div class="olscore"><span><b>You</b><em>${mw}</em></span><i>:</i><span><em>${tw}</em><b>${olEsc(other.name)}</b></span></div>`;
         const emo = `<div class="olemo">${["\u{1F44B}", "\u{1F604}", "\u{1F62E}", "GG"].map((e, i) => `<button class="mb" data-act="olemo:${i}">${e}</button>`).join("")}</div>`;
         if (D.over) { const won = mw > tw; return `${head}${score}<div class="olroom"><b>${won ? "You won the duel!" : olEsc(other.name) + " won the duel"}</b><small>${O.dwins || 0} duel wins · ${O.dlosses || 0} losses</small></div>${emo}
+          ${other.code && !olFriend(other.code) && other.code !== O.code ? `<button class="mb pbig" data-act="olfadd:${olEsc(other.code)}">Add ${olEsc(other.name)} as a friend</button>` : ""}
           <div class="pbtns"><button class="mb" data-act="arenasub:olleave">Leave</button><button class="mb gold pbig" data-act="olagain">Rematch</button></div>`; }
         const cur = D.rounds.find(x => !x.fin) || { r: 1 }, picked = duelPick(cur.r, O.pid);
         if (cur.live) return `${head}${score}<div class="olroom"><b>Round ${cur.r}</b><small>The fight is on!</small></div><button class="mb gold pbig" data-act="olfight">Back to the fight</button>${emo}`;
@@ -6312,7 +6383,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
       <div class="slist">${row("olfriends", "Friends", `${nf} friend${nf === 1 ? "" : "s"}${O.gifts.length ? ` · ${O.gifts.length} gift${O.gifts.length > 1 ? "s" : ""} waiting` : ""}`, gi, IC.gift || IC.star)}
         ${row("oldboss", "Daily Boss", `${D.left} of ${OL_BOSS.d.tries} tries left · best ${D.best.toLocaleString("en")}`, 0, art(olBossFoe("d").sp, 0, 44))}
         ${row("olwboss", "World Boss", `${Math.round(Math.min(1, wbSum(W) / wbGoal(W)) * 100)}% down · ${W.left} hits left today`, 0, art(olBossFoe("w").sp, olBossFoe("w").evo, 44))}
-        ${row("olduel", "Live duel", "Best of 3 with a friend, live", 0, IC.sword)}
+        ${row("olduel", "Live duel", MM ? "Looking for a player..." : "Find a match or play a friend, live", 0, IC.sword)}
         ${row("oltrade", "Trade", "Swap a spare Glumi with a friend, live", 0, '<b class="olswap">⇄</b>')}</div>
       <button class="mcard soft" data-act="olideas"><span class="mic">${IC.star}</span><span><b>Suggest an idea</b><small>Goes straight to the game maker</small></span></button>
       <button class="swrow" data-act="olsharesw" role="switch" aria-checked="${!!O.share}"><span><b>Share my team</b><small>Players meet it in the Ladder; friends can battle it</small></span><i class="sw${O.share ? " on" : ""}"><em></em></i></button>
@@ -6339,8 +6410,11 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     else if (a === "olwbclaim") olWbClaim();
     else if (a === "olideas") olIdeas();
     else if (a === "olidsend") olIdeaSend();
-    else if (a === "olmake") { roomOpen(olRid(5), arg, true); arenaSub = arg === "duel" ? "olduel" : "oltrade"; render(); }
-    else if (a === "olenter") { const i = $("olroom"), c = (i ? i.value : "").toUpperCase().replace(/[^A-Z0-9]/g, ""); if (!/^[A-Z0-9]{5}$/.test(c)) return toast("A room code has 5 letters and numbers"); roomOpen(c, null, false); render(); }
+    else if (a === "olfind") { mmStart(); render(); }
+    else if (a === "olfindstop") { mmCheck(); if (MM) { mmStop(true); toast("Stopped looking"); } render(); }
+    else if (a === "olfadd") { olAddFriend(arg).then(() => render()); }
+    else if (a === "olmake") { mmStop(true); roomOpen(olRid(5), arg, true); arenaSub = arg === "duel" ? "olduel" : "oltrade"; render(); }
+    else if (a === "olenter") { mmStop(true); const i = $("olroom"), c = (i ? i.value : "").toUpperCase().replace(/[^A-Z0-9]/g, ""); if (!/^[A-Z0-9]{5}$/.test(c)) return toast("A room code has 5 letters and numbers"); roomOpen(c, null, false); render(); }
     else if (a === "oljoin") { const [k, c] = arg.split(":"); O.invites = O.invites.filter(x => x.room !== c); roomOpen(c, null, false); arenaSub = k === "duel" ? "olduel" : "oltrade"; save(); render(); window.scrollTo(0, 0); }
     else if (a === "olinvite") olInvite(arg);
     else if (a === "olsel") { const u = +arg; let s = (duelSel || S.team.slice()).filter(x => mon(x)); s = s.includes(u) ? s.filter(x => x !== u) : s.length < 3 ? s.concat([u]) : s; duelSel = s; render(); }
