@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795180489;</script>
+<script>window.GAME_BUILD = 1795181814;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1667,6 +1667,10 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .olwrew > span.got { opacity: .45; }
 .olroom { flex-direction: column; gap: 4px; text-align: center; } .olroom b { font: 900 26px var(--display); color: var(--brown); letter-spacing: 1px; } .olroom small { font-size: 12.5px; color: var(--brown-2, #8a6d55); }
 .olpicks { display: flex; gap: 6px; margin-top: 6px; }
+.lvtag { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); z-index: 6; background: rgba(229,72,77,.92); color: #fff; font: 800 11px var(--display); letter-spacing: .05em; padding: 2px 10px; border-radius: 99px; pointer-events: none; white-space: nowrap; }
+.lvtag.off { background: rgba(90,90,110,.9); }
+.lvnote { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 6; font: 900 22px var(--display); color: #fff; text-shadow: 0 2px 0 rgba(60,30,10,.6), 0 0 14px rgba(0,0,0,.45); pointer-events: none; white-space: nowrap; }
+.lvnote.big { font-size: 86px; }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -3068,7 +3072,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
       const [ax, ay] = stageXY(att), [tx, ty] = stageXY(tgt);
       moAttack(att, tgt, f.skill, f.eff > 1);
       if (f.skill) {
-        const sm = f.who === "me" ? (front() || f.src) : BT.foes[BT.fi], el = sm ? EL[SP[sm.sp].el].color : "#ffffff", orb = document.createElement("div");  // the caster may have just fallen
+        const sm = BT.live ? f.src || BT.foes[BT.fi] : f.who === "me" ? (front() || f.src) : BT.foes[BT.fi], el = sm ? EL[SP[sm.sp].el].color : "#ffffff", orb = document.createElement("div");  // the caster may have just fallen
         orb.className = "fly"; orb.style.width = orb.style.height = "44px"; orb.style.margin = "-22px 0 0 -22px"; orb.style.borderRadius = "50%"; orb.style.background = `radial-gradient(circle, #fff, ${el} 60%, transparent 70%)`; orb.style.left = ax + "px"; orb.style.top = ay + "px"; fxLayer().appendChild(orb);
         orb.animate([{ transform: "translate(0,0) scale(.5)" }, { transform: `translate(${tx - ax}px,${ty - ay}px) scale(2.2)`, opacity: .2 }], { duration: RM ? 80 : 420, easing: "ease-in" }).onfinish = () => orb.remove();
         setTimeout(() => floatText(tx, ty - 50, f.dmg + (f.eff > 1 ? "!" : ""), true), RM ? 0 : 380);
@@ -5092,6 +5096,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
       <path d="M50 45 V103" stroke="#fff" stroke-width=".6" opacity=".6"/>${[8, 92].map(x => `<path d="M${x} 46 V30" stroke="#7a5638" stroke-width="1"/><path d="M${x} 30 l${x < 50 ? 7 : -7} 3 l${x < 50 ? -7 : 7} 3Z" fill="#ff8a8a"/>`).join("")}</svg>`;
   }
   function renderArena() {
+    if (BT.live) return renderLive();
     const me = front(), foe = BT.foes[BT.fi], t = team(); if (!me || !foe) return;
     const dots = (list, isMe) => list.map((m, i) => `<span class="tdot${(isMe ? m.hp <= 0 : i < BT.fi) ? " out" : ""}${(isMe ? m === me : i === BT.fi) ? " cur" : ""}">${art(m.sp, m.evo, 30)}</span>`).join("");
     const sw = t.map(m => `<button class="tsw${m === me ? " cur" : ""}" data-act="swap:${m.uid}" ${m === me || m.hp <= 0 || BT.swapCd > 0 ? "disabled" : ""} aria-label="Switch to ${fname(m.sp, m.evo)}">${m === me ? `<span class="tagcur">Fighting</span>` : ""}${art(m.sp, m.evo, 46)}${bar(m.hp, maxHp(m))}<span class="cd" ${BT.swapCd > 0 && m !== me && m.hp > 0 ? "" : "hidden"}>${Math.ceil(BT.swapCd)}</span></button>`).join("");
@@ -5155,6 +5160,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   }
   addEventListener("resize", () => fillArenaHub());
   function paintBattle() {
+    if (BT && BT.live) return paintLive();
     if (!BT) return; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe || !$("meHp")) return;
     $("meHp").innerHTML = bar(me.hp, maxHp(me)); $("foeHp").innerHTML = bar(foe.hp, maxHp(foe)); $("foeEn").innerHTML = segs(BT.foe.e); $("meSegs").innerHTML = segs(BT.me.e); $("eNum").textContent = Math.floor(BT.me.e / 10);
     $("meShield").hidden = !(BT.me.sh > 0); $("foeShield").hidden = !(BT.foe.sh > 0); if ($("meSt")) $("meSt").innerHTML = stChips(BT.me); if ($("foeSt")) $("foeSt").innerHTML = stChips(BT.foe);
@@ -5377,6 +5383,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-act]"); if (!b || b.disabled) return;
     const [a, arg] = b.dataset.act.split(":"); const n = arg !== undefined ? +arg : null;
+    if (BT && BT.live && ["skill", "cast", "shield", "swap", "pickmon", "autoskill", "retreat", "speed"].includes(a)) { lvAct(a, arg); return; }
     if (["addteam", "join", "hire", "give", "release", "sell"].includes(a) && isAway(n)) { toast("Away on an expedition"); return; }
     if (["release", "sell", "give"].includes(a) && mon(n) && (mon(n).lock || mon(n).fav)) { toast(mon(n).fav ? "It's a favorite: tap the heart on its card first" : "It's locked: unlock it on its card first"); return; }
     if (["pickslot", "swapto"].includes(a) && swapIn && isAway(swapIn)) { swapIn = null; toast("Away on an expedition"); render(); return; }
@@ -5728,7 +5735,8 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   const fbOk = tp => /^[A-Za-z0-9_-]{1,60}$/.test(tp);
   async function olPost(topic, o) {
     if (!fbOk(topic)) return false;
-    try { await fbTok(); const r = await fbCall("/t/" + topic + ".json", { method: "POST", body: JSON.stringify({ u: olState().fb.u, t: { ".sv": "timestamp" }, m: JSON.stringify(o) }) }); olNet = true; return r.ok; }
+    try { await fbTok(); const r = await fbCall("/t/" + topic + ".json", { method: "POST", body: JSON.stringify({ u: olState().fb.u, t: { ".sv": "timestamp" }, m: JSON.stringify(o) }) }); olNet = true;
+      if (!r.ok) return false; try { const j = await r.json(); return (j && typeof j.name === "string" && j.name) || true; } catch { return true; } }   // the new key (truthy)
     catch { olNet = false; return false; }
   }
   async function olRead(topic) {   // the messages added since this phone's last read of the topic (first read: the recent days)
@@ -5911,7 +5919,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   }
   // ---------- live rooms (duel or trade): both phones read the same message list, so both work out the same state ----------
   let R = null;
-  function roomOpen(code, kind, host) { roomClose(false); R = { code, kind, host, log: [], seen: new Set(), last: "", t0: Date.now(), net: true, played: {} }; roomConnect(); if (host) roomPost({ t: "hello", kind }); else setTimeout(() => { if (R && R.code === code && !roomHost()) { roomClose(false); toast("No room with that code. Check the code and try again"); render(); } }, 9000); }
+  function roomOpen(code, kind, host) { roomClose(false); R = { code, kind, host, lres: {}, log: [], seen: new Set(), last: "", t0: Date.now(), net: true, played: {} }; roomConnect(); if (host) roomPost({ t: "hello", kind }); else setTimeout(() => { if (R && R.code === code && !roomHost()) { roomClose(false); toast("No room with that code. Check the code and try again"); render(); } }, 9000); }
   function roomConnect() {   // Firebase streams the room: first the whole list ("put" at /), then each new message
     const r = R; if (!r) return; const ES = window.GLIMMER_ES || window.EventSource; if (!ES) return;
     const retry = ms => setTimeout(() => { if (R === r && !r.es) roomConnect(); }, ms);
@@ -5920,7 +5928,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
       const take = e => {
         if (R !== r || r.es !== es) return; let d; try { d = JSON.parse(e.data); } catch { return; } if (!d || typeof d !== "object") return; r.net = true;
         const parts = String(d.path || "/").split("/").filter(Boolean); let ch = false;
-        const one = (k, v) => { if (v && typeof v === "object" && typeof v.m === "string") ch = roomTake({ event: "message", id: k, message: v.m }) || ch; };
+        const one = (k, v) => { if (v && typeof v === "object" && typeof v.m === "string") ch = roomTake({ event: "message", id: k, message: v.m, time: +v.t || 0 }) || ch; };
         if (!parts.length) { const o = d.data && typeof d.data === "object" ? d.data : {}; for (const k of Object.keys(o).sort()) one(k, o[k]); }
         else if (parts.length === 1) one(parts[0], d.data);
         if (ch) roomSync();
@@ -5934,10 +5942,16 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   }
   function roomTake(m) {
     if (!m || m.event !== "message" || !m.id || R.seen.has(m.id)) return false; R.seen.add(m.id); R.last = m.id;
-    let o; try { o = JSON.parse(m.message); } catch { return false; } if (!o || !o.t || !o.pid) return false; o._id = m.id; R.log.push(o); return true;
+    if (m.time) { srvSeen[m.id] = m.time; srvSample(m.id); }
+    let o; try { o = JSON.parse(m.message); } catch { return false; } if (!o || !o.t || !o.pid) return false; o._id = m.id; o._t = +m.time || 0; R.log.push(o); return true;
   }
-  function roomPost(o) { const O = olState(); return R ? olPost("r-" + R.code, Object.assign({ pid: O.pid, code: O.code, name: olName(), v: window.GAME_BUILD || 0 }, o)) : Promise.resolve(false); }
-  function roomClose(say) { if (!R) return; if (say) roomPost({ t: "bye" }); if (R.es) try { R.es.close(); } catch {} R = null; }
+  function roomPost(o) { const O = olState(); if (!R) return Promise.resolve(false); const p0 = Date.now();
+    return olPost("r-" + R.code, Object.assign({ pid: O.pid, code: O.code, name: olName(), v: window.GAME_BUILD || 0 }, o)).then(k => { if (typeof k === "string") { srvPend[k] = [p0, Date.now()]; srvSample(k); } return k; }); }
+  // the database's clock: a message is stamped between sending it and the answer, so (stamp - middle) is the difference (best of the quickest answers)
+  let srvOff = null, srvRtt = 1e9; const srvPend = {}, srvSeen = {};
+  function srvSample(k) { const p = srvPend[k], t = srvSeen[k]; if (!p || !t) return; delete srvPend[k]; const rtt = p[1] - p[0]; if (rtt <= srvRtt + 30) { srvOff = t - (p[0] + p[1]) / 2; srvRtt = Math.min(srvRtt, rtt); } }
+  const srvNow = () => Date.now() + (srvOff || 0);
+  function roomClose(say) { if (!R) return; if (LV) lvStop(); if (say) roomPost({ t: "bye" }); if (R.es) try { R.es.close(); } catch {} R = null; }
   const roomPlayers = () => { const ids = []; for (const o of R.log) if (o.t === "hello" && !ids.some(x => x.pid === o.pid) && ids.length < 2) ids.push(o); return ids; };
   const roomHost = () => roomPlayers()[0] || null;
   const roomOther = () => { const me = olState().pid; return roomPlayers().find(p => p.pid !== me) || null; };
@@ -5951,30 +5965,208 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
       if (olOnPage() && /^ol(duel|trade)$/.test(arenaSub)) arenaSub = R.kind === "duel" ? "olduel" : "oltrade"; }
     const again = R.log.find(o => o.t === "again"); if (again && !R.moved) { R.moved = true; const k = R.kind, mine = again.pid === O.pid; setTimeout(() => { roomOpen(again.room, k, mine); render(); }, 400); return; }
     if (R.kind === "duel") duelSync(); if (R.kind === "trade") tradeSync();
-    olRefresh();
+    if (LV) lvLoop(); else olRefresh();
   }
   async function olInvite(code) {
     const O = olState(), F = olFriend(code); if (!F || !R) return;
     const ok = await olPost("in-" + code, { t: "invite", code: O.code, name: olName(), room: R.code, kind: R.kind }); toast(ok ? `Invite sent to ${F.name}` : "Couldn't send the invite");
   }
-  // ---------- live duel: best of 3 rounds; each round both pick 3 Glumis, the fight is worked out the same way on both phones ----------
-  let duelSel = null;
+  // ---------- live duel: best of 3 rounds; each round both pick up to 3 Glumis and fight it out live ----------
+  // Both phones run the same fight tick by tick (0.1 s); side 0 is the room's host, side 1 the guest. Only taps travel, as room
+  // messages {t:"act", r, k: tick, a}. A tap counts LDELAY ticks after it was made, so it usually reaches the other phone in time;
+  // one that arrives after its tick was played rewinds the fight to just before it and plays it again with the tap.
+  // A tap the database stamped more than LGRACE after its tick never counts (both phones see the same stamp), so both phones
+  // get the same fight, and a result is final LGRACE after the last Glumi falls. A fight starts LLEAD after the later pick.
+  // A player whose internet drops keeps fighting with basic attacks (and Auto, if it was on): nobody waits.
+  let duelSel = null, LV = null, lvTimer = null;
+  const LDT = .1, LDELAY = 3, LGRACE = 1500, LLEAD = 3000, LCAP = 18000, LPICK = 50, LFALL = 10;   // ticks: 5 s to choose, 1 s to fall
   const duelPick = (r, pid) => R.log.find(o => o.t === "pick" && o.r === r && o.pid === pid);
   function duelRounds() {
     const P = roomPlayers(); if (P.length < 2) return { rounds: [], wins: [0, 0], over: false };
     const out = [], wins = [0, 0];
     for (let r = 1; r <= 3 && wins[0] < 2 && wins[1] < 2; r++) {
-      const a = duelPick(r, P[0].pid), b = duelPick(r, P[1].pid); if (!a || !b) { out.push({ r, a, b }); break; }
-      const tr = [], A = snapFoes(a.team), B = snapFoes(b.team); A.forEach(m => delete m.real); B.forEach(m => delete m.real);
-      const res = simulate(A, B, true, tr); wins[res.won ? 0 : 1]++; out.push({ r, a, b, A, B, tr, hostWon: res.won });
+      const a = duelPick(r, P[0].pid), b = duelPick(r, P[1].pid), w = R.lres[r];
+      if (!a || !b || (w !== 0 && w !== 1)) { out.push({ r, a, b, live: !!(a && b) }); break; }
+      wins[w]++; out.push({ r, a, b, fin: true, hostWon: w === 0 });
     }
     return { rounds: out, wins, over: wins[0] >= 2 || wins[1] >= 2 };
   }
   function duelSync() {
-    const D = duelRounds(), P = roomPlayers(), meHost = P[0] && P[0].pid === olState().pid;
-    const ready = D.rounds.find(x => x.tr && !R.played[x.r]);
-    if (ready && !document.querySelector(".duelplay")) { R.played[ready.r] = 1; duelPlay(ready, meHost, D); return; }
+    if (roomGone()) { if (LV) { lvStop(); render(); } return; }
+    const D = duelRounds(), P = roomPlayers(), meHost = P[0] && P[0].pid === olState().pid, cur = D.rounds.find(x => x.live);
+    if (cur && (!LV || LV.r !== cur.r) && !document.querySelector(".duelplay")) { const V = lvNew(cur.r); if (V) { lvStart(V); return; } }
     if (D.over && !R.rewarded && !document.querySelector(".duelplay")) duelReward(D, meHost);
+  }
+  // ---- the fight itself (no screen, no clock: the same on both phones) ----
+  function lvSide(team, au) { const ms = withTB(snapFoes(team).map(m => { delete m.real; return m; })); return { ms, hp: ms.map(maxHp), cur: 0, e: 0, t: 0, sh: 0, st: {}, cd: 0, au: !!au, pick: 0, dealt: 0 }; }
+  const lvFront = s => s.ms[s.cur];
+  const lvAlive = s => s.hp.map((h, i) => h > 0 ? i : -1).filter(i => i >= 0);
+  const lvCopy = L => ({ k: L.k, fall: L.fall, over: L.over, win: L.win, endK: L.endK, ev: [], s: L.s.map(s => Object.assign({}, s, { hp: s.hp.slice(), st: Object.assign({}, s.st) })) });
+  const lvOrder = L => L.k % 2 ? [1, 0] : [0, 1];   // who goes first on a tick takes turns
+  function lvHit(L, si, power) {
+    const sa = L.s[si], sd = L.s[1 - si], a = lvFront(sa), d = lvFront(sd);
+    const dmg = Math.max(1, Math.round(DMG_MULT * atk(a) * power * 60 / (60 + def(d)) * (sd.sh > 0 ? .5 : 1) * stMul(sa, sd)));
+    sd.hp[sd.cur] = Math.max(0, sd.hp[sd.cur] - dmg); sa.dealt += dmg; return dmg;
+  }
+  function lvCast(L, si, k) {   // castSkill for a live fight
+    const sa = L.s[si], sd = L.s[1 - si], a = lvFront(sa), d = lvFront(sd), sk = skillOf(a, k); if (sa.e < sk.cost * 10) return false;
+    sa.e -= sk.cost * 10; let dealt = 0;
+    if (sk.power) { const m = mult(sk.el, SP[d.sp].el); dealt = lvHit(L, si, sk.power * m); L.ev.push({ s: si, dmg: dealt, skill: true, eff: m, src: a }); }
+    for (const f of sk.fx || []) { const S2 = STATUS[f];
+      if (f === "drain") { const h = Math.max(1, Math.round(dealt / 4)); sa.hp[sa.cur] = Math.min(maxHp(a), sa.hp[sa.cur] + h); L.ev.push({ s: si, heal: h }); continue; }
+      (S2.foe ? sd : sa).st[f] = S2.t; L.ev.push({ s: S2.foe ? 1 - si : si, stat: S2.n }); }
+    if (sk.heal) { const h = Math.round(maxHp(a) * sk.heal); sa.hp[sa.cur] = Math.min(maxHp(a), sa.hp[sa.cur] + h); L.ev.push({ s: si, heal: h }); }
+    if (sk.shield) sa.sh = Math.max(sa.sh, sk.shield);
+    L.ev.push({ s: si, banner: sk.name, el: sk.el }); return true;
+  }
+  function lvShield(L, si) { const s = L.s[si]; if (s.e < SHIELD_COST * 10 || s.sh > 0) return; s.e -= SHIELD_COST * 10; s.sh = 4; L.ev.push({ s: si, shield: true }); }
+  function lvAI(L, si) {   // Auto: the same choices as Auto in normal fights
+    const s = L.s[si], a = lvFront(s), x = skillOf(a, "x"), sh = skillOf(a, "s"), hp = s.hp[s.cur];
+    if (sh.heal && hp < maxHp(a) * .45 && s.e >= sh.cost * 10) return lvCast(L, si, "s");
+    if (s.e >= x.cost * 10) return lvCast(L, si, "x");
+    if (!sh.heal && s.e >= 90 && s.e >= sh.cost * 10) return lvCast(L, si, "s");
+    if (s.e >= SHIELD_COST * 10 && !(s.sh > 0) && hp < maxHp(a) * .4) lvShield(L, si);
+  }
+  function lvEnd(L, win) { L.over = true; L.win = win; L.endK = L.k; }
+  function lvTap(L, si, a) {
+    const s = L.s[si]; if (L.over) return;
+    if (a === "gu") return lvEnd(L, 1 - si);
+    if (a === "au1" || a === "au0") { s.au = a === "au1"; return; }
+    if (/^pk\d$/.test(a)) { const i = +a[2]; if (s.pick > 0 && s.hp[i] > 0) { s.cur = i; s.pick = 0; s.t = 0; } return; }
+    if (L.fall > 0 || L.s.some(x => x.pick > 0) || s.hp[s.cur] <= 0) return;   // nothing else while a Glumi falls or someone chooses
+    if (a === "x" || a === "s") lvCast(L, si, a);
+    else if (a === "sh") lvShield(L, si);
+    else if (/^sw\d$/.test(a)) { const i = +a[2]; if (s.cd <= 0 && i !== s.cur && s.hp[i] > 0) { s.cur = i; s.cd = 8; s.t = 0; } }
+  }
+  function lvStep(L, taps) {   // one tick; taps: [{s, a}] made for this tick
+    for (const si of lvOrder(L)) for (const x of taps) if (x.s === si) lvTap(L, si, x.a);
+    if (L.over) return;
+    if (L.fall > 0) { if (--L.fall === 0) for (const s of L.s) if (s.hp[s.cur] <= 0) { const al = lvAlive(s); if (al.length > 1 && !s.au) s.pick = LPICK; else { s.cur = al[0]; s.t = 0; } } return; }
+    if (L.s.some(s => s.pick > 0)) { for (const s of L.s) if (s.pick > 0 && --s.pick === 0) { s.cur = lvAlive(s)[0]; s.t = 0; } return; }
+    const A = L.s, F = A.map(lvFront);
+    for (let si = 0; si < 2; si++) { const s = A[si], m = F[si], mh = maxHp(m);
+      s.cd = Math.max(0, s.cd - LDT); s.sh = Math.max(0, s.sh - LDT); for (const k in s.st) s.st[k] = Math.max(0, s.st[k] - LDT);
+      if (s.st.burn > 0) s.hp[s.cur] = Math.max(0, s.hp[s.cur] - mh * .04 * LDT); if (s.st.poison > 0) s.hp[s.cur] = Math.max(0, s.hp[s.cur] - mh * .03 * LDT);
+      if (s.st.regen > 0 && s.hp[s.cur] > 0) s.hp[s.cur] = Math.min(mh, s.hp[s.cur] + mh * .015 * LDT);
+      s.t += stOn(s, "stun") ? 0 : LDT; s.e = Math.min(100, s.e + E_RATE * LDT * (1 + charmB(m, "en"))); }
+    const fire = [0, 1].map(si => A[si].hp[A[si].cur] > 0 && A[si].t >= interval(F[si]));   // basic attacks land together
+    for (let si = 0; si < 2; si++) if (fire[si]) { const iv = interval(F[si]), em = mult(SP[F[si].sp].el, SP[F[1 - si].sp].el); A[si].t -= iv; L.ev.push({ s: si, dmg: lvHit(L, si, iv * .9 * em), eff: em }); }
+    for (const si of lvOrder(L)) if (A[si].au && A[si].hp[A[si].cur] > 0 && A[1 - si].hp[A[1 - si].cur] > 0) lvAI(L, si);
+    const down = [0, 1].filter(si => A[si].hp[A[si].cur] <= 0); if (!down.length) return;
+    for (const si of down) L.ev.push({ s: si, ko: 1 });
+    const gone = down.filter(si => !lvAlive(A[si]).length);
+    if (gone.length === 2) return lvEnd(L, A[0].dealt >= A[1].dealt ? 0 : 1);   // both teams fell on the same tick: most damage wins
+    if (gone.length) return lvEnd(L, 1 - gone[0]);
+    L.fall = LFALL;
+  }
+  const lvHash = L => JSON.stringify([L.k, L.over, L.win, L.s.map(s => [s.cur, s.hp.map(h => Math.round(h * 100)), Math.round(s.e * 100), s.dealt])]);
+  // ---- driving it: the clock, the taps from the room, rewinding for a late tap ----
+  function lvNew(r) {
+    const P = roomPlayers(); if (P.length < 2) return null; const a = duelPick(r, P[0].pid), b = duelPick(r, P[1].pid); if (!a || !b) return null;
+    const L = { k: 0, fall: 0, over: false, win: -1, endK: -1, ev: [], s: [lvSide(a.team, a.au), lvSide(b.team, b.au)] };
+    if (!L.s[0].ms.length || !L.s[1].ms.length) lvEnd(L, L.s[0].ms.length ? 0 : 1);
+    return { r, go: Math.max(a._t || 0, b._t || 0) + LLEAD, pids: [P[0].pid, P[1].pid], mi: P[0].pid === olState().pid ? 0 : 1, base: lvCopy(L), L, snaps: new Map(), ids: new Set(), shown: -1, fx: [], fin: false, rolled: 0 };
+  }
+  function lvTaps(V) {
+    const m = new Map(), list = R.log.filter(o => o.t === "act" && o.r === V.r).sort((x, y) => x._id < y._id ? -1 : x._id > y._id ? 1 : 0);
+    for (const o of list) { const s = V.pids.indexOf(o.pid), k = Math.floor(+o.k);
+      if (s < 0 || !(k >= 0 && k <= LCAP) || typeof o.a !== "string") continue;
+      if (!(o._t <= V.go + k * 100 + LGRACE)) { if (s === V.mi && !V.ids.has(o._id)) { V.ids.add(o._id); V.late = (V.late || 0) + 1; if (V.late === 2 || V.late % 10 === 0) toast("Slow internet: some of your taps came too late to count"); } continue; }
+      if (!m.has(k)) m.set(k, []); m.get(k).push({ s, a: o.a.slice(0, 4), id: o._id }); }
+    return m;
+  }
+  function lvRun(V) {
+    const m = lvTaps(V); let back = Infinity;
+    for (const [k, l] of m) for (const x of l) if (!V.ids.has(x.id)) { V.ids.add(x.id); if (k < V.L.k || (V.L.over && k <= V.L.endK)) back = Math.min(back, k); }
+    if (back < Infinity) { let best = null; for (const [k, s] of V.snaps) if (k <= back && (!best || k > best.k)) best = s; V.L = lvCopy(best || V.base); V.rolled++; }
+    const to = Math.min(LCAP, Math.floor((srvNow() - V.go) / 100));
+    while (!V.L.over && V.L.k <= to) {
+      const L = V.L; V.snaps.set(L.k, lvCopy(L)); L.ev = []; lvStep(L, m.get(L.k) || []);
+      if (L.k > V.shown) { if (to - L.k < 12) V.fx.push(...L.ev); V.shown = L.k; }
+      if (L.over) break; L.k++;
+      if (L.k >= LCAP) { const sh = s => s.hp.reduce((x, h) => x + h, 0) / s.ms.reduce((x, q) => x + maxHp(q), 0); lvEnd(L, sh(L.s[0]) >= sh(L.s[1]) ? 0 : 1); }
+    }
+    for (const k of V.snaps.keys()) if (k < to - 80) V.snaps.delete(k);
+    if (V.L.over && srvNow() > V.go + V.L.endK * 100 + LGRACE + 400) V.fin = true;
+  }
+  // ---- on screen: the normal fight screen, with the friend's team as the foe ----
+  function lvStart(V) {
+    LV = V; const o = roomOther() || {};
+    BT = { live: V, over: false, fx: [], foes: [], fi: 0, me: null, foe: null, swapCd: 0, auto: false, speed: 1, pick: 0, name: o.name || "Friend", color: "#ff8a8a", enter: true, mode: "live" };
+    lvRun(V); lvBind(); V.sig = lvSig(V); render(); BT.enter = false;
+    clearInterval(lvTimer); lvTimer = setInterval(lvLoop, 50);
+  }
+  function lvBind() { const V = LV; if (!V || !BT) return; const ms = V.L.s[V.mi], ts = V.L.s[1 - V.mi]; BT.me = ms; BT.foe = ts; BT.foes = ts.ms; BT.fi = ts.cur; BT.swapCd = ms.cd; BT.auto = ms.au; BT.pick = ms.pick / 10; }
+  const lvCount = V => Math.ceil((V.go - srvNow()) / 1000);
+  const lvSig = V => JSON.stringify([V.L.s.map(s => [s.cur, s.pick > 0, s.au]), V.L.over, Math.max(0, lvCount(V)), !!(R && R.net)]);
+  function lvStop() { clearInterval(lvTimer); lvTimer = null; LV = null; if (BT && BT.live) { BT = null; } }
+  function lvLoop() {
+    const V = LV; if (!V || !BT || BT.live !== V || !R) { clearInterval(lvTimer); lvTimer = null; return; }
+    lvRun(V); lvBind(); const sig = lvSig(V);
+    if (sig !== V.sig) { V.sig = sig; render(); } else paintLive();
+    if (V.fx.length) {
+      const mine = e => e.s === V.mi;
+      for (const e of V.fx.splice(0)) {
+        if (e.ko) { moKO(mine(e) ? "me" : "foe"); if (mine(e)) sfx("tap"); continue; }
+        if (e.banner) { skillBanner(e.banner, mine(e), EL[e.el].color); continue; }
+        BT.fx.push(Object.assign({}, e, { who: mine(e) ? "me" : "foe" }));
+      }
+      playFx();
+    }
+    if (V.fin) lvFinish(V);
+  }
+  function lvFinish(V) {
+    const win = V.L.win, iWon = win === V.mi, other = BT.name; R.lres[V.r] = win; (R.lhash || (R.lhash = {}))[V.r] = [lvHash(V.L), V.rolled]; lvStop();
+    const D = duelRounds(), mw = D.wins[V.mi], tw = D.wins[1 - V.mi];
+    if (D.over && !R.rewarded) duelReward(D, V.mi === 0);   // the duel's reward right away, even if a rematch is tapped before the card closes
+    render();
+    const d = document.createElement("div"); d.className = "duelplay"; if (ART["bg-arena"]) d.style.backgroundImage = `linear-gradient(rgba(40,25,70,.62), rgba(60,35,90,.35) 50%, rgba(40,25,70,.62)), url(${ART["bg-arena"]})`;
+    d.innerHTML = `<div class="dpres ${iWon ? "win" : "lose"}"><b>${iWon ? "You win round " + V.r + "!" : olEsc(other) + " wins round " + V.r}</b><small>${mw} : ${tw}</small><em>Tap to go on</em></div>`;
+    document.body.appendChild(d); sfx(iWon ? "win" : "tap"); if (iWon) fxRain(40);
+    const end = () => { if (!d.isConnected) return; d.remove(); duelSel = null; render(); roomSync(); }; setTimeout(() => d.addEventListener("click", end), 300); setTimeout(end, 4000);
+  }
+  function lvAct(a, arg) {   // a fight button in a live duel: the tap goes to both phones and counts LDELAY ticks from now
+    const V = LV; if (!V || V.L.over) return; const s = V.L.s[V.mi]; let code = null;
+    if (a === "skill") code = "x"; else if (a === "cast") code = arg === "s" ? "s" : "x"; else if (a === "shield") code = "sh";
+    else if (a === "swap") code = "sw" + clampN(arg, 0, 2); else if (a === "pickmon") code = "pk" + clampN(arg, 0, 2);
+    else if (a === "autoskill") { code = s.au ? "au0" : "au1"; S.autoSkill = !s.au; save(); toast(s.au ? "Auto skills off" : "Auto skills on"); }
+    else if (a === "retreat") { if (!V.quitAsk || Date.now() - V.quitAsk > 3000) { V.quitAsk = Date.now(); return toast("Tap Give up again to give up this round"); } code = "gu"; }
+    if (!code) return;
+    const k = Math.max(V.L.k, Math.floor((srvNow() - V.go) / 100)) + LDELAY; roomPost({ t: "act", r: V.r, k, a: code });
+  }
+  function renderLive() {
+    const V = BT.live, ms = V.L.s[V.mi], ts = V.L.s[1 - V.mi], me = lvFront(ms), foe = lvFront(ts), other = olEsc(BT.name), cdn = lvCount(V);
+    const dots = s => s.ms.map((m, i) => `<span class="tdot${s.hp[i] <= 0 ? " out" : ""}${i === s.cur ? " cur" : ""}">${art(m.sp, m.evo, 30)}</span>`).join("");
+    const sw = ms.ms.map((m, i) => { const cur = i === ms.cur; return `<button class="tsw${cur ? " cur" : ""}" data-act="swap:${i}" ${cur || ms.hp[i] <= 0 || ms.cd > 0 ? "disabled" : ""} aria-label="Switch to ${fname(m.sp, m.evo)}">${cur ? `<span class="tagcur">Fighting</span>` : ""}${art(m.sp, m.evo, 46)}${bar(ms.hp[i], maxHp(m))}<span class="cd" ${ms.cd > 0 && !cur && ms.hp[i] > 0 ? "" : "hidden"}>${Math.ceil(ms.cd)}</span></button>`; }).join("");
+    const capb = (btn, label) => `<div class="capw">${btn}<span class="cap">${label}</span></div>`;
+    const picker = ms.pick > 0 ? `<div class="picker"><p>Choose your next Glumi</p><div class="prow">${ms.ms.map((m, i) => ms.hp[i] > 0 ? `<button class="pk" data-act="pickmon:${i}">${art(m.sp, m.evo, 56)}${bar(ms.hp[i], maxHp(m))}</button>` : "").join("")}</div><b id="pickT">${Math.ceil(ms.pick / 10)}</b></div>` : "";
+    const note = cdn > 0 ? `<div class="lvnote big">${cdn}</div>` : V.L.over ? `<div class="lvnote">${V.L.win === V.mi ? "You win the round!" : other + " wins the round"}</div>` : ts.pick > 0 ? `<div class="lvnote">${other} is choosing...</div>` : "";
+    $("aview").innerHTML = `${picker}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(ms)}</div></div><div class="aside r"><span class="aname">${other}</span><div class="tdots">${dots(ts)}</div></div></div>
+      <div class="afield">${arenaSVG()}<span class="lvtag${R && !R.net ? " off" : ""}">${R && !R.net ? "Reconnecting..." : "LIVE · Round " + V.r}</span>${note}
+        <div class="hpcard me"><div class="nm"><span>${fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(ms.hp[ms.cur], maxHp(me))}</div><div class="stx" id="meSt">${stChips(ms)}</div></div>
+        <div class="hpcard foe"><div class="nm"><span>${fname(foe.sp, foe.evo)}</span><span>Lv ${foe.lvl}</span></div><div id="foeHp">${bar(ts.hp[ts.cur], maxHp(foe))}</div><div id="foeEn" class="esegs mini">${segs(ts.e)}</div><div class="stx" id="foeSt">${stChips(ts)}</div></div>
+        <div class="trainer foe${BT.enter ? " enter" : ""}">${trainerSVG(BT.color, false)}</div>
+        <div class="actor" id="foeActor" style="left:66%;top:68%"><div class="shieldfx" id="foeShield" ${ts.sh > 0 ? "" : "hidden"}></div><div class="spr pop">${live(foe.sp, foe.evo, 130)}</div><div class="shadow"></div></div>
+        <div class="trainer me${BT.enter ? " enter" : ""}">${trainerSVG("#5aa8ff", true)}</div>
+        <div class="actor" id="meActor" style="left:38%;top:92%"><div class="shieldfx" id="meShield" ${ms.sh > 0 ? "" : "hidden"}></div><div class="spr pop">${live(me.sp, me.evo, 170, { flip: 1 })}</div><div class="shadow"></div></div>
+      </div>
+      <div class="actrl">
+        <div class="bmain"><div class="tswrow">${sw}</div><div class="skcol">${skCard(me, foe, "x")}${skCard(me, foe, "s")}</div></div>
+        <div class="ebrow"><span class="egem"><b id="eNum">${Math.floor(ms.e / 10)}</b></span><div class="esegs" id="meSegs">${segs(ms.e)}</div><button class="shieldb" id="shieldBtn" data-act="shield" ${ms.e >= SHIELD_COST * 10 && !(ms.sh > 0) ? "" : "disabled"} aria-label="Shield, ${SHIELD_COST} energy">${IC.shield || IC.flag}<b>${SHIELD_COST}</b></button></div>
+        <div class="arow">${capb(`<button class="round${ms.au ? " on" : ""}" data-act="autoskill" aria-label="Auto skills">${IC.auto}</button>`, "Auto")}${capb(`<button class="round" data-act="retreat" aria-label="Give up">${IC.flag}</button>`, "Give up")}</div>
+      </div>`;
+    paintLive();
+  }
+  function paintLive() {
+    const V = BT && BT.live; if (!V || !$("meHp")) return; const ms = V.L.s[V.mi], ts = V.L.s[1 - V.mi], me = lvFront(ms), foe = lvFront(ts);
+    const still = V.L.over || V.L.fall > 0 || V.L.s.some(s => s.pick > 0) || lvCount(V) > 0 || ms.hp[ms.cur] <= 0;
+    $("meHp").innerHTML = bar(ms.hp[ms.cur], maxHp(me)); $("foeHp").innerHTML = bar(ts.hp[ts.cur], maxHp(foe)); $("foeEn").innerHTML = segs(ts.e); $("meSegs").innerHTML = segs(ms.e); $("eNum").textContent = Math.floor(ms.e / 10);
+    $("meShield").hidden = !(ms.sh > 0); $("foeShield").hidden = !(ts.sh > 0); $("meSt").innerHTML = stChips(ms); $("foeSt").innerHTML = stChips(ts);
+    const sh = $("shieldBtn"); if (sh) sh.disabled = still || ms.e < SHIELD_COST * 10 || ms.sh > 0;
+    document.querySelectorAll(".tsw").forEach(b => { const i = +b.dataset.act.split(":")[1], cur = i === ms.cur, c = b.querySelector(".cd"), up = ms.hp[i] > 0;
+      b.disabled = still || cur || !up || ms.cd > 0; c.hidden = !(ms.cd > 0 && !cur && up); c.textContent = Math.ceil(ms.cd); const w = b.querySelector(".bar i"); if (w) w.style.width = Math.max(0, ms.hp[i] / maxHp(ms.ms[i]) * 100) + "%"; });
+    document.querySelectorAll(".skcard").forEach(c => { const need = +c.dataset.cost * 10, ok = !still && ms.e >= need; c.disabled = !ok; c.classList.toggle("ready", ok); c.style.setProperty("--p", Math.min(100, ms.e / need * 100) + "%"); });
+    const pt = $("pickT"); if (pt) pt.textContent = Math.max(0, Math.ceil(ms.pick / 10));
   }
   function duelReward(D, meHost) {
     const O = olState(); R.rewarded = true; if (O.done[R.code]) return; O.done[R.code] = 1;
@@ -5983,30 +6175,10 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     if (O.dday.n < 5) { O.dday.n++; const rew = won ? [{ k: "coins", n: 80 }, { k: "glow", n: 10 }] : [{ k: "coins", n: 25 }]; rew.forEach(giveReward); toast(`${won ? "You won the duel!" : "Good duel!"} +${rew.map(r => `${r.n} ${RW[r.k][1]}`).join(", ")}`); }
     olFeed(`${won ? "Won" : "Lost"} a live duel against ${(roomOther() || {}).name || "a friend"}`); save();
   }
-  function duelPlay(x, meHost, D) {  // the round's fight, played back from the worked-out trace
-    const mineT = meHost ? x.A : x.B, theirT = meHost ? x.B : x.A, mi = meHost ? 0 : 1, ti = meHost ? 1 : 0, iWon = meHost ? x.hostWon : !x.hostWon;
-    const d = document.createElement("div"); d.className = "duelplay"; if (ART["bg-arena"]) d.style.backgroundImage = `linear-gradient(rgba(40,25,70,.62), rgba(60,35,90,.35) 50%, rgba(40,25,70,.62)), url(${ART["bg-arena"]})`; document.body.appendChild(d);
-    const other = (roomOther() || {}).name || "Friend";
-    const side = (list, k, hp, who) => { const m = list[Math.min(k, list.length - 1)], out = k >= list.length; return `<div class="dpside ${who}"><div class="dpdots">${list.map((q, i) => `<span class="${i < k ? "out" : i === k ? "cur" : ""}">${art(q.sp, q.evo, 28)}</span>`).join("")}</div><div class="dpmon${out ? " ko" : ""}">${art(m.sp, m.evo, who === "me" ? 120 : 100)}</div>${bar(out ? 0 : hp, maxHp(withTB(list)[Math.min(k, list.length - 1)]))}<b>${who === "me" ? "You" : olEsc(other)}</b></div>`; };
-    const tr = x.tr.length > 120 ? x.tr.filter((_, i) => i % Math.ceil(x.tr.length / 120) === 0).concat([x.tr[x.tr.length - 1]]) : x.tr;
-    let f = 0, lastA = null, lastB = null; sfx("tap");
-    const step = () => {
-      if (!d.isConnected) return; const fr = tr[Math.min(f, tr.length - 1)], mk = fr[mi], tk = fr[ti], mh = fr[2 + mi], th = fr[2 + ti];
-      d.innerHTML = `<div class="dphead">Round ${x.r}</div>${side(theirT, tk, th, "foe")}<div class="dpvs">VS</div>${side(mineT, mk, mh, "me")}`;
-      const pop = (who, v) => { const el = d.querySelector(`.dpside.${who} .dpmon`); if (!el || v <= 0) return; const s = document.createElement("i"); s.className = "dphit"; s.textContent = "-" + v; el.appendChild(s); };
-      if (lastA && lastA[mi] === mk) pop("me", Math.round(lastA[2 + mi] - mh)); if (lastB && lastB[ti] === tk) pop("foe", Math.round(lastB[2 + ti] - th));
-      lastA = fr; lastB = fr; f++;
-      if (f < tr.length) setTimeout(step, RM ? 30 : 130);
-      else setTimeout(() => { if (!d.isConnected) return; let mw = 0, tw = 0; for (const y of D.rounds) if (y.tr && y.r <= x.r) { if ((meHost ? y.hostWon : !y.hostWon)) mw++; else tw++; }
-        d.insertAdjacentHTML("beforeend", `<div class="dpres ${iWon ? "win" : "lose"}"><b>${iWon ? "You win round " + x.r + "!" : olEsc(other) + " wins round " + x.r}</b><small>${mw} : ${tw}</small><em>Tap to go on</em></div>`);
-        sfx(iWon ? "win" : "tap"); if (iWon) fxRain(40); const end = () => { d.remove(); duelSel = null; render(); roomSync(); }; setTimeout(() => d.addEventListener("click", end), 300); setTimeout(() => { if (d.isConnected) end(); }, 4000); }, 500);
-    };
-    step();
-  }
   function duelReady() {
-    if (!R) return; const D = duelRounds(), cur = D.rounds.find(x => !x.tr); if (!cur) return;
+    if (!R) return; const D = duelRounds(), cur = D.rounds.find(x => !x.fin); if (!cur) return;
     const list = (duelSel || S.team).map(mon).filter(Boolean).slice(0, 3); if (!list.length) return toast("Pick at least one Glumi");
-    if (duelPick(cur.r, olState().pid)) return; roomPost({ t: "pick", r: cur.r, team: snapTeam(list) }); toast("Ready! Waiting for your friend"); duelSel = null;
+    if (duelPick(cur.r, olState().pid)) return; roomPost({ t: "pick", r: cur.r, team: snapTeam(list), au: !!S.autoSkill }); toast("Ready! Waiting for your friend"); duelSel = null;
   }
   // ---------- trade: each puts up one spare Glumi; when both say OK to the same two, both phones swap ----------
   let tradePickOn = false;
@@ -6096,7 +6268,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
       const kind = arenaSub === "olduel" ? "duel" : "trade", title = kind === "duel" ? "Live duel" : "Trade";
       const head = `${olBack(R && R.kind === kind ? "olleave" : "online")}<h3>${title}</h3><span></span></div>${olNetNote()}`;
       if (!R || (R.kind && R.kind !== kind)) return `${head}
-        <p class="hint" style="margin:6px 0 10px">${kind === "duel" ? "Both phones at the same time: best of 3 rounds, pick 3 Glumis each round, watch them fight." : "Both phones at the same time: each puts up one spare Glumi, both say OK, and they swap."}</p>
+        <p class="hint" style="margin:6px 0 10px">${kind === "duel" ? "Both phones at the same time: best of 3 rounds. Pick 3 Glumis each round, then fight live: skills, shield and switching, until one team falls." : "Both phones at the same time: each puts up one spare Glumi, both say OK, and they swap."}</p>
         <button class="mb gold pbig" data-act="olmake:${kind}">Make a room</button>
         <div class="oladd"><input id="olroom" maxlength="6" placeholder="Room code" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="mb" data-act="olenter:${kind}">Join</button></div>`;
       const P = roomPlayers(), other = roomOther();
@@ -6111,7 +6283,8 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
         const emo = `<div class="olemo">${["\u{1F44B}", "\u{1F604}", "\u{1F62E}", "GG"].map((e, i) => `<button class="mb" data-act="olemo:${i}">${e}</button>`).join("")}</div>`;
         if (D.over) { const won = mw > tw; return `${head}${score}<div class="olroom"><b>${won ? "You won the duel!" : olEsc(other.name) + " won the duel"}</b><small>${O.dwins || 0} duel wins · ${O.dlosses || 0} losses</small></div>${emo}
           <div class="pbtns"><button class="mb" data-act="arenasub:olleave">Leave</button><button class="mb gold pbig" data-act="olagain">Rematch</button></div>`; }
-        const cur = D.rounds.find(x => !x.tr) || { r: 1 }, picked = duelPick(cur.r, O.pid);
+        const cur = D.rounds.find(x => !x.fin) || { r: 1 }, picked = duelPick(cur.r, O.pid);
+        if (cur.live) return `${head}${score}<div class="olroom"><b>Round ${cur.r}</b><small>The fight is on!</small></div><button class="mb gold pbig" data-act="olfight">Back to the fight</button>${emo}`;
         if (picked) return `${head}${score}<div class="olroom"><b>Round ${cur.r}</b><small>Ready! Waiting for ${olEsc(other.name)} to pick...</small><span class="olpicks">${snapFoes(picked.team).map(m => art(m.sp, m.evo, 54)).join("")}</span></div>${emo}`;
         const sel = (duelSel || S.team.slice()).filter(u => mon(u)), cands = S.mons.slice().sort((a, b) => monPower(b) - monPower(a)).slice(0, 24);
         return `${head}${score}<p class="hint" style="margin:4px 0"><b>Round ${cur.r}:</b> pick up to 3 Glumis (first one fights first), then Ready.</p>
@@ -6173,6 +6346,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     else if (a === "olsel") { const u = +arg; let s = (duelSel || S.team.slice()).filter(x => mon(x)); s = s.includes(u) ? s.filter(x => x !== u) : s.length < 3 ? s.concat([u]) : s; duelSel = s; render(); }
     else if (a === "olunsel") { duelSel = (duelSel || S.team.slice()).filter(x => x !== +arg && mon(x)); render(); }
     else if (a === "olready") duelReady();
+    else if (a === "olfight") { if (R) duelSync(); }
     else if (a === "olemo") { const now = Date.now(); if (now - (R && R.emoT || 0) < 4000) return; if (R) { R.emoT = now; roomPost({ t: "emo", e: +arg }); } }
     else if (a === "olagain") { if (!R) return; const c = olRid(5); roomPost({ t: "again", room: c }); }
     else if (a === "oltpick") { tradePickOn = arg === "1"; render(); window.scrollTo(0, 0); }
