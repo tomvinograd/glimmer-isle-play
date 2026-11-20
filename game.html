@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795183574;</script>
+<script>window.GAME_BUILD = 1795184964;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -1903,6 +1903,18 @@ nav button:disabled { opacity: .7 !important; filter: grayscale(.6) brightness(.
 .actions { bottom: calc(106px + env(safe-area-inset-bottom, 0px) * 2) !important; }
 .stage .scene::after, #stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; pointer-events: none; z-index: 1; background: linear-gradient(rgba(40,30,20,0), rgba(40,30,20,.16)); }
 .toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
+/* NAVTILES: squarer tiles, big icon on top, the name across the bottom edge (Tom 20 Nov, 'adjust them') */
+nav { padding: 0 8px calc(13px + env(safe-area-inset-bottom, 0px)) !important; }
+nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.95fr !important; gap: 6px !important; }
+nav button:not(.navwide), nav button.navx { position: relative; overflow: visible !important; height: 58px !important; padding: 0 !important; align-content: start !important; justify-items: center; border-radius: 13px !important; }
+nav button:not(.navwide) svg, nav button:not(.navwide) img { width: 44px !important; height: 44px !important; margin: 3px auto 0 !important; }
+nav button.navx svg { width: 34px !important; height: 34px !important; margin-top: 7px !important; }
+nav button .tl { position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); white-space: nowrap; font: 800 14px/1 var(--display) !important; color: #fff;
+  -webkit-text-stroke: 4px #3d2716; paint-order: stroke fill; text-shadow: 0 2px 0 #3d2716; letter-spacing: .01em; pointer-events: none; }
+nav .navwide { height: 58px !important; border-radius: 13px !important; overflow: visible !important; }
+nav .navwide span { position: absolute; left: 0; right: 0; bottom: -8px; padding: 0 !important; background: none !important; font: 800 21px/1 var(--display) !important; -webkit-text-stroke: 4.5px #3d2716; paint-order: stroke fill; text-shadow: 0 2px 0 #3d2716; }
+nav .navwide::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(rgba(40,30,20,0) 55%, rgba(40,30,20,.35)); pointer-events: none; }
+nav .navwide .bang { top: -8px !important; right: -6px !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -4198,8 +4210,8 @@ nav button:disabled { opacity: .7 !important; filter: grayscale(.6) brightness(.
     paintCss();
     const lock = k => !S.started || ((E || BT || busy) && !(k === "shop" && E && E.type === "wild" && !BT && !busy));
     const open = k => (k === "menu" ? ["menu", "tasks", "bag", "shrine"].includes(view) : view === k) && !showMap && !showAuto;
-    const tab = (k, icon, label) => open(k) ? `<button class="navx" data-act="close" aria-label="Close ${label}">${NAVI.close}${label}</button>`
-      : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""}>${icon}${label}</button>`;
+    const tab = (k, icon, label) => open(k) ? `<button class="navx" data-act="close" aria-label="Close ${label}">${NAVI.close}<span class="tl">${label}</span></button>`
+      : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""} aria-label="${label}">${icon}<span class="tl">${label}</span></button>`;
     const wide = view === "home" && !showMap && !showAuto ? `<button class="navwide z${S.zone}" data-act="close"><span>Explore</span></button>`
       : `<button class="navwide homecard" data-act="view:home" ${lock("home") ? "disabled" : ""}><span>Home</span>${homeAlert() ? '<em class="bang">!</em>' : ""}</button>`;
     $("tabs").innerHTML = tab("menu", ART["ui-menu"] ? IC.menu : NAVI.menu, "Menu") + tab("team", TABI.team, "Glumis") + tab("shop", TABI.shop, "Shop") + tab("arena", (IC.arena || IC.sword).replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
