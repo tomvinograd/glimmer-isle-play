@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>window.GAME_BUILD = 1795163761;</script>
+<script>window.GAME_BUILD = 1795164564;</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Thinking games</title>
@@ -1084,23 +1084,33 @@ new MutationObserver(ms => {
   layer.querySelectorAll(":scope > .sheet, :scope > .scrim").forEach(e => e.classList.add("still"));
 }).observe(layer, { childList: true });
 function closeSheet() { sheet = null; layer.innerHTML = ""; }
+// Draw a sheet. While a level bar is being dragged (keepId), everything else in the open sheet is replaced but the bar itself
+// stays: replacing the bar under the finger ends the drag, so it could only move one step at a time (Tom, 20 Nov).
+function setSheet(html, keepId) {
+  const cur = layer.querySelector(".sheet"), live = keepId && $(keepId);
+  if (!cur || !live || !cur.contains(live)) { layer.innerHTML = html; return; }
+  const tmp = document.createElement("div"); tmp.innerHTML = html;
+  const fresh = tmp.querySelector(".sheet");
+  if (!fresh || fresh.children.length !== cur.children.length) { layer.innerHTML = html; return; }
+  [...cur.children].forEach((el, i) => { if (el !== live) el.replaceWith(fresh.children[i].cloneNode(true)); });
+}
 function openNew() {
   sheet = "new"; newMode = "solo"; pickLv = G ? G.level : opts.level; drawNew();
 }
-function drawNew() {
+function drawNew(fromBar) {
   const L = LEVELS[pickLv - 1], best = opts.best[pickLv];
   const presets = [[1, "Beginner"], [2, "Easy"], [4, "Medium"], [6, "Hard"], [8, "Expert"], [10, "Extreme"]];
   const solo = newMode === "solo", title = newMode === "vs" ? "Play a friend" : newMode === "re" ? "Rematch" : "New game";
   const go = newMode === "vs" ? `Make a ${L.name} game` : newMode === "re" ? `Ask for ${L.name}` : `Start ${L.name}`;
-  layer.innerHTML = `<div class="scrim"${solo ? " data-close" : ""}></div><div class="sheet" role="dialog" aria-label="${title}">
+  setSheet(`<div class="scrim"${solo ? " data-close" : ""}></div><div class="sheet" role="dialog" aria-label="${title}">
     <h2>${title}</h2>
     <div class="lvbig"><b>${L.name}</b><small>Level ${pickLv} of 10</small></div>
     <input class="range" id="lvrange" type="range" min="1" max="10" step="1" value="${pickLv}" aria-label="Difficulty">
     <div class="ticks">${LEVELS.map((_, k) => `<span>${k + 1}</span>`).join("")}</div>
     <div class="presets">${presets.map(([n, t]) => `<button data-lv="${n}" class="${n === pickLv ? "on" : ""}">${t}</button>`).join("")}</div>
     <p class="about">About <b>${L.clues} numbers given</b> out of 81. ${L.singles ? "Every step can be found by looking at one row, column or box." : L.tough ? "Needs advanced techniques: some steps can't be seen from a single row, column or box." : "Some steps may need advanced techniques."}${best ? ` Your best: <b>${fmt(best)}</b>.` : ""}</p>
-    <div class="row2">${!solo ? `<button class="big" id="newback">Back</button>` : homeOn ? `<button class="big" data-close>Back</button>` : G && !G.done ? `<button class="big" data-close>Keep playing</button>` : ""}<button class="big go" id="startbtn">${go}</button></div>${solo ? `<p class="ver">${verLabel()}</p>` : ""}</div>`;
-  $("lvrange").oninput = e => { pickLv = +e.target.value; drawNew(); $("lvrange").focus(); };
+    <div class="row2">${!solo ? `<button class="big" id="newback">Back</button>` : homeOn ? `<button class="big" data-close>Back</button>` : G && !G.done ? `<button class="big" data-close>Keep playing</button>` : ""}<button class="big go" id="startbtn">${go}</button></div>${solo ? `<p class="ver">${verLabel()}</p>` : ""}</div>`, fromBar && "lvrange");
+  $("lvrange").oninput = e => { pickLv = +e.target.value; drawNew(true); };
   layer.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => { pickLv = +b.dataset.lv; drawNew(); });
   $("startbtn").onclick = () => newMode === "vs" ? vsMake(pickLv) : newMode === "re" ? vsRematch(pickLv) : startGame(pickLv);
   if (!solo) $("newback").onclick = () => newMode === "vs" ? openVsMenu() : G && G.done ? openVsEnd() : closeSheet();
@@ -1153,18 +1163,18 @@ function openDaily() {
 }
 // how hard today's daily is: today's level (easy Monday .. Expert Sunday) or the player's own; the choice is kept for the next days
 let dPick = 4, dFollow = true;
-function drawDailyPick() {
+function drawDailyPick(fromBar) {
   const k = dayKey(), dl = dailyLevel(k), L = LEVELS[dPick - 1];
   const presets = [[2, "Easy"], [4, "Medium"], [6, "Hard"], [8, "Expert"], [10, "Extreme"]];
-  layer.innerHTML = `<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Daily puzzle">
+  setSheet(`<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-label="Daily puzzle">
     <h2>Daily puzzle</h2>
     <div class="lvbig"><b>${L.name}</b><small>Level ${dPick} of 10${dPick === dl ? " · today's level" : ""}</small></div>
     <input class="range" id="dlvrange" type="range" min="1" max="10" step="1" value="${dPick}" aria-label="Difficulty">
     <div class="ticks">${LEVELS.map((_, n) => `<span>${n + 1}</span>`).join("")}</div>
     <div class="presets"><button id="dtoday" class="${dFollow ? "on" : ""}">Today's level</button>${presets.map(([n, t]) => `<button data-dlv="${n}" class="${!dFollow && n === dPick ? "on" : ""}">${t}</button>`).join("")}</div>
     <p class="about">Today's level is <b>${LEVELS[dl - 1].name}</b>: easy on Monday, harder each day, Expert on Sunday. Every level has its own puzzle today, the same for everyone who picks it.</p>
-    <div class="row2"><button class="big" data-close>Back</button><button class="big go" id="dstart">Start ${L.name}</button></div></div>`;
-  $("dlvrange").oninput = e => { dPick = +e.target.value; dFollow = false; drawDailyPick(); $("dlvrange").focus(); };
+    <div class="row2"><button class="big" data-close>Back</button><button class="big go" id="dstart">Start ${L.name}</button></div></div>`, fromBar && "dlvrange");
+  $("dlvrange").oninput = e => { dPick = +e.target.value; dFollow = false; drawDailyPick(true); };
   $("dtoday").onclick = () => { dPick = dl; dFollow = true; drawDailyPick(); };
   layer.querySelectorAll("[data-dlv]").forEach(b => b.onclick = () => { dPick = +b.dataset.dlv; dFollow = false; drawDailyPick(); });
   $("dstart").onclick = () => { opts.dailyLv = dFollow ? 0 : dPick; save(); startDaily(k, dPick); };
