@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795170946;</script>
+<script>window.GAME_BUILD = 1795180489;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -3883,7 +3883,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     (RACE_REW[i] || []).forEach(giveReward); S.raceDone = null; save();
     if (!quiet) { sfx("claim"); toast(`Place ${i + 1}: rewards collected`); }
   }
-  // real players: each phone posts its points (at most every 15 min, ntfy allows ~250 posts a day) and keeps every score it saw
+  // real players: each phone posts its points (at most every 15 min) and keeps every score it saw
   let racePosting = false;
   async function racePost(gap = RACE_POST_MS, again = false) {
     const R = raceState(); if (!R.d || R.me <= 0 || racePosting) return;
@@ -5668,13 +5668,17 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   });
 
   // ================= ONLINE: friends, gifts, friend battles, real Ladder teams, Daily Boss, World Boss, live duels, trades, ideas =================
-  // Every phone talks through the free public relay ntfy.sh (the same one the Sudoku race uses). Topics (all start "tvglim-"):
+  // Every phone talks through Firebase Realtime Database (free plan, project glimmerisle-93c86, Europe) since 20 Nov 2026.
+  // Each phone signs in with an anonymous account; a message is /t/<topic>/<key> = {u: that account, t: server time, m: the message as JSON text}.
+  // The database rules (set in the Firebase console) only let a signed-in phone add new messages, never change or delete one. Topics:
   //   pub            profiles: name, friend code, team (feeds friend battles and real players in the Ladder)
   //   in-<code>      a player's inbox: friend added, gifts, battle results, invites
   //   db-<day>       Daily Boss scores; wb-<week> World Boss totals; r-<room> one live duel or trade room
-  // ntfy keeps messages about 12 hours and allows about 250 posts a day per internet connection, so every phone keeps what it
-  // saw and posts its own latest profile / score again when the relay may have forgotten it.
-  const RELAY = window.GLIMMER_RELAY || "https://ntfy.sh/", OLP = "tvglim-", IDEAS_TOPIC = "tvsudoku-ideas-w126b7sykrsk";
+  // Messages stay in the database; a phone reads only the recent days of a topic (fbKeep) and after that only what is new
+  // since its last read this session (fbAt), so reads stay small. Every phone keeps what it saw in its save.
+  // The ideas box still goes to ntfy.sh (Tom's phone app gets them there).
+  const FB = window.GLIMMER_FB || { key: "AIzaSyCPNEfi4e5nUel_k9FMiUMkdGZL1-I5Rc4", db: "https://glimmerisle-93c86-default-rtdb.europe-west1.firebasedatabase.app" };
+  const NTFY = window.GLIMMER_NTFY || "https://ntfy.sh/", IDEAS_TOPIC = "tvsudoku-ideas-w126b7sykrsk";
   const olFetch = (u, o) => (window.GLIMMER_FETCH || fetch)(u, o);
   const OL_ABC = "ACDEFHJKMNPRTUVWXY3479";  // no look-alikes
   const olRid = (n, abc = OL_ABC) => { let s = ""; for (let k = 0; k < n; k++) s += abc[Math.floor(Math.random() * abc.length)]; return s; };
@@ -5692,15 +5696,51 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   const olName = () => { const O = olState(); return O.name || "Islander " + O.code.slice(0, 3); };
   const olFriend = c => olState().friends.find(f => f.code === c);
   function olFeed(txt) { const O = olState(); O.feed.push({ t: Date.now(), txt }); O.feed = O.feed.slice(-12); }
+  // anonymous account: the refresh token stays in the save (S.ol.fb), the 1-hour id token only in memory
+  let fbId = "", fbExp = 0, fbP = null; const fbAt = {};
+  function fbTok(force) {
+    if (!force && fbId && Date.now() < fbExp) return Promise.resolve(fbId);
+    if (fbP) return fbP;
+    fbP = (async () => {
+      const O = olState(), F = O.fb && typeof O.fb === "object" ? O.fb : (O.fb = {}); let j = null;
+      if (F.r) {
+        const r = await olFetch("https://securetoken.googleapis.com/v1/token?key=" + FB.key, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: "grant_type=refresh_token&refresh_token=" + encodeURIComponent(F.r) });
+        if (r.ok) { const d = await r.json(); j = { id: d.id_token, r: d.refresh_token, u: d.user_id, e: d.expires_in }; }
+        else if (r.status >= 400 && r.status < 500) F.r = "";   // account gone: make a new one below
+        else throw new Error("auth " + r.status);
+      }
+      if (!j) {
+        const r = await olFetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + FB.key, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ returnSecureToken: true }) });
+        if (!r.ok) throw new Error("signup " + r.status); const d = await r.json(); j = { id: d.idToken, r: d.refreshToken, u: d.localId, e: d.expiresIn };
+      }
+      if (!j.id || !j.u) throw new Error("auth");
+      F.r = j.r; F.u = j.u; save(); fbId = j.id; fbExp = Date.now() + Math.max(60, (+j.e || 3600) - 300) * 1000; return fbId;
+    })().finally(() => { fbP = null; });
+    return fbP;
+  }
+  async function fbCall(path, o) {   // one retry with a fresh token when the database refuses a token older than 5 minutes
+    for (let k = 0; ; k++) { const tok = await fbTok(k > 0), r = await olFetch(FB.db + path + (path.includes("?") ? "&" : "?") + "auth=" + encodeURIComponent(tok), o || { cache: "no-store" });
+      if (r.status === 401 && k === 0 && Date.now() > fbExp - 50 * 60000) continue; return r; }
+  }
+  const PUSH_ABC = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";   // Firebase keys start with the time
+  const fbKeyAt = ms => { let s = ""; for (let k = 0; k < 8; k++) { s = PUSH_ABC[ms % 64] + s; ms = Math.floor(ms / 64); } return s; };
+  const fbKeep = tp => (/^wb-/.test(tp) ? 8 : tp === "pub" ? 4 : /^in-/.test(tp) ? 3 : 2) * 86400000;   // days of a topic a phone reads
+  const fbOk = tp => /^[A-Za-z0-9_-]{1,60}$/.test(tp);
   async function olPost(topic, o) {
-    try { const r = await olFetch(RELAY + OLP + topic, { method: "POST", body: JSON.stringify(o) }); if (r.status === 429) olFull = true; olNet = true; return r.ok; }
+    if (!fbOk(topic)) return false;
+    try { await fbTok(); const r = await fbCall("/t/" + topic + ".json", { method: "POST", body: JSON.stringify({ u: olState().fb.u, t: { ".sv": "timestamp" }, m: JSON.stringify(o) }) }); olNet = true; return r.ok; }
     catch { olNet = false; return false; }
   }
-  async function olRead(topic, since = "all") {
+  async function olRead(topic) {   // the messages added since this phone's last read of the topic (first read: the recent days)
+    if (!fbOk(topic)) return null;
     try {
-      const r = await olFetch(RELAY + OLP + topic + "/json?poll=1&since=" + since, { cache: "no-store" }); if (!r.ok) return null;
-      const txt = await r.text(), out = [];
-      for (const l of txt.split("\n")) if (l.trim()) { try { const m = JSON.parse(l); if (m.event !== "message") continue; const o = JSON.parse(m.message); if (o && typeof o === "object") { o._id = m.id; o._t = (m.time || 0) * 1000; out.push(o); } } catch {} }
+      const last = fbAt[topic], q = 'orderBy="$key"&startAt=' + encodeURIComponent(JSON.stringify(last || fbKeyAt(Date.now() - fbKeep(topic)))) + (last ? "&limitToFirst=300" : "&limitToLast=300");
+      const r = await fbCall("/t/" + topic + ".json?" + q.replace('"$key"', "%22%24key%22")); if (!r.ok) return null;
+      const j = await r.json(), out = [];
+      for (const k of Object.keys(j && typeof j === "object" ? j : {}).sort()) {
+        if (k === last) continue; fbAt[topic] = k; const v = j[k];
+        try { const o = JSON.parse(v.m); if (o && typeof o === "object" && !Array.isArray(o)) { o._id = k; o._t = +v.t || 0; out.push(o); } } catch {}
+      }
       olNet = true; return out;
     } catch { olNet = false; return null; }
   }
@@ -5872,12 +5912,25 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
   // ---------- live rooms (duel or trade): both phones read the same message list, so both work out the same state ----------
   let R = null;
   function roomOpen(code, kind, host) { roomClose(false); R = { code, kind, host, log: [], seen: new Set(), last: "", t0: Date.now(), net: true, played: {} }; roomConnect(); if (host) roomPost({ t: "hello", kind }); else setTimeout(() => { if (R && R.code === code && !roomHost()) { roomClose(false); toast("No room with that code. Check the code and try again"); render(); } }, 9000); }
-  function roomConnect() {
+  function roomConnect() {   // Firebase streams the room: first the whole list ("put" at /), then each new message
     const r = R; if (!r) return; const ES = window.GLIMMER_ES || window.EventSource; if (!ES) return;
-    let es; try { es = new ES(RELAY + OLP + "r-" + r.code + "/sse?since=" + (r.last || "all")); } catch { return; } r.es = es;
-    es.onopen = () => { if (R === r) { r.net = true; } };
-    es.onmessage = e => { if (R !== r) return; let m; try { m = JSON.parse(e.data); } catch { return; } if (roomTake(m)) roomSync(); };
-    es.onerror = () => { if (R !== r) return; r.net = false; if (es.readyState === 2) { r.es = null; setTimeout(() => { if (R === r && !r.es) roomConnect(); }, 4000); } };
+    const retry = ms => setTimeout(() => { if (R === r && !r.es) roomConnect(); }, ms);
+    fbTok().then(tok => {
+      if (R !== r || r.es) return; let es; try { es = new ES(FB.db + "/t/r-" + r.code + ".json?auth=" + encodeURIComponent(tok)); } catch { return; } r.es = es;
+      const take = e => {
+        if (R !== r || r.es !== es) return; let d; try { d = JSON.parse(e.data); } catch { return; } if (!d || typeof d !== "object") return; r.net = true;
+        const parts = String(d.path || "/").split("/").filter(Boolean); let ch = false;
+        const one = (k, v) => { if (v && typeof v === "object" && typeof v.m === "string") ch = roomTake({ event: "message", id: k, message: v.m }) || ch; };
+        if (!parts.length) { const o = d.data && typeof d.data === "object" ? d.data : {}; for (const k of Object.keys(o).sort()) one(k, o[k]); }
+        else if (parts.length === 1) one(parts[0], d.data);
+        if (ch) roomSync();
+      };
+      const again = ms => { if (r.es !== es) return; try { es.close(); } catch {} r.es = null; if (R === r) { r.net = false; retry(ms); } };
+      es.addEventListener("put", take); es.addEventListener("patch", take);
+      es.addEventListener("auth_revoked", () => { fbExp = 0; again(300); }); es.addEventListener("cancel", () => again(4000));
+      es.onopen = () => { if (R === r) r.net = true; };
+      es.onerror = () => { if (R !== r) return; r.net = false; if (es.readyState === 2) again(4000); };
+    }).catch(() => { if (R === r) { r.net = false; retry(4000); } });
   }
   function roomTake(m) {
     if (!m || m.event !== "message" || !m.id || R.seen.has(m.id)) return false; R.seen.add(m.id); R.last = m.id;
@@ -5995,7 +6048,7 @@ button[data-act^="buy"], button[data-act^="lvl"], button[data-act^="lvpstep"] { 
     const O = olState(), tx = $("olidtx"), text = tx ? tx.value.trim() : ""; if (text.length < 3) return toast("Write a few words first");
     if ((O.ideas || []).filter(x => x.d === today()).length >= 5) return toast("That's 5 ideas today, thank you!");
     const body = JSON.stringify({ topic: IDEAS_TOPIC, title: "Glimmer Isle · idea", tags: ["bulb"], message: `${text}\n\n— ${olName()} · ${versionText()}` });
-    try { const r = await olFetch(RELAY, { method: "POST", body }); if (!r.ok) throw 0; O.ideas = (O.ideas || []).concat([{ d: today(), text: text.slice(0, 200) }]).slice(-10); save(); closePopup(); sfx("claim"); toast("Thank you! Your idea was sent"); }
+    try { const r = await olFetch(NTFY, { method: "POST", body }); if (!r.ok) throw 0; O.ideas = (O.ideas || []).concat([{ d: today(), text: text.slice(0, 200) }]).slice(-10); save(); closePopup(); sfx("claim"); toast("Thank you! Your idea was sent"); }
     catch { toast("Couldn't send right now: check the internet"); }
   }
   // ---------- pages (inside the Arena tab) ----------
