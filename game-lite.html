@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795465782;</script>
+<script>window.GAME_BUILD = 1795466693;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2046,6 +2046,9 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
 #actions .compass.spyw:active:not(:disabled) .spywsvg, #actions .compass.spyw:active:not(:disabled) .spywimg { transform: translateY(3px); }
 #actions .compass.spyw:disabled { filter: grayscale(.5); opacity: .8; }
 #actions .compass.spyw .cost { bottom: -2px !important; }
+.minehelp { position: fixed; z-index: 40; pointer-events: none; opacity: 0; }
+.minehelp .mhs { width: 100%; height: 100%; transform-origin: 70% 100%; filter: drop-shadow(0 4px 4px rgba(40,25,10,.3)); }
+.minehelp .mhs img, .minehelp .mhs svg { width: 100%; height: 100%; object-fit: contain; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3200,36 +3203,40 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   GATHER_SVG.ore = ART["item-rock"] ? artIcon("item-rock") : ROCK_SVG;
   // mining like the big games: a pickaxe winds up and strikes with a golden swoosh, chips fly and the rock cracks; the 2nd
   // strike bursts it into chunks (Auto / quick: one strike). Returns the stage point the coins come out of.
-  async function mineRock(el) {
+  const pk1 = a => a[Math.floor(Math.random() * a.length)];
+  async function mineRock(el) {   // your team leader hops over and digs the rock apart (Tom 23 Nov, our own idea)
     const fast = RM || S.auto || (typeof quickNow !== "undefined" && quickNow), box = el.querySelector(".bounce") || el, r = box.getBoundingClientRect();
-    const hx = r.left + r.width * .6, hy = r.top + r.height * .38, W = r.width * .78;
-    const pk = document.createElement("div"); pk.className = "minepick" + (ART["item-pickaxe"] ? " art" : "");
-    pk.style.cssText = `left:${r.left + r.width * .5}px;top:${r.top - W * .62}px;width:${W}px;height:${W}px`;
-    pk.innerHTML = (ART["item-pickaxe"] ? `<img src="${ART["item-pickaxe"]}" alt="">` : PICK_SVG) + `<svg class="mswoosh" viewBox="0 0 100 100"><defs><linearGradient id="mswg" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8" stop-opacity="0"/><stop offset=".6" stop-color="#ffd34d"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><path d="M60 -6 A 62 62 0 0 0 4 48" fill="none" stroke="url(#mswg)" stroke-width="9" stroke-linecap="round"/></svg>`;
-    document.body.appendChild(pk); const sw = pk.querySelector(".mswoosh");
-    await anim(pk, [{ opacity: 0, transform: "rotate(10deg) scale(.6)" }, { opacity: 1, transform: "rotate(0) scale(1)" }], { duration: fast ? 90 : 180, easing: "ease-out", fill: "forwards" });
-    const strike = async last => {
-      await anim(pk, [{ transform: "rotate(0)" }, { transform: "rotate(38deg)" }], { duration: fast ? 110 : 260, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" });  // wind up
-      sw.animate([{ opacity: 0 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: fast ? 160 : 260 });
-      await anim(pk, [{ transform: "rotate(38deg)" }, { transform: "rotate(-44deg)" }], { duration: fast ? 80 : 110, easing: "cubic-bezier(.6,0,1,.6)", fill: "forwards" });  // strike
-      sfx("tap"); fxRing(hx, hy, "#fff6c8", last ? 120 : 70, .35, 0, 6); fxBurst(hx, hy, last ? 6 : 10, ["#aaa49e", "#8d857e", "#dcd6d0", "#fff6c8"], last ? 160 : 210);
-      if (!last) {
-        box.style.position = "relative";
-        if (ART["item-rock-cracked"]) box.innerHTML = artIcon("item-rock-cracked"); else box.insertAdjacentHTML("beforeend", CRACK_SVG);
-        anim(box, [{ transform: "none" }, { transform: "translateX(-5px) scale(1.04,.95)" }, { transform: "translateX(4px)" }, { transform: "translateX(-2px)" }, { transform: "none" }], { duration: 260 });
-        await anim(pk, [{ transform: "rotate(-44deg)" }, { transform: "rotate(-26deg)" }, { transform: "rotate(0)" }], { duration: 230, easing: "ease-out", fill: "forwards" });
-      }
+    const lead = team()[0], H = Math.round(r.height * .9);
+    const pk = document.createElement("div"); pk.className = "minehelp";
+    const hx = r.left - H * .55, hy = r.top + r.height - H;   // stands at the rock's left, feet on the same ground
+    pk.style.cssText = `left:${hx}px;top:${hy}px;width:${H}px;height:${H}px`;
+    pk.innerHTML = `<div class="mhs">${lead ? art(lead.sp, lead.evo, H) : ""}</div>`; document.body.appendChild(pk);
+    const spr = pk.querySelector(".mhs");
+    if (!fast) {   // hops in from the left
+      await anim(pk, [{ transform: "translate(-140px,0)", opacity: 0 }, { transform: "translate(-90px,-34px)", opacity: 1, offset: .15 }, { transform: "translate(-45px,0)", offset: .55 }, { transform: "translate(-20px,-18px)", opacity: 1, offset: .78 }, { transform: "translate(0,0)", opacity: 1 }], { duration: 620, easing: "ease-out", fill: "forwards" }); pk.style.opacity = 1;
+      fxBurst(hx + H / 2, hy + H, 6, ["#d9c4a0", "#bfa57e", "#efe2c4"], 70);
+    } else pk.style.opacity = 1;
+    const dig = async k => {   // leans into the rock, dirt flies back over its head
+      await anim(spr, [{ transform: "rotate(0) translateX(0)" }, { transform: "rotate(16deg) translateX(8px) translateY(4px)" }], { duration: fast ? 70 : 170, easing: "ease-in", fill: "forwards" });
+      sfx("tap"); const gx = r.left + r.width * .2, gy = r.top + r.height * .8;
+      for (let i = 0; i < (fast ? 4 : 7); i++) pfxAdd({ x: gx, y: gy, vx: -rr(60, 190), vy: -rr(180, 340), g: 700, drag: .6, life: rr(.6, .95), size: rr(6, 11), c: pk1(["#8a6a45", "#a8875f", "#6e5236", "#c2a27a"]) });
+      anim(box, [{ transform: "none" }, { transform: "translateX(3px) rotate(2deg)" }, { transform: "translateX(-2px)" }, { transform: "none" }], { duration: 200 });
+      if (k === 1) { box.style.position = "relative"; if (ART["item-rock-cracked"]) box.innerHTML = artIcon("item-rock-cracked"); else box.insertAdjacentHTML("beforeend", CRACK_SVG); }
+      await anim(spr, [{ transform: "rotate(16deg) translateX(8px) translateY(4px)" }, { transform: "rotate(0) translateX(0)" }], { duration: fast ? 70 : 200, easing: "ease-out", fill: "forwards" });
+      if (!fast) await wait(90);
     };
-    if (!fast) await strike(false);
-    await strike(true);
-    // the rock bursts into chunks that tumble out and fade; the pickaxe leaves
+    if (fast) await dig(2); else { for (const k of [0, 1, 2]) await dig(k); }
+    const leave = async () => {   // a happy hop, then back home
+      if (!fast) { poseShow(spr, "happy", 700); await anim(pk, [{ transform: "translate(0,0)" }, { transform: "translate(0,-30px)", offset: .5 }, { transform: "translate(0,0)" }], { duration: 360, easing: "ease-out" }); }
+      await anim(pk, [{ transform: "translate(0,0)", opacity: 1 }, { transform: "translate(-60px,-20px)", opacity: 1, offset: .5 }, { transform: "translate(-130px,0)", opacity: 0 }], { duration: fast ? 200 : 420, easing: "ease-in", fill: "forwards" });
+      pk.remove();
+    };
+    // the rock tumbles apart into chunks; the helper celebrates and goes back
     const cx = r.left + r.width / 2, cy = r.top + r.height * .6;
-    anim(box, [{ transform: "none", opacity: 1 }, { transform: "scale(1.12,.9)", opacity: 1, offset: .3 }, { transform: "scale(.6)", opacity: 0 }], { duration: fast ? 120 : 200, fill: "forwards" });
-    anim(pk, [{ opacity: 1 }, { opacity: 0, transform: "rotate(-60deg) translateY(10px)" }], { duration: 260, fill: "forwards" }).then(() => pk.remove());
-    setTimeout(() => pk.isConnected && pk.remove(), 1200);
+    anim(box, [{ transform: "none", opacity: 1 }, { transform: "translateY(4px) scale(1.04,.96)", opacity: 1, offset: .3 }, { transform: "translateY(14px) scale(.7)", opacity: 0 }], { duration: fast ? 120 : 260, fill: "forwards" });
+    leave(); setTimeout(() => pk.isConnected && pk.remove(), 2500);
     if (!RM) {
-      fxRing(cx, cy, "#ffffff", 150, .4, 0, 8);
-      const n = fast ? 5 : 9;
+      const n = fast ? 5 : 8;
       for (let i = 0; i < n; i++) {
         const c = document.createElement("div"); c.className = "minechip"; const sz = 14 + Math.random() * 16;
         c.style.cssText = `left:${cx - sz / 2}px;top:${cy - sz / 2}px;width:${sz}px;height:${sz}px`; c.innerHTML = ART["item-rock-chip"] ? `<img src="${ART["item-rock-chip"]}" alt="">` : CHIP_SVG; document.body.appendChild(c);
