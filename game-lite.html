@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795469949;</script>
+<script>window.GAME_BUILD = 1795470723;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1030,7 +1030,7 @@ nav .navwide .bang { top: 4px; right: 6px; }
 .cnode.cur .cnum { background: #e8574a; color: #fff; }
 .cbtns { display: flex; gap: 10px; align-items: center; justify-content: center; }
 .swrow.mini { width: auto; padding: 8px 12px; gap: 8px; }
-/* ===== Star Shrine (Tom 16 Nov) ===== */
+/* ===== Lantern Release (Tom 16 Nov) ===== */
 .shcount { display: inline-flex; align-items: center; gap: 4px; justify-self: end; font: 800 15px var(--display); color: var(--brown); } .shcount svg { width: 20px; height: 20px; }
 .shtop { border-radius: 12px; padding: 0 0 14px; overflow: hidden; background: linear-gradient(rgba(70,50,40,.55), rgba(70,50,40,.75)), var(--menubg, #6b5443) center 60%/cover; }
 .shbar { display: flex; justify-content: space-between; padding: 8px 12px; background: #f1e3d0; font: 800 13px var(--display); color: var(--brown); }
@@ -2166,6 +2166,23 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
 .lvpick .lvgo:disabled { background: #c9c2b8 !important; color: #fff !important; }
 .lvpick .lvgo.keep { background: linear-gradient(#ffe08a, #f5b23c) !important; }
 .lvpick { padding-bottom: 16px !important; }
+/* SKYLAN: Lantern Release (was Star Shrine), our own look (originality plan 23 Nov) */
+.skysky { background: linear-gradient(#2c2550, #5a3f6e 60%, #c47a5a) !important; border-radius: 12px; position: relative; overflow: hidden; }
+.skysky::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(1.5px 1.5px at 20% 25%, #fff, transparent), radial-gradient(1px 1px at 60% 15%, #fff, transparent), radial-gradient(1.5px 1.5px at 80% 35%, #ffe6a3, transparent), radial-gradient(1px 1px at 40% 45%, #fff, transparent), radial-gradient(1px 1px at 90% 10%, #fff, transparent); }
+.skysky .shbar { color: #fff3d6 !important; position: relative; background: rgba(30,20,50,.45) !important; text-shadow: 0 1px 2px rgba(0,0,0,.5); } .skysky .shbar b { color: #ffe6a3; }
+.skyrow { display: flex !important; justify-content: space-around; align-items: flex-start; min-height: 96px; padding: 6px 0 10px; position: relative; background: none !important; }
+.skylan { position: relative; width: 46px; height: 78px; border: 0; padding: 0; background: none; display: block; animation: skybob 2.6s var(--d, 0s) ease-in-out infinite; }
+@keyframes skybob { 50% { transform: translateY(-5px); } }
+.skylan .sklstr { position: absolute; left: 22px; top: 0; width: 2px; height: 10px; background: rgba(255,240,210,.5); }
+.skylan .sklbody { position: absolute; left: 1px; top: 10px; width: 44px; height: 54px; border-radius: 42% 42% 30% 30% / 50% 50% 22% 22%; display: grid; place-items: center; overflow: hidden;
+  background: rgba(255,240,210,.12); border: 2px dashed rgba(255,240,210,.45); }
+.skylan.full .sklbody { border: 0; background: radial-gradient(circle at 50% 70%, #fff6d0, color-mix(in srgb, var(--gc) 45%, #ffcf6b) 70%); box-shadow: 0 0 0 2px #7a4a22, 0 0 18px 4px color-mix(in srgb, var(--gc) 55%, #ffd36b); }
+.skylan.full .sklbody::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(122,74,34,.18) 0 1.5px, transparent 1.5px 9px); pointer-events: none; }
+.skylan .sklbody svg, .skylan .sklbody img { width: 36px !important; height: 36px; }
+.skylan .sklflame { position: absolute; left: 17px; bottom: 6px; width: 12px; height: 12px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: radial-gradient(circle at 50% 70%, #fff, #ffb02e 70%); box-shadow: 0 0 10px 4px rgba(255,180,60,.7); animation: skyfl .5s ease-in-out infinite alternate; }
+@keyframes skyfl { to { transform: scale(1.15, .9); } }
+.skyfly { z-index: 90; pointer-events: none; animation: none !important; }
+.lzgrade b { white-space: nowrap; font-size: 17px !important; } .grade { white-space: nowrap; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2233,7 +2250,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     ["Coralqueen", null, "tide", 3, "tall"], ["Fungolem", null, "leaf", 3, "wide"], ["Thunderroc", null, "spark", 3, "wide"],
   ].map(([name, evo, el, tier, shape], i) => ({ i, name, evo, el, tier, shape }));
   const TIER = [{ name: "Common", hp: 40, atk: 9, def: 8, catch: 1, w: 6 }, { name: "Rare", hp: 46, atk: 11, def: 10, catch: .8, w: 4 }, { name: "Epic", hp: 54, atk: 13, def: 12, catch: .6, w: 3 }, { name: "Guardian", hp: 90, atk: 15, def: 15, catch: .35, w: 0 }];
-  const GRADES = [{ name: "Green", mul: 1, catch: 1, c: "#6fd38a" }, { name: "Blue", mul: 1.1, catch: .85, c: "#5aa8ff" }, { name: "Purple", mul: 1.22, catch: .7, c: "#a77bff" }, { name: "Gold", mul: 1.75, catch: .5, c: "#ffb627" }, { name: "Rainbow", mul: 2.3, catch: .3, c: "#ff9ad1" }];
+  const GRADES = [{ name: "Moss", mul: 1, catch: 1, c: "#6fd38a" }, { name: "Sea Glass", mul: 1.1, catch: .85, c: "#5aa8ff" }, { name: "Amethyst", mul: 1.22, catch: .7, c: "#a77bff" }, { name: "Sunstone", mul: 1.75, catch: .5, c: "#ffb627" }, { name: "Prism", mul: 2.3, catch: .3, c: "#ff9ad1" }];
   const ZONES = [
     { name: "Mossy Shore", lv: [1, 4], sp: [3, 6, 12, 9], boss: 18, sky: ["#a9e3f0", "#e8f8f4"], far: "#8fd0b8", ground: "#a6dc8c", path: "#efdcae", props: ["palm", "bush", "flower", "rock"] },
     { name: "Fern Hollow", lv: [4, 8], sp: [7, 15, 0, 4], boss: 19, sky: ["#bfe7c4", "#eef8e6"], far: "#6eae7c", ground: "#82c873", path: "#dcc592", props: ["tree", "fern", "bush", "flower"] },
@@ -2244,15 +2261,15 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     { name: "Mushroom Grove", lv: [30, 36], sp: [26, 27, 28], boss: 33, sky: ["#c9b8e8", "#f1ecfa"], far: "#7d6aa8", ground: "#8fbf7a", path: "#d8c49a", props: ["mushroom", "fern", "mushroom", "bush"] },
     { name: "Cloud Steppes", lv: [36, 42], sp: [29, 30, 31], boss: 34, sky: ["#bfe0ff", "#f4f9ff"], far: "#d9e7f7", ground: "#c9e3c0", path: "#f4f1e6", props: ["cloud", "flower", "cloud", "rock"] }
   ];
-  const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 83, 12, 5, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 79, 16, 5, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 77, 18, 5, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 75, 20, 5, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 73, 22, 5, 0], count: 10 }, { m: 200, lvl: 18, grades: [0, 72, 23, 5, 0], count: 10 }, { m: 500, lvl: 22, grades: [0, 71, 24, 5, 0], count: 10 }];  // Gold 1 in 20 from x5
+  const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 83, 12, 5, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 79, 16, 5, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 77, 18, 5, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 75, 20, 5, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 73, 22, 5, 0], count: 10 }, { m: 200, lvl: 18, grades: [0, 72, 23, 5, 0], count: 10 }, { m: 500, lvl: 22, grades: [0, 71, 24, 5, 0], count: 10 }];  // Sunstone 1 in 20 from x5
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }, { k: "prism", base: 1, price: 5000, c: "prism" }];  // prism: always catches
-  const GLOW_EVERY = 180000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, EVOLVE_FRUIT = 10, RB_PITY = 400, RB_PITY_MULT = 10;  // a Rainbow for sure after 400 catches made at x10 or higher
-  const RAINBOW_ODDS = [Infinity, Infinity, Infinity, 250, 250, 250, 250, 250, 250];  // Rainbow 1 in 250 from x10, none below  // 1 in N wild Glimlings is Rainbow, by Power (x1 .. x20)
+  const GLOW_EVERY = 180000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, EVOLVE_FRUIT = 10, RB_PITY = 400, RB_PITY_MULT = 10;  // a Prism for sure after 400 catches made at x10 or higher
+  const RAINBOW_ODDS = [Infinity, Infinity, Infinity, 250, 250, 250, 250, 250, 250];  // Prism 1 in 250 from x10, none below  // 1 in N wild Glimlings is Prism, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 1, MAX_STARS = 5, STAR_BONUS = .1;
-  const FLEE_AFTER = [5, 6, 12, 20, 50];  // missed jars before a wild Glimling runs away, by grade Green..Rainbow
+  const FLEE_AFTER = [5, 6, 12, 20, 50];  // missed jars before a wild Glimling runs away, by grade Moss..Prism
   const ASC_EVERY = 10, MAX_ASC = 14, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20, 26, 33, 40, 50, 60, 70, 80, 90, 100];  // top level 150 (Tom 19 Nov; was 100)
   const ASC_STONES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 7, 10], WILD_MAX_ASC = 9;  // Glimmerstones for each ascension past level 100; foes stay as before  // ascension: top level, +30% stats each, keepsakes needed
-  const KEEPSAKES_BY_GRADE = [1, 1, 5, 8, 12], SELL_BASE = [5, 9, 18, 36, 120];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
+  const KEEPSAKES_BY_GRADE = [1, 1, 5, 8, 12], SELL_BASE = [5, 9, 18, 36, 120];  // what releasing / selling gives, by grade  // star cores per Prism released; each star +10% stats
   const RIVALS = ["Nia", "Oren", "Tali", "Bex", "Ido", "Maya", "Ravi", "Lena", "Yoni", "Kai"];
   const RM_SYS = matchMedia("(prefers-reduced-motion: reduce)").matches; let RM = RM_SYS;
 
@@ -2797,7 +2814,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   const banners = [];
   function gainX(n) { S.xxp += n; while (S.xxp >= xNeed()) { S.xxp -= xNeed(); S.xlvl++; banners.push(`Explorer Lv ${S.xlvl}`); } }
   // weekend events: Saturday and Sunday, one of three by week
-  const EVENTS = [{ k: "gold", name: "Golden Weekend", about: "Gold Glimlings are twice as likely" }, { k: "energy", name: "Energy Weekend", about: "Energy refills twice as fast" },
+  const EVENTS = [{ k: "gold", name: "Golden Weekend", about: "Sunstone Glimlings are twice as likely" }, { k: "energy", name: "Energy Weekend", about: "Energy refills twice as fast" },
     { k: "ladder", name: "Ladder Weekend", about: "Double ladder points" }];
   function eventNow() { const d = new Date(), day = d.getDay(); if (day !== 0 && day !== 6) return null;
     const mon = new Date(d); mon.setHours(24 * (day === 6 ? 2 : 1), 0, 0, 0);  // next Monday 00:00
@@ -2936,7 +2953,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
       const q = Math.max(...found.list.map(w => w.q)), c = GRADES[q].c;
       ring.animate([{ boxShadow: `0 0 0 5px ${c}, 0 0 0 8px #8a5208, 0 0 18px 6px ${c}` }, { boxShadow: `0 0 0 5px ${c}, 0 0 0 8px #8a5208, 0 0 34px 14px ${c}` }], { duration: 300, direction: "alternate", iterations: 2, fill: "forwards" });
       const q2 = ring.parentNode.querySelector(".rq"); if (q2) q2.style.background = `radial-gradient(circle at 50% 35%, #fff, ${c})`;
-      if (q >= 3 && !quick) { fxBurst(x, y, 36, q === 4 ? RAINB : [c, "#fff", "#ffd34d"], 330); fxRing(x, y, c, 150, .6, 0, 8); lvPop(x, y + 70, q === 4 ? "Rainbow!" : "Gold!"); if (q === 4) fxRain(50); return 650; }
+      if (q >= 3 && !quick) { fxBurst(x, y, 36, q === 4 ? RAINB : [c, "#fff", "#ffd34d"], 330); fxRing(x, y, c, 150, .6, 0, 8); lvPop(x, y + 70, q === 4 ? "Prism!" : "Sunstone!"); if (q === 4) fxRain(50); return 650; }
       return quick ? 0 : 200;
     }
     if (found.type === "rival" && !quick) {
@@ -2999,7 +3016,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     } else {
       // a Glimling about 1 step in 5; after 4 steps without one, the next step brings one
       let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 4) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;  // a Glimling at least every 5 steps
-      if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (RM && list.some(w => w.q >= 3)) banners.push(GRADES[Math.max(...list.map(w => w.q))].name + "!"); }  // with animations the reel announces Gold / Rainbow
+      if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (RM && list.some(w => w.q >= 3)) banners.push(GRADES[Math.max(...list.map(w => w.q))].name + "!"); }  // with animations the reel announces Sunstone / Prism
       else if (r === 1) E = { type: "chest", coins: rnd(5, 10) * M.m, glow: Math.random() < 1 / 12 ? rnd(5, 10) * M.m : 0 };  // coins; a rare glowing chest also gives glow
       else if (r === 2) { const treat = Math.random() < .3; E = { type: "gather", kind: "bush", treat, n: treat ? 1 : rnd(7, 12) * M.m }; }
       else if (r === 3) { autoPause(); const n = rnd(1, Math.min(3, slots() + 1)), foes = []; for (let k = 0; k < n; k++) { const f = newMon(Z.sp[rnd(0, Z.sp.length - 1)], zoneLevel(z), wpick([0, 70, 25, 5, 0])); f.wild = 1; f.hp = maxHp(f); foes.push(f); } E = { type: "rival", name: RIVALS[rnd(0, RIVALS.length - 1)], foes, color: ["#ff8a8a", "#7bd389", "#b48cff", "#ffb627", "#4cc3ff"][rnd(0, 4)] }; }
@@ -3087,8 +3104,8 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
 
   // ---------- catching ----------
   const ringScale = () => { const T = 1300, ph = ((performance.now() - (E ? E.t0 : 0)) % (2 * T)) / T, p = ph < 1 ? ph : 2 - ph; return 1.7 - p * 1.2; };
-  const RARE_JAR = { plain: .03, bright: .06, star: .3 };  // Gold and Rainbow: base catch chance by jar
-  const CATCH_TABLE = { plain: [.55, .55, .3, .03, .03], bright: [.75, .75, .55, .06, .06], star: [1, 1, 1, .5, .3] };  // by grade Green..Rainbow
+  const RARE_JAR = { plain: .03, bright: .06, star: .3 };  // Sunstone and Prism: base catch chance by jar
+  const CATCH_TABLE = { plain: [.55, .55, .3, .03, .03], bright: [.75, .75, .55, .06, .06], star: [1, 1, 1, .5, .3] };  // by grade Moss..Prism
   function chance(w, jarK, timing = 1) { if (jarK === "prism") return 1;
     const base = (CATCH_TABLE[jarK] || CATCH_TABLE.plain)[w.q] * (SP[w.sp].tier === 3 ? .6 : 1);  // guardians are harder
     return Math.min(1, Math.max(.01, base * (1 + (1 - E.hpFrac) * .8) * (E.treat ? 1.3 : 1))); }  // throw timing no longer changes the chance
@@ -3645,8 +3662,8 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     starter: [
       { id: "c1", name: "First catch", about: "Catch a Glimling", need: 1, got: T => T.total.catch, r: { k: "plain", n: 3 } },
       { id: "c10", name: "Little collection", about: "Catch 10 Glimlings", need: 10, got: T => T.total.catch, r: { k: "bright", n: 2 } },
-      { id: "pur", name: "Purple glow", about: "Catch a Purple Glimling", need: 1, got: T => T.total.q2, r: { k: "bright", n: 1 } },
-      { id: "gold", name: "Golden find", about: "Catch a Gold Glimling", need: 1, got: T => T.total.q3, r: { k: "star", n: 1 } },
+      { id: "pur", name: "Amethyst glow", about: "Catch an Amethyst Glimling", need: 1, got: T => T.total.q2, r: { k: "bright", n: 1 } },
+      { id: "gold", name: "Golden find", about: "Catch a Sunstone Glimling", need: 1, got: T => T.total.q3, r: { k: "star", n: 1 } },
       { id: "lv5", name: "Seasoned explorer", about: "Reach explorer level 5", need: 5, got: () => S.xlvl, r: { k: "coins", n: 120 } },
       { id: "evo", name: "Growing up", about: "Evolve a Glimling", need: 1, got: T => T.total.evolve, r: { k: "fruit", n: 1 } },
       { id: "w10", name: "Arena regular", about: "Win 10 trainer fights", need: 10, got: T => T.total.win, r: { k: "coins", n: 150 } },
@@ -3655,7 +3672,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     daily: [
       { id: "steps", name: "Morning walk", about: "Take 30 steps", need: 30, got: T => T.day.step, r: { k: "glow", n: 20 } },
       { id: "catch", name: "Busy catcher", about: "Catch 5 Glimlings", need: 5, got: T => T.day.catch, r: { k: "plain", n: 2 } },
-      { id: "purple", name: "Something special", about: "Catch a Purple or better", need: 1, got: T => T.day.q2, r: { k: "bright", n: 1 } },
+      { id: "purple", name: "Something special", about: "Catch an Amethyst or better", need: 1, got: T => T.day.q2, r: { k: "bright", n: 1 } },
       { id: "win", name: "Friendly fights", about: "Win 2 trainer fights", need: 2, got: T => T.day.win, r: { k: "coins", n: 60 } },
       { id: "chest", name: "Treasure hunter", about: "Open 3 chests", need: 3, got: T => T.day.chest, r: { k: "treats", n: 1 } },
       { id: "gather", name: "Forager", about: "Gather 5 times", need: 5, got: T => T.day.gather, r: { k: "leaves", n: 10 } },
@@ -3665,9 +3682,9 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
       { id: "g-c500", name: "Collector", about: "Catch 500 Glimlings", need: 500, got: T => T.total.catch, r: { k: "star", n: 5 } },
       { id: "g-c2000", name: "Grand collector", about: "Catch 2,000 Glimlings", need: 2000, got: T => T.total.catch, r: { k: "prism", n: 1 } },
       { id: "g-c10000", name: "Legend of the isle", about: "Catch 10,000 Glimlings", need: 10000, got: T => T.total.catch, r: { k: "egg4", n: 1 } },
-      { id: "g-gold25", name: "Gold digger", about: "Catch 25 Gold or better", need: 25, got: T => T.total.q3, r: { k: "egg3", n: 1 } },
-      { id: "g-rb1", name: "Over the rainbow", about: "Find a Rainbow Glimling", need: 1, got: () => statsState().rb, r: { k: "egg3", n: 1 } },
-      { id: "g-rb10", name: "Rainbow chaser", about: "Find 10 Rainbow Glimlings", need: 10, got: () => statsState().rb, r: { k: "egg4", n: 1 } },
+      { id: "g-gold25", name: "Sunstone digger", about: "Catch 25 Sunstone or better", need: 25, got: T => T.total.q3, r: { k: "egg3", n: 1 } },
+      { id: "g-rb1", name: "Over the rainbow", about: "Find a Prism Glimling", need: 1, got: () => statsState().rb, r: { k: "egg3", n: 1 } },
+      { id: "g-rb10", name: "Prism chaser", about: "Find 10 Prism Glimlings", need: 10, got: () => statsState().rb, r: { k: "egg4", n: 1 } },
       { id: "g-gold", name: "Rising star", about: "Reach Gold on the Ladder", need: 1, got: () => statsState().tier >= 2 ? 1 : 0, r: { k: "glow", n: 100 } },
       { id: "g-diamond", name: "Diamond trainer", about: "Reach Diamond on the Ladder", need: 1, got: () => statsState().tier >= 4 ? 1 : 0, r: { k: "egg3", n: 1 } },
       { id: "g-master", name: "Ladder master", about: "Reach Master on the Ladder", need: 1, got: () => statsState().tier >= 5 ? 1 : 0, r: { k: "egg4", n: 1 } },
@@ -3681,7 +3698,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     ],
     challenge: [
       ...ELK.map(k => ({ id: "el-" + k, name: `${EL[k].name} friends`, about: `Catch 5 ${EL[k].name} Glimlings`, need: 5, got: T => (T.total.el[k] || 0), r: { k: "star", n: 1 }, el: k })),
-      { id: "p5", name: "Purple parade", about: "Catch 5 Purple or better", need: 5, got: T => T.total.q2, r: { k: "fruit", n: 1 } },
+      { id: "p5", name: "Amethyst parade", about: "Catch 5 Amethyst or better", need: 5, got: T => T.total.q2, r: { k: "fruit", n: 1 } },
       { id: "c100", name: "Glimling expert", about: "Catch 100 Glimlings", need: 100, got: T => T.total.catch, r: { k: "star", n: 3 } },
     ],
   };
@@ -3716,11 +3733,11 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     const tick = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
     const weekDone = !ready && L.n === 0 && L.last === today();
     const tile = (r, i) => { const got = i < L.n || weekDone, now = i === L.n && ready, big = i === LOGIN_REW.length - 1;
-      return `<div class="gday${got ? " got" : ""}${now ? " now" : ""}${big ? " big" : ""}">${now ? '<i class="gtoday">Today</i>' : ""}<span class="gic">${RW[r.k][0]}</span><small>Day ${i + 1}</small><b>${big ? "Purple egg" : "+" + r.n.toLocaleString("en")}</b>${got ? `<em class="gchk">${tick}</em>` : ""}</div>`; };
+      return `<div class="gday${got ? " got" : ""}${now ? " now" : ""}${big ? " big" : ""}">${now ? '<i class="gtoday">Today</i>' : ""}<span class="gic">${RW[r.k][0]}</span><small>Day ${i + 1}</small><b>${big ? "Amethyst egg" : "+" + r.n.toLocaleString("en")}</b>${got ? `<em class="gchk">${tick}</em>` : ""}</div>`; };
     const sub = ready ? `Day ${L.n + 1} of 7` : weekDone ? "Week done! New week tomorrow" : `Next gift in ${left()}`;
     d.innerHTML = `<div class="popbg"></div><div class="popup gift" role="dialog" aria-label="Daily gift"><div class="ghead"><div class="gbox">${ART["pop-gift"] ? `<img src="${ART["pop-gift"]}" alt="">` : IC.gift || IC.star}</div><h3>Daily gift</h3><span class="gsub">${sub}</span></div>
       <div class="ggrid">${LOGIN_REW.map(tile).join("")}</div>
-      <p class="gnote">A gift every day. Day 7 is a Purple egg, then the week starts again.</p>
+      <p class="gnote">A gift every day. Day 7 is an Amethyst egg, then the week starts again.</p>
       <div class="popbtns">${ready ? `<button class="mb gold pbig" data-act="giftclaim">Claim day ${L.n + 1}</button>` : `<button class="mb" data-act="giftclose">Come back tomorrow</button>`}</div></div>`;
     document.body.appendChild(d); popThen = then || null;
   }
@@ -3770,13 +3787,13 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   function pageStats() {
     const T = tasksState(), st = statsState(), goals = TASKS.goals, gDone = goals.filter(t => T.done["goals:" + t.id]).length;
     const gymsBeat = Object.keys(S.gyms || {}).length, best = S.mons.reduce((a, m) => m.lvl > a ? m.lvl : a, 0), kinds = Object.keys(S.caught).length;
-    const tiles = [["Glimlings caught", T.total.catch], ["Purple or better", T.total.q2], ["Gold or better", T.total.q3], ["Rainbows found", st.rb],
+    const tiles = [["Glimlings caught", T.total.catch], ["Amethyst or better", T.total.q2], ["Sunstone or better", T.total.q3], ["Prisms found", st.rb],
       ["Forms in the Book", kinds], ["Glimlings you own", S.mons.length], ["Highest level", best], ["Explorer level", S.xlvl],
       ["Steps walked", st.steps], ["Fights won", T.total.win], ["Best Ladder tier", DRANKS[st.tier][1]], ["Longest win streak", st.streak],
       ["Cloud Climb floor", S.tower || 0], ["Gym fights won", gymsBeat], ["Goals done", `${gDone} of ${goals.length}`], ["Days played", st.days]];
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Stats</h3><span></span></div>
       <div class="stgrid">${tiles.map(([a, b]) => `<div class="sttile"><b>${typeof b === "number" ? b.toLocaleString("en") : b}</b><small>${a}</small></div>`).join("")}</div>
-      <p class="hint" style="margin:0">Rainbows, steps and win streaks count from ${new Date(st.since).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} (earlier ones counted where the game could tell).</p>`;
+      <p class="hint" style="margin:0">Prisms, steps and win streaks count from ${new Date(st.since).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} (earlier ones counted where the game could tell).</p>`;
   }
   function pageTasks() {
     const T = tasksState(), tabs = [["starter", "Starter"], ["daily", "Daily"], ["challenge", "Challenge"], ["goals", "Goals"]];
@@ -3832,8 +3849,8 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     if (bagTab === "items") {
       const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glimlings in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
-        ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["prism", IC.jar("prism"), "Prism jar", S.jars.prism || 0, 4, "Always catches, even Rainbows."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glimling before you throw."],
-        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glimlings."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glimling."], ["gstone", IC.gstone, "Glimmerstones", S.gstone || 0, 4, "Rare. Needed to ascend a Glimling past level 100. From the Daily and World Boss, Cloud Climb floors 50+, Rainbow releases and the Shop."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glimling: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glimling or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glimling, sometimes Rainbow."], ["egg4", EGG_ICON(4), "Rainbow egg", S.egg4 || 0, 4, "Hatches a Rainbow Glimling."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glimling. From the Star Shrine."]];
+        ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["prism", IC.jar("prism"), "Prism jar", S.jars.prism || 0, 4, "Always catches, even Prisms."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glimling before you throw."],
+        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glimlings."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glimling."], ["gstone", IC.gstone, "Glimmerstones", S.gstone || 0, 4, "Rare. Needed to ascend a Glimling past level 100. From the Daily and World Boss, Cloud Climb floors 50+, Prism releases and the Shop."], ["egg1", EGG_ICON(1), "Sea Glass egg", S.egg1 || 0, 1, "Hatches a Glimling: mostly Sea Glass, sometimes Amethyst or Sunstone."], ["egg2", EGG_ICON(2), "Amethyst egg", S.egg2 || 0, 2, "Hatches an Amethyst Glimling or better."], ["egg3", EGG_ICON(3), "Sunstone egg", S.egg3 || 0, 3, "Hatches a Sunstone Glimling, sometimes Prism."], ["egg4", EGG_ICON(4), "Prism egg", S.egg4 || 0, 4, "Hatches a Prism Glimling."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glimling. From the Lantern Release."]];
       tiles = items.filter(i => i[3] > 0).map(([k, ic, nm, n, q]) => `<button class="btile${bagPick === k ? " on" : ""}" data-act="bagpick:${k}" style="--gc:${GRADES[q].c}">${ic}<b>${n >= 10000 ? (n / 1000).toFixed(1) + "K" : n}</b></button>`);
       const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span>${/^egg/.test(p[0]) && p[3] > 0 ? `<button class="mb gold" data-act="openegg:${p[0].slice(3)}">Open</button>` : ""}</div>`;
     } else {
@@ -3844,7 +3861,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">‹ Back</button><h3>Backpack</h3><span></span></div>
       <div class="seg">${tabs.map(([k, n]) => `<button class="${bagTab === k ? "on" : ""}" data-act="bagtab:${k}">${n}</button>`).join("")}</div>
       ${info}
-      ${tiles.length ? `<div class="bgrid">${tiles.join("")}</div>` : `<p class="hint">${bagTab === "items" ? "Your backpack is empty." : bagTab === "keep" ? "Release Glimlings for keepsakes." : "Release Rainbow Glimlings for star cores."}</p>`}`;
+      ${tiles.length ? `<div class="bgrid">${tiles.join("")}</div>` : `<p class="hint">${bagTab === "items" ? "Your backpack is empty." : bagTab === "keep" ? "Release Glimlings for keepsakes." : "Release Prism Glimlings for star cores."}</p>`}`;
   }
   // ================= GIFT CODES (made up for the game, nothing to buy) =================
   const CODES = { GLUMI: { k: "coins", n: 100 }, GLIMLING: { k: "coins", n: 100 }, STARJAR: { k: "star", n: 1 }, MOONFRUIT: { k: "fruit", n: 1 }, GLOWUP: { k: "glow", n: 50 } };
@@ -3964,7 +3981,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   const gymDone = (z, d) => [0, 1, 2].every(i => gymBeat(z, d, i));
   const gymDiffOpen = (z, d) => d === 0 || gymDone(z, d - 1);
   // daily duels
-  // ladder tiers by rank points; [points, name, color, foe level bonus, foe grade weights Green..Rainbow]
+  // ladder tiers by rank points; [points, name, color, foe level bonus, foe grade weights Moss..Prism]
   const DRANKS = [[0, "Bronze", "#cd8a4a", 15, [10, 70, 20, 0, 0]], [120, "Silver", "#b9c3cf", 30, [0, 55, 40, 5, 0]], [360, "Gold", "#f2b42c", 50, [0, 30, 50, 20, 0]],
                   [720, "Platinum", "#6fd0c4", 70, [0, 10, 50, 40, 0]], [1200, "Diamond", "#6fa8ff", 90, [0, 0, 35, 55, 10]], [1900, "Master", "#b07cff", 100, [0, 0, 40, 50, 10]]];  // [rank points, name, color, foe level, foe grade weights]
   const RANK_WIN = [10, 8, 7, 6, 5, 4], RANK_LOSS = [5, 7, 9, 11, 13, 15], FOE_BOOST = [1.05, 1.12, 1.2, 1.25, 1.25, 1.25], FOE_STARS = [0, 0, 0, 0, 0, 0];  // by tier (1.25 x the 80% wild cut = full strength)
@@ -3982,7 +3999,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   }
   function ladderFoes() {
     const T = DRANKS[ladderTier(ladderState().pts)], t = ladderTier(ladderState().pts), pool = ZONES.flatMap((Z, i) => zoneOpen(i) ? Z.sp : []), L = avgLvl();
-    if (t === DRANKS.length - 1) return Array.from({ length: 3 }, () => { const f = foeMon(pickOf(pool), 100, 4); f.evo = SP[f.sp].evo ? 1 : 0; f.stars = 0; f.asc = WILD_MAX_ASC; f.boost = FOE_BOOST[t]; f.hp = maxHp(f); return f; });  // Master: maxed Rainbows
+    if (t === DRANKS.length - 1) return Array.from({ length: 3 }, () => { const f = foeMon(pickOf(pool), 100, 4); f.evo = SP[f.sp].evo ? 1 : 0; f.stars = 0; f.asc = WILD_MAX_ASC; f.boost = FOE_BOOST[t]; f.hp = maxHp(f); return f; });  // Master: maxed Prisms
     return Array.from({ length: t === 0 ? 2 : 3 }, () => { const f = foeMon(pickOf(pool), T[3] + rnd(-2, 2), wpick(T[4])); f.boost = FOE_BOOST[t]; f.stars = FOE_STARS[t]; f.hp = maxHp(f); return f; });
   }
   function duelState() { if (!S.duel) S.duel = { date: "", left: 5, pts: 0, wins: 0 }; if (S.duel.date !== today()) { S.duel.date = today(); S.duel.left = 5; } return S.duel; }
@@ -4133,7 +4150,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
         <div class="lrank"><span class="drank pic">${tierBadge(ladderTier(L.pts), 54)}</span><div><b>${duelRank(L.pts)}</b><small>Rank ${L.pts}${nextR ? ` · ${nextR[0] - L.pts} to ${nextR[1]}` : ""}</small></div>${timer(weekEnd - Date.now())}</div>
         <div class="ltiers">${DRANKS.map((r, i) => `<span class="${i < ladderTier(L.pts) ? "past" : i === ladderTier(L.pts) ? "cur" : "next"}">${tierBadge(i, i === ladderTier(L.pts) ? 34 : 26)}<small>${r[1]}</small></span>`).join("")}</div>
         <div class="lteam"><b>My team</b><div class="pmons">${team().map(m => `<div class="pmon">${art(m.sp, m.evo, 40)}<span class="lv">Lv ${m.lvl}</span></div>`).join("")}</div><button class="mb" data-act="view:team">Change</button></div>
-        ${ladHelp ? `<p class="hint lhelp">Every match gives week points for this week's rewards: a win ${LADDER_WIN}, plus ${STREAK_STEP} for each win in a row before it (up to +${STREAK_STEP * (STREAK_MAX - 1)}); a loss ${LADDER_LOSS} and ends the streak. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Rainbows) and gives more coins but less Rank.</p>` : ""}
+        ${ladHelp ? `<p class="hint lhelp">Every match gives week points for this week's rewards: a win ${LADDER_WIN}, plus ${STREAK_STEP} for each win in a row before it (up to +${STREAK_STEP * (STREAK_MAX - 1)}); a loss ${LADDER_LOSS} and ends the streak. Rank in ${DRANKS[ladderTier(L.pts)][1]}: a win +${RANK_WIN[ladderTier(L.pts)]}, a loss -${RANK_LOSS[ladderTier(L.pts)]}. Foes here are about level ${DRANKS[ladderTier(L.pts)][3]}; each tier up is much stronger (Master: level 100 Prisms) and gives more coins but less Rank.</p>` : ""}
         <div class="lgo"><button class="mb gold pbig" data-act="laddergo">Match</button></div>`;
     }
     if (arenaSub === "tower") {
@@ -4158,9 +4175,9 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   // ================= GRADE COLLECTION per zone (Atlas) =================
   const GC_REW = { 1: { k: "plain", n: 2 }, 2: { k: "bright", n: 1 }, 3: { k: "star", n: 1 }, 4: { k: "star", n: 2 } };
   function bestQ() { if (!S.bestQ) { S.bestQ = {}; for (const m of S.mons) S.bestQ[m.sp] = Math.max(S.bestQ[m.sp] || 0, m.q); } return S.bestQ; }
-  const gcRew = (g, k, n) => k === n - 1 ? (g === 4 ? { k: "egg4", n: 1 } : { k: "fruit", n: 1 }) : GC_REW[g];  // last step: moonfruit, Rainbow page: a rainbow egg
+  const gcRew = (g, k, n) => k === n - 1 ? (g === 4 ? { k: "egg4", n: 1 } : { k: "fruit", n: 1 }) : GC_REW[g];  // last step: moonfruit, Prism page: a rainbow egg
   let atlasGrade = 1;
-  const rbPityText = () => `A Rainbow for sure after ${Math.max(0, RB_PITY - (S.rbPity || 0))} more catches at x${RB_PITY_MULT} or higher`;
+  const rbPityText = () => `A Prism for sure after ${Math.max(0, RB_PITY - (S.rbPity || 0))} more catches at x${RB_PITY_MULT} or higher`;
   function gradeBlock(z) {
     const Z = ZONES[z], st = S.zones[z], g = atlasGrade, B = bestQ(), have = Z.sp.filter(sp => (B[sp] || 0) >= g).length, cl = (st.gq && st.gq[g]) || 0;
     const nodes = Z.sp.map((_, k) => { const need = k + 1, done = k < cl, can = !done && have >= need, r = gcRew(g, k, Z.sp.length);
@@ -4199,7 +4216,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   const CLOCK = IC.clock ? IC.clock.replace("<svg", '<svg width="13" height="13"') : '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const CATCH_PTS = [5, 10, 30, 80, 300];  // by grade
   const EVBARS = {
-    catch: { name: "Catch points", how: "Catch Glimlings: Blue 10, Purple 30, Gold 80, Rainbow 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
+    catch: { name: "Catch points", how: "Catch Glimlings: Sea Glass 10, Amethyst 30, Sunstone 80, Prism 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
              rew: [{ k: "glow", n: 40, need: 40 }, { k: "glow", n: 60, need: 60 }, { k: "plain", n: 3, need: 80 }, { k: "glow", n: 80, need: 100 }, { k: "egg1", n: 1, need: 150 }, { k: "glow", n: 100, need: 150 }, { k: "glow", n: 140, need: 200 }] },
     fight: { name: "Battle points", how: "Win fights: path trainers 20, gyms 40, ladder and climb 30", icon: () => IC.sword, steps: [60, 150, 300, 500, 800, 1200, 1800],
              rew: [{ k: "glow", n: 100, need: 50 }, { k: "glow", n: 100, need: 70 }, { k: "egg1", n: 1, need: 180 }, { k: "glow", n: 200, need: 140 }, { k: "glow", n: 260, need: 170 }, { k: "egg2", n: 1, need: 320 }, { k: "egg3", n: 1, need: 500 }] },
@@ -4321,7 +4338,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   }
   // ================= STAR SHRINE: offer spare Glimlings for keepsakes and star shards =================
   const SHARD = ART["ui-star-shard"] ? artIcon("ui-star-shard") : '<svg viewBox="0 0 24 24"><path d="M12 1.8 14.6 9.4 22.2 12 14.6 14.6 12 22.2 9.4 14.6 1.8 12 9.4 9.4z" fill="#b48cff" stroke="#7a52d6" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 6.5 13.2 10.8 17.5 12" fill="none" stroke="#f1e8ff" stroke-width="1.3" stroke-linecap="round"/></svg>';
-  const SHRINE_DEALS = [{ q: 3, n: 3, label: "5 Gold Glimlings or better" }, { q: 2, n: 1, label: "5 Purple Glimlings or better" }];
+  const SHRINE_DEALS = [{ q: 3, n: 3, label: "5 Sunstone Glimlings or better" }, { q: 2, n: 1, label: "5 Amethyst Glimlings or better" }];
   let shrinePick = [], shrineSort = "grade", shrineUp = true, shrineSure = false;
   const shrineFree = m => !S.team.includes(m.uid) && !(m.lock || m.fav) && !(typeof workingAt === "function" && workingAt(m.uid)) && !(typeof isAway === "function" && isAway(m.uid));
   function shrineGain(list) {
@@ -4334,33 +4351,39 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     shrinePick = shrinePick.filter(u => mon(u) && shrineFree(mon(u)));
     const picked = shrinePick.map(mon), avg = picked.length ? picked.reduce((a, m) => a + m.q, 0) / picked.length : 0, G = shrineGain(picked);
     const pool = S.mons.filter(shrineFree).sort((a, b) => (shrineUp ? 1 : -1) * (shrineSort === "grade" ? (a.q - b.q || a.lvl - b.lvl) : (a.lvl - b.lvl || a.q - b.q)));
-    const slot = i => { const m = picked[i]; return m ? `<button class="shslot full" data-act="shrinepick:${m.uid}" style="--gc:${GRADES[m.q].c}" aria-label="Take ${fname(m.sp, m.evo)} out">${art(m.sp, m.evo, 50)}</button>` : `<span class="shslot">${SHARD}</span>`; };
+    const slot = i => { const m = picked[i]; return m ? `<button class="skylan full" data-act="shrinepick:${m.uid}" style="--gc:${GRADES[m.q].c};--d:${i * .37}s" aria-label="Take ${fname(m.sp, m.evo)} out"><i class="sklstr"></i><span class="sklbody">${art(m.sp, m.evo, 40)}</span><i class="sklflame"></i></button>`
+      : `<span class="skylan" style="--d:${i * .37}s"><i class="sklstr"></i><span class="sklbody"></span></span>`; };
     const deal = d => { const got = picked.filter(m => m.q >= d.q).length, ok = picked.length === 5 && got === 5;
       return `<div class="shdeal${ok ? " ok" : ""}"><span>${d.label} (${Math.min(got, 5)}/5)</span><b>${SHARD}${d.n}</b><i>${ok ? "\u2713" : ""}</i></div>`; };
     const kinds = Object.keys(G.keeps);
-    return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Star Shrine</h3><span class="shcount">${SHARD}${S.shards || 0}</span></div>
-      <div class="shtop"><div class="shbar"><span>Glimlings to offer</span><span>Average grade: <b>${picked.length ? GRADES[Math.round(avg)].name : "-"}</b></span></div>
-        <div class="shslots">${[0, 1, 2, 3, 4].map(slot).join("")}</div></div>
-      <div class="shex"><h4>Star shard exchange</h4>${SHRINE_DEALS.map(deal).join("")}
+    return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Lantern Release</h3><span class="shcount">${SHARD}${S.shards || 0}</span></div>
+      <div class="shtop skysky"><div class="shbar"><span>Lanterns ready</span><span>Average: <b>${picked.length ? GRADES[Math.round(avg)].name : "-"}</b></span></div>
+        <div class="shslots skyrow">${[0, 1, 2, 3, 4].map(slot).join("")}</div></div>
+      <div class="shex"><h4>What the lanterns bring back</h4>${SHRINE_DEALS.map(deal).join("")}
         <p class="shnote">${picked.length ? `You get: ${kinds.map(sp => `${G.keeps[sp]} ${SP[sp].name} keepsake${G.keeps[sp] > 1 ? "s" : ""}`).join(", ")}${G.cores ? `, ${G.cores} star core${G.cores > 1 ? "s" : ""}` : ""}${G.shards ? `, <b>${G.shards} star shard${G.shards > 1 ? "s" : ""}</b>` : ""}` : "Star shards count as keepsakes of any kind when you ascend a Glimling."}</p></div>
       <div class="shpool"><div class="shtools"><span class="seg mini">${[["grade", "Grade"], ["level", "Level"]].map(([k, nm]) => `<button class="${shrineSort === k ? "on" : ""}" data-act="shrinesort:${k}">${nm}</button>`).join("")}</span><button class="mb" data-act="shrineflip" aria-label="Flip order">${shrineUp ? "\u2191" : "\u2193"}</button></div>
         ${pool.length ? `<div class="shgrid">${pool.map(m => `<button class="shtile${shrinePick.includes(m.uid) ? " on" : ""}" data-act="shrinepick:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 48)}<span class="lv">Lv ${m.lvl}</span>${shrinePick.includes(m.uid) ? '<i class="shck">\u2713</i>' : ""}</button>`).join("")}</div>`
-          : `<p class="hint">No spare Glimlings. Glimlings in your team, at work, away or locked can't be offered.</p>`}</div>
-      <div class="shbtns"><button class="mb" data-act="shrinequick" ${pool.length ? "" : "disabled"}>Quick add</button><button class="mb gold pbig${shrineSure ? " sure" : ""}" data-act="shrineoffer" ${picked.length ? "" : "disabled"}>${shrineSure ? "Tap again to offer" : `Offer ${picked.length || ""}`}</button></div>`;
+          : `<p class="hint">No spare Glimlings. Glimlings in your team, at work, away or locked can't be released.</p>`}</div>
+      <div class="shbtns"><button class="mb" data-act="shrinequick" ${pool.length ? "" : "disabled"}>Quick add</button><button class="mb gold pbig${shrineSure ? " sure" : ""}" data-act="shrineoffer" ${picked.length ? "" : "disabled"}>${shrineSure ? "Tap again to release" : `Release ${picked.length || ""}`}</button></div>`;
   }
   function shrineOffer() {
     const picked = shrinePick.map(mon).filter(Boolean); if (!picked.length) return;
     if (!shrineSure) { shrineSure = true; render(); return; }
     const G = shrineGain(picked);
+    if (!RM) document.querySelectorAll(".skyrow .skylan.full").forEach((l, i) => { const [x, y] = elXY(l), c = getComputedStyle(l).getPropertyValue("--gc") || "#ffd36b";
+      const f = l.cloneNode(true); f.classList.add("skyfly"); f.style.cssText += `;position:fixed;left:${x - 22}px;top:${y - 36}px;margin:0`; document.body.appendChild(f);
+      f.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${(i - 2) * 14}px,-${innerHeight * .35}px) scale(.55)`, opacity: 1, offset: .7 }, { transform: `translate(${(i - 2) * 18}px,-${innerHeight * .5}px) scale(.15)`, opacity: 0 }],
+        { duration: 1500 + i * 120, easing: "ease-in", fill: "forwards" });
+      setTimeout(() => { f.remove(); fxBurst(x + (i - 2) * 18, y - innerHeight * .5, 10, [c.trim() || "#ffd36b", "#fff", "#ffe6a3"], 120); }, 1450 + i * 120); });
     for (const sp in G.keeps) S.keepsakes[sp] = (S.keepsakes[sp] || 0) + G.keeps[sp];
     for (const m of picked) if (m.q === 4) { S.starCores[m.sp] = (S.starCores[m.sp] || 0) + RAINBOW_STAR_CORES; S.gstone = (S.gstone || 0) + 1; }
     S.shards = (S.shards || 0) + G.shards;
     S.mons = S.mons.filter(m => !shrinePick.includes(m.uid)); shrinePick = []; shrineSure = false;
-    sfx("claim"); save(); render(); toast(`Offered ${picked.length}: +${Object.values(G.keeps).reduce((a, b) => a + b, 0)} keepsakes${G.shards ? `, +${G.shards} star shard${G.shards > 1 ? "s" : ""}` : ""}`);
+    sfx("claim"); save(); render(); toast(`Released ${picked.length}: +${Object.values(G.keeps).reduce((a, b) => a + b, 0)} keepsakes${G.shards ? `, +${G.shards} star shard${G.shards > 1 ? "s" : ""}` : ""}`);
   }
   // ================= SKY ENTRANCE =================
   const nightImg = ART["bg-night"] ? Object.assign(new Image(), { src: ART["bg-night"] }) : null;  // the night-sky painting for the falling-stars entrance, loaded at start
-  const GRADE_TRAIL = ["#6fd38a", "#5aa8ff", "#a67cff", "#ffc94a", "#ff9ad1"];  // Green, Blue, Purple, Gold, Rainbow
+  const GRADE_TRAIL = ["#6fd38a", "#5aa8ff", "#a67cff", "#ffc94a", "#ff9ad1"];  // Moss, Sea Glass, Amethyst, Sunstone, Prism
   let cometImg = null; const cometTint = {};  // Tom's painted comet, one tinted copy per grade
   const COMET_HEAD = [752, 140], COMET_TAIL0 = 84;  // star centre and tail start in the 900x300 picture
   function cometFor(q) {
@@ -4610,7 +4633,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
       <div class="mrow"><button class="mcard soft" data-act="gobook"><span class="mic">${TABI.book}</span><span><b>Book</b><small>${Object.keys(S.caught).length} found</small></span></button>
         <button class="mcard soft" data-act="goreq"><span class="mic">${IC.lantern}</span><span><b>Requests</b><small>${reqCan ? "Someone can be helped" : "Islanders' wishes"}</small></span>${reqCan ? '<em class="bang">!</em>' : ""}</button></div>
       <div class="mrow"><button class="mcard soft" data-act="view:mail"><span class="mic">${IC.gift || IC.star}</span><span><b>Mailbox</b><small>${mailWaiting() ? `${mailWaiting()} waiting` : "Update gifts"}</small></span>${mailWaiting() ? '<em class="bang">!</em>' : ""}</button>
-      <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Star Shrine</b><small>${S.shards || 0} star shards</small></span></button></div>
+      <button class="mcard soft shrinecard" data-act="view:shrine"><span class="mic">${ART["bld-star-shrine"] ? artIcon("bld-star-shrine") : SHARD}</span><span><b>Lantern Release</b><small>${S.shards || 0} star shards</small></span></button></div>
       ${(() => { const ev = eventNow(); return ev ? `<div class="evcard"><b>${ev.name}</b><small>${ev.about} \u00B7 ends in ${mmss(ev.end - Date.now())}</small></div>` : ""; })()}
       <div class="mtiles"><button class="mtile" data-act="view:stats">${IC.book || IC.star}<span>Stats</span></button><button class="mtile" data-act="view:timers">${IC.clock || CLOCK}<span>Timers</span></button><button class="mtile" data-act="view:log">${IC.tasks || IC.flag}<span>Log</span></button><button class="mtile" data-act="giftopen">${IC.gift || IC.star}<span>Daily gift</span>${giftReady() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:tasks">${IC.tasks || IC.flag}<span>Tasks</span>${tasksWaiting() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="view:bag">${IC.bag || IC.chest}<span>Backpack</span>${eggCount() ? '<em class="bang">!</em>' : ""}</button><button class="mtile" data-act="autocfg">${IC.auto}<span>Auto rules</span></button><button class="mtile" data-act="olgo:olfriends">${IC.gift || IC.star}<span>Friends</span>${olWaiting() ? '<em class="bang">!</em>' : ""}</button></div>`;
   }
@@ -4637,7 +4660,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     const own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
     return { leaves, keeps, ascs, own, have, stones, stoneOk: (S.gstone || 0) >= stones, ok: S.leaves >= leaves && have >= keeps && (S.gstone || 0) >= stones };
   }
-  function keepBuyPlan(m, missing) {  // cheapest Purple/Gold shop buys that cover `missing` keepsakes (null: not sold)
+  function keepBuyPlan(m, missing) {  // cheapest Amethyst/Sunstone shop buys that cover `missing` keepsakes (null: not sold)
     const k = marketKinds().find(x => x.sp === m.sp); if (!k || missing <= 0) return null;
     const g2 = KEEPSAKES_BY_GRADE[2], g3 = KEEPSAKES_BY_GRADE[3], p2 = kindPrice(k, 2), p3 = kindPrice(k, 3); let best = null;
     for (let n3 = 0; n3 <= Math.ceil(missing / g3); n3++) { const n2 = Math.max(0, Math.ceil((missing - n3 * g3) / g2)), cost = n2 * p2 + n3 * p3;
@@ -4789,7 +4812,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     if (s.evo && !m.evo) L.push(`<button class="big2" data-act="evolve:${m.uid}" ${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? "" : "disabled"}>${IC.fruit}Evolve into ${s.evo}<small>${m.lvl < EVOLVE_AT ? `Reach level ${EVOLVE_AT} first` : `Costs ${EVOLVE_FRUIT} moonfruit and 60 coins · you have ${S.fruit} and ${S.coins}`}</small></button>`);
     if (m.lvl > 1) { const g = resetGain(m); L.push(`<button class="big2 danger" data-act="lvlreset:${m.uid}">${IC.up.replace("M12 19V5M6 11l6-6 6 6", "M12 5v14M6 13l6 6 6-6")}${resetSure === m.uid ? "Tap again to reset" : "Reset levels"}<small>Back to level 1 · you get ${g.leaves} leaves${g.keeps ? `, ${g.keeps} ${s.name} keepsakes` : ""}${g.shards ? `, ${g.shards} star shards` : ""}${g.stones ? `, ${g.stones} Glimmerstones` : ""} back</small></button>`); }
     { const st = m.stars || 0, have = S.starCores[m.sp] || 0, need = st + 1;
-      ST.push(`<button class="big2 starup" data-act="starup:${m.uid}" ${st < MAX_STARS && have >= need ? "" : "disabled"}>${IC.star}${st >= MAX_STARS ? "All stars reached" : `Star up to ${st + 1} of ${MAX_STARS}`}<small>${st >= MAX_STARS ? `+${Math.round(MAX_STARS * STAR_BONUS * 100)}% HP, Attack and Defense` : `Costs ${need} ${s.name} star core${need > 1 ? "s" : ""} · you have ${have}. Release a Rainbow ${s.name} to get ${RAINBOW_STAR_CORES}`}</small></button>`); }
+      ST.push(`<button class="big2 starup" data-act="starup:${m.uid}" ${st < MAX_STARS && have >= need ? "" : "disabled"}>${IC.star}${st >= MAX_STARS ? "All stars reached" : `Star up to ${st + 1} of ${MAX_STARS}`}<small>${st >= MAX_STARS ? `+${Math.round(MAX_STARS * STAR_BONUS * 100)}% HP, Attack and Defense` : `Costs ${need} ${s.name} star core${need > 1 ? "s" : ""} · you have ${have}. Release a Prism ${s.name} to get ${RAINBOW_STAR_CORES}`}</small></button>`); }
     if (!inTeam) T.push(`<button class="big2" data-act="addteam:${m.uid}">${IC.up.replace('M12 19V5M6 11l6-6 6 6', 'M12 5v14M5 12h14')}Add to team<small>${S.team.length < slots() ? "There is a free spot" : "You choose who it swaps with"}</small></button>`);
     if (inTeam && !lead) T.push(`<button class="big2" data-act="lead:${m.uid}">${IC.star}Make leader<small>The leader fights first</small></button>`);
     if (inTeam && S.team.length > 1) T.push(`<button class="big2" data-act="den:${m.uid}">${IC.home}Remove from team<small>It stays in your collection</small></button>`);
@@ -4812,7 +4835,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
       const next = st < MAX_STARS ? Object.assign({}, m, { stars: st + 1 }) : null;
       body = `${back("Stars")}${mini}
       <div class="starrow big" aria-label="${st} of ${MAX_STARS} stars">${Array.from({ length: MAX_STARS }, (_, k) => `<span class="${k < st ? "on" : ""}">${starIc(k < st)}</span>`).join("")}</div>
-      <p class="hint" style="margin:0">Each star adds ${Math.round(STAR_BONUS * 100)}% HP, Attack and Defense. Star cores come from releasing a Rainbow ${s.name}: ${RAINBOW_STAR_CORES} each. You have <b>${cores}</b>.</p>
+      <p class="hint" style="margin:0">Each star adds ${Math.round(STAR_BONUS * 100)}% HP, Attack and Defense. Star cores come from releasing a Prism ${s.name}: ${RAINBOW_STAR_CORES} each. You have <b>${cores}</b>.</p>
       ${next ? `<div class="card nextstar"><b>With ${st + 1} star${st ? "s" : ""}</b><span>HP ${maxHp(m)} \u2192 ${maxHp(next)}</span><span>Attack ${atk(m)} \u2192 ${atk(next)}</span><span>Defense ${def(m)} \u2192 ${def(next)}</span></div>` : ""}
       <div class="btns">${ST.join("")}</div>`;
     }
@@ -4872,10 +4895,10 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   function bookGoalList() {
     const B = bestQ(), L = [], all = ZONES.flatMap(Z => Z.sp);
     ZONES.forEach((Z, z) => { for (const [g, n] of [[3, 2], [4, 5]]) { const open = zoneOpen(z);
-      L.push({ id: `z${z}g${g}`, g, n, open, title: open ? `${Z.name} in ${GRADES[g].name}` : `A hidden island in ${GRADES[g].name}`, sub: `Every kind from ${open ? Z.name : "this island"} as ${GRADES[g].name}${g < 4 ? " or Rainbow" : ""}`,
+      L.push({ id: `z${z}g${g}`, g, n, open, title: open ? `${Z.name} in ${GRADES[g].name}` : `A hidden island in ${GRADES[g].name}`, sub: `Every kind from ${open ? Z.name : "this island"} as ${GRADES[g].name}${g < 4 ? " or Prism" : ""}`,
         have: Z.sp.filter(sp => (B[sp] || 0) >= g).length, need: Z.sp.length }); } });
     L.push({ id: "book", g: 2, n: 5, open: true, title: "The whole Book", sub: "Catch every Glimling and every evolved form", have: Object.keys(S.caught).length, need: bookTotal() });
-    for (const [g, n] of [[3, 10], [4, 30]]) L.push({ id: `all${g}`, g, n, open: true, title: `The whole Book in ${GRADES[g].name}`, sub: `Every kind on every island as ${GRADES[g].name}${g < 4 ? " or Rainbow" : ""}`, have: all.filter(sp => (B[sp] || 0) >= g).length, need: all.length });
+    for (const [g, n] of [[3, 10], [4, 30]]) L.push({ id: `all${g}`, g, n, open: true, title: `The whole Book in ${GRADES[g].name}`, sub: `Every kind on every island as ${GRADES[g].name}${g < 4 ? " or Prism" : ""}`, have: all.filter(sp => (B[sp] || 0) >= g).length, need: all.length });
     const got = S.bookGoals || {};
     L.forEach(x => { x.done = !!got[x.id]; x.ready = !x.done && x.have >= x.need; });
     return L;
@@ -4887,7 +4910,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
       <span><b>${x.title}</b><small>${x.sub}</small><small>${Math.min(x.have, x.need)} of ${x.need}</small><span class="bgbar"><i style="width:${Math.min(100, x.have / x.need * 100)}%"></i></span></span>
       <span class="bgrew"><span>${IC.gstone}${x.n}</span>${x.done ? '<em class="bgok">\u2713</em>' : x.ready ? `<button class="mb gold" data-act="bgclaim:${x.id}">Claim</button>` : ""}</span></div>`;
     return `<div class="sheethead"><button class="mb" data-act="bookgoals:0" aria-label="Back">\u2039 Back</button><h3>Book goals</h3><span></span></div>
-      <p class="hint" style="margin:0">Glimmerstones ascend Glimlings past level 100. Collect a whole island, or the whole Book, in Gold or Rainbow to earn them. You have ${S.gstone || 0} · earned here ${sum} of ${max}.</p>
+      <p class="hint" style="margin:0">Glimmerstones ascend Glimlings past level 100. Collect a whole island, or the whole Book, in Sunstone or Prism to earn them. You have ${S.gstone || 0} · earned here ${sum} of ${max}.</p>
       <div class="bglist">${L.map(row).join("")}</div>`;
   }
   function pageBook() {
@@ -4905,7 +4928,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   // ================= MAILBOX: update gifts =================
   const MAIL = [
     { id: "upd-2026-11-17-charms", title: "Charms are here", text: "Glimlings can now wear a charm (on their card). Gym leaders and Cloud Climb now give charms, so here are some for the fights you already won.", rew: [{ k: "charm", n: 1, r: 1 }, { k: "charm", n: 2, r: 0 }] },
-    { id: "upd-2026-11-19-lv150", title: "Glimlings grow to level 150", text: "Glimlings can now go past level 100, up to 150. Each ascension past 100 needs Glimmerstones, a rare new stone from Book goals, the Daily and World Boss, Cloud Climb floors 50+ and Rainbow releases. Here are your first ones.", rew: [{ k: "gstone", n: 3 }] },
+    { id: "upd-2026-11-19-lv150", title: "Glimlings grow to level 150", text: "Glimlings can now go past level 100, up to 150. Each ascension past 100 needs Glimmerstones, a rare new stone from Book goals, the Daily and World Boss, Cloud Climb floors 50+ and Prism releases. Here are your first ones.", rew: [{ k: "gstone", n: 3 }] },
     { id: "upd-2026-11-17-moonfruit", title: "Moonfruit gift", text: "New explorers now start with 20 moonfruit. You started before that, so here are yours!", rew: [{ k: "fruit", n: 20 }] },
   ];
   function mailSync() {  // put every letter not delivered yet into the inbox
@@ -4950,7 +4973,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
       jars: [row("plain", IC.jar(JARS[0].c), "Plain jar", `A simple jar · you have ${S.jars.plain}`, 15),
              row("bright", IC.jar(JARS[1].c), "Bright jar", `Catches more easily · you have ${S.jars.bright}`, 45),
              row("star", IC.jar(JARS[2].c), "Star jar", `The best catch chance · you have ${S.jars.star}`, 120),
-             row("prism", IC.jar("prism"), "Prism jar", `Always catches, even Rainbows · you have ${S.jars.prism || 0}`, 5000)],
+             row("prism", IC.jar("prism"), "Prism jar", `Always catches, even Prisms · you have ${S.jars.prism || 0}`, 5000)],
       supplies: [row("treat", IC.treat, "Treat", `Calms a Glimling before you throw · you have ${S.treats}`, 25),
                  row("leaves", IC.leaf, "10 leaves", `For leveling up · you have ${S.leaves}`, 20)],
     };
@@ -5247,11 +5270,11 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   }
   let teamTab = "team";
   const teamSeg = () => `<div class="seg">${[["team", "My team"], ["book", "Book"]].map(([k, n]) => `<button class="${teamTab === k ? "on" : ""}" data-act="teamtab:${k}">${n}</button>`).join("")}</div>`;
-  // ================= CREATURE MARKET: Purple and Gold Glimlings for coins =================
+  // ================= CREATURE MARKET: Amethyst and Sunstone Glimlings for coins =================
   const MARKET_HOURS = 6, MARKET_SLOTS = 4;
   let confirmBuy = null;
   const kindPrice = (k, q) => marketPrice(q, k.lvl) * (k.boss ? 3 : 1);
-  const marketPrice = (q, lvl) => q >= 3 ? 150 + lvl * 10 : 50 + lvl * 5;  // 16 Nov: much cheaper (Purple 55, Gold 160 at level 1)
+  const marketPrice = (q, lvl) => q >= 3 ? 150 + lvl * 10 : 50 + lvl * 5;  // 16 Nov: much cheaper (Amethyst 55, Sunstone 160 at level 1)
   // one star: the painted star picture (empty = 'ui-star-empty' picture, or a faded star), the text star only without art
   function starIc(on) {
     if (!ART["ui-star"]) return "\u2605";
@@ -5307,7 +5330,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     const k = marketKinds().find(x => x.sp === m.sp), miss = keepsMissing(m), name = SP[m.sp].name;
     const btn = q => { const p = kindPrice(k, q); return `<button class="kbuy ${q >= 3 ? "pgold" : "ppurple"}" data-act="buykeep:${q}" ${S.coins >= p ? "" : "disabled"}><b>+${KEEPSAKES_BY_GRADE[q]} keepsakes</b><small>Buy and release a ${GRADES[q].name} ${name}</small><span>${IC.coin}${p}</span></button>`; };
     return `<div class="kbox"><div class="krow">${art(m.sp, m.evo, 44)}<div><b>Keepsakes for ${fname(m.sp, m.evo)}</b><small>${miss ? `${miss} more needed to ascend · you have ${S.keepsakes[m.sp] || 0}` : "Enough to ascend"}</small></div></div>
-      ${k ? `<div class="kbtns">${btn(2)}${btn(3)}</div>` : `<p class="hint" style="margin:0">${name} isn't sold in the shop. Catch more on the path or offer spare Glimlings at the Star Shrine for star shards.</p>`}
+      ${k ? `<div class="kbtns">${btn(2)}${btn(3)}</div>` : `<p class="hint" style="margin:0">${name} isn't sold in the shop. Catch more on the path or offer spare Glimlings at the Lantern Release for star shards.</p>`}
       <button class="mb" data-act="keepsback">\u2039 Back to ${fname(m.sp, m.evo)}</button></div>`;
   }
   // ================= RELEASE SEVERAL =================
@@ -5361,7 +5384,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<button class="popbg" data-act="closepop" aria-label="Close"></button><div class="popup" role="dialog">${art(m.sp, 0, 70)}
       <h3>Not enough keepsakes</h3><p>${fname(m.sp, m.evo)} needs ${missing} more ${name} keepsake${missing > 1 ? "s" : ""} to ascend.
-      In the shop one tap buys a ${name} and releases it for keepsakes (${per} from a Purple), then you come back here to ascend.</p>
+      In the shop one tap buys a ${name} and releases it for keepsakes (${per} from an Amethyst), then you come back here to ascend.</p>
       <div class="popbtns"><button class="mb" data-act="closepop">Not now</button>${dupN ? `<button class="mb" data-act="keepsrel:${m.uid}">Release spares (${dupN})</button>` : ""}<button class="mb gold" data-act="keepsshop:${m.uid}">Go to the shop</button></div></div>`;
     document.body.appendChild(d);
   }
@@ -5381,20 +5404,20 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
         <span class="mprices">${chip(k, 2)}${chip(k, 3)}</span></div>`).join("");
     return `<div class="head"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
       <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
-      ${keepsBox()}<p class="hint" style="margin:0">Every Glimling of the zones you have opened. Release a Purple one for ${KEEPSAKES_BY_GRADE[2]} keepsakes.</p>
+      ${keepsBox()}<p class="hint" style="margin:0">Every Glimling of the zones you have opened. Release an Amethyst one for ${KEEPSAKES_BY_GRADE[2]} keepsakes.</p>
       <div class="slist">${rows}</div>`;
   }
   let autoPick = null;  // the rule whose choices are open, or null for the list
   const AUTO_RULES = [
     { k: "catch", name: "Auto catch", about: "What Auto does when a Glimling appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
-    { k: "low", name: "Jar for Blue", about: "Which jar Auto and Quick catch throw at Blue Glimlings", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "mid", name: "Jar for Purple", about: "Which jar Auto and Quick catch throw at Purple Glimlings", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto and Quick catch throw at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"], ["prism", "Prism jar"]] },
-    { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
+    { k: "low", name: "Jar for Sea Glass", about: "Which jar Auto and Quick catch throw at Sea Glass Glimlings", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "mid", name: "Jar for Amethyst", about: "Which jar Auto and Quick catch throw at Amethyst Glimlings", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "high", name: "Jar for Sunstone and Prism", about: "Which jar Auto and Quick catch throw at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"], ["prism", "Prism jar"]] },
+    { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Amethyst and up"], [3, "Sunstone and up"], [9, "Never"]] },
     { k: "only", name: "Catch", about: "Which Glimlings Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
     { k: "speed", name: "Catch speed", about: "How Auto throws jars", opts: [["normal", "Normal: aims for Perfect"], ["quick", "Quick: throws until done, shows the result"]] },
-  { k: "release", name: "Release extra Blues", about: "After Auto catches a Blue Glimling, it releases it for its keepsake when you already have this many spare Blues of that kind (team, favorites, locked and working Glimlings don't count)", opts: [[0, "Never"], [3, "Keep 3 of each kind"], [5, "Keep 5 of each kind"], [10, "Keep 10 of each kind"]] },
+  { k: "release", name: "Release extra Sea Glass ones", about: "After Auto catches a Sea Glass Glimling, it releases it for its keepsake when you already have this many spare Sea Glass ones of that kind (team, favorites, locked and working Glimlings don't count)", opts: [[0, "Never"], [3, "Keep 3 of each kind"], [5, "Keep 5 of each kind"], [10, "Keep 10 of each kind"]] },
   { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet energy"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
@@ -5693,7 +5716,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   });
   document.addEventListener("change", e => { if (e.target.id === "tsort") { S.ui = S.ui || {}; S.ui.sort = e.target.value; save(); render(); } });
   const HELP = { "view:shop": "Shop: jars, boosts (multipliers and the energy pack), Glimlings and Requests.", goreq: "Requests: islanders ask for Glimlings and pay moonfruit or energy.",
-    "view:tasks": "Tasks: starter, daily, challenge and lifetime goals, each with a reward.", "view:mail": "Mailbox: gifts that come with game updates.", giftopen: "Daily gift: one reward a day; day 7 is a Purple egg.",
+    "view:tasks": "Tasks: starter, daily, challenge and lifetime goals, each with a reward.", "view:mail": "Mailbox: gifts that come with game updates.", giftopen: "Daily gift: one reward a day; day 7 is an Amethyst egg.",
     gobook: "Book: every Glimling form you have found.", map: "Atlas: zones, their maps and zone rewards.", gorace: "Island Race: win fights for race points; the top places get rewards.",
     auto: "Auto walks and catches for you, following your Rules.", autocfg: "Rules: how Auto catches, fights, bets and releases.", mult: "Multiplier: energy per step. Higher ones find rarer Glimlings and give bigger rewards.",
     evclaim: "Daily points: catches and fight wins fill these bars; each full bar gives its reward.", eventinfo: "This weekend's event. Events run every Saturday and Sunday.", zstep: "Go to the next or previous zone.",
@@ -5730,7 +5753,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     if (a === "evolve" && m) { if (m.lvl < EVOLVE_AT) return [`It can evolve at level ${EVOLVE_AT}.`, null]; if (S.fruit < EVOLVE_FRUIT) return [`Evolving needs ${EVOLVE_FRUIT} moonfruit and you have ${S.fruit}. Requests give moonfruit.`, "goreq", "Requests"]; return [`Evolving costs 60 coins and you have ${S.coins}.`, null]; }
     if (a === "gymd") return [`Beat all three trainers on ${DIFF[n - 1] || "the easier level"} first.`, null];
     if (/^buy/.test(a)) return [`Not enough coins (you have ${S.coins.toLocaleString("en")}). Chests, trainers, gyms and the Gold Mine give coins.`, null];
-    if (a === "starup") return ["Star up needs star cores of this kind: release a Rainbow of the same kind to get one.", null];
+    if (a === "starup") return ["Star up needs star cores of this kind: release a Prism of the same kind to get one.", null];
     if (a === "shield") return ["The shield needs 4 fight energy and can't be used while one is up.", null];
     if (a === "cast") return ["Not enough fight energy yet: it fills by itself, 1 point a second.", null];
     return null;
@@ -5866,7 +5889,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     else if (a === "lvpkeep") { const m = mon(lvPick); if (!m) return; const p = lvPlan(m, lvTo), miss = Math.max(1, p.keeps - p.have), kb = keepBuyPlan(m, miss);
       if (kb && S.coins >= kb.cost) {  // one tap: buy + release them all, stay in the Level Up popup
         S.coins -= kb.cost; S.keepsakes[m.sp] = (S.keepsakes[m.sp] || 0) + kb.got; sfx("coin"); save(); render();
-        const nm = SP[m.sp].name, parts = [kb.n2 ? `${kb.n2} Purple` : "", kb.n3 ? `${kb.n3} Gold` : ""].filter(Boolean).join(" + ");
+        const nm = SP[m.sp].name, parts = [kb.n2 ? `${kb.n2} Amethyst` : "", kb.n3 ? `${kb.n3} Sunstone` : ""].filter(Boolean).join(" + ");
         toast(`Bought and released ${parts} ${nm}: +${kb.got} keepsakes`); }
       else { lvPick = null; render(); goForKeepsakes(m, miss); } }
     else if (a === "lvpclose") { lvPick = null; render(); }
@@ -6078,7 +6101,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     else if (a === "sell") { if (confirmRelease !== "sell" + n) { confirmRelease = "sell" + n; render(); return; } const m = mon(n); if (m && !S.team.includes(n)) {
       const p = sellPrice(m); S.coins += p; lastGone = { m: JSON.parse(JSON.stringify(m)), keeps: 0, cores: 0, coins: p, t: Date.now() }; showUndo(`Sold ${nameOf(m)}`); S.mons = S.mons.filter(x => x.uid !== n); confirmRelease = null; sheetUid = null; save(); render(); toast(`Sold for ${p} coins`); } }
     else if (a === "ascend") { const m = mon(n); if (m) { const as = ascOf(m), need = ASC_COST[as], own = S.keepsakes[m.sp] || 0, have = own + (S.shards || 0);
-      if (as < MAX_ASC && m.lvl >= ascTop(m) && (S.gstone || 0) < ASC_STONES[as]) { toast(`Ascending past level ${ascTop(m)} needs ${ASC_STONES[as]} Glimmerstones (you have ${S.gstone || 0}). Find them in Book goals, the Daily and World Boss, Cloud Climb and Rainbow releases`); return; }
+      if (as < MAX_ASC && m.lvl >= ascTop(m) && (S.gstone || 0) < ASC_STONES[as]) { toast(`Ascending past level ${ascTop(m)} needs ${ASC_STONES[as]} Glimmerstones (you have ${S.gstone || 0}). Find them in Book goals, the Daily and World Boss, Cloud Climb and Prism releases`); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have < need) { goForKeepsakes(m, need - have); return; }
       if (as < MAX_ASC && m.lvl >= ascTop(m) && have >= need) { S.gstone = (S.gstone || 0) - ASC_STONES[as]; const fromOwn = Math.min(own, need); S.keepsakes[m.sp] = own - fromOwn; S.shards = (S.shards || 0) - (need - fromOwn); m.ascShards = (m.ascShards || 0) + (need - fromOwn); m.asc = as + 1; m.hp = maxHp(m); save(); render(); toast(`${fname(m.sp, m.evo)} ascended! Levels up to ${ascTop(m)}`); setTimeout(() => fxPower("Ascended!"), 30); } } }
     else if (a === "mailclaim") { const ids = arg === "all" ? (S.mail || []).map(x => x.id) : [arg], got = {};
