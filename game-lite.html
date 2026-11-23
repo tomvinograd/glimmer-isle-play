@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795448106;</script>
+<script>window.GAME_BUILD = 1795448305;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1736,6 +1736,15 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .lbeam { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; z-index: 5; }
 .lbeam path { fill: none; stroke: #ffe08a; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .9; filter: drop-shadow(0 0 6px #ffd36b) drop-shadow(0 0 12px #fff3b0); }
 .lorb { position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; pointer-events: none; z-index: 6; background: radial-gradient(circle, #fff 0 25%, var(--oc) 60%, transparent 72%); box-shadow: 0 0 14px 4px var(--oc); }
+.spy { position: absolute; left: 50%; top: calc(150px + env(safe-area-inset-top, 0px)); width: 132px; height: 132px; z-index: 30; pointer-events: none; transform: translateX(-50%); }
+.spy .spyin { position: absolute; inset: 12px; border-radius: 50%; overflow: hidden; display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.92), rgba(225,240,250,.85) 62%, rgba(170,200,220,.9)); box-shadow: inset 0 0 18px rgba(40,60,90,.35); }
+.spy .spyit .rit { width: 76px; height: 76px; display: grid; place-items: center; } .spy .spyit .rit svg, .spy .spyit .rit img { width: 62px; height: 62px; }
+.spy .spyit .rq { width: 62px; height: 62px; font-size: 40px; border-radius: 50%; }
+.spy .spyit .rit { background: none !important; box-shadow: none !important; border-radius: 50%; }
+.spy .spyring { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 9px #c9963e, 0 0 0 12px #7a5226, inset 0 0 0 3px #f6d58a, 0 8px 18px rgba(40,25,10,.35);
+  background: conic-gradient(from 0deg, transparent 0 8%, rgba(255,240,190,.0) 8% 100%); }
+.spy.art .spyring { box-shadow: none; } .spy.art .spyring img { position: absolute; inset: -10px; width: calc(100% + 20px); height: calc(100% + 20px); filter: drop-shadow(0 6px 8px rgba(40,25,10,.35)); }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -2721,6 +2730,26 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       }, spin + 20);
     });
   }
+  function spyPeek(found, quick) {   // a spyglass view: the find, blurry and small, twists into focus
+    if (RM || !found) return Promise.resolve();
+    return new Promise(res => {
+      const box = document.createElement("div"); box.className = "spy" + (ART["ui-spyglass"] ? " art" : "");
+      box.innerHTML = `<div class="spyin"><span class="spyit">${reelCell(reelIcon(found))}</span></div><div class="spyring">${ART["ui-spyglass"] ? `<img src="${ART["ui-spyglass"]}" alt="" draggable="false">` : ""}</div>`;
+      $("stage").appendChild(box);
+      const ring = box.querySelector(".spyring"), it = box.querySelector(".spyit"), t = quick ? 380 : 820;
+      box.animate([{ opacity: 0, transform: "translateX(-90%) scale(.8)" }, { opacity: 1, transform: "translateX(-50%) scale(1)" }], { duration: 220, easing: "ease-out", fill: "forwards" });
+      ring.animate([{ transform: "rotate(-35deg)" }, { transform: "rotate(10deg)", offset: .75 }, { transform: "rotate(0)" }], { duration: t, easing: "ease-out", fill: "forwards" });
+      it.animate([{ transform: "scale(.45)", filter: "blur(7px)", opacity: .55 }, { transform: "scale(.8)", filter: "blur(3px)", opacity: .85, offset: .55 }, { transform: "scale(1)", filter: "blur(0)", opacity: 1 }], { duration: t, easing: "ease-out", fill: "forwards" });
+      setTimeout(() => {   // in focus
+        try { sfx("claim"); } catch {}
+        it.animate([{ transform: "scale(1)" }, { transform: "scale(1.3)", offset: .35 }, { transform: "scale(1.1)" }], { duration: 320, easing: "ease-out", fill: "forwards" });
+        const [x, y] = elXY(ring); fxRing(x, y, "#ffe6a3", 80, .45, 0, 6); fxBurst(x, y, quick ? 6 : 12, GOLDS, 180);
+        const extra = reelLandExtra(found, ring, quick);
+        setTimeout(() => { box.animate([{ opacity: 1 }, { opacity: 0, transform: "translateX(-50%) translateY(-16px) scale(.9)" }], { duration: 200, fill: "forwards" });
+          setTimeout(() => { box.remove(); res(); }, 190); }, (quick ? 160 : 380) + extra);
+      }, t + 20);
+    });
+  }
   function reelLandExtra(found, ring, quick) {  // what the reel does after it lands, by kind
     if (!found || RM) return 0;
     const [x, y] = elXY(ring);
@@ -2799,7 +2828,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       else if (r === 6) { const kind = wpick([45, 35, 20]); E = { type: "gather", kind: ["herb", "ore", "crystal"][kind], n: kind === 0 ? rnd(10, 16) * M.m : kind === 1 ? rnd(5, 10) * M.m : rnd(2, 4) + Math.floor(M.m / 10) }; }
       else { E = { type: "gather", kind: "pouch", n: 4 * M.m }; }  // a little coin pouch on the path
     }
-    if (E && !E.boss) { const found = E; E = null; renderActions(); await exploreReel(found, S.auto); await wk; E = found; } else await wk;
+    if (E && !E.boss) { const found = E; E = null; renderActions(); await spyPeek(found, S.auto); await wk; E = found; } else await wk;
     if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
     busy = false; save(); render(); findLands();
     if (E && E.type === "wild" && E.intro) starEntrance();
