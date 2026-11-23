@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795451381;</script>
+<script>window.GAME_BUILD = 1795465442;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1730,6 +1730,21 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .jsjar.on .jstag { background: #ffe9a8; box-shadow: 0 0 0 2px #b07a12, 0 2px 0 2px rgba(61,39,22,.35); }
 .jsplank { position: relative; height: 34px; border-radius: 8px; background: linear-gradient(#c79864, #9a6a3f 60%, #7a5230); box-shadow: 0 0 0 3px #3d2716, inset 0 3px 0 rgba(255,240,210,.45), 0 8px 12px rgba(30,20,10,.35); }
 .jsplank:has(img) { background: none; box-shadow: none; height: 52px; } .jsplank img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+.lanpath { position: absolute; inset: 0; z-index: 7; pointer-events: none; background: radial-gradient(120% 80% at 50% 65%, rgba(40,30,70,.18), rgba(25,18,50,.55)); animation: lpin .3s both; }
+.lanpath.out { animation: lpout .38s both; }
+@keyframes lpin { from { opacity: 0; } } @keyframes lpout { to { opacity: 0; } }
+.plan { position: absolute; width: 34px; height: 56px; margin: -46px 0 0 -17px; transform: scale(var(--s)); transform-origin: 50% 0; }
+.plan .pstr { position: absolute; left: 16px; top: 0; width: 2px; height: 14px; background: #5b3f2a; }
+.plan .pbody { position: absolute; left: 3px; top: 12px; width: 28px; height: 34px; border-radius: 45% 45% 40% 40%; background: #8a7a9a;
+  box-shadow: 0 0 0 2px #3d2716, inset 0 -5px 0 rgba(0,0,0,.18); background-image: repeating-linear-gradient(0deg, rgba(0,0,0,.12) 0 1px, transparent 1px 6px); animation: plight .35s var(--d) both ease-out; }
+.plan .pbody::after { content: ""; position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--c) 70%, #fff), color-mix(in srgb, var(--c) 35%, transparent) 35%, transparent 65%); opacity: 0; animation: pglow .5s var(--d) both ease-out; pointer-events: none; }
+.plan.best .pbody::after { width: 200px; height: 200px; margin: -100px 0 0 -100px; }
+@keyframes plight { from { background-color: #8a7a9a; transform: scale(.9); } 60% { transform: scale(1.15); } to { background-color: color-mix(in srgb, var(--c) 75%, #fff8dc); transform: scale(1); box-shadow: 0 0 0 2px #3d2716, inset 0 -5px 0 rgba(0,0,0,.12), 0 0 18px 4px var(--c); } }
+@keyframes pglow { to { opacity: 1; } }
+.plan.rb .pbody { animation-name: plight, prb; animation-duration: .35s, 1.6s; animation-iteration-count: 1, infinite; }
+@keyframes prb { 0% { filter: hue-rotate(0); } 100% { filter: hue-rotate(360deg); } }
+.shootstar .seorb { position: absolute; inset: 9px; border-radius: 50%; background: radial-gradient(circle, #fff 0 25%, #ffe6a3 55%, rgba(255,214,120,0) 72%); box-shadow: 0 0 14px 6px rgba(255,220,140,.8); }
+.shootstar::before { opacity: .35; }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -2863,7 +2878,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
       else { E = { type: "gather", kind: "pouch", n: 4 * M.m }; }  // a little coin pouch on the path
     }
     if (E && !E.boss) { const found = E; E = null; renderActions(); await spyPeek(found, S.auto); await wk; E = found; } else await wk;
-    if (E && E.type === "wild" && !E.boss && !RM) { await skyIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
+    if (E && E.type === "wild" && !E.boss && !RM) { await lanternIntro(E.list); if (E) { E.intro = true; E.introT = performance.now(); E.t0 = performance.now() + 900; const e0 = E; setTimeout(() => { if (E === e0) E.intro = false; }, 1300 + E.list.length * 140); } }
     busy = false; save(); render(); findLands();
     if (E && E.type === "wild" && E.intro) starEntrance();
     await flushBanners();
@@ -3079,7 +3094,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     [...document.querySelectorAll("#actors .actor.intro")].forEach((a, k) => {
       const spr = a.querySelector(".spr"); if (!spr) return; const [x, y] = stageXY(spr), d = k * 140;
       const st = document.createElement("div"); st.className = "shootstar"; st.style.left = x + "px"; st.style.top = (y - 40) + "px"; st.style.animationDelay = d + "ms";
-      st.innerHTML = `<span>${IC.star}</span>`; $("fx").appendChild(st);
+      st.innerHTML = `<i class="seorb"></i>`; $("fx").appendChild(st);
       setTimeout(() => { st.remove(); const b = document.createElement("div"); b.className = "starburst"; b.style.left = x + "px"; b.style.top = (y - 40) + "px"; $("fx").appendChild(b);
         flyIcons(IC.star, 5, x, y - 40, null); setTimeout(() => b.remove(), 650); }, d + 520);
     });
@@ -4213,6 +4228,23 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     return cometTint[q] = c;
   }
   let skyCloud = null; const skyCloudImg = () => skyCloud || (skyCloud = Object.assign(new Image(), { src: ART["fx-cloudbank"] }));
+  function lanternIntro(list) {   // the path dims to dusk; a lantern lights for each Glimling here, in its rarity colour, the rarest last
+    const st = $("stage"); if (!st) return Promise.resolve();
+    return new Promise(done => {
+      const qs = list.map(w => w.q).sort((a, b) => a - b), n = qs.length, fast = S.auto ? .6 : 1;
+      const POS = k => { const t = n === 1 ? 1 : k / (n - 1); return [50 + (k % 2 ? 1 : -1) * Math.min(28, 10 + n * 3) * (n === 1 ? 0 : 1), 30 + t * 22, 1 + t * .55]; };   // far (small) to near (big), zig-zag along the path
+      const box = document.createElement("div"); box.className = "lanpath";
+      box.innerHTML = qs.map((q, k) => { const [x, y, sc] = POS(k), last = k === n - 1;
+        return `<span class="plan${last ? " best" : ""}${q === 4 ? " rb" : ""}" style="left:${x}%;top:${y}%;--s:${sc * (last && q >= 2 ? 1.25 : 1)};--c:${GRADE_TRAIL[q]};--d:${Math.round((300 + k * 230) * fast)}ms"><i class="pstr"></i><i class="pbody"></i></span>`; }).join("");
+      st.appendChild(box); box.style.setProperty("--fade", Math.round(260 * fast) + "ms");
+      const lastAt = (300 + (n - 1) * 230) * fast;
+      setTimeout(() => { const b = box.querySelector(".plan.best"); if (!b) return; const [x, y] = elXY(b), q = qs[n - 1], c = GRADE_TRAIL[q];
+        fxRing(x, y, c, q >= 3 ? 150 : 100, .55); fxBurst(x, y, q >= 3 ? 26 : 12, q === 4 ? RAINB : [c, "#fff", "#ffe6a3"], q >= 3 ? 260 : 170); try { sfx("claim"); } catch {} }, lastAt + 250);
+      const end = lastAt + (qs[n - 1] >= 3 ? 1500 : 1050) * fast;
+      setTimeout(() => box.classList.add("out"), end);
+      setTimeout(() => { box.remove(); done(); }, end + 380);
+    });
+  }
   function skyIntro(list) {
     return new Promise(done => {
       const cloudImg = ART["fx-cloudbank"] ? skyCloudImg() : null, cloudOk = () => cloudImg && cloudImg.complete && cloudImg.naturalWidth;
@@ -4390,6 +4422,11 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   }
   function navArtCss() {   // only the level ring + XP bar art now; the square nav tiles (sheet-nav) were dropped for the medallions (originality plan 23 Nov)
     let c = "";
+    if (ART["med-rope"]) c += `nav .tabs .mdrope.art{background:url(${ART["med-rope"]}) center/100% 100% no-repeat !important;height:13px !important;top:5px !important;box-shadow:none !important}`;
+    if (ART["med-menu"]) c += `nav .tabs .mdl:has(.mdb.art)::before,nav .tabs .mdl:has(.mdwin.art)::before{display:none}nav .tabs .mdl:has(.mdb.art) .mdstring,nav .tabs .mdl:has(.mdwin.art) .mdstring{display:none}nav .tabs .mdl:has(.mdb.art),nav .tabs .mdl:has(.mdwin.art){padding-top:6px}`
+      + `nav .tabs button.mdb.art>img{position:absolute !important;inset:-6px !important;width:calc(100% + 12px) !important;height:calc(100% + 12px) !important;margin:0 !important;object-fit:contain}`
+      + `nav .tabs button.mdwin.art{background:none !important;box-shadow:none !important}nav .tabs button.mdwin.art>img{position:absolute !important;inset:-4px !important;width:calc(100% + 8px) !important;height:calc(100% + 8px) !important;margin:0 !important;object-fit:contain;z-index:1}`
+      + `nav .tabs button.mdwin.art .mdpic{inset:19% 18% 15% 18% !important;box-shadow:none !important}nav .tabs button.mdwin.art .tl{z-index:2}`;
     if (ART["ui-level-ring"]) c += `.xbadge{width:56px !important;height:52px !important;background:url(${ART["ui-level-ring"]}) center/100% 100% no-repeat !important;box-shadow:none !important;filter:drop-shadow(0 3px 3px rgba(40,25,10,.35))}.xbadge span{width:auto !important;height:auto !important;margin-top:5px;background:none !important;color:#5b3f2a !important;font:900 21px/1 var(--display) !important;-webkit-text-stroke:0 !important;text-shadow:0 1px 0 #fff !important}`;
     if (ART["ui-xp-frame"]) c += `.xbar{width:56px !important;height:16px !important;border-radius:0 !important;background:none !important;box-shadow:none !important;overflow:visible !important;border:7px solid transparent;border-image:url(${ART["ui-xp-frame"]}) 48 fill / 8px stretch;box-sizing:border-box;padding:0;margin-top:-4px;position:relative}.xbar i{position:absolute;left:-3px;top:-3px;bottom:-3px;max-width:calc(100% + 6px);min-width:6px;border-radius:0 !important;background:${ART["ui-xp-fill"] ? "none" : "linear-gradient(#8fe07a,#4fb85a)"} !important;${ART["ui-xp-fill"] ? `border:5px solid transparent;border-image:url(${ART["ui-xp-fill"]}) 34 fill / 5px stretch;box-sizing:border-box;` : ""}}`;
     return c;
