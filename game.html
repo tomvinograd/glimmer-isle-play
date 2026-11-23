@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795465442;</script>
+<script>window.GAME_BUILD = 1795465782;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 </head>
 <body>
@@ -2037,6 +2037,14 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
 .zsign .zcs { display: flex; gap: 2px; } .zsign .zcs i { width: 15px; height: 15px; display: block; } .zsign .zcs img, .zsign .zcs svg { width: 15px !important; height: 15px !important; }
 .zsign .zspost { width: 10px; height: 46px; margin-top: -2px; border-radius: 3px; background: linear-gradient(90deg, #8a5f35, #b88752 50%, #7a5230); box-shadow: 0 0 0 2px #3d2716; }
 .zsign .bang { top: -6px; right: 0; z-index: 2; }
+#actions .compass.spyw { width: 156px !important; height: 128px !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; display: grid; place-items: center; overflow: visible; }
+#actions .compass.spyw::before, #actions .compass.spyw::after { display: none !important; }
+#actions .compass.spyw .spywsvg, #actions .compass.spyw .spywimg { width: 156px; height: 128px; object-fit: contain; filter: drop-shadow(0 6px 6px rgba(40,25,10,.35)); }
+#actions .compass.spyw .spywtube, #actions .compass.spyw .spywimg { transform-origin: 48% 54%; transform-box: fill-box; }
+#actions .compass.spyw .spywglint { animation: spywg 2.6s ease-in-out infinite; } @keyframes spywg { 0%, 70%, 100% { opacity: .35; } 80% { opacity: 1; } }
+#actions .compass.spyw:active:not(:disabled) .spywsvg, #actions .compass.spyw:active:not(:disabled) .spywimg { transform: translateY(3px); }
+#actions .compass.spyw:disabled { filter: grayscale(.5); opacity: .8; }
+#actions .compass.spyw .cost { bottom: -2px !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -2749,8 +2757,10 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
   function compassAway() {
     if (RM) return; cmpAway = true;
     const c = document.querySelector("#actions .compass");
-    if (c) { const [x, y] = elXY(c); fxRing(x, y, "#9ff3ff", 110, .5, 0, 8); fxRing(x, y, "#fff", 70, .45, .08, 5); fxBurst(x, y, 18, ["#9ff3ff", "#fff", "#ffd34d"], 260);
-      moPlay(c, [{ transform: "none" }, { transform: "scale(1.12,.86)", offset: .4 }, { transform: "scale(.95,1.06)" }], { duration: 160 }); }
+    if (c) { let [x, y] = elXY(c); if (c.classList.contains("spyw")) { const r = c.getBoundingClientRect(); x = r.left + r.width * .8; y = r.top + r.height * .22; }   // the glint at the lens
+      fxRing(x, y, "#9ff3ff", 110, .5, 0, 8); fxRing(x, y, "#fff", 70, .45, .08, 5); fxBurst(x, y, 18, ["#9ff3ff", "#fff", "#ffd34d"], 260);
+      if (c.classList.contains("spyw")) { const t = c.querySelector(".spywtube, .spywimg"); if (t) moPlay(t, [{ transform: "rotate(0)" }, { transform: "rotate(-9deg)", offset: .5 }, { transform: "rotate(0)" }], { duration: 260 }); }
+      else moPlay(c, [{ transform: "none" }, { transform: "scale(1.12,.86)", offset: .4 }, { transform: "scale(.95,1.06)" }], { duration: 160 }); }
     setTimeout(() => document.body.classList.add("exploring"), 130);
   }
   function exploreReel(found, quick) {
@@ -2881,6 +2891,19 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     busy = false; save(); render(); findLands();
     if (E && E.type === "wild" && E.intro) starEntrance();
     await flushBanners();
+  }
+  function spyWalkSVG() {   // a brass explorer spyglass on a little wooden tripod (until the painted one comes)
+    return `<svg class="spywsvg" viewBox="0 0 150 120" aria-hidden="true"><g stroke="#4a3020" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M74 70 L44 116 M74 70 L104 116 M74 70 L76 118" stroke="#4a3020" stroke-width="9"/><path d="M74 70 L44 116 M74 70 L104 116 M74 70 L76 118" stroke="#a87444" stroke-width="5"/>
+      <g class="spywtube"><g transform="rotate(-24 74 64)">
+        <rect x="14" y="56" width="20" height="16" rx="3" fill="#8c6a2a"/>
+        <rect x="31" y="51" width="36" height="26" rx="5" fill="#d9a843"/><rect x="34" y="54" width="30" height="5" rx="2" fill="#f6d98a" stroke="none"/>
+        <rect x="65" y="48" width="7" height="32" rx="2" fill="#a37a2c"/>
+        <rect x="71" y="46" width="38" height="36" rx="5" fill="#e7b94e"/><rect x="74" y="49" width="32" height="6" rx="2" fill="#fbe3a0" stroke="none"/>
+        <rect x="107" y="42" width="8" height="44" rx="3" fill="#a37a2c"/>
+        <ellipse cx="117" cy="64" rx="6.5" ry="20" fill="#bfe6f5"/><path class="spywglint" d="M115 51 q4 6 0 12" stroke="#fff" stroke-width="3" fill="none"/>
+      </g></g>
+      <circle cx="74" cy="66" r="6.5" fill="#8c6a2a"/></g></svg>`;
   }
   function compassSVG() {
     const ticks = Array.from({ length: 24 }, (_, i) => { const a = i * 15 * Math.PI / 180, r1 = i % 6 ? 37 : 34, r2 = 40;
@@ -3441,7 +3464,7 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     if (E && E.type === "luck") { A.innerHTML = `<div class="row"><button class="round big gold" data-act="luckgo:glow" ${S.glow >= E.stake && !busy ? "" : "disabled"} aria-label="Bet ${E.stake} energy">${IC.glow.replace("<svg", '<svg width="24" height="24"')} ${E.stake}</button><button class="round big gold" data-act="luckgo:coins" ${S.coins >= (E.cstake || E.stake) && !busy ? "" : "disabled"} aria-label="Bet ${E.cstake || E.stake} coins">${IC.coin.replace("<svg", '<svg width="24" height="24"')} ${E.cstake || E.stake}</button><button class="round big" data-act="leave" aria-label="Walk on">${IC.run}</button></div><p class="hint" style="margin:6px 0 0">Bet one step of energy, or coins: get 1 to 2 times it back</p>`; return; }
     const M = curM(), next = MULTS.filter(multOpen);
     A.innerHTML = `<div class="dock"><div class="side">${zoneCard()}</div>
-      <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Energy per step: ${M.m}">x${M.m}</button><button class="compass${ART["ui-compass-hero"] ? " hero" : ""}" data-act="step" aria-label="Step" ${S.glow >= M.m && !busy ? "" : "disabled"}>${ART["ui-compass-hero"] ? `<img class="chero" src="${ART["ui-compass-hero"]}" alt="" draggable="false">` : ""}${compassSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
+      <div class="cwrap"><button class="multknob" data-act="mult" aria-label="Energy per step: ${M.m}">x${M.m}</button><button class="compass spyw" data-act="step" aria-label="Look ahead and walk" ${S.glow >= M.m && !busy ? "" : "disabled"}>${ART["ui-spyglass-walk"] ? `<img class="spywimg" src="${ART["ui-spyglass-walk"]}" alt="" draggable="false">` : spyWalkSVG()}<span class="pill cost">${IC.glow}${M.m}</span></button></div>
       <div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round ${S.auto ? "on" : ""}" data-act="auto" aria-label="Auto walk">${IC.auto}</button><span class="cap">Auto</span></div><div class="capw"><button class="round jartype" data-act="autocfg" aria-label="Auto rules">${IC.gear}</button><span class="cap">Rules</span></div></div></div>
       ${S.auto && S.autoCfg.catch ? `<p class="hint">Auto catch on${autoStat.caught ? ` · ${autoStat.caught} caught` : ""}</p>` : ""}
       ${S.zones[0].steps === 0 ? `<p class="hint">Tap the compass to walk · hold it for Auto</p>` : next.length < MULTS.length ? "" : ""}`;
