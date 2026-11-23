@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795447361;</script>
+<script>window.GAME_BUILD = 1795448106;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1716,6 +1716,26 @@ svg.tapme { background: none !important; box-shadow: none !important; padding: 0
 .fphand[data-pose="ready"] { --jx: 30%; --jy: 43%; } .fphand[data-pose="windup"] { --jx: 19%; --jy: 33%; } .fphand[data-pose="release"] { --jx: 21%; --jy: 14%; }
 .fphand.empty .tjar { visibility: hidden; }
 .jthrow.fp { z-index: 0; } .dock > .side { position: relative; z-index: 1; }
+.lanbox { position: relative; width: 116px; height: 126px; display: grid; place-items: end center; }
+.lanstump { position: absolute; bottom: 4px; left: 50%; width: 112px; height: 40px; transform: translateX(-50%); background: radial-gradient(ellipse 50% 42% at 50% 45%, #b38658 0 60%, #7a5638 62% 98%, transparent 100%); pointer-events: none; }
+.lanstump:has(img) { background: none; height: 56px; } .lanstump img { position: absolute; left: 0; bottom: 0; width: 100%; }
+.langlow { position: absolute; left: 50%; top: 44%; width: 160px; height: 160px; margin: -80px 0 0 -80px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,232,150,.95), rgba(255,205,95,.45) 40%, rgba(255,205,95,0) 70%); opacity: calc(var(--g) * .95); transform: scale(calc(.45 + var(--g) * .75)); }
+.lanjar { position: relative; z-index: 1; width: 84px; height: 84px; margin-bottom: 26px; border: 0; padding: 0; background: none; transform-origin: 50% 100%; touch-action: none; -webkit-user-select: none; user-select: none;
+  filter: brightness(calc(1 + var(--g) * .45)) drop-shadow(0 0 calc(var(--g) * 16px) #ffd36b) drop-shadow(0 4px 4px rgba(40,25,10,.3)); }
+.lanjar img, .lanjar svg { width: 100% !important; height: 100% !important; pointer-events: none; }
+.lanjar:disabled { filter: grayscale(.5) opacity(.75); }
+.lanbox.peak .langlow { background: radial-gradient(circle, rgba(255,255,232,1), rgba(255,218,115,.65) 40%, rgba(255,205,95,0) 70%); }
+.lanbox.peak .lanjar { animation: lanpk .22s ease-in-out infinite alternate; } @keyframes lanpk { to { transform: scale(1.07); } }
+.lancount { position: absolute !important; bottom: 0 !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 2; }
+.lanhint { position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); z-index: 2; white-space: nowrap; font: 800 12px var(--display); color: #fff; -webkit-text-stroke: 3px #3d2716; paint-order: stroke fill; pointer-events: none; }
+.lanbox.full .langlow { opacity: .85; transform: scale(.75); background: radial-gradient(circle, color-mix(in srgb, var(--oc) 55%, #fff), color-mix(in srgb, var(--oc) 45%, transparent) 45%, transparent 70%); }
+.lanbox.flick .langlow { animation: lanfl .44s steps(4) 1; } @keyframes lanfl { 50% { opacity: .3; } }
+.lanbox.won .langlow { opacity: 1; transform: scale(1.3); background: radial-gradient(circle, #fffbe0, rgba(255,211,77,.7) 40%, transparent 70%); transition: all .3s; }
+.lanbox.out .langlow { opacity: 0; transition: opacity .35s; }
+.lbeam { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; z-index: 5; }
+.lbeam path { fill: none; stroke: #ffe08a; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .9; filter: drop-shadow(0 0 6px #ffd36b) drop-shadow(0 0 12px #fff3b0); }
+.lorb { position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; pointer-events: none; z-index: 6; background: radial-gradient(circle, #fff 0 25%, var(--oc) 60%, transparent 72%); box-shadow: 0 0 14px 4px var(--oc); }
 .olscore { display: flex; justify-content: center; align-items: center; gap: 12px; font-family: var(--display); }
 .olscore span { display: flex; align-items: center; gap: 8px; } .olscore b { font-size: 15px; color: var(--brown); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .olscore em { font-style: normal; font-size: 30px; font-weight: 900; color: #c47f0a; } .olscore i { font-style: normal; font-size: 24px; color: #b0907a; }
@@ -2883,62 +2903,79 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       document.body.appendChild(sh); const close = () => { if (sh.isConnected) { sh.remove(); res(); } };
       sh.addEventListener("click", close); setTimeout(close, autoThrow ? 1300 : 2200); });
   }
-  async function throwJar(autoThrow) {
+  async function throwJar(autoThrow, glow) {
     if (!quickNow && wantQuick(autoThrow)) return quickWrap(throwJar, autoThrow);
     const w = E && E.type === "wild" ? E.list[E.i] : null; if (!w || busy) return;
     if (tough(w) && !E.fought) { toast("Battle it first"); return; }
     if (!S.jars[E.jar]) { toast("No jars of that kind"); return; }
-    if (autoThrow) {  // Auto aims: wait for the ring to reach the Perfect size (at most one full ring cycle)
-      const enc = E, t0 = performance.now();
-      while (!quickNow && E === enc && !busy && !enc.manual && Math.abs(ringScale() - .78) >= .05 && performance.now() - t0 < 2800) await wait(15);
-      if (E !== enc || busy || enc.manual) return;
-    }
-    busy = true; const sc = ringScale(), d = Math.abs(sc - .78), timing = d < .1 ? 1.5 : d < .28 ? 1.15 : .8;
+    busy = true; const timing = autoThrow || quickNow ? 1.5 : lanGlowT(glow == null ? .75 : glow);   // Auto and Quick always let go at the brightest glow
     S.jars[E.jar]--; if (quickNow) qThrown++; renderActions();
-    const spr = document.querySelector("#wildActor .spr"), ring = document.querySelector(".ring"); if (ring) ring.style.display = "none";
-    const [cx, cy] = spr ? stageXY(spr) : [180, 280]; const st = $("stage");
-    floatText(cx, cy - 90, timing === 1.5 ? "Perfect!" : timing > 1 ? "Nice!" : "Okay", timing === 1.5);
-    const jar = document.createElement("div"); jar.className = "fly"; jar.style.width = jar.style.height = "54px"; jar.style.margin = "-27px 0 0 -27px"; jar.innerHTML = IC.jar(JARS.find(j => j.k === E.jar).c);
-    let sx = st.clientWidth * .55, sy = st.clientHeight + 30;
-    const thr = cfxOn() && document.querySelector("#actions .fphand");
-    if (thr) {   // the hand winds up (a fist round the jar), then opens: the jar leaves from the hand
-      thr.parentElement.classList.add("throwing");
-      thrPose(thr, "windup"); await wait(190); const tj = thr.querySelector(".tjar"); if (tj) [sx, sy] = stageXY(tj);
-      thrPose(thr, "release"); sfx("tap"); thr.animate([{ transform: "translateY(0)" }, { transform: "translateY(-14px)", offset: .35 }, { transform: "translateY(0)" }], { duration: 420, easing: "ease-out" });
-      setTimeout(() => { if (thr.isConnected) thrPose(thr, "ready", true); }, 560);
-    }
-    jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar);
-    const flight = await anim(jar, [{ transform: "translate(0,0) rotate(0) scale(1.2)" }, { transform: `translate(${(cx - sx) * .5}px,${(cy - sy) - 120}px) rotate(300deg) scale(.9)`, offset: .55 }, { transform: `translate(${cx - sx}px,${cy - sy}px) rotate(720deg) scale(.8)` }], { duration: RM ? 120 : 600, easing: "ease-in", fill: "forwards" });
-    jar.style.transform = `translate(${cx - sx}px,${cy - sy}px) scale(.8)`; flight.cancel();
-    if (spr && cfxOn()) {   // the Glimling turns to light, then is pulled into the jar
-      const [px, py] = elXY(spr); fxRing(px, py, "#ffffff", 95, .45); fxBurst(px, py, 14, ["#ffffff", "#eaf7ff", GRADES[w.q].c], 170);
-      await anim(spr, [{ filter: "brightness(1)" }, { filter: "brightness(0) invert(1) drop-shadow(0 0 10px #fff) drop-shadow(0 0 18px #fff)" }], { duration: 170, fill: "forwards" });
-    }
-    if (spr) await anim(spr, MO_IN, { duration: RM ? 80 : 420, easing: "ease-in", fill: "forwards" });
-    await anim(jar, [{ transform: jar.style.transform }, { transform: `translate(${cx - sx}px,${cy - sy + 50}px) scale(.8)` }], { duration: RM ? 40 : 220, easing: "cubic-bezier(.5,0,.7,1.4)" });
-    jar.style.transform = `translate(${cx - sx}px,${cy - sy + 50}px) scale(.8)`;
-    if (cfxOn()) { const [jx, jy, jr] = elXY(jar); fxBurst(jx, jy + jr.height * .4, 10, ["#efe2c4", "#dcc79f", "#ffffff"], 95); }   // dust where it lands
+    const spr = document.querySelector("#wildActor .spr"), L = lanEls();
+    const [cx, cy] = spr ? stageXY(spr) : [180, 280];
+    floatText(cx, cy - 90, timing === 1.5 ? "Bright glow!" : timing > 1 ? "Good glow" : "Dim glow", timing === 1.5);
+    const fx = cfxOn() && L && spr, elc = EL[SP[w.sp].el].color;
+    let lx = 0, ly = 0, qx = 0, qy = 0;
+    const bez = (t, back) => { const u = back ? 1 - t : t; return [(1 - u) * (1 - u) * cx + 2 * (1 - u) * u * qx + u * u * lx, (1 - u) * (1 - u) * (cy - 18) + 2 * (1 - u) * u * qy + u * u * ly]; };
+    if (fx) {   // a beam of light reaches the Glimling; it becomes a little light of its colour and floats into the lantern
+      L.box.classList.add("lit"); L.box.style.setProperty("--g", 1); L.box.style.setProperty("--oc", elc);
+      [lx, ly] = stageXY(L.jar); qx = (lx + cx) / 2; qy = Math.min(ly, cy) - 120; const st = $("stage");
+      const sv = document.createElementNS("http://www.w3.org/2000/svg", "svg"); sv.setAttribute("class", "lbeam"); sv.setAttribute("width", st.clientWidth); sv.setAttribute("height", st.clientHeight);
+      sv.innerHTML = `<path d="M${lx} ${ly} Q${qx} ${qy} ${cx} ${cy}" pathLength="1"/>`; $("fx").appendChild(sv); sfx("tap");
+      await anim(sv.querySelector("path"), [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 300, easing: "ease-out", fill: "forwards" });
+      await anim(spr, [{ transform: "none", filter: "none" }, { transform: "translateY(-10px) scale(.7)", filter: `brightness(1.5) drop-shadow(0 0 10px ${elc})`, offset: .4 }, { transform: "translateY(-18px) scale(.08)", filter: `brightness(2.2) drop-shadow(0 0 16px ${elc})` }], { duration: 480, easing: "ease-in", fill: "forwards" });
+      const orb = document.createElement("div"); orb.className = "lorb"; orb.style.setProperty("--oc", elc); $("fx").appendChild(orb);
+      await anim(orb, [0, .2, .4, .6, .8, 1].map(t => { const [x, y] = bez(t); return { transform: `translate(${x}px,${y}px) scale(${1 - .4 * t})` }; }), { duration: 520, easing: "ease-in-out", fill: "forwards" });
+      orb.remove(); sv.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => sv.remove(), 260);
+      L.box.classList.add("full"); L.jar.animate([{ transform: "scale(1)" }, { transform: "scale(1.12,.9)" }, { transform: "scale(1)" }], { duration: 220 }); sfx("tap");
+    } else if (spr) await anim(spr, MO_IN, { duration: RM ? 80 : 420, easing: "ease-in", fill: "forwards" });
     const c = chance(w, E.jar, timing), ok = Math.random() < c, wobbles = ok ? 3 : rnd(1, 2);
-    for (let k = 0; k < wobbles; k++) { await wait(250); if (!ok && k === wobbles - 1 && cfxOn()) jarCrack(jar); await anim(jar, [{ transform: jar.style.transform + " rotate(0)" }, { transform: jar.style.transform + " rotate(-22deg)" }, { transform: jar.style.transform + " rotate(18deg)" }, { transform: jar.style.transform + " rotate(0)" }], { duration: RM ? 60 : 420 }); }
+    for (let k = 0; k < wobbles; k++) {   // the lantern sways, its light flickering
+      await wait(fx ? 230 : RM ? 30 : 150);
+      if (fx) { L.box.classList.add("flick"); await anim(L.jar, [{ transform: "rotate(0)" }, { transform: "rotate(-14deg)" }, { transform: "rotate(11deg)" }, { transform: "rotate(0)" }], { duration: 440 }); L.box.classList.remove("flick"); }
+    }
     if (ok) {
-      if (cfxOn()) { const [jx, jy] = elXY(jar); jar.animate([{ filter: "none" }, { filter: "brightness(1.5) drop-shadow(0 0 14px #ffd34d)" }], { duration: 260, fill: "forwards" });
-        fxRing(jx, jy, "#ffd34d", 110, .55); fxBurst(jx, jy, 22, [...GOLDS, "#ffffff"], 230); await wait(260); }
-      flyIcons(IC.star, 6, cx, cy + 50, null); jar.remove();
+      if (fx) { const [jx, jy] = elXY(L.jar); L.box.classList.add("won"); fxRing(jx, jy, "#ffd34d", 110, .55); fxBurst(jx, jy, 24, ["#ffd34d", "#fff3b0", "#ffc0d6", "#ffffff"], 230); await wait(320); }
+      flyIcons(IC.star, 6, cx, cy + 50, null);
       keepMon(w); if (quickNow) qCaught.push(w); track("catch", w); sfx("catch"); S.wins++; S.leaves += CATCH_LEAVES * curM().m; gainX(E.boss ? 20 : 5); if (autoThrow) autoStat.caught++;
       let cleared = false; if (E.boss) { const z = S.zone; S.zones[z].cleared = true; S.fruit += 2; cleared = true; }
       busy = false; await reveal(w, "Caught!");
       if (cleared) banners.push(S.zone + 1 < ZONES.length ? `${ZONES[S.zone + 1].name} open!` : "All zones cleared!");
       nextWild(); await flushBanners();
     } else {
-      if (cfxOn()) { const [jx, jy] = elXY(jar); jarShatter(jx, jy); jar.remove(); }   // the jar breaks into glass
-      else { jar.animate([{ transform: jar.style.transform, opacity: 1 }, { transform: jar.style.transform + " scale(1.6)", opacity: 0 }], { duration: 250, fill: "forwards" }); setTimeout(() => jar.remove(), 260); }
-      if (spr) spr.animate(MO_OUT, { duration: RM ? 60 : 560, easing: "ease-out", fill: "forwards" });
-      if (spr && cfxOn()) spr.animate([{ filter: "brightness(0) invert(1) drop-shadow(0 0 10px #fff)" }, { filter: "brightness(0) invert(1) drop-shadow(0 0 10px #fff)", offset: .35 }, { filter: "none" }], { duration: 520, fill: "forwards" });   // bursts out as light, then its colors come back
+      if (fx) {   // the light goes out with a little puff and the Glimling hops back out
+        const [jx, jy] = elXY(L.jar); L.box.classList.remove("full"); L.box.classList.add("out"); fxBurst(jx, jy - 20, 10, ["#cfc6dc", "#e8e2f0", "#b9b0c8"], 90);
+        const orb = document.createElement("div"); orb.className = "lorb"; orb.style.setProperty("--oc", elc); $("fx").appendChild(orb);
+        await anim(orb, [0, .25, .5, .75, 1].map(t => { const [x, y] = bez(t, true); return { transform: `translate(${x}px,${y}px) scale(${.6 + .4 * t})` }; }), { duration: 340, easing: "ease-out", fill: "forwards" }); orb.remove();
+      }
+      if (spr) { spr.getAnimations().forEach(x => x.cancel()); spr.animate(MO_OUT, { duration: RM ? 60 : 560, easing: "ease-out", fill: "forwards" }); }   // back in its own colours
       w.miss = (w.miss || 0) + 1; const left = E.boss ? 99 : FLEE_AFTER[w.q] - w.miss; await wait(RM ? 450 : 580);
       if (left <= 0) { if (quickNow) qFled++; if (spr) await anim(spr, MO_RUN, { duration: RM ? 60 : 650, easing: "ease-in-out", fill: "forwards" }); floatText(cx, cy - 60, "Ran away!"); busy = false; nextWild(); }
-      else { busy = false; E.t0 = performance.now(); render(); floatText(cx, cy - 60, left <= 3 ? `Broke free! ${left} ${left === 1 ? "try" : "tries"} left` : "Broke free!"); }
+      else { busy = false; E.t0 = performance.now(); render(); floatText(cx, cy - 60, left <= 3 ? `Slipped out! ${left} ${left === 1 ? "try" : "tries"} left` : "Slipped out!"); }
     }
     save();
+  }
+  // ---------- the lantern: hold to fill it with light, let go at the brightest moment ----------
+  function lanternHTML(J, off) {
+    const tip = (S.lanTips || 0) < 3 ? `<span class="lanhint">Hold, let go when it shines</span>` : "";
+    return `<div class="lanbox" style="--g:0">${tip}<span class="lanstump">${ART["lan-stump"] ? `<img src="${ART["lan-stump"]}" alt="" draggable="false">` : ""}</span><span class="langlow"></span>`
+      + `<button class="lanjar" data-act="lanthrow" aria-label="Hold the lantern, let go when it glows brightest" ${off ? "disabled" : ""}>${ART["lan-" + J.k] ? `<img src="${ART["lan-" + J.k]}" alt="" draggable="false">` : IC.jar(J.c)}</button>`
+      + `<span class="pill cost lancount">${S.jars[J.k] || 0}</span></div>`;
+  }
+  const lanEls = () => { const b = document.querySelector("#actions .lanbox"); return b ? { box: b, jar: b.querySelector(".lanjar") } : null; };
+  const lanGlowT = g => g >= .9 ? 1.5 : g >= .7 ? 1.15 : .8;
+  const lanG = t => { if (t < 950) return t / 950; const u = ((t - 950) % 1300) / 1300; return 1 - .42 * (u < .5 ? u * 2 : (1 - u) * 2); };   // fills, then pulses between full and dimmer
+  let lanHold = null, lanFired = 0;
+  document.addEventListener("pointerdown", e => {
+    const b = e.target.closest && e.target.closest('[data-act="lanthrow"]'); if (!b || b.disabled || busy || !E || E.type !== "wild") return;
+    const box = b.closest(".lanbox"), t0 = performance.now(); if (!box) return; box.classList.add("charging");
+    lanHold = { box, g: 0, iv: setInterval(() => { const g = lanG(performance.now() - t0); lanHold.g = g; box.style.setProperty("--g", g.toFixed(3)); box.classList.toggle("peak", g >= .9); }, 30) };
+  }, true);
+  const lanStop = () => { const H = lanHold; lanHold = null; if (!H) return null; clearInterval(H.iv); H.box.classList.remove("charging", "peak"); return H; };
+  document.addEventListener("pointerup", () => { const H = lanStop(); if (H) lanFire(H.g); }, true);
+  document.addEventListener("pointercancel", () => { const H = lanStop(); if (H) H.box.style.setProperty("--g", 0); }, true);
+  function lanFire(g) {
+    lanFired = performance.now(); if (!E || E.type !== "wild" || busy) return; S.lanTips = (S.lanTips || 0) + 1;
+    if (E.list.length > 1) throwGroup(); else throwJar(false, g);
   }
   const cfxOn = () => !quickNow && !moOff() && !RM;   // the catch effects (not in Quick catch or reduced motion)
   function jarCrack(jar) {   // a crack runs down the jar just before it breaks
@@ -3305,7 +3342,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const w = E.list[E.i];
       const gc = E.boss ? "#ffd36b" : GRADES[w.q].c;
       return `${E.intro ? `<div class="flashfx"></div>` : ""}<div class="actor${E.intro ? " intro" : ""}" id="wildActor" style="left:50%;top:72%;--d:${introD(0)}s">${E.intro ? `<div class="excl">!</div>` : ""}<div class="spr"><div class="pop">${live(w.sp, w.evo, E.boss ? 180 : 150)}</div></div>
-        ${tough(w) && !E.fought ? "" : `<div class="target"></div><div class="ring" id="ring"></div>`}<div class="shadow"></div>
+        <div class="shadow"></div>
         <div class="tag">${gChip(w.q)}<span>Lv ${w.lvl}</span>${tough(w) && !E.fought ? "" : `<span style="color:var(--muted)">${Math.round(chance(w, E.jar) * 100)}%</span>`}</div></div>`;
     }
     if (E.type === "chest") return `<div class="actor" id="chestActor" style="left:50%;top:72%"><button class="spr pop" data-act="chest" style="border:0;background:none;padding:0" aria-label="Open chest"><div class="bounce${E.glow ? (ART["item-chest-glow"] ? " glowchest art" : " glowchest") : ""}" style="width:130px">${E.glow && ART["item-chest-glow"] ? artIcon("item-chest-glow") : IC.chest}</div></button><div class="shadow"></div><svg class="tapme" viewBox="0 0 24 24"><path d="M9 11V5a1.5 1.5 0 013 0v5l4 .6c1.3.2 2.2 1.4 2 2.7L17.3 19a2.5 2.5 0 01-2.5 2H11a2.5 2.5 0 01-2-1l-3.4-4.4a1.4 1.4 0 012-2z" fill="#fff" stroke="#3b3557" stroke-width="1.6"/></svg></div>`;
@@ -3332,7 +3369,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const nJar = JARS.filter(j => S.jars[j.k]).length, J2 = JARS.find(j => j.k !== E.jar && S.jars[j.k]) || J;
       A.innerHTML = `<div class="dock"><div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round" data-act="treat" aria-label="Give treat" ${!S.treats || E.treat || must || busy ? "disabled" : ""}>${IC.treat}${S.treats}</button><span class="cap">Treat</span></div>
           <div class="capw"><button class="round${S.quickCatch ? " on" : ""}" data-act="quickcatch" aria-label="Quick catch">${IC.fast}</button><span class="cap">Quick</span></div></div>
-        <div class="jthrow${ART["fp-hand-ready"] && !(noJars && !must) ? " fp" : ""}">${noJars && !must ? "" : fphandHTML(J)}${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `<button class="compass" data-act="throw" aria-label="Throw jar" ${must || !S.jars[E.jar] || busy ? "disabled" : ""}><div style="width:70px">${IC.jar(J.c)}</div><span class="pill cost">${S.jars[E.jar]}</span></button>
+        <div class="jthrow">${noJars && !must ? `<button class="compass" data-act="view:shop" aria-label="Out of jars: open the shop" ${busy ? "disabled" : ""}><div style="width:60px">${TABI.shop}</div><span class="pill cost">Shop</span></button>` : `${lanternHTML(J, must || !S.jars[E.jar] || busy)}
           <button class="jswap" data-act="jarfan" aria-label="Change jar" ${busy || nJar < 1 ? "disabled" : ""}><span>${IC.jar(J.c)}</span><span>${IC.jar(J2.c)}</span><i>Jars</i></button>`}
         </div>
         <div class="side" style="flex-direction:column;align-items:center;gap:6px"><div class="capw"><button class="round" data-act="leave" aria-label="Walk on" ${busy ? "disabled" : ""}>${IC.run}</button><span class="cap">Walk on</span></div>
@@ -5748,6 +5785,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     else if (a === "chest") openChest();
     else if (a === "jar") { E.jar = arg; render(); }
     else if (a === "jarfan") jarFan();
+    else if (a === "lanthrow") { if (performance.now() - lanFired > 700) lanFire(.75); }
     else if (a === "qjset") { const [q, j] = arg.split("-"); S.quickJars = { ...QJ_DEF, ...(S.quickJars || {}), [q]: j }; save(); quickJarPanel(); }
     else if (a === "quickcatch") { S.quickCatch = !S.quickCatch; S.autoCfg.speed = S.quickCatch ? "quick" : "normal"; save(); renderActions(); toast(S.quickCatch ? "Quick catch on (you and Auto): throws until caught or it runs away" : "Quick catch off"); }
     else if (a === "throw") { if (E && E.type === "wild" && E.list.length > 1) throwGroup(); else throwJar(); }
