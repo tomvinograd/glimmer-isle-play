@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795211653;</script>
+<script>window.GAME_BUILD = 1795447361;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -503,7 +503,7 @@
   .card { background: #fff; border: 0; border-radius: 10px; box-shadow: 0 3px 12px rgba(91,70,54,.12); }
   .stats { color: var(--brown-2); } .nmrow { color: var(--brown); }
 
-  /* Glumi cards: a soft glow of their grade color, names on one line */
+  /* Glimling cards: a soft glow of their grade color, names on one line */
   .slot, .tile { border: 0; margin: 0; border-radius: 10px; box-shadow: 0 3px 12px rgba(91,70,54,.14), inset 0 0 0 2px color-mix(in srgb, var(--gc, #ead8b8) 70%, #fff);
     background: radial-gradient(90% 70% at 50% 35%, #fff, color-mix(in srgb, var(--gc, #fff) 26%, #fff8ec) 80%); }
   .slot .nm, .tile .nm { color: var(--brown); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; overflow-wrap: normal; padding: 0 2px; }
@@ -932,7 +932,7 @@ body.bigtext #page { width: calc(100% / 1.12); max-width: calc(560px / 1.12); bo
 .rchips { display: flex; gap: 4px; } .rchips .rchip { padding: 2px 5px; font-size: 11.5px; } .rchips .rchip svg { width: 15px; height: 15px; }
 .srow:has(.rchips) { grid-template-columns: 44px 1fr auto auto; }
 nav .navwide .bang { top: 4px; right: 6px; }
-/* ===== Glumi card page (Tom 16 Nov) ===== */
+/* ===== Glimling card page (Tom 16 Nov) ===== */
 .sheet.cardpage { top: calc(8px + env(safe-area-inset-top, 0px)); max-height: none; border-radius: 12px 12px 0 0 !important; padding-top: 12px; align-content: start; }
 .gcard { position: relative; height: 330px; border-radius: 14px; padding: 10px; overflow: hidden; box-shadow: 0 0 0 4px #fff, 0 0 0 6px color-mix(in srgb, var(--gc) 60%, #fff), 0 6px 18px rgba(91,70,54,.2);
   background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.55) 0 8%, transparent 9%), radial-gradient(circle at 80% 70%, rgba(255,255,255,.35) 0 6%, transparent 7%), linear-gradient(160deg, color-mix(in srgb, var(--gc) 35%, #fff), color-mix(in srgb, var(--gc) 70%, #fff)); }
@@ -1146,7 +1146,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .ltiers small { font: 800 9.5px var(--display); color: var(--brown); }
   .ltiers .next { opacity: .38; filter: grayscale(.6); }
   .ltiers .cur small { color: #d9822b; }
-  /* map silhouettes and the reveal of a newly caught Glumi */
+  /* map silhouettes and the reveal of a newly caught Glimling */
   .pin.unknown > span, .pin.reveal > span { background: #3f2d22; }
   .pin.unknown > span svg, .pin.unknown > span img, .pin.reveal > span svg, .pin.reveal > span img, .pin .silh svg, .pin .silh img { filter: brightness(0) opacity(.45); }
   .pin.reveal { background: #6b4a33; z-index: 3; animation: revpulse 1s ease-in-out infinite; }
@@ -1237,7 +1237,7 @@ canvas#skyfx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .shieldb svg, .shieldb img { width: 28px !important; height: 28px; }
   .shieldb > b { position: absolute; right: -3px; bottom: -3px; width: 20px; height: 20px; border-radius: 50%; background: #6b4a33; color: #fff; font: 900 12px/20px var(--display); text-align: center; }
   .shieldb:disabled { filter: grayscale(.85) brightness(.92); }
-  /* Glumi card skill tab */
+  /* Glimling card skill tab */
   .skilltab .skh { margin: 6px 0 2px; font: 800 13px var(--display); color: var(--brown); }
   .skilltab .skc { font-style: normal; font-size: 11px; font-weight: 800; color: #d9822b; margin-left: 4px; }
   .skilltab .skrow { align-items: center; }
@@ -1475,7 +1475,7 @@ nav button.navx svg { width: 26px !important; height: 26px !important; }
 
 #actions { background: linear-gradient(rgba(255,248,236,0) 0, rgba(255,248,236,0) 38%, rgba(255,248,236,.55) 70%, rgba(255,248,236,.8)) !important; }  /* softer, lower fade: the side icons above stay clear */
 
-/* ---- Glumis page: trading cards (18 Nov) ---- */
+/* ---- Glimlings page: trading cards (18 Nov) ---- */
 .gtab { justify-self: start; margin: -4px 0 2px; padding: 4px 16px 6px; border-radius: 10px 10px 10px 2px; background: linear-gradient(#a6e08f, #5fb24f); box-shadow: 0 0 0 2.5px var(--ink), inset 0 3px 0 rgba(255,255,255,.35);
   font: 800 22px var(--display); color: #fff; -webkit-text-stroke: 3.5px var(--ink); paint-order: stroke fill; }
 .gtool { display: flex; align-items: center; gap: 8px; }
@@ -1947,6 +1947,7 @@ nav button:disabled { opacity: .7 !important; filter: grayscale(.6) brightness(.
 .actions { bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important; }
 .stage .scene::after, #stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 110px; pointer-events: none; z-index: 1; background: linear-gradient(rgba(40,30,20,0), rgba(40,30,20,.16)); }
 .toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important; }
+nav button[aria-label="Glimlings"] .tl, nav button[aria-label="Close Glimlings"] .tl { font-size: 12px !important; -webkit-text-stroke-width: 3.5px; }
 /* NAVTILES: squarer tiles, big icon on top, the name across the bottom edge (Tom 20 Nov, 'adjust them') */
 nav { padding: 0 11px calc(13px + env(safe-area-inset-bottom, 0px)) !important; }
 nav .tabs { grid-template-columns: 1fr 1fr 1fr 1fr 1.7fr !important; gap: 11px !important; }
@@ -2040,9 +2041,9 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const MULTS = [{ m: 1, lvl: 1, grades: [0, 100, 0, 0, 0], count: 1 }, { m: 2, lvl: 2, grades: [0, 96, 4, 0, 0], count: 1 }, { m: 5, lvl: 4, grades: [0, 83, 12, 5, 0], count: 1 }, { m: 10, lvl: 6, grades: [0, 79, 16, 5, 0], count: 1 }, { m: 20, lvl: 9, grades: [0, 77, 18, 5, 0], count: 2 }, { m: 50, lvl: 12, grades: [0, 75, 20, 5, 0], count: 5 }, { m: 100, lvl: 15, grades: [0, 73, 22, 5, 0], count: 10 }, { m: 200, lvl: 18, grades: [0, 72, 23, 5, 0], count: 10 }, { m: 500, lvl: 22, grades: [0, 71, 24, 5, 0], count: 10 }];  // Gold 1 in 20 from x5
   const JARS = [{ k: "plain", base: .5, price: 15, c: "#9fd6ff" }, { k: "bright", base: .7, price: 45, c: "#ffd36b" }, { k: "star", base: .9, price: 120, c: "#c79bff" }, { k: "prism", base: 1, price: 5000, c: "prism" }];  // prism: always catches
   const GLOW_EVERY = 180000, EGG_SLOTS = 3, EGG_STEPS = 12, EVOLVE_AT = 12, BOSS_STEPS = 60, EVOLVE_FRUIT = 10, RB_PITY = 400, RB_PITY_MULT = 10;  // a Rainbow for sure after 400 catches made at x10 or higher
-  const RAINBOW_ODDS = [Infinity, Infinity, Infinity, 250, 250, 250, 250, 250, 250];  // Rainbow 1 in 250 from x10, none below  // 1 in N wild Glumis is Rainbow, by Power (x1 .. x20)
+  const RAINBOW_ODDS = [Infinity, Infinity, Infinity, 250, 250, 250, 250, 250, 250];  // Rainbow 1 in 250 from x10, none below  // 1 in N wild Glimlings is Rainbow, by Power (x1 .. x20)
   const RAINBOW_STAR_CORES = 1, MAX_STARS = 5, STAR_BONUS = .1;
-  const FLEE_AFTER = [5, 6, 12, 20, 50];  // missed jars before a wild Glumi runs away, by grade Green..Rainbow
+  const FLEE_AFTER = [5, 6, 12, 20, 50];  // missed jars before a wild Glimling runs away, by grade Green..Rainbow
   const ASC_EVERY = 10, MAX_ASC = 14, ASC_BONUS = .3, ASC_COST = [3, 6, 10, 15, 20, 26, 33, 40, 50, 60, 70, 80, 90, 100];  // top level 150 (Tom 19 Nov; was 100)
   const ASC_STONES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 5, 7, 10], WILD_MAX_ASC = 9;  // Glimmerstones for each ascension past level 100; foes stay as before  // ascension: top level, +30% stats each, keepsakes needed
   const KEEPSAKES_BY_GRADE = [1, 1, 5, 8, 12], SELL_BASE = [5, 9, 18, 36, 120];  // what releasing / selling gives, by grade  // star cores per Rainbow released; each star +10% stats
@@ -2060,7 +2061,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const key = (sp, evo) => sp + "-" + (evo ? 1 : 0);
   const ascOf = m => m.asc !== undefined ? m.asc : Math.min(WILD_MAX_ASC, Math.floor(Math.max(0, m.lvl - 1) / ASC_EVERY));  // wild ones: by level
   const ascTop = m => (ascOf(m) + 1) * ASC_EVERY, sellPrice = m => Math.round((SELL_BASE[m.q] + m.lvl) * (m.evo ? 1.5 : 1));
-  // charms: one per Glumi, kept in S.charms [{id, k, r}], m.charm = id
+  // charms: one per Glimling, kept in S.charms [{id, k, r}], m.charm = id
   const CHARM = { atk: { n: "Power charm", s: "attack", b: [.08, .15, .25], c: "#ff7a5c" }, def: { n: "Guard charm", s: "defense", b: [.08, .15, .25], c: "#7f93ad" },
     hp: { n: "Life charm", s: "HP", b: [.1, .18, .3], c: "#ff6fa8" }, en: { n: "Spark charm", s: "fight energy", b: [.1, .2, .3], c: "#f5b400" } };
   const CHARM_R = ["Common", "Rare", "Epic"], CHARM_RC = ["#b9a68f", "#4f9cff", "#a46bff"];
@@ -2235,9 +2236,9 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const EGG_ART = { 1: "egg-blue", 2: "egg-purple", 3: "egg-gold", 4: "egg-rainbow" };
   const DRAGON_SLOTS = [2, 14, 20];  // the dragon families keep their drawn dragons until their art exists
   // moving parts: a sprite cut into layers (tools/make_rig.py); parts sit behind the body and swing around a pivot
-  // ---------- poses: whole pictures of the same Glumi (blink, happy, attack, hurt) swapped in for a moment (Tom 18 Nov) ----------
+  // ---------- poses: whole pictures of the same Glimling (blink, happy, attack, hurt) swapped in for a moment (Tom 18 Nov) ----------
   const POSE_KINDS = ["blink", "happy", "attack", "hurt"];
-  // idle animations made from AI videos (tools/vid_batch.py) live on the update site, one file per Glumi; the phone keeps them after the first download
+  // idle animations made from AI videos (tools/vid_batch.py) live on the update site, one file per Glimling; the phone keeps them after the first download
   const CLIPS = /*CLIPS_START*/{"00-0":68114,"00-1":64504,"01-0":41496,"01-1":62701,"02-0":16798,"02-1":50437,"03-0":8456,"03-1":3253,"04-0":49275,"04-1":31946,"06-0":83529,"06-1":38796,"07-0":53112,"07-1":73480,"08-0":90177,"08-1":44791,"09-0":78509}/*CLIPS_END*/, CLIP_BASE = "https://tomvinograd.github.io/glimmer-isle-play/clips/", CLIP_OK = new Set(), CLIP_BUSY = new Set();
   const clipUrl = k => CLIP_BASE + k + "-idle.webp?v=" + CLIPS[k];
   function clipLoad(k) {
@@ -2269,7 +2270,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       }, delay);
     }
   }
-  setInterval(() => {  // blink now and then, each Glumi on its own rhythm
+  setInterval(() => {  // blink now and then, each Glimling on its own rhythm
     if (typeof moOff === "function" && moOff()) return;
     for (const img of document.querySelectorAll("img[data-pk]")) {
       if (img._pose || img.dataset.anim || !ART[img.dataset.pk + "-blink"] || img.offsetParent === null) continue;  // animated ones blink by themselves
@@ -2449,7 +2450,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       setTimeout(finish, 6000);
     });
   }
-  // Placeholder for Glumis whose art is not made yet: a soft round critter in the element's colors.
+  // Placeholder for Glimlings whose art is not made yet: a soft round critter in the element's colors.
   function blobArt(sp, evo, size) {
     const s = SP[sp], col = EL[s.el].color, dark = mix(col, -0.38), light = mix(col, 0.45), rar = Math.min(2, s.tier);
     const base = { round: [27, 25, 60], tall: [21, 30, 58], wide: [33, 21, 64] }[s.shape];
@@ -2522,7 +2523,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   }
   let autoStat = { caught: 0 }, showAuto = false, autoLock = false, autoSession = false, autoNext = 0, autoSeenE = null;
   const AUTO_STEP_MS = 1000, AUTO_LOOK_MS = 900;  // at Auto speed x2 (the pace Auto always had)
-  const CATCH_LEAVES = 5;  // leaves per Glumi caught on the path, x multiplier  // leaves per Glumi caught on the path, x multiplier
+  const CATCH_LEAVES = 5;  // leaves per Glimling caught on the path, x multiplier  // leaves per Glimling caught on the path, x multiplier
   const AUTO_GAP_MS = 1500; let autoGapUntil = 0;  // wait after an encounter (at x2)
   const AUTO_SPEEDS = [1, 2, 3], autoSpd = () => AUTO_SPEEDS.includes(S.autoSpd) ? S.autoSpd : 2, autoPace = () => 2 / autoSpd();  // ms x autoPace  // Auto's pace: time between steps, and time to look at what appeared
   let S = fresh(), view = "explore", E = null, BT = null, busy = false, db = null, uid = null, saveTimer = null, saving = false, pendingSave = false, saveNote = "", confirmRelease = null, showMap = false;
@@ -2557,11 +2558,11 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const slots = () => 3;
   const glowCap = () => 60 + S.xlvl * 12, lvlCap = () => 10 + S.xlvl * 2, xNeed = () => 40 + S.xlvl * 20;  // explorer levels twice as fast (Tom 17 Nov)  /* ECONOMY_SLOWER */
   const ZONE_LVL = [0, 3, 5, 7, 9, 12, 15, 18];
-  const zoneOpen = i => i === 0 || (zoneAll(i - 1) && !!S.zones[i - 1].cleared) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING: Glumis + Guardian */
-  const zoneProg = i => caughtIn(i) + (S.zones[i].cleared ? 1 : 0), zoneTotal = i => ZONES[i].sp.length + 1;  // Glumis + Guardian
-  const lockText = i => `${ZONES[i].name} opens when you catch every Glumi and the Guardian in ${ZONES[i - 1].name} (${zoneProg(i - 1)} of ${zoneTotal(i - 1)} caught)`;
+  const zoneOpen = i => i === 0 || (zoneAll(i - 1) && !!S.zones[i - 1].cleared) || S.zones[i].steps > 0;  /* ZONES_BY_CATCHING: Glimlings + Guardian */
+  const zoneProg = i => caughtIn(i) + (S.zones[i].cleared ? 1 : 0), zoneTotal = i => ZONES[i].sp.length + 1;  // Glimlings + Guardian
+  const lockText = i => `${ZONES[i].name} opens when you catch every Glimling and the Guardian in ${ZONES[i - 1].name} (${zoneProg(i - 1)} of ${zoneTotal(i - 1)} caught)`;
   const zoneAll = i => ZONES[i].sp.every(sp => S.zones[i].caught[sp]);
-  const bossReady = i => !S.zones[i].cleared && zoneAll(i);  // only after every regular Glumi here is caught
+  const bossReady = i => !S.zones[i].cleared && zoneAll(i);  // only after every regular Glimling here is caught
   const MULT_NEED = { 1: 0, 2: 2, 5: 5, 10: 50, 20: 100, 50: 200, 100: 500, 200: 1500, 500: 3000 };  // glow you need to have to use each multiplier (Tom 16 Nov)
   const MULT_PRICE = { 5: 150, 10: 600, 20: 1500, 50: 4000, 100: 10000, 200: 25000, 500: 60000 };  // coins to unlock a multiplier for good
   const multOwned = M => !!(S.multOwned && S.multOwned[M.m]);
@@ -2574,10 +2575,10 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const fromWild = m.wild;
     if (fromWild && (m.pm || 0) >= RB_PITY_MULT && m.q !== 4) S.rbPity = (S.rbPity || 0) + 1;
     delete m.pm;
-    m.lvl = 1; m.asc = 0;  // every Glumi you get starts at level 1
+    m.lvl = 1; m.asc = 0;  // every Glimling you get starts at level 1
     delete m.wild; m.uid = S.nextUid++; m.hp = maxHp(m); m.isNew = 1; S.mons.push(m); if (!S.caught[key(m.sp, m.evo)]) { S.bookNew = S.bookNew || {}; S.bookNew[key(m.sp, m.evo)] = 1; } S.caught[key(m.sp, m.evo)] = 1; S.seen[key(m.sp, m.evo)] = 1;
     ZONES.forEach((z, i) => { if (!z.sp.includes(m.sp)) return; const was = zoneAll(i);
-      if (!fromWild) return;  // only Glumis caught on the path count in the zone (not bought or hatched ones)
+      if (!fromWild) return;  // only Glimlings caught on the path count in the zone (not bought or hatched ones)
       if (!S.zones[i].caught[m.sp]) { S.reveal = S.reveal || []; if (!S.reveal.includes(m.sp)) S.reveal.push(m.sp); }
       S.zones[i].caught[m.sp] = 1;
       });
@@ -2590,7 +2591,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const banners = [];
   function gainX(n) { S.xxp += n; while (S.xxp >= xNeed()) { S.xxp -= xNeed(); S.xlvl++; banners.push(`Explorer Lv ${S.xlvl}`); } }
   // weekend events: Saturday and Sunday, one of three by week
-  const EVENTS = [{ k: "gold", name: "Golden Weekend", about: "Gold Glumis are twice as likely" }, { k: "energy", name: "Energy Weekend", about: "Energy refills twice as fast" },
+  const EVENTS = [{ k: "gold", name: "Golden Weekend", about: "Gold Glimlings are twice as likely" }, { k: "energy", name: "Energy Weekend", about: "Energy refills twice as fast" },
     { k: "ladder", name: "Ladder Weekend", about: "Double ladder points" }];
   function eventNow() { const d = new Date(), day = d.getDay(); if (day !== 0 && day !== 6) return null;
     const mon = new Date(d); mon.setHours(24 * (day === 6 ? 2 : 1), 0, 0, 0);  // next Monday 00:00
@@ -2768,8 +2769,8 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       E = { type: "wild", list: [b], i: 0, treat: false, fought: false, hpFrac: 1, boss: true, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300);
       busy = false; save(); render(); shakeStage(); await banner("Guardian!");
     } else {
-      // a Glumi about 1 step in 5; after 4 steps without one, the next step brings one
-      let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 4) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;  // a Glumi at least every 5 steps
+      // a Glimling about 1 step in 5; after 4 steps without one, the next step brings one
+      let r = wpick([15, 12, 14, 9, 6, 10, 14]); if ((S.dry || 0) >= 4) r = 0; S.dry = r === 0 ? 0 : (S.dry || 0) + 1;  // a Glimling at least every 5 steps
       if (r === 0) { const all = []; for (let k = 0; k < M.count; k++) all.push(wildFrom(z, M)); const waves = []; for (let k = 0; k < all.length; k += WAVE_SIZE) waves.push(all.slice(k, k + WAVE_SIZE)); const list = waves.shift(); E = { type: "wild", list, waves, i: 0, treat: false, fought: false, hpFrac: 1, jar: bestJar(), t0: performance.now() + 900, intro: true, introT: performance.now() }; setTimeout(() => { if (E) E.intro = false; }, 1300 + list.length * 140); autoPause(); if (RM && list.some(w => w.q >= 3)) banners.push(GRADES[Math.max(...list.map(w => w.q))].name + "!"); }  // with animations the reel announces Gold / Rainbow
       else if (r === 1) E = { type: "chest", coins: rnd(5, 10) * M.m, glow: Math.random() < 1 / 12 ? rnd(5, 10) * M.m : 0 };  // coins; a rare glowing chest also gives glow
       else if (r === 2) { const treat = Math.random() < .3; E = { type: "gather", kind: "bush", treat, n: treat ? 1 : rnd(7, 12) * M.m }; }
@@ -2909,7 +2910,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     jar.style.left = sx + "px"; jar.style.top = sy + "px"; $("fx").appendChild(jar);
     const flight = await anim(jar, [{ transform: "translate(0,0) rotate(0) scale(1.2)" }, { transform: `translate(${(cx - sx) * .5}px,${(cy - sy) - 120}px) rotate(300deg) scale(.9)`, offset: .55 }, { transform: `translate(${cx - sx}px,${cy - sy}px) rotate(720deg) scale(.8)` }], { duration: RM ? 120 : 600, easing: "ease-in", fill: "forwards" });
     jar.style.transform = `translate(${cx - sx}px,${cy - sy}px) scale(.8)`; flight.cancel();
-    if (spr && cfxOn()) {   // the Glumi turns to light, then is pulled into the jar
+    if (spr && cfxOn()) {   // the Glimling turns to light, then is pulled into the jar
       const [px, py] = elXY(spr); fxRing(px, py, "#ffffff", 95, .45); fxBurst(px, py, 14, ["#ffffff", "#eaf7ff", GRADES[w.q].c], 170);
       await anim(spr, [{ filter: "brightness(1)" }, { filter: "brightness(0) invert(1) drop-shadow(0 0 10px #fff) drop-shadow(0 0 18px #fff)" }], { duration: 170, fill: "forwards" });
     }
@@ -2989,7 +2990,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   }
 
   // ---------- groups, waves, star entrance, gathering ----------
-  // seconds until Glumi k pops in; negative once its pop-in has already played (a redraw then shows it at once)
+  // seconds until Glimling k pops in; negative once its pop-in has already played (a redraw then shows it at once)
   const introD = k => (.55 + k * .14 - (performance.now() - (E && E.introT || 0)) / 1000).toFixed(2);
   function starEntrance() {
     [...document.querySelectorAll("#actors .actor.intro")].forEach((a, k) => {
@@ -3279,7 +3280,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     return `<div class="sidecol l">${ico("view:shop", TABI.shop, "Shop")}${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}${mailWaiting() ? ico("view:mail", IC.gift || IC.star, "Mail", true, "") : ""}${giftReady() ? ico("giftopen", IC.gift || IC.star, "Daily gift", true, "") : ""}</div>
       <div class="sidecol r">${ico("gobook", TABI.book, "Book", false, found ? found + " found" : "")}${ico("map", TABI.atlas, "Atlas")}${(() => { const R = raceState(), over = !!S.raceDone; return ico("gorace", IC.flag, "Race #" + (raceBoard(R).findIndex(r => r.me) + 1), over); })()}</div>`;
   }
-  function zoneCard() {  // the zone painting with its name and 3 stars: every Glumi caught, guardian beaten, every reward claimed
+  function zoneCard() {  // the zone painting with its name and 3 stars: every Glimling caught, guardian beaten, every reward claimed
     const z = S.zone, Z = ZONES[z], st = S.zones[z], stars = [Z.sp.every(sp => st.caught[sp]), !!st.cleared, (st.claimed || 0) >= milestones(z).length];
     const ms = milestones(z), mk = st.claimed || 0, zReady = ms[mk] && reached(z, ms[mk]);
     return `<button class="zcard z${z}" data-act="map" aria-label="${Z.name}, open the Atlas">${zReady ? '<em class="bang">!</em>' : ""}<span class="zcn">${Z.name}</span><span class="zcs">${stars.map(on => `<i class="${on ? "on" : ""}">${starIc(on)}</i>`).join("")}</span></button>`;
@@ -3398,31 +3399,31 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   function giveReward(r) { if (/^egg[1-4]$/.test(r.k)) { for (let i = 0; i < r.n; i++) eggWait.push(+r.k[3]); eggWait.sort((a, b) => b - a); setTimeout(() => eggGo(), 900); } if (r.k === "charm") { for (let i = 0; i < r.n; i++) addCharm(r.kind, r.r || 0); return; } if (S.jars[r.k] !== undefined) S.jars[r.k] += r.n; else S[r.k] = (S[r.k] || 0) + r.n; }
   const TASKS = {
     starter: [
-      { id: "c1", name: "First catch", about: "Catch a Glumi", need: 1, got: T => T.total.catch, r: { k: "plain", n: 3 } },
-      { id: "c10", name: "Little collection", about: "Catch 10 Glumis", need: 10, got: T => T.total.catch, r: { k: "bright", n: 2 } },
-      { id: "pur", name: "Purple glow", about: "Catch a Purple Glumi", need: 1, got: T => T.total.q2, r: { k: "bright", n: 1 } },
-      { id: "gold", name: "Golden find", about: "Catch a Gold Glumi", need: 1, got: T => T.total.q3, r: { k: "star", n: 1 } },
+      { id: "c1", name: "First catch", about: "Catch a Glimling", need: 1, got: T => T.total.catch, r: { k: "plain", n: 3 } },
+      { id: "c10", name: "Little collection", about: "Catch 10 Glimlings", need: 10, got: T => T.total.catch, r: { k: "bright", n: 2 } },
+      { id: "pur", name: "Purple glow", about: "Catch a Purple Glimling", need: 1, got: T => T.total.q2, r: { k: "bright", n: 1 } },
+      { id: "gold", name: "Golden find", about: "Catch a Gold Glimling", need: 1, got: T => T.total.q3, r: { k: "star", n: 1 } },
       { id: "lv5", name: "Seasoned explorer", about: "Reach explorer level 5", need: 5, got: () => S.xlvl, r: { k: "coins", n: 120 } },
-      { id: "evo", name: "Growing up", about: "Evolve a Glumi", need: 1, got: T => T.total.evolve, r: { k: "fruit", n: 1 } },
+      { id: "evo", name: "Growing up", about: "Evolve a Glimling", need: 1, got: T => T.total.evolve, r: { k: "fruit", n: 1 } },
       { id: "w10", name: "Arena regular", about: "Win 10 trainer fights", need: 10, got: T => T.total.win, r: { k: "coins", n: 150 } },
       { id: "g1", name: "Guardian's friend", about: "Beat a zone guardian", need: 1, got: () => S.zones.filter(z => z.cleared).length, r: { k: "star", n: 1 } },
     ],
     daily: [
       { id: "steps", name: "Morning walk", about: "Take 30 steps", need: 30, got: T => T.day.step, r: { k: "glow", n: 20 } },
-      { id: "catch", name: "Busy catcher", about: "Catch 5 Glumis", need: 5, got: T => T.day.catch, r: { k: "plain", n: 2 } },
+      { id: "catch", name: "Busy catcher", about: "Catch 5 Glimlings", need: 5, got: T => T.day.catch, r: { k: "plain", n: 2 } },
       { id: "purple", name: "Something special", about: "Catch a Purple or better", need: 1, got: T => T.day.q2, r: { k: "bright", n: 1 } },
       { id: "win", name: "Friendly fights", about: "Win 2 trainer fights", need: 2, got: T => T.day.win, r: { k: "coins", n: 60 } },
       { id: "chest", name: "Treasure hunter", about: "Open 3 chests", need: 3, got: T => T.day.chest, r: { k: "treats", n: 1 } },
       { id: "gather", name: "Forager", about: "Gather 5 times", need: 5, got: T => T.day.gather, r: { k: "leaves", n: 10 } },
-      { id: "lvl", name: "Trainer's care", about: "Level up Glumis 3 times", need: 3, got: T => T.day.lvl, r: { k: "coins", n: 40 } },
+      { id: "lvl", name: "Trainer's care", about: "Level up Glimlings 3 times", need: 3, got: T => T.day.lvl, r: { k: "coins", n: 40 } },
     ],
     goals: [
-      { id: "g-c500", name: "Collector", about: "Catch 500 Glumis", need: 500, got: T => T.total.catch, r: { k: "star", n: 5 } },
-      { id: "g-c2000", name: "Grand collector", about: "Catch 2,000 Glumis", need: 2000, got: T => T.total.catch, r: { k: "prism", n: 1 } },
-      { id: "g-c10000", name: "Legend of the isle", about: "Catch 10,000 Glumis", need: 10000, got: T => T.total.catch, r: { k: "egg4", n: 1 } },
+      { id: "g-c500", name: "Collector", about: "Catch 500 Glimlings", need: 500, got: T => T.total.catch, r: { k: "star", n: 5 } },
+      { id: "g-c2000", name: "Grand collector", about: "Catch 2,000 Glimlings", need: 2000, got: T => T.total.catch, r: { k: "prism", n: 1 } },
+      { id: "g-c10000", name: "Legend of the isle", about: "Catch 10,000 Glimlings", need: 10000, got: T => T.total.catch, r: { k: "egg4", n: 1 } },
       { id: "g-gold25", name: "Gold digger", about: "Catch 25 Gold or better", need: 25, got: T => T.total.q3, r: { k: "egg3", n: 1 } },
-      { id: "g-rb1", name: "Over the rainbow", about: "Find a Rainbow Glumi", need: 1, got: () => statsState().rb, r: { k: "egg3", n: 1 } },
-      { id: "g-rb10", name: "Rainbow chaser", about: "Find 10 Rainbow Glumis", need: 10, got: () => statsState().rb, r: { k: "egg4", n: 1 } },
+      { id: "g-rb1", name: "Over the rainbow", about: "Find a Rainbow Glimling", need: 1, got: () => statsState().rb, r: { k: "egg3", n: 1 } },
+      { id: "g-rb10", name: "Rainbow chaser", about: "Find 10 Rainbow Glimlings", need: 10, got: () => statsState().rb, r: { k: "egg4", n: 1 } },
       { id: "g-gold", name: "Rising star", about: "Reach Gold on the Ladder", need: 1, got: () => statsState().tier >= 2 ? 1 : 0, r: { k: "glow", n: 100 } },
       { id: "g-diamond", name: "Diamond trainer", about: "Reach Diamond on the Ladder", need: 1, got: () => statsState().tier >= 4 ? 1 : 0, r: { k: "egg3", n: 1 } },
       { id: "g-master", name: "Ladder master", about: "Reach Master on the Ladder", need: 1, got: () => statsState().tier >= 5 ? 1 : 0, r: { k: "egg4", n: 1 } },
@@ -3430,14 +3431,14 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       { id: "g-gyms", name: "Badge collector", about: "Beat every Easy gym", need: ZONES.length, got: () => ZONES.filter((_, z) => gymDone(z, 0)).length, r: { k: "egg3", n: 1 } },
       { id: "g-cc25", name: "Cloud walker", about: "Reach Cloud Climb floor 25", need: 25, got: () => S.tower || 0, r: { k: "star", n: 3 } },
       { id: "g-cc50", name: "Sky high", about: "Reach Cloud Climb floor 50", need: 50, got: () => S.tower || 0, r: { k: "egg3", n: 1 } },
-      { id: "g-lv100", name: "Fully grown", about: "Get a Glumi to level 100", need: 100, got: () => Math.max(0, ...S.mons.map(m => m.lvl)), r: { k: "prism", n: 1 } },
-      { id: "g-lv150", name: "Beyond the clouds", about: "Get a Glumi to level 150", need: 150, got: () => Math.max(0, ...S.mons.map(m => m.lvl)), r: { k: "egg4", n: 1 } },
+      { id: "g-lv100", name: "Fully grown", about: "Get a Glimling to level 100", need: 100, got: () => Math.max(0, ...S.mons.map(m => m.lvl)), r: { k: "prism", n: 1 } },
+      { id: "g-lv150", name: "Beyond the clouds", about: "Get a Glimling to level 150", need: 150, got: () => Math.max(0, ...S.mons.map(m => m.lvl)), r: { k: "egg4", n: 1 } },
       { id: "g-steps", name: "Long road", about: "Walk 10,000 steps", need: 10000, got: () => statsState().steps, r: { k: "glow", n: 200 } },
     ],
     challenge: [
-      ...ELK.map(k => ({ id: "el-" + k, name: `${EL[k].name} friends`, about: `Catch 5 ${EL[k].name} Glumis`, need: 5, got: T => (T.total.el[k] || 0), r: { k: "star", n: 1 }, el: k })),
+      ...ELK.map(k => ({ id: "el-" + k, name: `${EL[k].name} friends`, about: `Catch 5 ${EL[k].name} Glimlings`, need: 5, got: T => (T.total.el[k] || 0), r: { k: "star", n: 1 }, el: k })),
       { id: "p5", name: "Purple parade", about: "Catch 5 Purple or better", need: 5, got: T => T.total.q2, r: { k: "fruit", n: 1 } },
-      { id: "c100", name: "Glumi expert", about: "Catch 100 Glumis", need: 100, got: T => T.total.catch, r: { k: "star", n: 3 } },
+      { id: "c100", name: "Glimling expert", about: "Catch 100 Glimlings", need: 100, got: T => T.total.catch, r: { k: "star", n: 3 } },
     ],
   };
   const today = () => new Date().toDateString();
@@ -3525,8 +3526,8 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   function pageStats() {
     const T = tasksState(), st = statsState(), goals = TASKS.goals, gDone = goals.filter(t => T.done["goals:" + t.id]).length;
     const gymsBeat = Object.keys(S.gyms || {}).length, best = S.mons.reduce((a, m) => m.lvl > a ? m.lvl : a, 0), kinds = Object.keys(S.caught).length;
-    const tiles = [["Glumis caught", T.total.catch], ["Purple or better", T.total.q2], ["Gold or better", T.total.q3], ["Rainbows found", st.rb],
-      ["Forms in the Book", kinds], ["Glumis you own", S.mons.length], ["Highest level", best], ["Explorer level", S.xlvl],
+    const tiles = [["Glimlings caught", T.total.catch], ["Purple or better", T.total.q2], ["Gold or better", T.total.q3], ["Rainbows found", st.rb],
+      ["Forms in the Book", kinds], ["Glimlings you own", S.mons.length], ["Highest level", best], ["Explorer level", S.xlvl],
       ["Steps walked", st.steps], ["Fights won", T.total.win], ["Best Ladder tier", DRANKS[st.tier][1]], ["Longest win streak", st.streak],
       ["Cloud Climb floor", S.tower || 0], ["Gym fights won", gymsBeat], ["Goals done", `${gDone} of ${goals.length}`], ["Days played", st.days]];
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Stats</h3><span></span></div>
@@ -3552,7 +3553,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     if (!eggWait.length || !S.started || E || BT || busy || S.auto || document.querySelector(".shade, .popwrap, .hatch")) return;
     while (eggWait.length) { const t = eggWait.shift(); if ((S["egg" + t] || 0) > 0) { hatchEgg(t, true); return; } }
   }
-  let charmFor = null;  // uid of the Glumi choosing a charm, or null (charm list from the Backpack)
+  let charmFor = null;  // uid of the Glimling choosing a charm, or null (charm list from the Backpack)
   const charmPct = c => Math.round(CHARM[c.k].b[c.r] * 100);
   function charmRow(m) {
     const c = charmOf(m);
@@ -3569,7 +3570,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const eq = m ? (mine ? `<span class="skuse on">Wearing</span>` : `<button class="mb gold" data-act="charmeq:${g.k}-${g.r}">${g.free.length ? "Use" : "Move here"}</button>`) : "";
       const merge = g.r < 2 && g.free.length >= 3 ? `<button class="mb" data-act="charmmerge:${g.k}-${g.r}">Merge 3 \u2192 ${CHARM_R[g.r + 1]}</button>` : "";
       return `<div class="crow"><span class="gci">${charmSvg(g.k, g.r)}</span><span class="gct"><b>${CHARM_R[g.r]} ${CHARM[g.k].n} \u00D7${g.all.length}</b><small>+${Math.round(CHARM[g.k].b[g.r] * 100)}% ${CHARM[g.k].s}${worn ? ` \u00B7 ${worn} worn` : ""}</small></span><span class="cbtn">${eq}${merge}</span></div>`; }).join("")}</div>
-      <p class="hint" style="margin:0">Each Glumi can wear one charm. Merge 3 spare charms of the same kind and rarity into one of the next rarity.</p>`;
+      <p class="hint" style="margin:0">Each Glimling can wear one charm. Merge 3 spare charms of the same kind and rarity into one of the next rarity.</p>`;
   }
   function pageCharms() {
     const m = mon(charmFor);
@@ -3585,24 +3586,24 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       <div class="seg">${tabs.map(([k, n]) => `<button class="${bagTab === k ? "on" : ""}" data-act="bagtab:${k}">${n}</button>`).join("")}</div>${charmList(null)}`;
     let tiles = [], info = "";
     if (bagTab === "items") {
-      const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glumis in the shop."],
+      const items = [["glow", IC.glow, "Energy", S.glow, 1, "Spent on every step. Refills by itself over time."], ["coins", IC.coin, "Coins", S.coins, 3, "Buy jars, supplies and Glimlings in the shop."],
         ["plain", IC.jar(JARS[0].c), "Plain jar", S.jars.plain, 1, "A simple jar for catching."], ["bright", IC.jar(JARS[1].c), "Bright jar", S.jars.bright, 2, "Catches more easily."],
-        ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["prism", IC.jar("prism"), "Prism jar", S.jars.prism || 0, 4, "Always catches, even Rainbows."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glumi before you throw."],
-        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glumis."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glumi."], ["gstone", IC.gstone, "Glimmerstones", S.gstone || 0, 4, "Rare. Needed to ascend a Glumi past level 100. From the Daily and World Boss, Cloud Climb floors 50+, Rainbow releases and the Shop."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glumi: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glumi or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glumi, sometimes Rainbow."], ["egg4", EGG_ICON(4), "Rainbow egg", S.egg4 || 0, 4, "Hatches a Rainbow Glumi."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glumi. From the Star Shrine."]];
+        ["star", IC.jar(JARS[2].c), "Star jar", S.jars.star, 3, "The best catch chance."], ["prism", IC.jar("prism"), "Prism jar", S.jars.prism || 0, 4, "Always catches, even Rainbows."], ["treats", IC.treat, "Treat", S.treats, 1, "Calms a wild Glimling before you throw."],
+        ["leaves", IC.leaf, "Leaves", S.leaves, 1, "Used to level up Glimlings."], ["fruit", IC.fruit, "Moonfruit", S.fruit, 3, "Needed to evolve a Glimling."], ["gstone", IC.gstone, "Glimmerstones", S.gstone || 0, 4, "Rare. Needed to ascend a Glimling past level 100. From the Daily and World Boss, Cloud Climb floors 50+, Rainbow releases and the Shop."], ["egg1", EGG_ICON(1), "Blue egg", S.egg1 || 0, 1, "Hatches a Glimling: mostly Blue, sometimes Purple or Gold."], ["egg2", EGG_ICON(2), "Purple egg", S.egg2 || 0, 2, "Hatches a Purple Glimling or better."], ["egg3", EGG_ICON(3), "Gold egg", S.egg3 || 0, 3, "Hatches a Gold Glimling, sometimes Rainbow."], ["egg4", EGG_ICON(4), "Rainbow egg", S.egg4 || 0, 4, "Hatches a Rainbow Glimling."], ["shards", SHARD, "Star shards", S.shards || 0, 2, "Count as keepsakes of any kind when you ascend a Glimling. From the Star Shrine."]];
       tiles = items.filter(i => i[3] > 0).map(([k, ic, nm, n, q]) => `<button class="btile${bagPick === k ? " on" : ""}" data-act="bagpick:${k}" style="--gc:${GRADES[q].c}">${ic}<b>${n >= 10000 ? (n / 1000).toFixed(1) + "K" : n}</b></button>`);
       const p = items.find(i => i[0] === bagPick); if (p) info = `<div class="binfo">${p[1]}<span><b>${p[2]} · ${p[3]}</b><small>${p[5]}</small></span>${/^egg/.test(p[0]) && p[3] > 0 ? `<button class="mb gold" data-act="openegg:${p[0].slice(3)}">Open</button>` : ""}</div>`;
     } else {
       const src = bagTab === "keep" ? (S.keepsakes || {}) : (S.starCores || {});
       tiles = Object.keys(src).filter(sp => src[sp] > 0).map(sp => `<button class="btile${bagPick === "s" + sp ? " on" : ""}" data-act="bagpick:s${sp}" style="--gc:${bagTab === "keep" ? GRADES[2].c : GRADES[4].c}">${art(+sp, 0, 40)}<b>${src[sp]}</b></button>`);
-      if (bagPick && bagPick[0] === "s" && src[bagPick.slice(1)]) { const sp = +bagPick.slice(1); info = `<div class="binfo">${art(sp, 0, 36)}<span><b>${SP[sp].name} ${bagTab === "keep" ? "keepsakes" : "star cores"} · ${src[sp]}</b><small>${bagTab === "keep" ? "Used to ascend this kind of Glumi past its level limit." : "Used to give this kind of Glumi stars."}</small></span></div>`; }
+      if (bagPick && bagPick[0] === "s" && src[bagPick.slice(1)]) { const sp = +bagPick.slice(1); info = `<div class="binfo">${art(sp, 0, 36)}<span><b>${SP[sp].name} ${bagTab === "keep" ? "keepsakes" : "star cores"} · ${src[sp]}</b><small>${bagTab === "keep" ? "Used to ascend this kind of Glimling past its level limit." : "Used to give this kind of Glimling stars."}</small></span></div>`; }
     }
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">‹ Back</button><h3>Backpack</h3><span></span></div>
       <div class="seg">${tabs.map(([k, n]) => `<button class="${bagTab === k ? "on" : ""}" data-act="bagtab:${k}">${n}</button>`).join("")}</div>
       ${info}
-      ${tiles.length ? `<div class="bgrid">${tiles.join("")}</div>` : `<p class="hint">${bagTab === "items" ? "Your backpack is empty." : bagTab === "keep" ? "Release Glumis for keepsakes." : "Release Rainbow Glumis for star cores."}</p>`}`;
+      ${tiles.length ? `<div class="bgrid">${tiles.join("")}</div>` : `<p class="hint">${bagTab === "items" ? "Your backpack is empty." : bagTab === "keep" ? "Release Glimlings for keepsakes." : "Release Rainbow Glimlings for star cores."}</p>`}`;
   }
   // ================= GIFT CODES (made up for the game, nothing to buy) =================
-  const CODES = { GLUMI: { k: "coins", n: 100 }, STARJAR: { k: "star", n: 1 }, MOONFRUIT: { k: "fruit", n: 1 }, GLOWUP: { k: "glow", n: 50 } };
+  const CODES = { GLUMI: { k: "coins", n: 100 }, GLIMLING: { k: "coins", n: 100 }, STARJAR: { k: "star", n: 1 }, MOONFRUIT: { k: "fruit", n: 1 }, GLOWUP: { k: "glow", n: 50 } };
   function redeem(code) {
     code = (code || "").trim().toUpperCase(); if (!S.codes) S.codes = {};
     if (code === "ROCK") {  // test code (Tom 19 Nov): put a rock to mine on the path, any time, as often as wanted
@@ -3646,7 +3647,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     if (k === "x") return { k, name: EXCL[m.sp] || "Signature", fx: sigFx(m.sp), cost: 5, power: s.shape === "tall" ? 4.4 : 3.8, heal: s.shape === "round" ? .08 : 0, shield: s.shape === "wide" ? 3 : 0, el: s.el, sig: true };
     const [name, cost, power, heal] = SHARED[s.el][m.wild ? m.sp % 3 : Math.min(2, m.sk || 0)]; return { k, name, cost, power, heal, shield: 0, el: s.el };
   }
-  const skillText = sk => [sk.power ? `a ${sk.power}x hit` : "", sk.heal ? `heals ${Math.round(sk.heal * 100)}% HP` : "", sk.shield ? `a ${sk.shield} s shield` : "", ...(sk.fx || []).map(f => `${STATUS[f].n}: ${STATUS[f].foe ? "the foe" : "your Glumi"} ${STATUS[f].d}`)].filter(Boolean).join(" + ");
+  const skillText = sk => [sk.power ? `a ${sk.power}x hit` : "", sk.heal ? `heals ${Math.round(sk.heal * 100)}% HP` : "", sk.shield ? `a ${sk.shield} s shield` : "", ...(sk.fx || []).map(f => `${STATUS[f].n}: ${STATUS[f].foe ? "the foe" : "your Glimling"} ${STATUS[f].d}`)].filter(Boolean).join(" + ");
   const skillEst = (a, d, sk) => sk.power ? Math.max(1, Math.round(DMG_MULT * atk(a) * sk.power * mult(sk.el, SP[d.sp].el) * 60 / (60 + def(d)))) : Math.round(maxHp(a) * sk.heal);
   function castSkill(mine, k) {
     if (!BT) return false; const me = front(), foe = BT.foes[BT.fi]; if (!me || !foe) return false;
@@ -3800,7 +3801,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const fe = foes.map(f => SP[f.sp].el), common = fe.sort((a, b) => fe.filter(x => x === b).length - fe.filter(x => x === a).length)[0], counter = weakTo(common);
     const weak = mine.filter(m => fe.some(e => mult(e, SP[m.sp].el) > 1)).length;
     if (weak) tips.push(`${weak === mine.length ? "All" : weak} of your team ${weak === 1 ? "is" : "are"} weak against their elements.`);
-    if (!mine.some(m => SP[m.sp].el === counter)) tips.push(`Try a ${EL[counter].name} Glumi: strong against ${EL[common].name}.`);
+    if (!mine.some(m => SP[m.sp].el === counter)) tips.push(`Try a ${EL[counter].name} Glimling: strong against ${EL[common].name}.`);
     if (tips.length < 3) { const b = bestTeam(foes); if (b && b.r.margin > r.margin + .05 && b.p.some((m, k) => m !== mine[k])) tips.push(`"Best team" on the battle page finds a better team for this fight.`); }
     return tips.slice(0, 3);
   }
@@ -3845,7 +3846,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       return `${back(P.back)}<h3>${P.title}</h3><span></span></div>
         <div class="prep"><div class="pside foe"><span class="ptr">${trainerSVG(P.color, false)}</span><div><b>${P.name}</b><small class="ppow">Power ${teamPower(P.foes).toLocaleString("en")}${teamBonus(P.foes) ? ` \u00B7 ${teamBonus(P.foes).txt}` : ""}</small><div class="pmons">${P.foes.map(m => mon2(m)).join("")}</div></div></div>
           <div class="pvs">VS</div>
-          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}${teamBonus(mine) ? ` \u00B7 <span class="ptb">${teamBonus(mine).txt}</span>` : ""}</small><div class="pmons">${[0, 1, 2].map(i => mine[i] ? `<button class="pmbtn" data-act="prepslot:${i}" aria-label="Swap ${nameOf(mine[i])}">${mon2(mine[i], true)}</button>` : `<button class="pmbtn padd" data-act="prepslot:${i}" aria-label="Add a Glumi">+</button>`).join("")}</div></div></div></div>
+          <div class="pside me"><span class="ptr">${trainerSVG("#5aa8ff", false)}</span><div class="pgrow"><b>Your team</b><button class="mb pbest" data-act="bestteam">Best team</button><small class="ppow">Power ${teamPower(mine).toLocaleString("en")}${teamBonus(mine) ? ` \u00B7 <span class="ptb">${teamBonus(mine).txt}</span>` : ""}</small><div class="pmons">${[0, 1, 2].map(i => mine[i] ? `<button class="pmbtn" data-act="prepslot:${i}" aria-label="Swap ${nameOf(mine[i])}">${mon2(mine[i], true)}</button>` : `<button class="pmbtn padd" data-act="prepslot:${i}" aria-label="Add a Glimling">+</button>`).join("")}</div></div></div></div>
         ${P.note ? `<p class="hint pnote">${P.note}</p>` : ""}${od ? `<div class="podds ${od.cls}"><span>Forecast</span><b>${od.label}</b><div class="pobar"><i style="width:${od.fill}%"></i></div></div>` : ""}
         ${P.rewards.length ? `<div class="prew"><span>Reward</span>${rchips(P.rewards)}</div>` : `<p class="hint" style="margin:0">Already beaten: no reward this time.</p>`}
         <div class="pbtns"><button class="mb" data-act="view:team">Team</button><button class="mb gold pbig" data-act="prepgo:0">Battle</button>${P.quick ? `<button class="mb" data-act="prepgo:1">Quick</button>` : ""}</div>`;
@@ -3855,7 +3856,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const idx = open.indexOf(z), prev = open[idx - 1], next = open[idx + 1];
       const badges = ZONES.map((ZZ, i) => `<button class="gbadge${gymDone(i, 0) ? " done" : ""}${i === z ? " cur" : ""}" data-act="gymz:${i}" ${zoneOpen(i) ? "" : "disabled"} aria-label="${ZZ.name} Gym">${zoneOpen(i) ? (ART["badge-zone-" + i] ? `<img src="${ART["badge-zone-" + i]}" alt="">` : gymDone(i, 0) ? "\u2713" : i + 1) : IC.lock}</button>`).join("");
       const tcard = i => { const T = gymTrainer(z, d, i), beat = gymBeat(z, d, i);
-        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false, i === 2 && ART["tr-leader-" + z] ? "tr-leader-" + z : "")}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glumi${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward, T.energy, ...(T.charm ? [T.charm] : [])])}</span></button>`; };
+        return `<button class="gtr${i === 2 ? " lead" : ""}${beat ? " beat" : ""}" data-act="gymgo:${i}"><span class="gimg">${trainerSVG(T.color, false, i === 2 && ART["tr-leader-" + z] ? "tr-leader-" + z : "")}</span><b>${T.name}</b><small>Lv ${T.lvl} · ${T.foes.length} Glimling${T.foes.length > 1 ? "s" : ""}</small><span class="grw">${beat ? `<span class="rchip ok">\u2713</span>` : rchips([T.reward, T.energy, ...(T.charm ? [T.charm] : [])])}</span></button>`; };
       return `${back("gyms")}<h3>${Z.name} Gym</h3><span></span></div>
         <div class="gbadges">${badges}</div>
         <div class="seg">${DIFF.map((n, k) => `<button class="${d === k ? "on" : ""}" data-act="gymd:${k}" ${gymDiffOpen(z, k) ? "" : "disabled"}>${gymDiffOpen(z, k) ? "" : IC.lock.replace(/#fff/g, "#8a6d55")}${n}</button>`).join("")}</div>
@@ -3954,7 +3955,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const CLOCK = IC.clock ? IC.clock.replace("<svg", '<svg width="13" height="13"') : '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   const CATCH_PTS = [5, 10, 30, 80, 300];  // by grade
   const EVBARS = {
-    catch: { name: "Catch points", how: "Catch Glumis: Blue 10, Purple 30, Gold 80, Rainbow 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
+    catch: { name: "Catch points", how: "Catch Glimlings: Blue 10, Purple 30, Gold 80, Rainbow 300", icon: () => IC.jar(JARS[0].c), steps: [100, 250, 500, 900, 1500, 2500, 4000],
              rew: [{ k: "glow", n: 40, need: 40 }, { k: "glow", n: 60, need: 60 }, { k: "plain", n: 3, need: 80 }, { k: "glow", n: 80, need: 100 }, { k: "egg1", n: 1, need: 150 }, { k: "glow", n: 100, need: 150 }, { k: "glow", n: 140, need: 200 }] },
     fight: { name: "Battle points", how: "Win fights: path trainers 20, gyms 40, ladder and climb 30", icon: () => IC.sword, steps: [60, 150, 300, 500, 800, 1200, 1800],
              rew: [{ k: "glow", n: 100, need: 50 }, { k: "glow", n: 100, need: 70 }, { k: "egg1", n: 1, need: 180 }, { k: "glow", n: 200, need: 140 }, { k: "glow", n: 260, need: 170 }, { k: "egg2", n: 1, need: 320 }, { k: "egg3", n: 1, need: 500 }] },
@@ -4074,9 +4075,9 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     }
     climbing = false; render();
   }
-  // ================= STAR SHRINE: offer spare Glumis for keepsakes and star shards =================
+  // ================= STAR SHRINE: offer spare Glimlings for keepsakes and star shards =================
   const SHARD = ART["ui-star-shard"] ? artIcon("ui-star-shard") : '<svg viewBox="0 0 24 24"><path d="M12 1.8 14.6 9.4 22.2 12 14.6 14.6 12 22.2 9.4 14.6 1.8 12 9.4 9.4z" fill="#b48cff" stroke="#7a52d6" stroke-width="1.2" stroke-linejoin="round"/><path d="M12 6.5 13.2 10.8 17.5 12" fill="none" stroke="#f1e8ff" stroke-width="1.3" stroke-linecap="round"/></svg>';
-  const SHRINE_DEALS = [{ q: 3, n: 3, label: "5 Gold Glumis or better" }, { q: 2, n: 1, label: "5 Purple Glumis or better" }];
+  const SHRINE_DEALS = [{ q: 3, n: 3, label: "5 Gold Glimlings or better" }, { q: 2, n: 1, label: "5 Purple Glimlings or better" }];
   let shrinePick = [], shrineSort = "grade", shrineUp = true, shrineSure = false;
   const shrineFree = m => !S.team.includes(m.uid) && !(m.lock || m.fav) && !(typeof workingAt === "function" && workingAt(m.uid)) && !(typeof isAway === "function" && isAway(m.uid));
   function shrineGain(list) {
@@ -4094,13 +4095,13 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       return `<div class="shdeal${ok ? " ok" : ""}"><span>${d.label} (${Math.min(got, 5)}/5)</span><b>${SHARD}${d.n}</b><i>${ok ? "\u2713" : ""}</i></div>`; };
     const kinds = Object.keys(G.keeps);
     return `<div class="sheethead"><button class="mb" data-act="view:menu" aria-label="Back">\u2039 Back</button><h3>Star Shrine</h3><span class="shcount">${SHARD}${S.shards || 0}</span></div>
-      <div class="shtop"><div class="shbar"><span>Glumis to offer</span><span>Average grade: <b>${picked.length ? GRADES[Math.round(avg)].name : "-"}</b></span></div>
+      <div class="shtop"><div class="shbar"><span>Glimlings to offer</span><span>Average grade: <b>${picked.length ? GRADES[Math.round(avg)].name : "-"}</b></span></div>
         <div class="shslots">${[0, 1, 2, 3, 4].map(slot).join("")}</div></div>
       <div class="shex"><h4>Star shard exchange</h4>${SHRINE_DEALS.map(deal).join("")}
-        <p class="shnote">${picked.length ? `You get: ${kinds.map(sp => `${G.keeps[sp]} ${SP[sp].name} keepsake${G.keeps[sp] > 1 ? "s" : ""}`).join(", ")}${G.cores ? `, ${G.cores} star core${G.cores > 1 ? "s" : ""}` : ""}${G.shards ? `, <b>${G.shards} star shard${G.shards > 1 ? "s" : ""}</b>` : ""}` : "Star shards count as keepsakes of any kind when you ascend a Glumi."}</p></div>
+        <p class="shnote">${picked.length ? `You get: ${kinds.map(sp => `${G.keeps[sp]} ${SP[sp].name} keepsake${G.keeps[sp] > 1 ? "s" : ""}`).join(", ")}${G.cores ? `, ${G.cores} star core${G.cores > 1 ? "s" : ""}` : ""}${G.shards ? `, <b>${G.shards} star shard${G.shards > 1 ? "s" : ""}</b>` : ""}` : "Star shards count as keepsakes of any kind when you ascend a Glimling."}</p></div>
       <div class="shpool"><div class="shtools"><span class="seg mini">${[["grade", "Grade"], ["level", "Level"]].map(([k, nm]) => `<button class="${shrineSort === k ? "on" : ""}" data-act="shrinesort:${k}">${nm}</button>`).join("")}</span><button class="mb" data-act="shrineflip" aria-label="Flip order">${shrineUp ? "\u2191" : "\u2193"}</button></div>
         ${pool.length ? `<div class="shgrid">${pool.map(m => `<button class="shtile${shrinePick.includes(m.uid) ? " on" : ""}" data-act="shrinepick:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 48)}<span class="lv">Lv ${m.lvl}</span>${shrinePick.includes(m.uid) ? '<i class="shck">\u2713</i>' : ""}</button>`).join("")}</div>`
-          : `<p class="hint">No spare Glumis. Glumis in your team, at work, away or locked can't be offered.</p>`}</div>
+          : `<p class="hint">No spare Glimlings. Glimlings in your team, at work, away or locked can't be offered.</p>`}</div>
       <div class="shbtns"><button class="mb" data-act="shrinequick" ${pool.length ? "" : "disabled"}>Quick add</button><button class="mb gold pbig${shrineSure ? " sure" : ""}" data-act="shrineoffer" ${picked.length ? "" : "disabled"}>${shrineSure ? "Tap again to offer" : `Offer ${picked.length || ""}`}</button></div>`;
   }
   function shrineOffer() {
@@ -4140,7 +4141,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const clamp = x => Math.max(0, Math.min(1, x)), ease = x => 1 - Math.pow(1 - clamp(x), 3), easeIn = x => clamp(x) * clamp(x);
       const stars = Array.from({ length: 110 }, () => ({ x: rr() * W, y: rr() * H, r: .5 + rr() * 1.3, ph: rr() * 6.28, sp: 2 + rr() * 4 }));
       const qs = list.map(w => w.q), top = qs.splice(qs.indexOf(Math.max(...qs)), 1)[0];
-      qs.splice(Math.floor(qs.length / 2), 0, top);  // one star per Glumi; the rarest is the central one
+      qs.splice(Math.floor(qs.length / 2), 0, top);  // one star per Glimling; the rarest is the central one
       const ANG = 20 * Math.PI / 180, dx = Math.cos(ANG), dy = Math.sin(ANG);
       const best = Math.floor((qs.length - 1) / 2), gap = Math.min(60, 420 / qs.length);
       const comets = qs.map((q, i) => {
@@ -4321,7 +4322,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""} aria-label="${label}">${icon}<span class="tl">${label}</span></button>`;
     const wide = view === "home" && !showMap && !showAuto ? `<button class="navwide z${S.zone}" data-act="close"><span>Explore</span></button>`
       : `<button class="navwide homecard" data-act="view:home" ${lock("home") ? "disabled" : ""}><span>Home</span>${homeAlert() ? '<em class="bang">!</em>' : ""}</button>`;
-    $("tabs").innerHTML = tab("menu", ART["ui-menu"] ? IC.menu : NAVI.menu, "Menu") + tab("team", TABI.team, "Glumis") + tab("shop", TABI.shop, "Shop") + tab("arena", (IC.arena || IC.sword).replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
+    $("tabs").innerHTML = tab("menu", ART["ui-menu"] ? IC.menu : NAVI.menu, "Menu") + tab("team", TABI.team, "Glimlings") + tab("shop", TABI.shop, "Shop") + tab("arena", (IC.arena || IC.sword).replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
   }
   function pageMenu() {
     if (settingsPage) return pageSettings();
@@ -4350,9 +4351,9 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     if (!inTeam) b.push(`<button class="mb" data-act="release:${m.uid}">${confirmRelease === m.uid ? "Sure?" : "Release"} ${IC.glow}${5 * (m.q + 1)}</button>`);
     return `<div class="card mon${inTeam && i === 0 ? " lead" : ""}">${art(m.sp, m.evo, 76)}<div class="info"><div class="nmrow">${fname(m.sp, m.evo)}${gChip(m.q)}${elDot(s.el)}</div><div class="stats"><span>Lv ${m.lvl}</span><span>HP ${maxHp(m)}</span><span>ATK ${atk(m)}</span><span>DEF ${def(m)}</span></div><div class="mini-btns">${b.join("")}</div></div></div>`;
   }
-  let sheetTab = "stats", sheetMulti = false, sheetShown = null;  // sheetShown: the Glumi whose page is already on screen
+  let sheetTab = "stats", sheetMulti = false, sheetShown = null;  // sheetShown: the Glimling whose page is already on screen
   let ladHelp = false;  // the Ladder rules text, opened from "?"
-  let lvPick = null, lvTo = 0, lvShown = false;  // the Level Up picker: which Glumi, which level
+  let lvPick = null, lvTo = 0, lvShown = false;  // the Level Up picker: which Glimling, which level
   const lvTop = m => Math.min(lvlCap(), (MAX_ASC + 1) * ASC_EVERY);
   function lvPlan(m, to) {  // what reaching level `to` costs: leaves, plus keepsakes for each ascension on the way
     let leaves = 0, keeps = 0, ascs = 0, stones = 0, a = ascOf(m);
@@ -4409,7 +4410,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       grade: (x, y) => y.q - x.q || y.lvl - x.lvl, element: (x, y) => ELK.indexOf(SP[x.sp].el) - ELK.indexOf(SP[y.sp].el) || y.q - x.q || y.lvl - x.lvl, newest: (x, y) => y.uid - x.uid, name: (x, y) => nameOf(x).localeCompare(nameOf(y)) || y.lvl - x.lvl }[by] || (() => 0);
     return S.mons.filter(m => (!tEl || SP[m.sp].el === tEl) && (tQ === null || m.q === tQ) && (!tSpare || isSpare(m)) && (!q || nameOf(m).toLowerCase().includes(q) || fname(m.sp, m.evo).toLowerCase().includes(q))).sort(cmp);
   }
-  const tilesHTML = () => { const L = listMons(); return L.length ? L.map(monTile).join("") : `<p class="hint" style="grid-column:1/-1">No Glumis match.</p>`; };
+  const tilesHTML = () => { const L = listMons(); return L.length ? L.map(monTile).join("") : `<p class="hint" style="grid-column:1/-1">No Glimlings match.</p>`; };
   let tSearch = false, teamSub = "list";  // teamSub: list | edit | filter
   const filtersOn = () => !!tEl || tQ !== null || tSpare;
   function listControls() {
@@ -4425,10 +4426,10 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       <h3 class="grouph">Element</h3><div class="lchips">${ELK.map(k => `<button class="lchip${tEl === k ? " on" : ""}" data-act="tel:${k}" style="--c:${EL[k].color}">${ART[EL_ART[k]] ? `<i class="lic">${artIcon(EL_ART[k])}</i>` : "<i></i>"}${EL[k].name}</button>`).join("")}</div>
       <h3 class="grouph">Grade</h3><div class="lchips">${[1, 2, 3, 4].map(q => `<button class="lchip${tQ === q ? " on" : ""}" data-act="tq:${q}" style="--c:${GRADES[q].c}"><i></i>${GRADES[q].name}</button>`).join("")}</div>
       <h3 class="grouph">Other</h3><div class="lchips"><button class="lchip${tSpare ? " on" : ""}" data-act="tspare" style="--c:#8a6d55">Spares only</button></div>
-      <div class="row" style="gap:8px;margin-top:6px"><button class="mb" data-act="tclear" ${filtersOn() ? "" : "disabled"}>Clear all</button><button class="mb gold" data-act="tsub:list">Show ${listMons().length} Glumis</button></div>`;
+      <div class="row" style="gap:8px;margin-top:6px"><button class="mb" data-act="tclear" ${filtersOn() ? "" : "disabled"}>Clear all</button><button class="mb gold" data-act="tsub:list">Show ${listMons().length} Glimlings</button></div>`;
   }
   function actNow(act) { const f = document.createElement("button"); f.dataset.act = act; f.hidden = true; document.body.appendChild(f); f.click(); f.remove(); }  // run a button's action
-  function levelTeam() {  // Q7: always the lowest level team Glumi next, while leaves last
+  function levelTeam() {  // Q7: always the lowest level team Glimling next, while leaves last
     let n = 0;
     for (;;) { const c = team().filter(m => m.lvl < lvlCap() && m.lvl < ascTop(m) && S.leaves >= 5 + m.lvl * 3).sort((a, b) => a.lvl - b.lvl)[0]; if (!c) break;
       S.leaves -= 5 + c.lvl * 3; c.lvl++; c.hp = maxHp(c); track("lvl"); n++; if (n > 5000) break; }
@@ -4467,7 +4468,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const mark = m => { const e = SP[m.sp].el, up = P.foes.some(o => mult(e, SP[o.sp].el) > 1), dn = P.foes.some(o => mult(SP[o.sp].el, e) > 1); return up && !dn ? '<em class="pedge up">\u25B2</em>' : dn && !up ? '<em class="pedge dn">\u25BC</em>' : ""; };
     const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<div class="popbg"></div><div class="popup pswap" role="dialog"><h3>${cur ? `Swap ${nameOf(cur)} for` : "Add to the team"}</h3>
-      <div class="pslist">${list.map(m => `<button class="pmon pspick" data-act="prepswap:${i}-${m.uid}">${art(m.sp, m.evo, 52)}${mark(m)}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span><small>${monPower(m).toLocaleString("en")}</small></button>`).join("") || '<p class="hint">No other Glumis.</p>'}</div>
+      <div class="pslist">${list.map(m => `<button class="pmon pspick" data-act="prepswap:${i}-${m.uid}">${art(m.sp, m.evo, 52)}${mark(m)}<span class="lv">${elDot(SP[m.sp].el)}Lv ${m.lvl}</span><small>${monPower(m).toLocaleString("en")}</small></button>`).join("") || '<p class="hint">No other Glimlings.</p>'}</div>
       <div class="popbtns"><button class="mb" data-act="nickcancel">Cancel</button></div></div>`;
     document.body.appendChild(d);
   }
@@ -4491,7 +4492,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       <div class="slots">${[0, 1, 2].map(teamSlot).join("")}</div>
       <button class="mb lvteam" data-act="lvteam">${IC.leaf}<span><b>Level up team</b><small>Uses your leaves, lowest level first</small></span></button>${sheet}`;
     return `${listControls()}
-      ${cmpA && mon(cmpA) ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a Glumi to compare with <b>${nameOf(mon(cmpA))}</b></span><button class="mb" data-act="cmpcancel">Cancel</button></div>` : ""}
+      ${cmpA && mon(cmpA) ? `<div class="card row" style="justify-content:space-between;align-items:center"><span>Tap a Glimling to compare with <b>${nameOf(mon(cmpA))}</b></span><button class="mb" data-act="cmpcancel">Cancel</button></div>` : ""}
       <div class="tcards" id="tilesBox">${tilesHTML()}</div>
       <div class="gfoot"><button class="geditteam" data-act="tsub:edit">Edit Team</button>
         <span class="capw"><button class="ground big" data-act="lvteam" aria-label="Level up team">${IC.up}</button><span class="cap">Level up</span></span>
@@ -4523,7 +4524,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const stats = `<div class="stats2">${statBar("HP", maxHp(m), 260, "#43c59e")}${statBar("Attack", atk(m), 70, "#ff8a4c")}${statBar("Defense", def(m), 60, "#5aa8ff")}</div>`;
     let body;
     if (sheetPage === "level") body = `${back("Level up")}${mini}${stats}
-      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a Glumi must ascend: ${s.name} keepsakes (you have ${keeps}), past level 100 also Glimmerstones (${S.gstone || 0}).</p>
+      <p class="hint" style="margin:0">Every ${ASC_EVERY} levels a Glimling must ascend: ${s.name} keepsakes (you have ${keeps}), past level 100 also Glimmerstones (${S.gstone || 0}).</p>
       <div class="btns">${L.join("")}</div>`;
     else if (sheetPage === "stars") {
       const next = st < MAX_STARS ? Object.assign({}, m, { stars: st + 1 }) : null;
@@ -4548,16 +4549,16 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const tabBody = sheetTab === "skill"
         ? `<div class="skilltab">${skillTab(m)}</div>`
         : sheetTab === "info"
-        ? `<div class="infotab">${[["Kind", `${TIER[s.tier].name} ${EL[s.el].name} Glumi`], ["Found in", ZONES.filter(Z => Z.sp.includes(m.sp) || Z.boss === m.sp).map(Z => Z.name).join(", ") || "Unknown"],
+        ? `<div class="infotab">${[["Kind", `${TIER[s.tier].name} ${EL[s.el].name} Glimling`], ["Found in", ZONES.filter(Z => Z.sp.includes(m.sp) || Z.boss === m.sp).map(Z => Z.name).join(", ") || "Unknown"],
              ["Forms", s.evo ? `${s.name}${S.caught[key(m.sp, 0)] ? " \u2713" : ""} \u2192 ${s.evo}${S.caught[key(m.sp, 1)] ? " \u2713" : ""}` : `${s.name} (no evolution)`],
              ["You own", `${S.mons.filter(x => x.sp === m.sp).length} of this kind`], ["Ascended", `${ascOf(m)} of ${MAX_ASC}`], ["Keepsakes", `${keeps}`], ["Star cores", `${cores}`]]
              .map(([a, b]) => `<div class="irow"><span>${a}</span><b>${b}</b></div>`).join("")}
              <p class="matchup">Strong against <b>${EL[BEATS[s.el]].name}</b> · Weak against <b>${EL[weakTo(s.el)].name}</b></p></div>`
-        : `<div class="gcstats"><button class="gcnav" data-act="sheetnav:-1" aria-label="Previous Glumi">\u2039</button><div class="gcbars">
+        : `<div class="gcstats"><button class="gcnav" data-act="sheetnav:-1" aria-label="Previous Glimling">\u2039</button><div class="gcbars">
              ${[["Attack", atk(m), 70, IC.sword], ["Defense", def(m), 60, IC.flag], ["HP", maxHp(m), 260, IC.heart || IC.star], ["Work", Math.round(workBest), 30, IC.home]].map(([n, v, mx, ic]) =>
                `<div class="gcbar"><span class="gcbi">${ic}</span><b>${n}</b><span class="gctrack"><i style="width:${Math.min(100, v / mx * 100)}%"></i></span><em>${v}${n === "Work" ? "/h" : ""}</em></div>`).join("")}
-           </div><button class="gcnav" data-act="sheetnav:1" aria-label="Next Glumi">\u203A</button></div>
-           <div class="gpair">${charmRow(m)}<button class="gcharm cmpbtn" data-act="cmpstart:${m.uid}"><span class="gci"><svg viewBox="0 0 24 24" fill="none" stroke="#8a6d55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span><span class="gct"><b>Compare</b><small>With another Glumi</small></span><i>\u203A</i></button></div><div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
+           </div><button class="gcnav" data-act="sheetnav:1" aria-label="Next Glimling">\u203A</button></div>
+           <div class="gpair">${charmRow(m)}<button class="gcharm cmpbtn" data-act="cmpstart:${m.uid}"><span class="gci"><svg viewBox="0 0 24 24" fill="none" stroke="#8a6d55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg></span><span class="gct"><b>Compare</b><small>With another Glimling</small></span><i>\u203A</i></button></div><div class="gacts"><button class="gsq${starReady ? " hot" : ""}" data-act="spage:stars" aria-label="Stars">${IC.star}<small>Stars</small></button>
              ${s.evo && !m.evo ? `<button class="gsq${m.lvl >= EVOLVE_AT && S.fruit >= EVOLVE_FRUIT && S.coins >= 60 ? " hot" : ""}" data-act="spage:level" aria-label="Evolve">${IC.fruit}<small>Evolve</small></button>` : `<button class="gsq" data-act="spage:level" aria-label="Level details">${IC.up}<small>More</small></button>`}
              ${bigBtn}
              <button class="gx" data-act="lvpopen:${m.uid}" aria-label="Level up to any level" ${m.lvl < lvTop(m) ? "" : "disabled"}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12.5l6-6 6 6"/><path d="M6 19l6-6 6 6"/></svg><small>Levels</small></button></div>`;
@@ -4591,7 +4592,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     ZONES.forEach((Z, z) => { for (const [g, n] of [[3, 2], [4, 5]]) { const open = zoneOpen(z);
       L.push({ id: `z${z}g${g}`, g, n, open, title: open ? `${Z.name} in ${GRADES[g].name}` : `A hidden island in ${GRADES[g].name}`, sub: `Every kind from ${open ? Z.name : "this island"} as ${GRADES[g].name}${g < 4 ? " or Rainbow" : ""}`,
         have: Z.sp.filter(sp => (B[sp] || 0) >= g).length, need: Z.sp.length }); } });
-    L.push({ id: "book", g: 2, n: 5, open: true, title: "The whole Book", sub: "Catch every Glumi and every evolved form", have: Object.keys(S.caught).length, need: bookTotal() });
+    L.push({ id: "book", g: 2, n: 5, open: true, title: "The whole Book", sub: "Catch every Glimling and every evolved form", have: Object.keys(S.caught).length, need: bookTotal() });
     for (const [g, n] of [[3, 10], [4, 30]]) L.push({ id: `all${g}`, g, n, open: true, title: `The whole Book in ${GRADES[g].name}`, sub: `Every kind on every island as ${GRADES[g].name}${g < 4 ? " or Rainbow" : ""}`, have: all.filter(sp => (B[sp] || 0) >= g).length, need: all.length });
     const got = S.bookGoals || {};
     L.forEach(x => { x.done = !!got[x.id]; x.ready = !x.done && x.have >= x.need; });
@@ -4604,7 +4605,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       <span><b>${x.title}</b><small>${x.sub}</small><small>${Math.min(x.have, x.need)} of ${x.need}</small><span class="bgbar"><i style="width:${Math.min(100, x.have / x.need * 100)}%"></i></span></span>
       <span class="bgrew"><span>${IC.gstone}${x.n}</span>${x.done ? '<em class="bgok">\u2713</em>' : x.ready ? `<button class="mb gold" data-act="bgclaim:${x.id}">Claim</button>` : ""}</span></div>`;
     return `<div class="sheethead"><button class="mb" data-act="bookgoals:0" aria-label="Back">\u2039 Back</button><h3>Book goals</h3><span></span></div>
-      <p class="hint" style="margin:0">Glimmerstones ascend Glumis past level 100. Collect a whole island, or the whole Book, in Gold or Rainbow to earn them. You have ${S.gstone || 0} · earned here ${sum} of ${max}.</p>
+      <p class="hint" style="margin:0">Glimmerstones ascend Glimlings past level 100. Collect a whole island, or the whole Book, in Gold or Rainbow to earn them. You have ${S.gstone || 0} · earned here ${sum} of ${max}.</p>
       <div class="bglist">${L.map(row).join("")}</div>`;
   }
   function pageBook() {
@@ -4621,8 +4622,8 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const shortN = n => n >= 1e6 ? +(n / 1e6).toFixed(n >= 1e7 ? 0 : 2) + "M" : n >= 1e5 ? Math.round(n / 1000) + "K" : n.toLocaleString("en");
   // ================= MAILBOX: update gifts =================
   const MAIL = [
-    { id: "upd-2026-11-17-charms", title: "Charms are here", text: "Glumis can now wear a charm (on their card). Gym leaders and Cloud Climb now give charms, so here are some for the fights you already won.", rew: [{ k: "charm", n: 1, r: 1 }, { k: "charm", n: 2, r: 0 }] },
-    { id: "upd-2026-11-19-lv150", title: "Glumis grow to level 150", text: "Glumis can now go past level 100, up to 150. Each ascension past 100 needs Glimmerstones, a rare new stone from Book goals, the Daily and World Boss, Cloud Climb floors 50+ and Rainbow releases. Here are your first ones.", rew: [{ k: "gstone", n: 3 }] },
+    { id: "upd-2026-11-17-charms", title: "Charms are here", text: "Glimlings can now wear a charm (on their card). Gym leaders and Cloud Climb now give charms, so here are some for the fights you already won.", rew: [{ k: "charm", n: 1, r: 1 }, { k: "charm", n: 2, r: 0 }] },
+    { id: "upd-2026-11-19-lv150", title: "Glimlings grow to level 150", text: "Glimlings can now go past level 100, up to 150. Each ascension past 100 needs Glimmerstones, a rare new stone from Book goals, the Daily and World Boss, Cloud Climb floors 50+ and Rainbow releases. Here are your first ones.", rew: [{ k: "gstone", n: 3 }] },
     { id: "upd-2026-11-17-moonfruit", title: "Moonfruit gift", text: "New explorers now start with 20 moonfruit. You started before that, so here are yours!", rew: [{ k: "fruit", n: 20 }] },
   ];
   function mailSync() {  // put every letter not delivered yet into the inbox
@@ -4653,10 +4654,10 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
         <button class="price" data-act="buyepack" ${left && S.coins >= EPACK.price ? "" : "disabled"}>${IC.coin}${EPACK.price}</button></div>
       <h4 class="bsec">Multipliers</h4>
       <div class="blist">${MULTS.filter(M => MULT_PRICE[M.m]).map(mrow).join("")}</div>
-      <p class="hint" style="margin:0">A multiplier makes each step cost more energy and gives rarer Glumis and bigger rewards. Without buying it, you can only pick it while you have the energy shown in its card saved up.</p>`;
+      <p class="hint" style="margin:0">A multiplier makes each step cost more energy and gives rarer Glimlings and bigger rewards. Without buying it, you can only pick it while you have the energy shown in its card saved up.</p>`;
   }
   function pageShop() {
-    const tabs = [["jars", "Jars"], ["boost", "Boosts"], ["market", "Glumis"], ["requests", "Requests"]];
+    const tabs = [["jars", "Jars"], ["boost", "Boosts"], ["market", "Glimlings"], ["requests", "Requests"]];
     if (shopTab === "supplies") shopTab = "jars";
     if (shopTab === "boost") return pageBoost(tabs);
     if (shopTab === "requests") return pageRequests(tabs);
@@ -4668,7 +4669,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
              row("bright", IC.jar(JARS[1].c), "Bright jar", `Catches more easily · you have ${S.jars.bright}`, 45),
              row("star", IC.jar(JARS[2].c), "Star jar", `The best catch chance · you have ${S.jars.star}`, 120),
              row("prism", IC.jar("prism"), "Prism jar", `Always catches, even Rainbows · you have ${S.jars.prism || 0}`, 5000)],
-      supplies: [row("treat", IC.treat, "Treat", `Calms a Glumi before you throw · you have ${S.treats}`, 25),
+      supplies: [row("treat", IC.treat, "Treat", `Calms a Glimling before you throw · you have ${S.treats}`, 25),
                  row("leaves", IC.leaf, "10 leaves", `For leveling up · you have ${S.leaves}`, 20)],
     };
     const waiting = E && E.type === "wild" ? E.list[E.i] : null;
@@ -4678,7 +4679,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       ${shopTab === "jars" ? `<div class="bqrow"><span>Buy</span>${BUY_QS.map(q => `<button class="${buyQ() === q ? "on" : ""}" data-act="buyq:${q}">×${q}</button>`).join("")}</div>` : ""}
       <div class="sgrid">${items[shopTab].join("")}</div>`;
   }
-  // ================= REQUESTS: give Glumis, get moonfruit or glow =================
+  // ================= REQUESTS: give Glimlings, get moonfruit or glow =================
   const REQUEST_SLOTS = 3, REQUEST_WAIT_MIN = 10;
   let reqPick = null, confirmGive = null;
   function newRequest() {
@@ -4697,13 +4698,13 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     for (let i = 0; i < REQUEST_SLOTS; i++) { const r = S.requests[i]; if (!r || (r.done && Date.now() >= r.readyAt)) S.requests[i] = newRequest(); }
   }
   const reqMatches = r => S.mons.filter(m => (r.sp < 0 || m.sp === r.sp) && m.q >= r.minQ && !S.team.includes(m.uid) && !(m.lock || m.fav));
-  const reqName = r => r.sp < 0 ? "Any Glumi" : SP[r.sp].name, reqArt = (r, size) => r.sp < 0 ? `<span style="width:${size}px;display:inline-grid">${TABI.team}</span>` : art(r.sp, 0, size);
+  const reqName = r => r.sp < 0 ? "Any Glimling" : SP[r.sp].name, reqArt = (r, size) => r.sp < 0 ? `<span style="width:${size}px;display:inline-grid">${TABI.team}</span>` : art(r.sp, 0, size);
   const reqLeft = r => (r.count || 1) - (r.got || 0);
   const reqWant = r => `${r.count || 1} ${r.minQ > 1 ? GRADES[r.minQ].name + " or better" : "of any grade"}${r.got ? ` · ${r.got} given` : ""}`;
   const reqReward = r => r.reward.k === "fruit" ? `${IC.fruit}<b>${r.reward.n}</b>` : `${IC.glow}<b>${r.reward.n}</b>`;
   // buying what a request needs
   const reqMissing = r => Math.max(0, reqLeft(r) - reqMatches(r).length);
-  function reqBuyOpt(r) {  // the Glumi kind + grade to buy, and its price
+  function reqBuyOpt(r) {  // the Glimling kind + grade to buy, and its price
     const q = Math.max(2, r.minQ), kinds = marketKinds().filter(k => !k.boss && (r.sp < 0 || k.sp === r.sp)); if (!kinds.length) return null;
     const k = kinds.reduce((a, b) => (kindPrice(b, q) < kindPrice(a, q) ? b : a)); return { k, q, price: kindPrice(k, q) };
   }
@@ -4724,28 +4725,28 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     if (r && !r.done) {
       const got = reqMatches(r);
       return `${head}<div class="sheethead"><button class="mb" data-act="reqpick:" aria-label="Back">‹ Back</button><h3>Request</h3><span></span></div>
-        ${islander(`I wish for ${r.sp < 0 ? `${reqLeft(r)} more Glumis of any kind` : reqLeft(r) > 1 ? `${reqLeft(r)} more ${SP[r.sp].name}s` : `a ${SP[r.sp].name}`}${r.minQ > 1 ? ` (${GRADES[r.minQ].name} or better)` : ""}! Will you help?`)}
+        ${islander(`I wish for ${r.sp < 0 ? `${reqLeft(r)} more Glimlings of any kind` : reqLeft(r) > 1 ? `${reqLeft(r)} more ${SP[r.sp].name}s` : `a ${SP[r.sp].name}`}${r.minQ > 1 ? ` (${GRADES[r.minQ].name} or better)` : ""}! Will you help?`)}
         <div class="minihero"><div class="hero" style="--gc:${GRADES[r.minQ].c}">${reqArt(r, 74)}</div><div><div class="nmrow">${reqName(r)}</div>
           <small class="reqtxt">Wanted: ${reqWant(r)}</small><span class="reward">Reward ${reqReward(r)}</span></div></div>
-        ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Glumis in your team are not shown.</p>
+        ${got.length ? `<p class="hint" style="margin:0">Choose who to give. Glimlings in your team are not shown.</p>
           <div class="slist">${got.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl}${m.stars ? ` · ${m.stars} star${m.stars > 1 ? "s" : ""}` : ""}</small></span>
             <button class="price give" data-act="give:${m.uid}">${confirmGive === m.uid ? "Sure?" : "Give"}</button></div>`).join("")}</div>`
-          : `<p class="hint" style="margin:0">${r.sp < 0 ? `You have no ${GRADES[r.minQ].name} or better Glumi outside your team. Catch more on the path.` : `You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.`}</p>`}
+          : `<p class="hint" style="margin:0">${r.sp < 0 ? `You have no ${GRADES[r.minQ].name} or better Glimling outside your team. Catch more on the path.` : `You don't have one yet. ${SP[r.sp].name} lives in ${ZONES[r.z].name}.`}</p>`}
         ${reqMissing(r) && reqBuyOpt(r) ? `<button class="mb gold pbig" data-act="reqbuypop:${reqPick}">Buy what's missing (${reqMissing(r)})</button>` : ""}`;
     }
     const rows = S.requests.map((q, i) => q.done
       ? `<div class="srow wait"><span class="ic">${IC.star}</span><span class="txt"><b>New request soon</b><small>In ${Math.max(1, Math.ceil((q.readyAt - Date.now()) / 60000))} min</small></span><span></span></div>`
       : `<button class="srow req" data-act="reqpick:${i}"><span class="ic">${reqArt(q, 32)}</span><span class="txt"><b>${reqName(q)}</b><small>${reqWant(q)}${reqMatches(q).length ? " · you have one" : ""}</small></span><span class="reward">${reqReward(q)}</span></button>`).join("");
-    return `${head}${islander("Can you help us? We pay in moonfruit or energy for the Glumis we wish for.")}
+    return `${head}${islander("Can you help us? We pay in moonfruit or energy for the Glimlings we wish for.")}
       <div class="slist">${rows}</div>`;
   }
-  // ================= HOME ISLAND: Glumis work and make resources =================
+  // ================= HOME ISLAND: Glimlings work and make resources =================
   const PLACES = {
     orchard: { name: "Orchard", res: "leaves", unit: "leaves", base: 6, els: ["Forest", "Earth"], about: "Grows leaves for leveling up" },
     spring: { name: "Energy Spring", res: "glow", unit: "energy", base: 1, els: ["Water", "Spirit"], about: "Collects energy for walking" },
     mine: { name: "Gold Mine", res: "coins", unit: "coins", base: 7, els: ["Fire", "Electric"], about: "Digs up coins" },
     jars: { name: "Jar Workshop", res: "jars", get unit() { return jarMake() + " jars"; }, base: .6, els: ["Earth", "Water"], about: "Blows jars for catching: plain ones fast, bright and star jars slowly" },
-    candy: { name: "Candy Maker", res: "treats", unit: "treats", base: .5, els: ["Fire", "Spirit"], about: "Cooks treats that calm wild Glumis" },
+    candy: { name: "Candy Maker", res: "treats", unit: "treats", base: .5, els: ["Fire", "Spirit"], about: "Cooks treats that calm wild Glimlings" },
   };
   const HOME_CAP_HOURS = 8, HOME_SLOTS = () => S.xlvl >= 8 ? 3 : 2;
   const PLACE_SVG = {
@@ -4815,7 +4816,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   function pageSettings() {
     if (!S.opt) S.opt = {};
     if (settingsPage === "delete") return `<div class="sheethead"><button class="mb" data-act="settings:main" aria-label="Back">‹ Back</button><h3>Delete my data</h3><span></span></div>
-      <p class="hint" style="margin:0;text-align:left">This deletes all your Glumis, coins, items and progress on this phone, and you start again from the beginning. It can't be undone.</p>
+      <p class="hint" style="margin:0;text-align:left">This deletes all your Glimlings, coins, items and progress on this phone, and you start again from the beginning. It can't be undone.</p>
       <div class="slist"><button class="setrow danger" data-act="wipe"><span>Delete everything</span><b></b><i>›</i></button></div>`;
     if (settingsPage === "backup") return `<div class="sheethead"><button class="mb" data-act="settings:main" aria-label="Back">‹ Back</button><h3>Save backup</h3><span></span></div>
       <p class="hint" style="margin:0;text-align:left">A save code holds your whole game. Copy it somewhere safe (a note or a message to yourself). To move to another phone, paste it there and load it.</p>
@@ -4890,15 +4891,15 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   const expSlots = () => S.xlvl >= 10 ? 3 : 2;
   const isAway = uid => (S.exps || []).some(x => x.uid === uid);
   function tripLoot(m, h) { const r = [{ k: "coins", n: Math.round((10 + m.lvl * 2) * h * GRADES[m.q].mul) }, { k: "leaves", n: 3 * h }]; if (h >= 4) r.push({ k: "plain", n: h / 4 }); if (h >= 8) r.push({ k: "bright", n: 1 }); return r; }
-  let expPick = null;  // null | hours chosen, waiting for a Glumi
+  let expPick = null;  // null | hours chosen, waiting for a Glimling
   function pageExp() {
     const X = S.exps || [], now = Date.now();
     if (expPick) {
       const free = S.mons.filter(m => !S.team.includes(m.uid) && !workingAt(m.uid) && !isAway(m.uid)).sort((a, b) => b.lvl - a.lvl);
       return `<div class="sheethead"><button class="mb" data-act="exppick:0" aria-label="Back">‹ Back</button><h3>Who goes?</h3><span></span></div>
-        <p class="hint" style="margin:0">${TRIPS.find(t => t.h === expPick).name}: ${expPick} hour${expPick > 1 ? "s" : ""}. Higher level and grade bring more back. Glumis in your team or at work can't go.</p>
+        <p class="hint" style="margin:0">${TRIPS.find(t => t.h === expPick).name}: ${expPick} hour${expPick > 1 ? "s" : ""}. Higher level and grade bring more back. Glimlings in your team or at work can't go.</p>
         ${free.length ? `<div class="slist">${free.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl}</small></span><span class="rchips">${rchips(tripLoot(m, expPick).slice(0, 2))}</span><button class="price give" data-act="send:${m.uid}">Send</button></div>`).join("")}</div>`
-          : `<p class="hint">No free Glumis. Catch more, or take one out of your team.</p>`}`;
+          : `<p class="hint">No free Glimlings. Catch more, or take one out of your team.</p>`}`;
     }
     return `<div class="sheethead"><button class="mb" data-act="homeplace:" aria-label="Back">‹ Back</button><h3>Expeditions</h3><span></span></div>
       <h3 class="grouph">Away · ${X.length} of ${expSlots()}</h3>
@@ -4922,15 +4923,15 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       const P = PLACES[homePlace];
       const free = S.mons.filter(m => !S.team.includes(m.uid) && !workingAt(m.uid)).sort((a, b) => workerRate(b, homePlace) - workerRate(a, homePlace));
       return `<div class="sheethead"><button class="mb" data-act="homepick:0" aria-label="Back">‹ Back</button><h3>Choose a worker</h3><span></span></div>
-        <p class="hint" style="margin:0">${P.els.join(" and ")} Glumis work best here. Glumis in your team can't work.</p>
+        <p class="hint" style="margin:0">${P.els.join(" and ")} Glimlings work best here. Glimlings in your team can't work.</p>
         ${free.length ? `<div class="slist">${free.map(m => `<div class="srow"><span class="ic">${art(m.sp, m.evo, 32)}</span><span class="txt"><b>${fname(m.sp, m.evo)}</b><small>${GRADES[m.q].name} · level ${m.lvl} · ${perHour(workerRate(m, homePlace))} ${P.unit} an hour</small></span>
           <button class="price give" data-act="hire:${m.uid}">Assign</button></div>`).join("")}</div>`
-          : `<p class="hint" style="margin:0">No free Glumis. Catch more, or take one out of your team.</p>`}`;
+          : `<p class="hint" style="margin:0">No free Glimlings. Catch more, or take one out of your team.</p>`}`;
     }
     if (homePlace) {
       const k = homePlace, P = PLACES[k], p = H[k], ws = placeWorkers(k), slots = HOME_SLOTS(), n = Math.floor(p.store);
       return `<div class="sheethead"><button class="mb" data-act="homeplace:" aria-label="Back">‹ Back</button><h3>${P.name}</h3><span></span></div>
-        <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} Glumis.</small>
+        <div class="minihero"><div class="hero placepic">${PLACE_SVG[k]}</div><div><div class="nmrow">${P.name}</div><small class="reqtxt">${P.about}. Best with ${P.els.join(" and ")} Glimlings.</small>
           <span class="reward">${resIcon(k)}<b>${perHour(placeRate(k))}</b>&nbsp;an hour</span></div></div>
         ${k === "jars" ? `<div class="jmake">${Object.keys(JAR_SLOW).map(j => `<button class="${jarMake() === j ? "on" : ""}" data-act="jarmake:${j}"><span>${IC.jar(JARS.find(x => x.k === j).c)}</span><b>${j[0].toUpperCase() + j.slice(1)}</b><small>${JAR_SLOW[j] === 1 ? "fastest" : JAR_SLOW[j] + "x slower"}</small></button>`).join("")}</div>` : ""}
         <div class="slist"><div class="srow"><span class="ic">${resIcon(k)}</span><span class="txt"><b>${n} ${P.unit} ready</b><small>Holds up to ${placeCap(k)} (${HOME_CAP_HOURS} hours of work)</small></span>
@@ -4960,11 +4961,11 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       <div class="iscene${ART["bg-home"] ? " painted" : ""}">${ART["bg-home"] ? `<img class="iland" src="${ART["bg-home"]}" alt="" draggable="false" style="object-fit:cover">` : HOME_ISLAND_SVG}${blds}</div>
             <div class="slist">${(() => { standTick(); const T = standState(), X = S.exps || [], now = Date.now(), backN = X.filter(x => now >= x.until).length;
         return `<button class="hrow" data-act="homeplace:stand"><span class="ic">${ART["bld-snack-stand"] ? artIcon("bld-snack-stand") : IC.coin}</span><span class="txt"><b>Snack Stand</b><small>${T.menu.length ? `${T.menu.reduce((a, d) => a + d.left, 0)} servings left · ${Math.floor(T.coins)} coins ready` : Math.floor(T.coins) ? `${Math.floor(T.coins)} coins ready` : "Cook dishes to sell"}</small></span>${Math.floor(T.coins) ? '<em class="bang">!</em>' : ""}<i>›</i></button>
-          <button class="hrow" data-act="homeplace:exp"><span class="ic">${ART["bld-balloon-dock"] ? artIcon("bld-balloon-dock") : IC.balloon}</span><span class="txt"><b>Expeditions</b><small>${X.length ? `${X.length} away${backN ? ` · ${backN} back home` : ""}` : "Send Glumis on trips"}</small></span>${backN ? '<em class="bang">!</em>' : ""}<i>›</i></button>`; })()}</div>`;
+          <button class="hrow" data-act="homeplace:exp"><span class="ic">${ART["bld-balloon-dock"] ? artIcon("bld-balloon-dock") : IC.balloon}</span><span class="txt"><b>Expeditions</b><small>${X.length ? `${X.length} away${backN ? ` · ${backN} back home` : ""}` : "Send Glimlings on trips"}</small></span>${backN ? '<em class="bang">!</em>' : ""}<i>›</i></button>`; })()}</div>`;
   }
   let teamTab = "team";
   const teamSeg = () => `<div class="seg">${[["team", "My team"], ["book", "Book"]].map(([k, n]) => `<button class="${teamTab === k ? "on" : ""}" data-act="teamtab:${k}">${n}</button>`).join("")}</div>`;
-  // ================= CREATURE MARKET: Purple and Gold Glumis for coins =================
+  // ================= CREATURE MARKET: Purple and Gold Glimlings for coins =================
   const MARKET_HOURS = 6, MARKET_SLOTS = 4;
   let confirmBuy = null;
   const kindPrice = (k, q) => marketPrice(q, k.lvl) * (k.boss ? 3 : 1);
@@ -5010,21 +5011,21 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     closePopup(); const n = 5, cost = JAR_PRICE[k] * n;
     const d = document.createElement("div"); d.className = "popwrap";
     d.innerHTML = `<div class="popbg"></div><div class="popup" role="dialog">${art(w.sp, w.evo, 70)}
-      <h3>Out of ${JAR_NAME[k]} jars</h3><p>Auto stopped: your rule throws ${JAR_NAME[k]} jars at ${GRADES[w.q].name} Glumis like ${fname(w.sp, w.evo)}. Go to the Shop to buy more, or walk on. You have ${S.coins} coins.</p>
+      <h3>Out of ${JAR_NAME[k]} jars</h3><p>Auto stopped: your rule throws ${JAR_NAME[k]} jars at ${GRADES[w.q].name} Glimlings like ${fname(w.sp, w.evo)}. Go to the Shop to buy more, or walk on. You have ${S.coins} coins.</p>
       <div class="popbtns"><button class="mb" data-act="jarwalk">Walk on</button><button class="mb" data-act="jarshop">Shop</button><button class="mb gold" data-act="jarbuy:${k}" ${S.coins >= cost ? "" : "disabled"}>Buy ${n} ${IC.coin}${cost}</button></div></div>`;
     document.body.appendChild(d);
   }
   function autoResume() { S.auto = true; autoSession = true; autoNext = performance.now() + 500; save(); render(); }
   // not enough keepsakes to ascend: open a duplicate's release page, or the shop row of that kind
   function goForKeepsakes(m, missing) { keepsakePopup(m, missing); }
-  let keepsFor = null;  // { uid } of the Glumi waiting to ascend while the player gets keepsakes in the shop
+  let keepsFor = null;  // { uid } of the Glimling waiting to ascend while the player gets keepsakes in the shop
   const keepsMissing = m => Math.max(0, (ASC_COST[ascOf(m)] || 0) - ((S.keepsakes[m.sp] || 0) + (S.shards || 0)));
   function keepsBox() {
     const m = keepsFor && mon(keepsFor.uid); if (!m) return "";
     const k = marketKinds().find(x => x.sp === m.sp), miss = keepsMissing(m), name = SP[m.sp].name;
     const btn = q => { const p = kindPrice(k, q); return `<button class="kbuy ${q >= 3 ? "pgold" : "ppurple"}" data-act="buykeep:${q}" ${S.coins >= p ? "" : "disabled"}><b>+${KEEPSAKES_BY_GRADE[q]} keepsakes</b><small>Buy and release a ${GRADES[q].name} ${name}</small><span>${IC.coin}${p}</span></button>`; };
     return `<div class="kbox"><div class="krow">${art(m.sp, m.evo, 44)}<div><b>Keepsakes for ${fname(m.sp, m.evo)}</b><small>${miss ? `${miss} more needed to ascend · you have ${S.keepsakes[m.sp] || 0}` : "Enough to ascend"}</small></div></div>
-      ${k ? `<div class="kbtns">${btn(2)}${btn(3)}</div>` : `<p class="hint" style="margin:0">${name} isn't sold in the shop. Catch more on the path or offer spare Glumis at the Star Shrine for star shards.</p>`}
+      ${k ? `<div class="kbtns">${btn(2)}${btn(3)}</div>` : `<p class="hint" style="margin:0">${name} isn't sold in the shop. Catch more on the path or offer spare Glimlings at the Star Shrine for star shards.</p>`}
       <button class="mb" data-act="keepsback">\u2039 Back to ${fname(m.sp, m.evo)}</button></div>`;
   }
   // ================= RELEASE SEVERAL =================
@@ -5048,7 +5049,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     return `<div class="sheethead"><button class="mb" data-act="relback" aria-label="Back">\u2039 Back</button><h3>Release ${name}s</h3><span class="shcount">${IC.keepsake || ""}${S.keepsakes[R.sp] || 0}</span></div>
       <div class="reltop"><span class="relsel">Selected: ${picked.length}</span><span class="seg mini">${[["grade", "Grade"], ["level", "Level"]].map(([k, nm]) => `<button class="${R.sort === k ? "on" : ""}" data-act="relsort:${k}">${nm}</button>`).join("")}</span><button class="mb" data-act="relflip" aria-label="Flip order">${R.up ? "\u2191" : "\u2193"}</button></div>
       ${pool.length ? `<div class="shgrid relgrid">${pool.map(x => `<button class="shtile${R.sel.includes(x.uid) ? " on" : ""}" data-act="relpick:${x.uid}" style="--gc:${GRADES[x.q].c}">${art(x.sp, x.evo, 48)}<span class="lv">Lv ${x.lvl}</span>${R.sel.includes(x.uid) ? '<i class="shck">\u2713</i>' : ""}</button>`).join("")}</div>`
-        : `<p class="hint">No spare ${name}s. Glumis in your team, locked, working or away can't be released here.</p>`}
+        : `<p class="hint">No spare ${name}s. Glimlings in your team, locked, working or away can't be released here.</p>`}
       <div class="relget"><b>You get:</b><span class="rchips">${keeps ? `<span class="rchip">${IC.keepsake || ""}${keeps} ${name} keepsake${keeps > 1 ? "s" : ""}</span>` : `<span class="relnone">nothing selected</span>`}${cores ? `<span class="rchip">${IC.core || IC.star}${cores} star core${cores > 1 ? "s" : ""}</span>` : ""}</span></div>
       <div class="relgrades"><span>Select by grade:</span>${[1, 2, 3, 4].map(gradeBtn).join("")}</div>
       <button class="mb gold pbig${R.sure ? " sure" : ""}" data-act="relgo" ${picked.length ? "" : "disabled"} style="justify-self:center">${R.sure ? `Tap again to release ${picked.length}` : `Release ${picked.length || ""}`}</button>`;
@@ -5082,7 +5083,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       <div class="popbtns"><button class="mb" data-act="closepop">Not now</button>${dupN ? `<button class="mb" data-act="keepsrel:${m.uid}">Release spares (${dupN})</button>` : ""}<button class="mb gold" data-act="keepsshop:${m.uid}">Go to the shop</button></div></div>`;
     document.body.appendChild(d);
   }
-  let marketFocus = null;  // a Glumi kind to scroll to and highlight (from the Ascend pop-up)
+  let marketFocus = null;  // a Glimling kind to scroll to and highlight (from the Ascend pop-up)
   function marketKinds() {
     const seen = new Set(), out = [];
     const owned = new Set(S.mons.map(m => m.sp));  // kinds you own are always for sale (for keepsakes), even from zones not open yet
@@ -5098,20 +5099,20 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
         <span class="mprices">${chip(k, 2)}${chip(k, 3)}</span></div>`).join("");
     return `<div class="head"><h2>Shop</h2><span class="pill">${IC.coin}${S.coins}</span></div>
       <div class="seg">${tabs.map(([k, n]) => `<button class="${shopTab === k ? "on" : ""}" data-act="shoptab:${k}">${n}</button>`).join("")}</div>
-      ${keepsBox()}<p class="hint" style="margin:0">Every Glumi of the zones you have opened. Release a Purple one for ${KEEPSAKES_BY_GRADE[2]} keepsakes.</p>
+      ${keepsBox()}<p class="hint" style="margin:0">Every Glimling of the zones you have opened. Release a Purple one for ${KEEPSAKES_BY_GRADE[2]} keepsakes.</p>
       <div class="slist">${rows}</div>`;
   }
   let autoPick = null;  // the rule whose choices are open, or null for the list
   const AUTO_RULES = [
-    { k: "catch", name: "Auto catch", about: "What Auto does when a Glumi appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
-    { k: "low", name: "Jar for Blue", about: "Which jar Auto and Quick catch throw at Blue Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
-    { k: "mid", name: "Jar for Purple", about: "Which jar Auto and Quick catch throw at Purple Glumis", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "catch", name: "Auto catch", about: "What Auto does when a Glimling appears", opts: [[true, "Catch it"], [false, "Stop and let me choose"]] },
+    { k: "low", name: "Jar for Blue", about: "Which jar Auto and Quick catch throw at Blue Glimlings", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
+    { k: "mid", name: "Jar for Purple", about: "Which jar Auto and Quick catch throw at Purple Glimlings", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"]] },
     { k: "high", name: "Jar for Gold and Rainbow", about: "Which jar Auto and Quick catch throw at the rarest grades", opts: [["plain", "Plain jar"], ["bright", "Bright jar"], ["star", "Star jar"], ["prism", "Prism jar"]] },
     { k: "treat", name: "Use treats on", about: "When Auto gives a treat before throwing", opts: [[2, "Purple and up"], [3, "Gold and up"], [9, "Never"]] },
-    { k: "only", name: "Catch", about: "Which Glumis Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
+    { k: "only", name: "Catch", about: "Which Glimlings Auto tries to catch", opts: [["all", "Everything"], ["new", "Only ones I don't have"]] },
     { k: "rivals", name: "Rival explorers", about: "What Auto does when a trainer challenges you", opts: [["fight", "Battle them"], ["quick", "Quick battle"], ["skip", "Walk on"]] },
     { k: "speed", name: "Catch speed", about: "How Auto throws jars", opts: [["normal", "Normal: aims for Perfect"], ["quick", "Quick: throws until done, shows the result"]] },
-  { k: "release", name: "Release extra Blues", about: "After Auto catches a Blue Glumi, it releases it for its keepsake when you already have this many spare Blues of that kind (team, favorites, locked and working Glumis don't count)", opts: [[0, "Never"], [3, "Keep 3 of each kind"], [5, "Keep 5 of each kind"], [10, "Keep 10 of each kind"]] },
+  { k: "release", name: "Release extra Blues", about: "After Auto catches a Blue Glimling, it releases it for its keepsake when you already have this many spare Blues of that kind (team, favorites, locked and working Glimlings don't count)", opts: [[0, "Never"], [3, "Keep 3 of each kind"], [5, "Keep 5 of each kind"], [10, "Keep 10 of each kind"]] },
   { k: "lantern", name: "Lucky lantern", about: "What Auto bets at the lantern (you get 1 to 2 times it back)", opts: [["glow", "Bet energy"], ["coins", "Bet coins"], ["skip", "Walk on"]] },
   ];
   function pageAuto() {
@@ -5122,7 +5123,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       <div class="slist">${R.opts.map(([v, n]) => `<button class="choice${C[R.k] === v ? " on" : ""}" data-act="cfg:${R.k}=${v}"><span>${n}</span><i>${C[R.k] === v ? "✓" : ""}</i></button>`).join("")}</div>`;
     return `<div class="head"><h2>Auto rules</h2><button class="mb gold" data-act="autocfg">Done</button></div>
       <div class="slist">${AUTO_RULES.map(r => `<button class="setrow" data-act="autopick:${r.k}"><span>${r.name}</span><b>${label(r)}</b><i>›</i></button>`).join("")}</div>
-      <p class="hint">Auto throws only the jar its rule names; when that jar runs out it stops and asks you to go to the Shop. Catch speed Quick throws until each Glumi is caught or runs away and shows just the result. Auto pauses at zone guardians and when energy runs out.</p>`;
+      <p class="hint">Auto throws only the jar its rule names; when that jar runs out it stops and asks you to go to the Shop. Catch speed Quick throws until each Glimling is caught or runs away and shows just the result. Auto pauses at zone guardians and when energy runs out.</p>`;
   }
   // ================= ATLAS =================
   let atlasZone = null, atlasPin = null, revealAnim = null, revealTrip = false;
@@ -5157,7 +5158,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const pts = ZONES.map((Z, i) => { const p = WORLD_PTS[i] || [50, 50], open = zoneOpen(i);
       return `<button class="wpt${open ? "" : " locked"}${i === S.zone ? " here" : ""}" data-act="atlaszone:${i}" style="left:${p[0]}%;top:${p[1]}%">${i === S.zone ? `<span class="wbal">${IC.balloon}</span>` : ""}<b>${open ? "" : IC.lock}${Z.name}</b><small>${caughtIn(i)}/${Z.sp.length} caught</small></button>`; }).join("");
     return `<div class="atlas"><div class="head"><h2>Atlas</h2><button class="round" data-act="map" aria-label="Back to the path" style="font-size:16px">Back</button></div>
-      <p class="hint" style="margin:0">Tap an island to see its Glumis</p><div class="wmap">${pts}</div></div>`;
+      <p class="hint" style="margin:0">Tap an island to see its Glimlings</p><div class="wmap">${pts}</div></div>`;
   }
   const LZ_CHECK = '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#5fcf6a" stroke="#fff" stroke-width="2"/><path d="M6.5 12.5l3.8 3.8 7.2-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const LZ_CARD = '<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 3l2.2 6.4L21 12l-6.8 2.6L12 21l-2.2-6.4L3 12l6.8-2.6z" fill="#fff" stroke="rgba(60,40,20,.35)" stroke-width="1"/></svg>';
@@ -5183,14 +5184,14 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const pinH = (sp, [x, y], big) => {
       const c = big ? !!st.cleared : !!st.caught[sp] && !waiting(sp), q = B[sp] ?? (big && st.cleared ? 1 : -1);
       const cls = waiting(sp) ? "reveal" : !c ? "unknown" : q >= g ? "lit" : "dim";
-      return `<button class="lzpin ${cls}${big ? " big" : ""}${g === 4 && cls === "lit" ? " rb" : ""}${atlasPin === sp ? " sel" : ""}${revealAnim === sp ? " pop" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${c ? SP[sp].name : waiting(sp) ? "New Glumi: tap to reveal" : "Not caught yet"}"><span class="lzin">${art(sp, 0, big ? 84 : 62)}</span></button>`
+      return `<button class="lzpin ${cls}${big ? " big" : ""}${g === 4 && cls === "lit" ? " rb" : ""}${atlasPin === sp ? " sel" : ""}${revealAnim === sp ? " pop" : ""}" data-act="atlaspin:${sp}" style="left:${x}%;top:${y}%" aria-label="${c ? SP[sp].name : waiting(sp) ? "New Glimling: tap to reveal" : "Not caught yet"}"><span class="lzin">${art(sp, 0, big ? 84 : 62)}</span></button>`
         + `${waiting(sp) ? `<span class="tapme" style="left:${x}%;top:${y}%">Tap!</span>` : ""}${revealAnim === sp ? `<span class="revburst" style="left:${x}%;top:${y}%"></span>` : ""}`;
     };
     const pos = LZ_POS[total] || Z.sp.map((_, k) => [50 + 34 * Math.cos(k / total * 6.283 - 1.57), 48 + 36 * Math.sin(k / total * 6.283 - 1.57)]);
     let info = "";
     if (atlasPin !== null) {
       const sp = atlasPin, s0 = SP[sp], boss = s0.tier === 3, has0 = S.caught[key(sp, 0)], has1 = s0.evo && S.caught[key(sp, 1)], known = has0 || S.seen[key(sp, 0)];
-      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Can appear on the path now" : `Appears once every Glumi here is caught (${caughtIn(z)} of ${Z.sp.length})`) : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
+      const status = boss ? (st.cleared ? "Caught: zone cleared" : bossReady(z) ? "Can appear on the path now" : `Appears once every Glimling here is caught (${caughtIn(z)} of ${Z.sp.length})`) : has0 ? `Caught · best grade ${GRADES[B[sp] ?? 1].name}` : known ? "Seen, not caught yet" : "Not found yet: keep walking here";
       info = `<div class="card pininfo lzinfo" data-act="atlaspin:${sp}"><div class="${known ? "" : "sil"}">${art(sp, 0, 70)}</div><div style="display:grid;gap:4px"><span class="nmrow">${known ? s0.name : "???"}</span>
         <div class="tags" style="justify-content:flex-start"><span class="tag2">${elDot(s0.el)}${EL[s0.el].name}</span><span class="tag2">${TIER[s0.tier].name}</span></div>
         <span class="stats"><span>${status}</span></span>${s0.evo ? `<div class="forms"><span>${has0 ? "\u2713" : "\u25cb"} ${known ? s0.name : "???"}</span><span>\u2192</span><span>${has1 ? "\u2713 " + s0.evo : "\u25cb Evolved form"}</span></div>` : ""}</div></div>`;
@@ -5203,8 +5204,8 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const newHere = Z.sp.some(sp => waiting(sp));
     return `<div class="lz${g === 4 ? " rbg" : ""}" style="--gc:${GRADES[g].c};${ART["bg-" + z] ? `--zbg:url(${ART["bg-" + z]})` : `--zbg:none;background-color:${Z.ground}`}">
       <div class="lzhead"><div><b>${Z.name}</b><small>Wild Lv ${Z.lv[0]}-${Z.lv[1]} · ${got}/${total} caught</small></div>${ART["map-world"] ? `<button class="round" data-act="atlasworld" style="font-size:15px">World</button>` : ""}</div>
-      ${open ? track + `<p class="lzpity">\u2726 ${rbPityText()}</p>` : `<p class="lzpity">${IC.lock} Catch every Glumi and the Guardian in ${ZONES[z - 1].name} first (${zoneProg(z - 1)} of ${zoneTotal(z - 1)})</p>`}
-      ${newHere ? `<p class="revhint lzrev">New Glumi caught! Tap its silhouette</p>` : revealTrip ? `<button class="big2 gold" data-act="revealback">${IC.run}Back to the path<small>Keep exploring ${ZONES[S.zone].name}</small></button>` : ""}
+      ${open ? track + `<p class="lzpity">\u2726 ${rbPityText()}</p>` : `<p class="lzpity">${IC.lock} Catch every Glimling and the Guardian in ${ZONES[z - 1].name} first (${zoneProg(z - 1)} of ${zoneTotal(z - 1)})</p>`}
+      ${newHere ? `<p class="revhint lzrev">New Glimling caught! Tap its silhouette</p>` : revealTrip ? `<button class="big2 gold" data-act="revealback">${IC.run}Back to the path<small>Keep exploring ${ZONES[S.zone].name}</small></button>` : ""}
       <div class="lzmap">${ART["bg-" + z] ? "" : `<div class="lzdrawn">${zoneMapSVG(Z)}</div>`}${Z.sp.map((sp, k) => pinH(sp, pos[k])).join("")}${pinH(Z.boss, [50, 48], true)}${info}</div>
       <div class="lzbar"><div class="lzgrade${g === 4 ? " rb" : ""}"><button data-act="agrade:-1" aria-label="Previous grade">\u2039</button><b>${GRADES[g].name}</b><button data-act="agrade:1" aria-label="Next grade">\u203A</button></div>${go}</div>
       <div class="zcards">${cards}</div>
@@ -5238,7 +5239,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const dots = (list, isMe) => list.map((m, i) => `<span class="tdot${(isMe ? m.hp <= 0 : i < BT.fi) ? " out" : ""}${(isMe ? m === me : i === BT.fi) ? " cur" : ""}">${art(m.sp, m.evo, 30)}</span>`).join("");
     const sw = t.map(m => `<button class="tsw${m === me ? " cur" : ""}" data-act="swap:${m.uid}" ${m === me || m.hp <= 0 || BT.swapCd > 0 ? "disabled" : ""} aria-label="Switch to ${fname(m.sp, m.evo)}">${m === me ? `<span class="tagcur">Fighting</span>` : ""}${art(m.sp, m.evo, 46)}${bar(m.hp, maxHp(m))}<span class="cd" ${BT.swapCd > 0 && m !== me && m.hp > 0 ? "" : "hidden"}>${Math.ceil(BT.swapCd)}</span></button>`).join("");
     const capb = (btn, label) => `<div class="capw">${btn}<span class="cap">${label}</span></div>`;
-    const picker = BT.pick > 0 ? `<div class="picker"><p>Choose your next Glumi</p><div class="prow">${t.filter(m => m.hp > 0).map(m => `<button class="pk" data-act="pickmon:${m.uid}">${art(m.sp, m.evo, 56)}${bar(m.hp, maxHp(m))}</button>`).join("")}</div><b id="pickT">${Math.ceil(BT.pick)}</b></div>` : "";
+    const picker = BT.pick > 0 ? `<div class="picker"><p>Choose your next Glimling</p><div class="prow">${t.filter(m => m.hp > 0).map(m => `<button class="pk" data-act="pickmon:${m.uid}">${art(m.sp, m.evo, 56)}${bar(m.hp, maxHp(m))}</button>`).join("")}</div><b id="pickT">${Math.ceil(BT.pick)}</b></div>` : "";
     $("aview").innerHTML = `${picker}${autoChip()}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(t, true)}</div></div><div class="aside r"><span class="aname">${BT.name || "Trainer"}</span><div class="tdots">${dots(BT.foes, false)}</div></div></div>
       <div class="afield">${arenaSVG()}
         <div class="hpcard me"><div class="nm"><span>${me.nick || fname(me.sp, me.evo)}</span><span>Lv ${me.lvl}</span></div><div id="meHp">${bar(me.hp, maxHp(me))}</div><div class="stx" id="meSt">${stChips(BT.me)}</div></div>
@@ -5255,12 +5256,12 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       </div>`;
   }
   const HINTS = [
-    ["walk", () => view === "explore" && !E && statsState().steps < 3, "Tap the compass to walk. Each step costs energy (top left) and finds Glumis, chests and trainers."],
-    ["catch", () => view === "explore" && E && E.type === "wild", "A wild Glumi! Tap Throw to catch it with a jar. Better jars catch rarer Glumis."],
-    ["team", () => view === "explore" && !E && S.mons.length >= 2, "You caught a Glumi! Open Glumis at the bottom to see your team and level them up with leaves."],
-    ["mult", () => view === "explore" && !E && S.mons.length >= 4 && S.glow >= 5, "The x1 button above the compass picks a multiplier: more energy a step, rarer Glumis, bigger rewards."],
+    ["walk", () => view === "explore" && !E && statsState().steps < 3, "Tap the compass to walk. Each step costs energy (top left) and finds Glimlings, chests and trainers."],
+    ["catch", () => view === "explore" && E && E.type === "wild", "A wild Glimling! Tap Throw to catch it with a jar. Better jars catch rarer Glimlings."],
+    ["team", () => view === "explore" && !E && S.mons.length >= 2, "You caught a Glimling! Open Glimlings at the bottom to see your team and level them up with leaves."],
+    ["mult", () => view === "explore" && !E && S.mons.length >= 4 && S.glow >= 5, "The x1 button above the compass picks a multiplier: more energy a step, rarer Glimlings, bigger rewards."],
     ["auto", () => view === "explore" && !E && statsState().steps >= 15, "Hold the compass to turn on Auto: it walks and catches for you. Rules sets how."],
-    ["home", () => view === "explore" && !E && S.xlvl >= 2 && S.mons.length >= 4, "Home (bottom right) is your island. Put spare Glumis to work there for leaves, energy and coins."],
+    ["home", () => view === "explore" && !E && S.xlvl >= 2 && S.mons.length >= 4, "Home (bottom right) is your island. Put spare Glimlings to work there for leaves, energy and coins."],
     ["arena", () => view === "explore" && !E && S.xlvl >= 3, "The Arena has gyms, the Ladder and Cloud Climb. Win fights for coins, eggs and charms."],
   ];
   function maybeHint() {
@@ -5409,17 +5410,17 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     if (e.target.id === "bq") { bq = e.target.value.trim().toLowerCase(); document.querySelectorAll(".book .cell").forEach(c => { c.hidden = !!bq && !(c.dataset.n || "").includes(bq); }); document.querySelectorAll(".bookzone").forEach(z => { z.hidden = !!bq && !z.querySelector(".cell:not([hidden])"); }); }
   });
   document.addEventListener("change", e => { if (e.target.id === "tsort") { S.ui = S.ui || {}; S.ui.sort = e.target.value; save(); render(); } });
-  const HELP = { "view:shop": "Shop: jars, boosts (multipliers and the energy pack), Glumis and Requests.", goreq: "Requests: islanders ask for Glumis and pay moonfruit or energy.",
+  const HELP = { "view:shop": "Shop: jars, boosts (multipliers and the energy pack), Glimlings and Requests.", goreq: "Requests: islanders ask for Glimlings and pay moonfruit or energy.",
     "view:tasks": "Tasks: starter, daily, challenge and lifetime goals, each with a reward.", "view:mail": "Mailbox: gifts that come with game updates.", giftopen: "Daily gift: one reward a day; day 7 is a Purple egg.",
-    gobook: "Book: every Glumi form you have found.", map: "Atlas: zones, their maps and zone rewards.", gorace: "Island Race: win fights for race points; the top places get rewards.",
-    auto: "Auto walks and catches for you, following your Rules.", autocfg: "Rules: how Auto catches, fights, bets and releases.", mult: "Multiplier: energy per step. Higher ones find rarer Glumis and give bigger rewards.",
+    gobook: "Book: every Glimling form you have found.", map: "Atlas: zones, their maps and zone rewards.", gorace: "Island Race: win fights for race points; the top places get rewards.",
+    auto: "Auto walks and catches for you, following your Rules.", autocfg: "Rules: how Auto catches, fights, bets and releases.", mult: "Multiplier: energy per step. Higher ones find rarer Glimlings and give bigger rewards.",
     evclaim: "Daily points: catches and fight wins fill these bars; each full bar gives its reward.", eventinfo: "This weekend's event. Events run every Saturday and Sunday.", zstep: "Go to the next or previous zone.",
     lockmon: "Lock: it can't be sold, released or given away.", favmon: "Favorite: protected like the lock and listed first.", lvlreset: "Reset levels: back to level 1, and you get the leaves and keepsakes back.",
     "spage:bye": "Sell it for coins or release it for keepsakes.", addteam: "Add it to your team of 3.", den: "Take it out of the team.", lead: "Make it the leader: it fights first.",
     shield: "Shield: halves the damage you take for 4 seconds. Use it when a boss is charging.", autoskill: "Auto uses skills and the shield for you.", speed: "Fight speed.", retreat: "Give up this fight.",
-    cast: "A skill: tap it when it lights up. It costs fight energy (the yellow bar).", bestteam: "Picks your best 3 Glumis for this fight from the forecast.", lvteam: "Levels up your team with your leaves, lowest level first.",
-    claimall: "Collects every reward that is ready.", charmfor: "Charms give a Glumi extra attack, defense, HP or fight energy.", cmpstart: "Compare this Glumi with another one.",
-    hudGlow: "Energy: every step costs energy. It refills by itself; the cap grows with your Explorer level.", hudCoins: "Coins: for jars, boosts, Glumis and evolving.", hudLeaves: "Leaves: for leveling up Glumis." };
+    cast: "A skill: tap it when it lights up. It costs fight energy (the yellow bar).", bestteam: "Picks your best 3 Glimlings for this fight from the forecast.", lvteam: "Levels up your team with your leaves, lowest level first.",
+    claimall: "Collects every reward that is ready.", charmfor: "Charms give a Glimling extra attack, defense, HP or fight energy.", cmpstart: "Compare this Glimling with another one.",
+    hudGlow: "Energy: every step costs energy. It refills by itself; the cap grows with your Explorer level.", hudCoins: "Coins: for jars, boosts, Glimlings and evolving.", hudLeaves: "Leaves: for leveling up Glimlings." };
   let helpT = null, helpEat = false;
   function helpFor(el) { const a = el.dataset && el.dataset.act; if (a) { if (a === "step") return null; return HELP[a] || HELP[a.split(":")[0]] || null; } return HELP[el.id] || null; }
   function showHelp(el, text) {
@@ -5442,7 +5443,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     if (a === "step") { const M = curM(); return [`Each step needs ${M.m} energy and you have ${S.glow}. Energy refills by itself, or buy an energy pack.`, "goboost", "Energy pack"]; }
     if (a === "lvpopen" && m) return [m.lvl >= (MAX_ASC + 1) * ASC_EVERY ? "It reached the highest level." : `Level ${lvlCap()} is the highest for now: raise your Explorer level (now ${S.xlvl}) to go higher.`, null];
     if ((a === "lvl" || a === "lvlmax") && m) { if (m.lvl >= ascTop(m)) return ["It reached its level limit: ascend it to keep leveling.", null];
-      if (m.lvl >= lvlCap()) return [`Glumis can't pass level ${lvlCap()} yet: raise your Explorer level by walking and catching.`, "view:explore", "Go explore"];
+      if (m.lvl >= lvlCap()) return [`Glimlings can't pass level ${lvlCap()} yet: raise your Explorer level by walking and catching.`, "view:explore", "Go explore"];
       return [`The next level costs ${5 + m.lvl * 3} leaves and you have ${S.leaves}. Bushes, herbs, catches and the Orchard give leaves.`, "view:home", "Go Home"]; }
     if (a === "evolve" && m) { if (m.lvl < EVOLVE_AT) return [`It can evolve at level ${EVOLVE_AT}.`, null]; if (S.fruit < EVOLVE_FRUIT) return [`Evolving needs ${EVOLVE_FRUIT} moonfruit and you have ${S.fruit}. Requests give moonfruit.`, "goreq", "Requests"]; return [`Evolving costs 60 coins and you have ${S.coins}.`, null]; }
     if (a === "gymd") return [`Beat all three trainers on ${DIFF[n - 1] || "the easier level"} first.`, null];
@@ -5487,7 +5488,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const day = t => { const d = new Date(t), h = d.getHours(); if (h >= 22) { d.setDate(d.getDate() + 1); d.setHours(8, 30, 0, 0); return d.getTime(); } if (h < 8 || (h === 8 && d.getMinutes() < 30)) { d.setHours(8, 30, 0, 0); return d.getTime(); } return t; };
     if (S.glow < cap) L.push({ id: 1, at: day(now + (cap - S.glow - 1) * glowEvery() + Math.max(0, glowEvery() - (now - S.glowT))), title: "Energy is full", text: "Your energy is full. Time to explore Glimmer Isle!" });
     try { homeTick(); let i = 0; for (const k in PLACES) { const r = placeRate(k), st = homeState()[k].store, c = placeCap(k); if (r > 0 && st < c) L.push({ id: 10 + i, at: day(now + (c - st) / r * 3600000), title: `${PLACES[k].name} is full`, text: "Collect it so your workers keep going." }); i++; } } catch {}
-    (S.exps || []).forEach((x, i) => { if (x.until > now) { const m = mon(x.uid); L.push({ id: 20 + i, at: day(x.until), title: "Back from the expedition", text: `${m ? nameOf(m) : "Your Glumi"} is home with a find.` }); } });
+    (S.exps || []).forEach((x, i) => { if (x.until > now) { const m = mon(x.uid); L.push({ id: 20 + i, at: day(x.until), title: "Back from the expedition", text: `${m ? nameOf(m) : "Your Glimling"} is home with a find.` }); } });
     const g = new Date(); g.setDate(g.getDate() + 1); g.setHours(9, 0, 0, 0); L.push({ id: 2, at: g.getTime(), title: "Daily gift", text: "Your daily gift is waiting on Glimmer Isle." });
     return L;
   }
@@ -5536,7 +5537,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     else if (a === "wipe") wipeData();
     else if (a === "rivalquick") quickRival(false);
     else if (a === "bestteam" && prep) { const b = bestTeam(prep.foes), cur = fightOdds(team(), prep.foes);
-      if (!b) toast("No Glumis to pick from");
+      if (!b) toast("No Glimlings to pick from");
       else if (cur && b.r.margin <= cur.margin + .001 && b.p.length === team().length) toast("Your team is already the best one for this fight");
       else { S.team = b.p.map(m => m.uid); save(); sfx("claim"); toast(`Best team: ${b.p.map(m => fname(m.sp, m.evo)).join(", ")}`); render(); } }
     else if (a === "relopen") { const m = mon(n); if (m) openRelease(m.sp, null, 0, m.uid); }
@@ -5627,8 +5628,8 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     else if (a === "tsearch") { tSearch = !(tSearch || tq); if (!tSearch) tq = ""; render(); if (tSearch) setTimeout(() => { const i = $("tq"); if (i) i.focus(); }, 30); }
     else if (a === "tclear") { tEl = null; tQ = null; tSpare = false; render(); }
     else if (a === "trelease") { const sp = Object.entries(S.mons.filter(isSpare).reduce((o, m) => (o[m.sp] = (o[m.sp] || 0) + 1, o), {})).sort((x, y) => y[1] - x[1])[0];  // the kind you have most spares of
-      if (sp) { const m = S.mons.find(x => x.sp === +sp[0] && isSpare(x)); openRelease(+sp[0], null, 0, m && m.uid); } else toast("No spare Glumis: team, working, locked and favourite ones are kept"); }
-    else if (a === "cmpstart") { cmpA = n; sheetUid = null; view = "team"; render(); toast("Now tap the Glumi to compare with"); }
+      if (sp) { const m = S.mons.find(x => x.sp === +sp[0] && isSpare(x)); openRelease(+sp[0], null, 0, m && m.uid); } else toast("No spare Glimlings: team, working, locked and favourite ones are kept"); }
+    else if (a === "cmpstart") { cmpA = n; sheetUid = null; view = "team"; render(); toast("Now tap the Glimling to compare with"); }
     else if (a === "cmpcancel") { cmpA = null; render(); }
     else if (a === "cmpswap") { const [ua, ub] = arg.split("-").map(Number), i = S.team.indexOf(ua); if (i >= 0 && !S.team.includes(ub) && !isAway(ub)) { S.team[i] = ub; save(); closePopup(); render(); toast(`${nameOf(mon(ub))} joined the team`); } }
     else if (a === "hintok") { S.hints = S.hints || {}; S.hints[arg] = 1; save(); maybeHint(); }
@@ -5658,7 +5659,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     else if (a === "updrestart") { const g = appBridge(); if (g) g.restart(); }
     else if (a === "redeem") { const i = $("codeIn"); redeem(i && i.value); }
     else if (a === "view") {
-      if (arg === "team") teamSub = "list";  // the Glumis tab always opens on the collection
+      if (arg === "team") teamSub = "list";  // the Glimlings tab always opens on the collection
       const from = tabOf(showMap ? "atlas" : view), to = tabOf(arg), keepPrep = to === "arena" && from === "team" && arenaSub === "prep";
       if (from !== to) resetTab(to, keepPrep);
       if (arg !== "shrine") shrineSure = false;
@@ -5680,7 +5681,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     else if (a === "step") step();
     else if (a === "mult") { const open = MULTS.filter(x => multOpen(x) || x.m === curM().m), i = open.findIndex(x => x.m === curM().m), nextLock = MULTS.find(x => !multOpen(x));
       S.mult = open[(i + 1) % open.length].m; save(); renderActions();
-      toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} energy, or unlock it in the Shop` : `x${S.mult}: ${S.mult} energy a step${S.mult > 1 ? ", rarer Glumis and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} energy or the Shop` : ""}`); }
+      toast(open.length < 2 ? `x${nextLock.m} needs ${multNeed(nextLock)} energy, or unlock it in the Shop` : `x${S.mult}: ${S.mult} energy a step${S.mult > 1 ? ", rarer Glimlings and bigger rewards" : ""}${nextLock ? ` · x${nextLock.m} needs ${multNeed(nextLock)} energy or the Shop` : ""}`); }
     else if (a === "auto") { S.auto = !S.auto; autoSession = S.auto; if (S.auto) { autoStat.caught = 0; autoNext = performance.now() + 400; } render(); }
     else if (a === "autospd") { S.autoSpd = AUTO_SPEEDS[(AUTO_SPEEDS.indexOf(autoSpd()) + 1) % AUTO_SPEEDS.length]; save(); toast(`Auto speed ×${autoSpd()}`); render(); }
     else if (a === "autopause") { S.auto = !S.auto; if (S.auto) autoNext = performance.now() + 600; if (BT && BT.byAuto) { BT.auto = S.auto; } toast(S.auto ? "Auto continues" : "Auto paused"); render(); }
@@ -5726,7 +5727,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     else if (a === "closepop") closePopup();
     else if (a === "jarbuy") { const cost = JAR_PRICE[arg] * 5; if (S.coins >= cost) { S.coins -= cost; S.jars[arg] += 5; sfx("coin"); closePopup(); toast(`Bought 5 ${JAR_NAME[arg]} jars`); autoResume(); } }
     else if (a === "jarwalk") { closePopup(); nextWild(); autoResume(); }
-    else if (a === "jarshop") { closePopup(); view = "shop"; shopTab = "jars"; showMap = false; render(); window.scrollTo(0, 0); toast("Buy jars, then go back to the Glumi"); }
+    else if (a === "jarshop") { closePopup(); view = "shop"; shopTab = "jars"; showMap = false; render(); window.scrollTo(0, 0); toast("Buy jars, then go back to the Glimling"); }
     else if (a === "shoptab") { shopTab = arg; confirmBuy = null; reqPick = null; confirmGive = null; render(); }
     else if (a === "reqpick") { reqPick = arg === "" ? null : +arg; confirmGive = null; render(); window.scrollTo(0, 0); const r = reqPick !== null && S.requests[reqPick]; if (r && !r.done && !reqMatches(r).length && reqBuyOpt(r)) reqBuyPopup(reqPick); }
     else if (a === "reqbuypop") reqBuyPopup(n);
@@ -5779,7 +5780,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     else if (a === "spage") { sheetPage = arg; confirmRelease = null; render(); const sh = document.querySelector(".sheet"); if (sh) sh.scrollTop = 0; }
     else if (a === "closesheet") { sheetUid = null; sheetPage = "main"; lvPick = null; render(); }
     else if (a === "addteam") { sheetUid = null; if (S.team.length < slots()) { S.team.push(n); save(); toast("Added to your team"); } else { swapIn = n; } render(); window.scrollTo(0, 0); }
-    else if (a === "pickslot") { if (swapIn) { S.team.push(swapIn); swapIn = null; save(); toast("Added to your team"); render(); } else toast("Tap a Glumi below, then Add to team"); }
+    else if (a === "pickslot") { if (swapIn) { S.team.push(swapIn); swapIn = null; save(); toast("Added to your team"); render(); } else toast("Tap a Glimling below, then Add to team"); }
     else if (a === "swapto") { if (swapIn) { S.team[n] = swapIn; swapIn = null; save(); toast("Team updated"); render(); } }
     else if (a === "cancelswap") { swapIn = null; render(); }
     else if (a === "lead") { S.team = [n, ...S.team.filter(u => u !== n)]; save(); render(); }
@@ -6126,7 +6127,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     return { pairs, open: [...open.values()].filter(s => srvNow() - s._t < MM_FRESH) };
   }
   function mmStart() {
-    if (MM || R || !S.started) return; if (!team().length) return toast("Put Glumis in your team first");
+    if (MM || R || !S.started) return; if (!team().length) return toast("Put Glimlings in your team first");
     MM = { t0: Date.now(), day: OL_DAY(), log: [], seen: new Set(), rooms: new Set(), es: null, renewT: 0, looking: 0 }; mmConnect(); mmSeek();
   }
   function mmStop(say) { const M = MM; if (!M) return; MM = null; if (M.es) try { M.es.close(); } catch {} if (say) olPost("mm-" + M.day, { t: "stop", pid: olState().pid }); }
@@ -6170,12 +6171,12 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const t = $("mmT"); if (t) { const s = Math.floor((Date.now() - M.t0) / 1000); t.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
     const n = $("mmN"); if (n) n.textContent = mmLookingText();
   }, 1000);
-  // ---------- live duel: best of 3 rounds; each round both pick up to 3 Glumis and fight it out live ----------
+  // ---------- live duel: best of 3 rounds; each round both pick up to 3 Glimlings and fight it out live ----------
   // Both phones run the same fight tick by tick (0.1 s); side 0 is the room's host, side 1 the guest. Only taps travel, as room
   // messages {t:"act", r, k: tick, a}. A tap counts LDELAY ticks after it was made, so it usually reaches the other phone in time;
   // one that arrives after its tick was played rewinds the fight to just before it and plays it again with the tap.
   // A tap the database stamped more than LGRACE after its tick never counts (both phones see the same stamp), so both phones
-  // get the same fight, and a result is final LGRACE after the last Glumi falls. A fight starts LLEAD after the later pick.
+  // get the same fight, and a result is final LGRACE after the last Glimling falls. A fight starts LLEAD after the later pick.
   // A player whose internet drops keeps fighting with basic attacks (and Auto, if it was on): nobody waits.
   let duelSel = null, LV = null, lvTimer = null;
   const LDT = .1, LDELAY = 3, LGRACE = 1500, LLEAD = 3000, LCAP = 18000, LPICK = 50, LFALL = 10;   // ticks: 5 s to choose, 1 s to fall
@@ -6232,7 +6233,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     if (a === "gu") return lvEnd(L, 1 - si);
     if (a === "au1" || a === "au0") { s.au = a === "au1"; return; }
     if (/^pk\d$/.test(a)) { const i = +a[2]; if (s.pick > 0 && s.hp[i] > 0) { s.cur = i; s.pick = 0; s.t = 0; } return; }
-    if (L.fall > 0 || L.s.some(x => x.pick > 0) || s.hp[s.cur] <= 0) return;   // nothing else while a Glumi falls or someone chooses
+    if (L.fall > 0 || L.s.some(x => x.pick > 0) || s.hp[s.cur] <= 0) return;   // nothing else while a Glimling falls or someone chooses
     if (a === "x" || a === "s") lvCast(L, si, a);
     else if (a === "sh") lvShield(L, si);
     else if (/^sw\d$/.test(a)) { const i = +a[2]; if (s.cd <= 0 && i !== s.cur && s.hp[i] > 0) { s.cur = i; s.cd = 8; s.t = 0; } }
@@ -6338,7 +6339,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const dots = s => s.ms.map((m, i) => `<span class="tdot${s.hp[i] <= 0 ? " out" : ""}${i === s.cur ? " cur" : ""}">${art(m.sp, m.evo, 30)}</span>`).join("");
     const sw = ms.ms.map((m, i) => { const cur = i === ms.cur; return `<button class="tsw${cur ? " cur" : ""}" data-act="swap:${i}" ${cur || ms.hp[i] <= 0 || ms.cd > 0 ? "disabled" : ""} aria-label="Switch to ${fname(m.sp, m.evo)}">${cur ? `<span class="tagcur">Fighting</span>` : ""}${art(m.sp, m.evo, 46)}${bar(ms.hp[i], maxHp(m))}<span class="cd" ${ms.cd > 0 && !cur && ms.hp[i] > 0 ? "" : "hidden"}>${Math.ceil(ms.cd)}</span></button>`; }).join("");
     const capb = (btn, label) => `<div class="capw">${btn}<span class="cap">${label}</span></div>`;
-    const picker = ms.pick > 0 ? `<div class="picker"><p>Choose your next Glumi</p><div class="prow">${ms.ms.map((m, i) => ms.hp[i] > 0 ? `<button class="pk" data-act="pickmon:${i}">${art(m.sp, m.evo, 56)}${bar(ms.hp[i], maxHp(m))}</button>` : "").join("")}</div><b id="pickT">${Math.ceil(ms.pick / 10)}</b></div>` : "";
+    const picker = ms.pick > 0 ? `<div class="picker"><p>Choose your next Glimling</p><div class="prow">${ms.ms.map((m, i) => ms.hp[i] > 0 ? `<button class="pk" data-act="pickmon:${i}">${art(m.sp, m.evo, 56)}${bar(ms.hp[i], maxHp(m))}</button>` : "").join("")}</div><b id="pickT">${Math.ceil(ms.pick / 10)}</b></div>` : "";
     const note = cdn > 0 ? `<div class="lvnote big">${cdn}</div>` : V.L.over ? `<div class="lvnote">${V.L.win === V.mi ? "You win the round!" : other + " wins the round"}</div>` : ts.pick > 0 ? `<div class="lvnote">${other} is choosing...</div>` : "";
     $("aview").innerHTML = `${picker}<div class="ahead"><div class="aside"><span class="aname">You</span><div class="tdots">${dots(ms)}</div></div><div class="aside r"><span class="aname">${other}</span><div class="tdots">${dots(ts)}</div></div></div>
       <div class="afield">${arenaSVG()}<span class="lvtag${R && !R.net ? " off" : ""}">${R && !R.net ? "Reconnecting..." : "LIVE · Round " + V.r}</span>${note}
@@ -6376,10 +6377,10 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   }
   function duelReady() {
     if (!R) return; const D = duelRounds(), cur = D.rounds.find(x => !x.fin); if (!cur) return;
-    const list = (duelSel || S.team).map(mon).filter(Boolean).slice(0, 3); if (!list.length) return toast("Pick at least one Glumi");
+    const list = (duelSel || S.team).map(mon).filter(Boolean).slice(0, 3); if (!list.length) return toast("Pick at least one Glimling");
     if (duelPick(cur.r, olState().pid)) return; roomPost({ t: "pick", r: cur.r, team: snapTeam(list), au: !!S.autoSkill }); toast("Ready! Waiting for your friend"); duelSel = null;
   }
-  // ---------- trade: each puts up one spare Glumi; when both say OK to the same two, both phones swap ----------
+  // ---------- trade: each puts up one spare Glimling; when both say OK to the same two, both phones swap ----------
   let tradePickOn = false;
   const tradeOffer = pid => { let o = null; for (const x of R.log) if (x.t === "offer" && x.pid === pid) o = x; return o; };
   const tradeOk = pid => { let o = null; for (const x of R.log) if ((x.t === "ok" || x.t === "offer") && x.pid === pid) o = x; return o && o.t === "ok" ? o : null; };
@@ -6392,7 +6393,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   function tradeSync() {
     const T = tradeState(), O = olState(); if (!T || !T.okMe || !T.okThem || O.done[R.code]) return;
     const m = mon(T.mine.uid); O.done[R.code] = 1;
-    if (!m || !isSpare(m)) { save(); toast("Trade stopped: your Glumi isn't free to trade any more"); return; }
+    if (!m || !isSpare(m)) { save(); toast("Trade stopped: your Glimling isn't free to trade any more"); return; }
     const g = T.theirs.mon && snapFoe(T.theirs.mon); if (!g) { save(); return; }
     S.mons = S.mons.filter(x => x.uid !== m.uid);
     delete g.real; delete g.xc; g.uid = S.nextUid++; g.hp = maxHp(g); g.isNew = 1; g.from = String(T.theirs.name || "").slice(0, 20); S.mons.push(g);
@@ -6401,7 +6402,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     setTimeout(() => reveal(g, "Traded!"), 200);
   }
   function tradePut(uid) {
-    const m = mon(uid); if (!m || !R) return; if (!isSpare(m)) return toast("Only spare Glumis can be traded (not in the team, locked, a favorite, working or away)");
+    const m = mon(uid); if (!m || !R) return; if (!isSpare(m)) return toast("Only spare Glimlings can be traded (not in the team, locked, a favorite, working or away)");
     tradePickOn = false; roomPost({ t: "offer", uid, mon: snapMon(m) }); render();
   }
   function tradeAccept() { const T = tradeState(); if (!T || !T.mine || !T.theirs) return; roomPost({ t: "ok", h: T.pair }); toast("OK sent: the trade happens when your friend says OK too"); }
@@ -6409,7 +6410,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   function olIdeas() {
     closePopup(); const O = olState(), sentToday = (O.ideas || []).filter(x => x.d === today()).length;
     const d = document.createElement("div"); d.className = "popwrap";
-    d.innerHTML = `<div class="popbg" data-act="closepop"></div><div class="popup olidea" role="dialog"><h3>Suggest an idea</h3><p>A new Glumi, a game mode, something that's hard to find or a bug: every message is read.</p>
+    d.innerHTML = `<div class="popbg" data-act="closepop"></div><div class="popup olidea" role="dialog"><h3>Suggest an idea</h3><p>A new Glimling, a game mode, something that's hard to find or a bug: every message is read.</p>
       <textarea id="olidtx" maxlength="800" rows="5" placeholder="Your idea"></textarea>
       <p class="hint">Please don't write private details: messages travel through a public message service.</p>
       <div class="popbtns"><button class="mb" data-act="closepop">Close</button><button class="mb gold" data-act="olidsend" ${sentToday >= 5 ? "disabled" : ""}>Send</button></div></div>`;
@@ -6471,7 +6472,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
         <p class="hint">You can keep playing: the duel opens as soon as someone is found.</p>
         <button class="mb pbig" data-act="olfindstop">Stop looking</button>`;
       if (!R || (R.kind && R.kind !== kind)) return `${head}
-        <p class="hint" style="margin:6px 0 10px">${kind === "duel" ? "Both phones at the same time: best of 3 rounds. Pick 3 Glumis each round, then fight live: skills, shield and switching, until one team falls." : "Both phones at the same time: each puts up one spare Glumi, both say OK, and they swap."}</p>
+        <p class="hint" style="margin:6px 0 10px">${kind === "duel" ? "Both phones at the same time: best of 3 rounds. Pick 3 Glimlings each round, then fight live: skills, shield and switching, until one team falls." : "Both phones at the same time: each puts up one spare Glimling, both say OK, and they swap."}</p>
         ${kind === "duel" ? `<button class="mb gold pbig" data-act="olfind">Find match</button><p class="hint" style="margin:4px 0 12px">Fight anyone who is looking right now.</p><p class="olor">or play a friend</p>` : ""}
         <button class="mb ${kind === "duel" ? "" : "gold "}pbig" data-act="olmake:${kind}">Make a room</button>
         <div class="oladd"><input id="olroom" maxlength="6" placeholder="Room code" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="mb" data-act="olenter:${kind}">Join</button></div>`;
@@ -6492,22 +6493,22 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
         if (cur.live) return `${head}${score}<div class="olroom"><b>Round ${cur.r}</b><small>The fight is on!</small></div><button class="mb gold pbig" data-act="olfight">Back to the fight</button>${emo}`;
         if (picked) return `${head}${score}<div class="olroom"><b>Round ${cur.r}</b><small>Ready! Waiting for ${olEsc(other.name)} to pick...</small><span class="olpicks">${snapFoes(picked.team).map(m => art(m.sp, m.evo, 54)).join("")}</span></div>${emo}`;
         const sel = (duelSel || S.team.slice()).filter(u => mon(u)), cands = S.mons.slice().sort((a, b) => monPower(b) - monPower(a)).slice(0, 24);
-        return `${head}${score}<p class="hint" style="margin:4px 0"><b>Round ${cur.r}:</b> pick up to 3 Glumis (first one fights first), then Ready.</p>
+        return `${head}${score}<p class="hint" style="margin:4px 0"><b>Round ${cur.r}:</b> pick up to 3 Glimlings (first one fights first), then Ready.</p>
           <div class="olsel">${[0, 1, 2].map(i => { const m = mon(sel[i]); return m ? `<button class="pmbtn" data-act="olunsel:${m.uid}">${art(m.sp, m.evo, 54)}<span class="lv">Lv ${m.lvl}</span></button>` : `<span class="pmbtn padd">+</span>`; }).join("")}</div>
           <button class="mb gold pbig" data-act="olready" ${sel.length ? "" : "disabled"}>Ready</button>
           <div class="olgrid">${cands.map(m => `<button class="olpick${sel.includes(m.uid) ? " on" : ""}" data-act="olsel:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 52)}<small>Lv ${m.lvl} · ${monPower(m)}</small></button>`).join("")}</div>${emo}`;
       }
       const T = tradeState(), mine = T && T.mine, theirs = T && T.theirs, done = O.done[R.code];
-      const card = (o, who) => { if (!o) return `<div class="oltc empty"><small>${who === "me" ? "Pick a Glumi to put up" : "Waiting for " + olEsc(other.name) + "..."}</small></div>`; const g = snapFoe(o.mon); if (!g) return ""; delete g.real;
+      const card = (o, who) => { if (!o) return `<div class="oltc empty"><small>${who === "me" ? "Pick a Glimling to put up" : "Waiting for " + olEsc(other.name) + "..."}</small></div>`; const g = snapFoe(o.mon); if (!g) return ""; delete g.real;
         return `<div class="oltc" style="--gc:${GRADES[g.q].c}">${art(g.sp, g.evo, 76)}<b>${fname(g.sp, g.evo)}</b><small>${GRADES[g.q].name} · Lv ${g.lvl}${g.stars ? " · " + starIc(1).repeat(g.stars) : ""}</small><small>Power ${monPower(g)}</small></div>`; };
-      if (done) return `${head}<div class="olroom"><b>Trade done!</b><small>Your new Glumi is in your Glumis list.</small></div><div class="pbtns"><button class="mb" data-act="arenasub:olleave">Leave</button><button class="mb gold pbig" data-act="olagain">Trade again</button></div>`;
+      if (done) return `${head}<div class="olroom"><b>Trade done!</b><small>Your new Glimling is in your Glimlings list.</small></div><div class="pbtns"><button class="mb" data-act="arenasub:olleave">Leave</button><button class="mb gold pbig" data-act="olagain">Trade again</button></div>`;
       if (tradePickOn) { const L = S.mons.filter(isSpare).sort((a, b) => b.q - a.q || b.lvl - a.lvl);
-        return `${head}<p class="hint" style="margin:4px 0">Pick a spare Glumi to put up (not in your team, not locked or a favorite).</p>
-          ${L.length ? `<div class="olgrid">${L.slice(0, 40).map(m => `<button class="olpick" data-act="olput:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 52)}<small>${GRADES[m.q].name} · Lv ${m.lvl}</small></button>`).join("")}</div>` : `<p class="hint">No spare Glumis right now.</p>`}
+        return `${head}<p class="hint" style="margin:4px 0">Pick a spare Glimling to put up (not in your team, not locked or a favorite).</p>
+          ${L.length ? `<div class="olgrid">${L.slice(0, 40).map(m => `<button class="olpick" data-act="olput:${m.uid}" style="--gc:${GRADES[m.q].c}">${art(m.sp, m.evo, 52)}<small>${GRADES[m.q].name} · Lv ${m.lvl}</small></button>`).join("")}</div>` : `<p class="hint">No spare Glimlings right now.</p>`}
           <button class="mb pbig" data-act="oltpick:0">Back</button>`; }
       return `${head}<div class="oltrade"><div><small>${olEsc(other.name)} gives</small>${card(theirs, "them")}${T && T.okThem ? `<span class="rchip ok">✓ OK</span>` : ""}</div><div class="oltx">⇄</div><div><small>You give</small>${card(mine, "me")}${T && T.okMe ? `<span class="rchip ok">✓ OK</span>` : ""}</div></div>
-        <div class="pbtns"><button class="mb" data-act="oltpick:1">${mine ? "Change" : "Pick a Glumi"}</button><button class="mb gold pbig" data-act="oltok" ${mine && theirs && !(T && T.okMe) ? "" : "disabled"}>OK, trade</button></div>
-        <p class="hint">The swap happens on both phones once you both say OK. Changing a Glumi asks for OK again.</p>`;
+        <div class="pbtns"><button class="mb" data-act="oltpick:1">${mine ? "Change" : "Pick a Glimling"}</button><button class="mb gold pbig" data-act="oltok" ${mine && theirs && !(T && T.okMe) ? "" : "disabled"}>OK, trade</button></div>
+        <p class="hint">The swap happens on both phones once you both say OK. Changing a Glimling asks for OK again.</p>`;
     }
     // hub
     const D = olDb(), W = olWb(), nf = O.friends.length, gi = O.gifts.length + olInvites().length;
@@ -6518,7 +6519,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
         ${row("oldboss", "Daily Boss", `${D.left} of ${OL_BOSS.d.tries} tries left · best ${D.best.toLocaleString("en")}`, 0, art(olBossFoe("d").sp, 0, 44))}
         ${row("olwboss", "World Boss", `${Math.round(Math.min(1, wbSum(W) / wbGoal(W)) * 100)}% down · ${W.left} hits left today`, 0, art(olBossFoe("w").sp, olBossFoe("w").evo, 44))}
         ${row("olduel", "Live duel", MM ? "Looking for a player..." : "Find a match or play a friend, live", 0, IC.sword)}
-        ${row("oltrade", "Trade", "Swap a spare Glumi with a friend, live", 0, '<b class="olswap">⇄</b>')}</div>
+        ${row("oltrade", "Trade", "Swap a spare Glimling with a friend, live", 0, '<b class="olswap">⇄</b>')}</div>
       <button class="mcard soft" data-act="olideas"><span class="mic">${IC.star}</span><span><b>Suggest an idea</b><small>Goes straight to the game maker</small></span></button>
       <button class="swrow" data-act="olsharesw" role="switch" aria-checked="${!!O.share}"><span><b>Share my team</b><small>Players meet it in the Ladder; friends can battle it</small></span><i class="sw${O.share ? " on" : ""}"><em></em></i></button>
       <p class="hint">Only your name, friend code and team are shared, through a free public message service.</p>`;
@@ -6604,7 +6605,7 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
     const has = k => ART[String(k).padStart(2, "0") + "-0"], group = [1, 3, 0, 6, 4].filter(has);
     const crowd = (painting && group.length >= 3 ? group : [3, 0, 6]).map((k, i, a) => [k, 0, i === Math.floor(a.length / 2) ? 100 : 74]);
     $("spMons").innerHTML = crowd.map(([k, e, z]) => `<span>${art(k, e, z)}</span>`).join("");
-    const tips = ["Tip: tap the compass to walk the path", "Tip: hold the compass to switch Auto on", "Tip: throw a jar when the ring is small", "Tip: energy refills by itself over time", "Tip: the Atlas shows every zone's Glumis", "Tip: a glowing chest gives extra energy"];
+    const tips = ["Tip: tap the compass to walk the path", "Tip: hold the compass to switch Auto on", "Tip: throw a jar when the ring is small", "Tip: energy refills by itself over time", "Tip: the Atlas shows every zone's Glimlings", "Tip: a glowing chest gives extra energy"];
     $("spTip").textContent = tips[rnd(0, tips.length - 1)];
     $("spVer").textContent = versionText();
     let p = 0, ready = false;
