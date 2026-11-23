@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795448482;</script>
+<script>window.GAME_BUILD = 1795448772;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1974,6 +1974,31 @@ nav .navwide { height: 58px !important; border-radius: 13px !important; overflow
 nav .navwide span { position: absolute; left: 0; right: 0; bottom: -8px; padding: 0 !important; background: none !important; font: 800 21px/1 var(--display) !important; -webkit-text-stroke: 4.5px #3d2716; paint-order: stroke fill; text-shadow: 0 2px 0 #3d2716; }
 nav .navwide::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(rgba(40,30,20,0) 55%, rgba(40,30,20,.35)); pointer-events: none; }
 nav .navwide .bang { top: -8px !important; right: -6px !important; }
+/* MEDALLIONS: rope-hung round buttons, a round Home window in the middle (originality plan 23 Nov) */
+nav { padding: 0 6px calc(10px + env(safe-area-inset-bottom, 0px)) !important; }
+nav .tabs { position: relative; display: flex !important; justify-content: space-around; align-items: flex-start; gap: 0 !important; height: 96px; }
+nav .tabs .mdrope { position: absolute; left: -6px; right: -6px; top: 8px; height: 7px; border-radius: 4px; pointer-events: none;
+  background: repeating-linear-gradient(115deg, #b98b55 0 5px, #8a5f35 5px 9px); box-shadow: 0 0 0 1.5px #3d2716, 0 3px 3px rgba(30,20,10,.3); }
+nav .tabs .mdrope.art { background: none; box-shadow: none; }
+nav .tabs .mdl { position: relative; display: grid; justify-items: center; transform-origin: 50% 11px; padding-top: 11px; }
+nav .mdstring { width: 3px; height: 12px; background: #6b4a2e; border-radius: 2px; box-shadow: 0 0 0 1px #3d2716; }
+nav .tabs .mdl::before { content: ""; position: absolute; top: 5px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid #d7a94c; box-sizing: border-box; box-shadow: 0 0 0 1px #3d2716; background: transparent; }
+nav .tabs button.mdb { position: relative; width: 58px !important; height: 58px !important; padding: 0 !important; border: 0 !important; border-radius: 50% !important; display: grid !important; place-items: center !important; align-content: center !important; overflow: visible !important;
+  background: radial-gradient(circle at 50% 42%, #fff6df 0 54%, #c99a62 56% 72%, #8a5f35 74%) !important; box-shadow: 0 0 0 2.5px #3d2716, inset 0 2px 0 rgba(255,240,210,.6), 0 5px 0 rgba(61,39,22,.35), 0 8px 10px rgba(30,20,10,.25) !important; filter: none !important; }
+nav .tabs button.mdb .mdic { width: 32px; height: 32px; display: grid; place-items: center; margin-top: -4px; } nav .tabs button.mdb .mdic svg { margin: 0 !important; } nav button.mdb .mdic svg, nav .tabs button.mdb .mdic img { width: 30px !important; height: 30px !important; filter: none !important; visibility: visible !important; }
+nav .tabs button.mdb.art { background: none !important; box-shadow: none !important; } nav button.mdb.art > img { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); filter: drop-shadow(0 5px 4px rgba(30,20,10,.3)); visibility: visible !important; }
+nav .tabs .mdl.mx button.mdb { background: radial-gradient(circle at 50% 42%, #fff6df 0 54%, #e2b0a0 56% 72%, #a8584a 74%) !important; }
+nav .tabs button.mdb .tl, nav .tabs button.mdwin .tl { position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%); white-space: nowrap; font: 800 12.5px/1 var(--display) !important; color: #fff; -webkit-text-stroke: 3.5px #3d2716; paint-order: stroke fill; text-shadow: 0 2px 0 #3d2716; pointer-events: none; }
+nav .tabs .mdw { margin-top: -4px; }
+nav .tabs button.mdwin { position: relative; width: 74px !important; height: 74px !important; padding: 0 !important; border: 0 !important; border-radius: 50% !important; overflow: visible !important; background: radial-gradient(circle, transparent 0 60%, #c99a62 62% 78%, #8a5f35 80%) !important;
+  box-shadow: 0 0 0 2.5px #3d2716, 0 6px 0 rgba(61,39,22,.35), 0 10px 12px rgba(30,20,10,.28) !important; display: block !important; }
+.mdpic { background-image: linear-gradient(#bfe3f5, #f6e3b8); background-size: cover; background-position: center; }
+nav .tabs button.mdwin .mdpic { position: absolute; inset: 9px; border-radius: 50%; box-shadow: inset 0 0 0 2px #3d2716, inset 0 4px 10px rgba(30,20,10,.25); }
+nav .tabs button.mdwin.art { background: none !important; box-shadow: none !important; } nav button.mdwin.art > img { position: absolute; inset: -6px; width: calc(100% + 12px); height: calc(100% + 12px); filter: drop-shadow(0 6px 5px rgba(30,20,10,.3)); }
+nav .tabs button.mdwin .tl { font-size: 14px !important; bottom: -4px; }
+nav .tabs button.mdwin .bang { top: 2px; right: 2px; }
+nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !important; filter: grayscale(.6) !important; }
+.actions { bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -4335,17 +4360,15 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
   let zoneCss = false;
   function paintCss() {  // zone paintings as backgrounds for the zone card, the Atlas card and the wide bottom tile (set once)
     if (zoneCss) return; zoneCss = true;
-    const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
+    const r = ZONES.map((_, i) => ART["bg-" + i] ? `.z${i}.zcard,.z${i}.mcard,.z${i}.navwide,.mdwin.z${i} .mdpic{background-image:url(${ART["bg-" + i]})}` : "").join("") + (ART["bg-menu"] ? `.navwide.homecard,.mdwin.homecard .mdpic{background-image:url(${ART["bg-menu"]})}` : "") + ZONES.map((_, i) => ART["bg-" + i] ? `.gbook.z${i},.garow.z${i} .gpic{background-image:url(${ART["bg-" + i]})}` : "").join("")
       + [["a-online", "banner-online", "", "50% 50%"], ["a-gym", "banner-gyms", "bg-arena", "72% 55%"], ["a-duel", "banner-ladder", "bg-2", "70% 28%"], ["a-tower", "banner-cloud-climb", "bg-7", "78% 40%"], ["a-race", "banner-island-race", "bg-5", "78% 45%"]]
         .map(([c, b, z, pos]) => ART[b] ? `.aimg.${c}{background-image:url(${ART[b]});background-position:${pos}}` : ART[z] ? `.aimg.${c}{background-image:url(${ART[z]})}` : "").join("");
     const el = document.createElement("style"); el.textContent = r + navArtCss(); document.body.appendChild(el);  // after the game style, wherever that is
   }
-  function navArtCss() {   // the painted bottom buttons (Gemini sheet-nav, 20 Nov): the tile is the picture, its icon is in it; the name stays written on top
-    const tiles = [['[data-act="view:menu"]', "nav-menu"], ['[data-act="view:team"]', "nav-glumis"], ['[data-act="view:shop"]', "nav-shop"], ['[data-act="view:arena"]', "nav-arena"], [".navx", "nav-close"]];
-    let c = tiles.map(([q, k]) => ART[k] ? `nav button${q}{background:url(${ART[k]}) center/100% 100% no-repeat !important;box-shadow:none !important;border-radius:14px !important;filter:drop-shadow(0 4px 0 rgba(61,39,22,.45)) drop-shadow(0 8px 8px rgba(30,20,10,.25))}nav button${q}>svg,nav button${q}>img{visibility:hidden}nav button${q}:disabled{filter:grayscale(.6) brightness(.95) drop-shadow(0 4px 0 rgba(61,39,22,.45)) !important}` : "").join("");
+  function navArtCss() {   // only the level ring + XP bar art now; the square nav tiles (sheet-nav) were dropped for the medallions (originality plan 23 Nov)
+    let c = "";
     if (ART["ui-level-ring"]) c += `.xbadge{width:56px !important;height:52px !important;background:url(${ART["ui-level-ring"]}) center/100% 100% no-repeat !important;box-shadow:none !important;filter:drop-shadow(0 3px 3px rgba(40,25,10,.35))}.xbadge span{width:auto !important;height:auto !important;margin-top:5px;background:none !important;color:#5b3f2a !important;font:900 21px/1 var(--display) !important;-webkit-text-stroke:0 !important;text-shadow:0 1px 0 #fff !important}`;
     if (ART["ui-xp-frame"]) c += `.xbar{width:56px !important;height:16px !important;border-radius:0 !important;background:none !important;box-shadow:none !important;overflow:visible !important;border:7px solid transparent;border-image:url(${ART["ui-xp-frame"]}) 48 fill / 8px stretch;box-sizing:border-box;padding:0;margin-top:-4px;position:relative}.xbar i{position:absolute;left:-3px;top:-3px;bottom:-3px;max-width:calc(100% + 6px);min-width:6px;border-radius:0 !important;background:${ART["ui-xp-fill"] ? "none" : "linear-gradient(#8fe07a,#4fb85a)"} !important;${ART["ui-xp-fill"] ? `border:5px solid transparent;border-image:url(${ART["ui-xp-fill"]}) 34 fill / 5px stretch;box-sizing:border-box;` : ""}}`;
-    if (ART["nav-wide-frame"]) c += `nav .navwide{box-shadow:0 6px 0 1px rgba(61,39,22,.45),0 9px 12px rgba(30,20,10,.25) !important;border-radius:18px !important}nav .navwide::after{content:"";position:absolute;inset:-5px;border:18px solid transparent;border-image:url(${ART["nav-wide-frame"]}) 74 / 18px stretch;pointer-events:none;z-index:1}nav .navwide span{z-index:2}nav .navwide .bang{z-index:3}`;
     return c;
   }
   function renderTabs() {
@@ -4356,8 +4379,20 @@ nav .navwide .bang { top: -8px !important; right: -6px !important; }
       : `<button data-act="view:${k}" ${lock(k) ? "disabled" : ""} aria-label="${label}">${icon}<span class="tl">${label}</span></button>`;
     const wide = view === "home" && !showMap && !showAuto ? `<button class="navwide z${S.zone}" data-act="close"><span>Explore</span></button>`
       : `<button class="navwide homecard" data-act="view:home" ${lock("home") ? "disabled" : ""}><span>Home</span>${homeAlert() ? '<em class="bang">!</em>' : ""}</button>`;
-    $("tabs").innerHTML = tab("menu", ART["ui-menu"] ? IC.menu : NAVI.menu, "Menu") + tab("team", TABI.team, "Glimlings") + tab("shop", TABI.shop, "Shop") + tab("arena", (IC.arena || IC.sword).replace("<svg", '<svg width="24" height="24"'), "Arena") + wide;
+    $("tabs").innerHTML = medalHTML(tab, wide, lock, open);
   }
+  function medalHTML(tab, wide, lock, open) {   // a rope across the bottom; medallions hang from it, Home is a round window in the middle
+    const md = (k, art, icon, label) => { const o = open(k), a = ART[o ? "med-close" : art];
+      return `<div class="mdl${o ? " mx" : ""}"><span class="mdstring"></span><button class="mdb${a ? " art" : ""}" data-act="${o ? "close" : "view:" + k}" ${!o && lock(k) ? "disabled" : ""} aria-label="${o ? "Close " + label : label}">`
+        + `${a ? `<img src="${a}" alt="" draggable="false">` : `<span class="mdic">${o ? NAVI.close : icon}</span>`}<span class="tl">${label}</span></button></div>`; };
+    const home = view === "home" && !showMap && !showAuto, hz = home ? "z" + S.zone : "homecard";
+    const win = `<div class="mdl mdw"><span class="mdstring"></span><button class="mdwin ${hz}${ART["med-window"] ? " art" : ""}" data-act="${home ? "close" : "view:home"}" ${!home && lock("home") ? "disabled" : ""} aria-label="${home ? "Explore" : "Home"}">`
+      + `<span class="mdpic"></span>${ART["med-window"] ? `<img src="${ART["med-window"]}" alt="" draggable="false">` : ""}<span class="tl">${home ? "Explore" : "Home"}</span>${!home && homeAlert() ? '<em class="bang">!</em>' : ""}</button></div>`;
+    return `<div class="mdrope${ART["med-rope"] ? " art" : ""}"></div>` + md("menu", "med-menu", ART["ui-menu"] ? IC.menu : NAVI.menu, "Menu") + md("team", "med-glims", TABI.team, "Glimlings")
+      + win + md("shop", "med-shop", TABI.shop, "Shop") + md("arena", "med-arena", (IC.arena || IC.sword).replace("<svg", '<svg width="24" height="24"'), "Arena");
+  }
+  document.addEventListener("pointerdown", e => { const b = e.target.closest && e.target.closest("nav .mdb, nav .mdwin"); if (!b || b.disabled) return;
+    const l = b.closest(".mdl"); if (l && l.animate) l.animate([{ transform: "rotate(0)" }, { transform: "rotate(-9deg)" }, { transform: "rotate(6deg)" }, { transform: "rotate(-3deg)" }, { transform: "rotate(0)" }], { duration: 650, easing: "ease-out" }); }, true);
   function pageMenu() {
     if (settingsPage) return pageSettings();
     const z = S.zone, openN = ZONES.filter((_, i) => zoneOpen(i)).length, reqs = Array.isArray(S.requests) ? S.requests : [];
