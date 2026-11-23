@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795469196;</script>
+<script>window.GAME_BUILD = 1795469671;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -2101,6 +2101,44 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
 .lz.paper .zcard .zn { color: #4a2e16 !important; -webkit-text-stroke: 0 !important; text-shadow: none !important; }
 .lz.paper .zcard .zn small { color: #7a5636 !important; }
 .lz.paper .lzx { background: #fffaf0; box-shadow: 0 0 0 2px #8a5f35, 0 2px 6px rgba(0,0,0,.25); }
+/* FIGHT23: our own fight screen look (originality plan 23 Nov): wood instead of purple, round skill medallions, a glass light-tube for energy */
+.arena { background: repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 3px, transparent 3px 22px), linear-gradient(#5b3d26, #3f2817) !important; }
+.arena .hpcard { background: #fff7e4 !important; border-radius: 6px !important; box-shadow: 0 0 0 2.5px #3d2716, 0 3px 0 rgba(30,20,10,.35) !important; }
+.arena .ahead .tdot { border-radius: 50%; }
+.actrl { background: linear-gradient(#a87444, #7a5230); box-shadow: inset 0 3px 0 rgba(255,236,200,.35), 0 -3px 0 #3d2716; border-radius: 14px 14px 0 0; }
+.actrl .bmain { align-items: center !important; }
+.actrl .tswrow { gap: 6px !important; }
+.actrl .tsw { width: 44px !important; height: 44px; border-radius: 50% !important; padding: 0 !important; background: #fff7e4 !important; box-shadow: 0 0 0 2.5px #3d2716, 0 3px 0 rgba(30,20,10,.4) !important; place-items: center !important; align-content: center; }
+.actrl .tsw svg, .actrl .tsw img { width: 34px !important; }
+.actrl .tsw .bar { position: absolute; left: 6px; right: 6px; bottom: -7px; height: 6px !important; width: auto !important; box-shadow: 0 0 0 1.5px #3d2716; border-radius: 3px; }
+.actrl .tsw.cur { background: #ffe9a8 !important; box-shadow: 0 0 0 2.5px #3d2716, 0 0 0 5px #ffd36b, 0 3px 0 rgba(30,20,10,.4) !important; }
+.actrl .tsw .cd { border-radius: 50%; }
+.actrl .skcol { display: flex !important; gap: 8px !important; margin-right: 4px; align-items: flex-end; }
+.actrl .skcard { width: 68px !important; height: 68px !important; border-radius: 50% !important; overflow: visible !important;
+  background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--elc) 25%, #fff7e4) 0 58%, #c99a62 60% 76%, #8a5f35 78%) !important;
+  box-shadow: 0 0 0 2.5px #3d2716, 0 4px 0 rgba(30,20,10,.45) !important; }
+.actrl .skcard.sig { width: 82px !important; height: 82px !important; background: radial-gradient(circle at 50% 42%, #fff3d0 0 58%, #e0b24c 60% 76%, #a87420 78%) !important; }
+.actrl .skcard .skart { left: 50% !important; top: 48% !important; transform: translate(-50%, -50%); width: 56px !important; height: 56px !important; }
+.actrl .skcard .skart svg, .actrl .skcard .skart img { width: 46px !important; }
+.actrl .skcard.sig .skart svg, .actrl .skcard.sig .skart img { width: 62px !important; }
+.actrl .skcard .sknm { left: 50% !important; right: auto !important; top: auto !important; bottom: -17px; transform: translateX(-50%); white-space: nowrap; font-size: 11px !important; -webkit-text-stroke: 3px #3d2716; paint-order: stroke fill; text-shadow: none !important; }
+.actrl .skcard .skgem { left: -4px !important; top: -4px !important; width: 26px !important; height: 26px !important; clip-path: none !important; border-radius: 50%; background: #fff3d0 !important; box-shadow: 0 0 0 2px #3d2716; }
+.actrl .skcard .skel { display: none !important; }
+.actrl .skcard .skpow { right: -6px !important; bottom: 8px !important; font-size: 15px !important; padding: 0 5px; border-radius: 8px; background: #3d2716; text-shadow: none !important; }
+.actrl .skcard::after { clip-path: none !important; border-radius: 50%; background: conic-gradient(transparent var(--p), rgba(40,25,15,.6) 0) !important; }
+.actrl .skcard.ready { animation: skglow2 1.2s ease-in-out infinite !important; }
+@keyframes skglow2 { 50% { box-shadow: 0 0 0 2.5px #3d2716, 0 4px 0 rgba(30,20,10,.45), 0 0 18px 5px #ffe27a !important; } }
+.actrl .ebrow { margin-top: 10px; }
+.actrl .egem { clip-path: none !important; border-radius: 50%; background: #fff3d0 !important; box-shadow: 0 0 0 2.5px #3d2716; width: 38px !important; height: 38px !important; }
+.actrl .esegs:not(.mini) { gap: 0 !important; padding: 3px !important; border-radius: 14px !important; background: linear-gradient(rgba(255,255,255,.35), rgba(255,255,255,.12)) !important;
+  box-shadow: 0 0 0 2.5px #3d2716, inset 0 2px 4px rgba(0,0,0,.35), inset 0 -2px 0 rgba(255,255,255,.25) !important; }
+.actrl .esegs:not(.mini) i { height: 16px !important; border-radius: 0 !important; background: rgba(40,25,15,.25) !important; border-right: 1px dashed rgba(255,240,200,.45); }
+.actrl .esegs:not(.mini) i:first-child { border-radius: 10px 0 0 10px !important; } .actrl .esegs:not(.mini) i:last-child { border-radius: 0 10px 10px 0 !important; border-right: 0; }
+.actrl .esegs:not(.mini) i b { background: linear-gradient(#fffbe0, #ffd96b 55%, #f5a623) !important; box-shadow: 0 0 8px rgba(255,214,107,.8); }
+.actrl .shieldb { width: 46px !important; height: 46px !important; margin-right: 4px; background: radial-gradient(circle at 50% 42%, #e7f3ff 0 56%, #c99a62 58% 76%, #8a5f35 78%) !important; box-shadow: 0 0 0 2.5px #3d2716, 0 3px 0 rgba(30,20,10,.45) !important; }
+.actrl .arow .round { border-radius: 8px !important; background: #fff7e4 !important; box-shadow: 0 0 0 2.5px #3d2716, 0 3px 0 rgba(30,20,10,.4) !important; transform: rotate(-2deg); }
+.actrl .arow .capw:nth-child(2) .round { transform: rotate(2deg); }
+.actrl .arow .cap { color: #fff3d6 !important; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
