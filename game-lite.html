@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>window.GAME_BUILD = 1795448772;</script>
+<script>window.GAME_BUILD = 1795451381;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="art.js"></script>
 </head>
@@ -1999,6 +1999,30 @@ nav .tabs button.mdwin .tl { font-size: 14px !important; bottom: -4px; }
 nav .tabs button.mdwin .bang { top: 2px; right: 2px; }
 nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !important; filter: grayscale(.6) !important; }
 .actions { bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
+/* LAYOUT23: our own explore layout (originality plan 23 Nov) */
+.hud { left: 6px !important; right: 6px !important; top: calc(4px + env(safe-area-inset-top, 0px)) !important; padding: 6px 10px 6px !important; border-radius: 10px 10px 18px 18px;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.05) 0 2px, transparent 2px 9px), linear-gradient(#c79864, #a5743f 55%, #8a5f35) !important;
+  box-shadow: 0 0 0 2.5px #3d2716, inset 0 3px 0 rgba(255,236,200,.5), inset 0 -4px 0 rgba(0,0,0,.18), 0 5px 8px rgba(30,20,10,.3); align-items: center !important; }
+.hud .pill.res { background: rgba(60,38,20,.38) !important; box-shadow: inset 0 2px 3px rgba(0,0,0,.25), 0 1px 0 rgba(255,236,200,.35) !important; border: 0 !important; }
+.hud .rsub { color: #fff3d6 !important; }
+.ztop { left: auto !important; right: 8px !important; top: calc(84px + env(safe-area-inset-top, 0px)) !important; width: 158px; justify-items: stretch !important; gap: 4px !important; }
+.evbars { gap: 12px !important; justify-items: stretch !important; position: relative; padding-top: 6px; }
+.evbars::before { content: ""; position: absolute; top: -12px; bottom: 30px; left: 22px; right: 22px; border-left: 3px dotted #6b4a2e; border-right: 3px dotted #6b4a2e; z-index: -1; }
+.evbar { position: relative; padding: 5px 6px !important; border-radius: 8px !important; background: linear-gradient(#d6aa73, #b07d47) !important; box-shadow: 0 0 0 2.5px #3d2716, inset 0 2px 0 rgba(255,236,200,.55), 0 4px 0 rgba(61,39,22,.4) !important; transform: rotate(-1.5deg); }
+.evbar.fight { transform: rotate(1.5deg); }
+.evbar { width: 100%; box-sizing: border-box; }
+.evbar .evtrack { flex: 1; min-width: 0; width: auto !important; margin: 0 4px !important; }
+.evtime { align-self: center; }
+.sidecol.l { top: calc(84px + env(safe-area-inset-top, 0px)) !important; }
+.zarrows { top: calc(var(--zarrow-top, 62%)) !important; }
+.zsign { position: relative; width: 112px; height: 104px; border: 0; padding: 0; background: none; display: grid; justify-items: center; align-content: start; }
+.zsign .zsboard { position: relative; z-index: 1; display: grid; justify-items: center; gap: 2px; padding: 6px 8px 5px; border-radius: 6px; clip-path: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%);
+  padding-right: 18px; background: linear-gradient(#d9ad74, #b07d47); box-shadow: inset 0 2px 0 rgba(255,236,200,.6), inset 0 -3px 0 rgba(0,0,0,.18); filter: drop-shadow(0 0 0 #3d2716); }
+.zsign .zsboard { outline: 2.5px solid #3d2716; outline-offset: -2px; }
+.zsign .zsn { font: 800 13px/1.1 var(--display); color: #fff; -webkit-text-stroke: 3px #3d2716; paint-order: stroke fill; white-space: nowrap; }
+.zsign .zcs { display: flex; gap: 2px; } .zsign .zcs i { width: 15px; height: 15px; display: block; } .zsign .zcs img, .zsign .zcs svg { width: 15px !important; height: 15px !important; }
+.zsign .zspost { width: 10px; height: 46px; margin-top: -2px; border-radius: 3px; background: linear-gradient(90deg, #8a5f35, #b88752 50%, #7a5230); box-shadow: 0 0 0 2px #3d2716; }
+.zsign .bang { top: -6px; right: 0; z-index: 2; }
 </style>
 
 <div id="splash" role="status" aria-label="Loading Glimmer Isle">
@@ -3336,13 +3360,12 @@ nav .tabs button.mdb:disabled, nav .tabs button.mdwin:disabled { opacity: .55 !i
     homeTick(); const H = homeState(), homeReady = Object.keys(PLACES).some(k => Math.floor(H[k].store) >= 1);
     const found = Object.keys(S.caught).length;
     const ico = (act, icon, label, bang, timer) => `<button class="sico" data-act="${act}" aria-label="${label}"><span class="sic">${icon}</span><span class="sil">${label}</span>${timer ? `<span class="sit">${timer}</span>` : ""}${bang ? '<em class="bang">!</em>' : ""}</button>`;
-    return `<div class="sidecol l">${ico("view:shop", TABI.shop, "Shop")}${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}${mailWaiting() ? ico("view:mail", IC.gift || IC.star, "Mail", true, "") : ""}${giftReady() ? ico("giftopen", IC.gift || IC.star, "Daily gift", true, "") : ""}</div>
-      <div class="sidecol r">${ico("gobook", TABI.book, "Book", false, found ? found + " found" : "")}${ico("map", TABI.atlas, "Atlas")}${(() => { const R = raceState(), over = !!S.raceDone; return ico("gorace", IC.flag, "Race #" + (raceBoard(R).findIndex(r => r.me) + 1), over); })()}</div>`;
+    return `<div class="sidecol l">${ico("goreq", IC.lantern, "Requests", reqCan, reqTimer)}${ico("view:tasks", IC.tasks || IC.flag, "Tasks", tasksWaiting() > 0, tasksWaiting() ? tasksWaiting() + " ready" : "")}${mailWaiting() ? ico("view:mail", IC.gift || IC.star, "Mail", true, "") : ""}${giftReady() ? ico("giftopen", IC.gift || IC.star, "Daily gift", true, "") : ""}${(() => { const R = raceState(), over = !!S.raceDone; return ico("gorace", IC.flag, "Race #" + (raceBoard(R).findIndex(r => r.me) + 1), over); })()}</div>`;
   }
   function zoneCard() {  // the zone painting with its name and 3 stars: every Glimling caught, guardian beaten, every reward claimed
     const z = S.zone, Z = ZONES[z], st = S.zones[z], stars = [Z.sp.every(sp => st.caught[sp]), !!st.cleared, (st.claimed || 0) >= milestones(z).length];
     const ms = milestones(z), mk = st.claimed || 0, zReady = ms[mk] && reached(z, ms[mk]);
-    return `<button class="zcard z${z}" data-act="map" aria-label="${Z.name}, open the Atlas">${zReady ? '<em class="bang">!</em>' : ""}<span class="zcn">${Z.name}</span><span class="zcs">${stars.map(on => `<i class="${on ? "on" : ""}">${starIc(on)}</i>`).join("")}</span></button>`;
+    return `<button class="zsign" data-act="map" aria-label="${Z.name}, open the Atlas">${zReady ? '<em class="bang">!</em>' : ""}<span class="zsboard"><span class="zsn">${Z.name}</span><span class="zcs">${stars.map(on => `<i class="${on ? "on" : ""}">${starIc(on)}</i>`).join("")}</span></span><span class="zspost"></span></button>`;
   }
   function actorsHTML() {
     if (BT) return "";
