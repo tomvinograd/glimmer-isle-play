@@ -559,8 +559,8 @@
       (p.gpsOn === false ? item(false, '🛰️', T('permGps'), T('permGpsInfo'), 'gps', T('open')) : '') +
       item(p.location, '📍', T('permLoc'), T('permLocInfo'), 'location') +
       item(p.activity, '👣', T('permAct'), T('permActInfo'), 'activity') +
-      item(p.notifications, '🔔', T('permNote'), T('permNoteInfo'), 'notifications') +
-      item(p.battery, '🔋', T('permBat'), T('permBatInfo'), 'battery', T('open')) + '</div>';
+      (p.platform === 'ios' ? '' : item(p.notifications, '🔔', T('permNote'), T('permNoteInfo'), 'notifications') +
+        item(p.battery, '🔋', T('permBat'), T('permBatInfo'), 'battery', T('open'))) + '</div>';
     box.querySelectorAll('[data-ask]').forEach((b) => {
       b.onclick = async () => {
         const w = b.dataset.ask;
@@ -616,7 +616,7 @@
   function onBack() {
     if (sheetOpen()) { const x = $('#layer [data-close]'); if (x) closeSheet(); return; }
     if (!$('#page').hidden) { pageBack(); return; }
-    if (AppP) AppP.minimizeApp();
+    if (AppP && appInfo.platform !== 'ios') AppP.minimizeApp().catch(() => {});
   }
 
   // ---------- start ----------

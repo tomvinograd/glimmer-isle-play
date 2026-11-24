@@ -1,11 +1,11 @@
 {
-"v": 1795530439,
+"v": 1795531381,
 "files": {
 "engine.js": "6336e58eb84403e28bd71b708018935ce6a60d94",
 "game.css": "e2e835c892fe1fb270cca868790d42e567afaef1",
-"game.js": "e3f91ea625a5fc41e22a57b18179c252b456207d",
+"game.js": "843c92966c48ec800521cb935597eeb5d3458099",
 "i18n.js": "e3c5638b3352274fd313b7391db9f9a089068492",
-"index.html": "7e86627d769e99ce96c93a0483687a88a1a13e52",
+"index.html": "2179754480b7458bb613956c2a134faf1bee63b2",
 "lib/capacitor.js": "16737d90b0c5c8457cfb5dfa844a4174eaa45f64",
 "lib/fonts/rubik-hebrew.woff2": "119f25217dbc125e0f189c59f5e514a3319d15a7",
 "lib/fonts/rubik-latin.woff2": "ea3f56e306962481bcb38735c71ea5039b9ce2bd",
