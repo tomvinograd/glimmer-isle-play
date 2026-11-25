@@ -78,6 +78,11 @@ window.GT_WORDS = {
     codeBad: 'No player has this code. Check the letters.', codeSelf: 'This is your own code.', friendAdded: 'You and {n} are friends now!',
     how5: 'Achievements (Me → Achievements) give extra points: summits, nature, dirt paths, long trips and more.',
     how6: 'Friends: compare points every week and see each other’s routes.',
+    a_trailsDone: 'Trail finisher', d_trailsDone: 'Marked trails you walked from end to end',
+    kindN: 'National trail', kindR: 'Regional trail', kindL: 'Marked trail',
+    trailWalked: 'You walked', trailOf: '{a} of {b}', trailNext: 'Reach {s}%', trailFinish: 'Walk all of it', trailDone: 'Completed!', trailShow: 'Show the whole trail',
+    trailsInfo: 'Tap a coloured trail on the map to see your progress.',
+    how7: 'Marked trails are on the map in their colours. Walk a whole trail for bonus points; long trails give points on the way.',
   },
   he: {
     today: 'היום', newPaths: 'חדשים', start: 'יוצאים לדרך', finish: 'סיום', time: 'זמן', km: 'ק״מ', newM: 'מ׳ חדשים', points: 'נקודות', steps: 'צעדים',
@@ -157,5 +162,10 @@ window.GT_WORDS = {
     codeBad: 'אין שחקן עם הקוד הזה. בדקו את האותיות.', codeSelf: 'זה הקוד שלכם.', friendAdded: 'אתם ו{n} חברים עכשיו!',
     how5: 'הישגים (אני ← הישגים) נותנים נקודות נוספות: פסגות, טבע, שבילי עפר, מסלולים ארוכים ועוד.',
     how6: 'חברים: משווים נקודות כל שבוע ורואים את המסלולים אחד של השני.',
+    a_trailsDone: 'משלימי שבילים', d_trailsDone: 'שבילים מסומנים שהלכתם מתחילתם ועד סופם',
+    kindN: 'שביל ארצי', kindR: 'שביל אזורי', kindL: 'שביל מסומן',
+    trailWalked: 'הלכתם', trailOf: '{a} מתוך {b}', trailNext: 'להגיע ל-{s}%', trailFinish: 'ללכת את כולו', trailDone: 'הושלם!', trailShow: 'הצגת השביל כולו',
+    trailsInfo: 'לחצו על שביל צבעוני במפה כדי לראות כמה הלכתם.',
+    how7: 'השבילים המסומנים מופיעים במפה בצבעים שלהם. הליכה בשביל שלם נותנת נקודות בונוס; שבילים ארוכים נותנים נקודות גם בדרך.',
   },
 };

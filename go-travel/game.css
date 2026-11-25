@@ -165,3 +165,6 @@ input.code-in { font-size: 26px; font-weight: 800; letter-spacing: 5px; text-ali
 #fchip i { width: 18px; height: 5px; border-radius: 3px; background: #9B4DFF; flex: none; }
 #fchip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #fchip b { color: var(--ink2); font-size: 18px; line-height: 1; }
+.swatch { display: inline-block; width: 22px; height: 8px; border-radius: 3px; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(0,0,0,.15); }
+.trail-head { display: flex; align-items: center; gap: 12px; padding-inline-end: 40px; }
+.trail-head h2 { margin: 0; }

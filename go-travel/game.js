@@ -154,6 +154,12 @@
     map = new maplibregl.Map({ container: 'map', style: mapStyle(), center: start, zoom: 16, attributionControl: { compact: true }, pitchWithRotate: false, dragRotate: false, maxZoom: 19, minZoom: 7 });
     map.touchZoomRotate.disableRotation();
     map.on('load', () => {
+      map.addSource('trails', { type: 'geojson', data: EMPTY, tolerance: 0.6 });
+      const tw = (a, b) => ['interpolate', ['exponential', 1.6], ['zoom'], 11, a, 18, b];
+      map.addLayer({ id: 'trail-case', type: 'line', source: 'trails', minzoom: 11, layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#FFFFFF', 'line-width': tw(2.5, 9), 'line-opacity': 0.9 } }, 'road-name');
+      map.addLayer({ id: 'trail', type: 'line', source: 'trails', minzoom: 11, layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['get', 'c'], 'line-width': tw(1.2, 4.5) } }, 'road-name');
+      map.addLayer({ id: 'trail-hit', type: 'line', source: 'trails', minzoom: 12, paint: { 'line-color': '#000000', 'line-width': 18, 'line-opacity': 0 } }, 'road-name');
+      map.on('click', 'trail-hit', (e) => { if (e.features && e.features[0] && !sheetOpen()) trailSheet(e.features[0].properties.id); });
       map.addSource('painted', { type: 'geojson', data: EMPTY });
       map.addSource('cur', { type: 'geojson', data: EMPTY });
       map.addSource('raw', { type: 'geojson', data: EMPTY });
@@ -168,7 +174,7 @@
       map.addLayer({ id: 'friend', type: 'line', source: 'friend', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#9B4DFF', 'line-width': lw(2.5, 9), 'line-opacity': 0.85 } }, 'road-name');
       map.addLayer({ id: 'focus', type: 'line', source: 'focus', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#FF8A1F', 'line-width': lw(3, 10) } }, 'road-name');
       mapReady = true;
-      drawPainted(); drawCur();
+      drawPainted(); drawCur(); drawTrails();
     });
     map.on('dragstart', (e) => { if (e.originalEvent) setFollow(false); });
     const el = document.createElement('div');
@@ -499,7 +505,7 @@
     },
     phone() { return { title: T('phone'), html: '<div id="permList"></div>', wire: () => fillPerms($('#permList')) }; },
     how() {
-      return { title: T('howTitle'), html: '<div class="list">' + row('🖌️', T('how1'), '', '', 'blue') + row('🌲', T('how2'), '', '', 'green') + row('🚲', T('how3'), '', '') + row('🔁', T('how4'), '', '') + row('🏅', T('how5'), '', '', 'green') + row('🤝', T('how6'), '', '', 'blue') + '</div>' };
+      return { title: T('howTitle'), html: '<div class="list">' + row('🖌️', T('how1'), '', '', 'blue') + row('🌲', T('how2'), '', '', 'green') + row('🚲', T('how3'), '', '') + row('🔁', T('how4'), '', '') + row('🏅', T('how5'), '', '', 'green') + row('🤝', T('how6'), '', '', 'blue') + row('🚩', T('how7'), '', '', 'green') + '</div>' };
     },
     app() {
       return {
@@ -534,16 +540,12 @@
   }
   function showTrip(t) {
     const g = t.left ? { segs: t.segs, raw: t.raw } : store.get('gt.t.' + t.id, null);
-    showTab('map');
-    if (!g || !mapReady) return;
-    const pts = g.segs.flat().concat(g.raw.filter(Boolean));
-    map.getSource('focus').setData({ type: 'FeatureCollection', features: [segFeature(g.segs)] });
-    if (!pts.length) return;
-    const b = new maplibregl.LngLatBounds(pts[0], pts[0]);
-    for (const p of pts) b.extend(p);
-    setFollow(false);
-    map.fitBounds(b, { padding: { top: 90, bottom: 200, left: 40, right: 40 }, maxZoom: 17, duration: 800 });
-    setTimeout(() => { if (mapReady) map.getSource('focus').setData(EMPTY); }, 12000);
+    if (!g) { showTab('map'); return; }
+    const raw = [];
+    let part = [];
+    for (const p of g.raw) { if (!p) { if (part.length) raw.push(part); part = []; } else part.push(p); }
+    if (part.length) raw.push(part);
+    showLines(g.segs.filter((s) => s.length > 1).length ? g.segs : raw);
   }
 
   function nameSheet(after) {
@@ -636,15 +638,76 @@
   }
 
 
+  // ---------- marked trails (trails.json from OpenStreetMap, tools/make_trails.py) ----------
+  let TRAILS = [];
+  const trails = () => TRAILS;
+  const coarse = (lo, la) => Math.floor(la * 50) + ':' + Math.floor(lo * 50); // ~2 km squares, to skip far trails fast
+  async function loadTrails() {
+    let j;
+    try { j = await (await fetch('trails.json')).json(); } catch (e) { return; }
+    TRAILS = j.trails.map((t) => {
+      const lines = GTNet.decodeLines(t.g), s = GTAchieve.samples(lines), grid = new Set();
+      for (let i = 0; i < s.length; i += 2) grid.add(coarse(s[i], s[i + 1]));
+      return { id: t.id, he: t.he, en: t.en, c: t.c, k: t.k, km: t.km, lines, s, grid, featured: t.k !== 'l' && t.km >= GTAchieve.FEATURED_KM };
+    });
+    drawTrails();
+    const got = awardAch();
+    if (got.length && !sheetOpen()) toastAch(got);
+    rerender('ach');
+  }
+  function drawTrails() {
+    if (!mapReady || !TRAILS.length) return;
+    map.getSource('trails').setData({ type: 'FeatureCollection', features: TRAILS.map((t) => ({ type: 'Feature', properties: { id: t.id, c: t.c }, geometry: { type: 'MultiLineString', coordinates: t.lines } })) });
+  }
+  const fmtKm = (km) => T('km_s', { n: nf(km, km >= 100 ? 0 : km >= 10 ? 1 : 2) });
+  const trailName = (t) => (S.lang === 'he' ? t.he : t.en) || t.he || t.en;
+  /** Percent of each trail I walked: {id: pct}; trails far from anything I painted are 0 without counting. */
+  function trailPcts(only) {
+    const done = new Set(cells), mine = new Set(), out = {};
+    for (const c of cells) { const [la, lo] = c.split(':'); mine.add(coarse(lo * GTEngine.R.CELL, la * GTEngine.R.CELL)); }
+    for (const t of only || TRAILS) {
+      let near = false;
+      for (const g of t.grid) if (mine.has(g)) { near = true; break; }
+      out[t.id] = near ? GTAchieve.trailPct(t.s, done, GTEngine.R.CELL) : 0;
+    }
+    return out;
+  }
+  function trailSheet(id) {
+    const t = TRAILS.find((x) => x.id === id);
+    if (!t) return;
+    const pct = trailPcts([t])[t.id], a = GTAchieve.progress({ trail: { [t.id]: pct } }, [t]).find((x) => x.trail);
+    const kind = T(t.k === 'n' ? 'kindN' : t.k === 'r' ? 'kindR' : 'kindL');
+    const all = a.tier >= a.tiers.length;
+    sheet(`<div class="trail-head"><span class="swatch" style="background:${esc(t.c)}"></span><h2>${esc(trailName(t))}</h2></div>
+      <p>${esc(kind)} · ${esc(fmtKm(t.km))}</p>
+      <div class="list">
+        ${row('🚶', T('trailWalked'), T('trailOf', { a: fmtM(t.km * 1000 * Math.min(100, pct) / 100), b: fmtKm(t.km) }), nf(Math.min(100, pct), pct > 0 && pct < 10 ? 1 : 0) + '%', 'blue')}
+        ${all ? row('🏅', T('trailDone'), '', '', 'green') : row('★', a.shown.length > 1 ? T('trailNext', { s: a.shown[a.tier] }) : T('trailFinish'), '', '+' + nf(a.pts[a.tier]) + ' ★', 'green')}
+      </div>
+      <div class="acts"><button class="btn plain" data-close>${T('close')}</button><button class="btn blue" id="trShow">${T('trailShow')}</button></div>`);
+    $('#trShow').onclick = () => { closeSheet(); showLines(t.lines); };
+  }
+  /** Shows lines on the map in orange for a while (a trip, a trail). */
+  function showLines(segs) {
+    showTab('map');
+    if (!mapReady || !segs.length) return;
+    map.getSource('focus').setData({ type: 'FeatureCollection', features: [segFeature(segs)] });
+    const pts = segs.flat(), b = new maplibregl.LngLatBounds(pts[0], pts[0]);
+    for (const p of pts) b.extend(p);
+    setFollow(false);
+    map.fitBounds(b, { padding: { top: 90, bottom: 200, left: 40, right: 40 }, maxZoom: 17, duration: 800 });
+    clearTimeout(showLines.t);
+    showLines.t = setTimeout(() => { if (mapReady) map.getSource('focus').setData(EMPTY); }, 12000);
+  }
+
   // ---------- achievements ----------
-  const trails = () => window.GT_TRAILS || [];
   const peakName = (pk) => (S.lang === 'he' ? pk.he : pk.en) || pk.n;
   function stats() {
     const ok = S.trips.filter((t) => !t.mock);
     let maxEle = 0;
     for (const id in S.peaks) maxEle = Math.max(maxEle, S.peaks[id].ele || 0);
-    const trail = {};
-    if (trails().length) { const done = new Set(cells); for (const t of trails()) trail[t.id] = GTAchieve.trailPct(t.p, done, GTEngine.R.CELL); }
+    const trail = TRAILS.length ? trailPcts() : {};
+    const trailsDone = Object.values(trail).filter((x) => x >= GTAchieve.TRAIL_DONE).length;
     return {
       trips: ok.length, newM: S.newM, natM: S.natM, dirtM: S.dirtM,
       longestM: Math.max(0, ...ok.map((t) => t.m)),
@@ -653,7 +716,7 @@
       peaks: Object.keys(S.peaks).length, maxEle,
       streak: GTAchieve.bestStreak(ok.map((t) => t.start)),
       dawn: ok.filter((t) => new Date(t.start).getHours() < 7 && t.m >= 500).length,
-      friends: S.nFr, trail,
+      friends: S.nFr, trail, trailsDone,
     };
   }
   /** Gives the points of every tier newly reached; returns them [{id, tier, pts}]. */
@@ -664,14 +727,15 @@
     return got;
   }
   const achCount = () => Object.values(S.ach).reduce((a, b) => a + b, 0);
-  const achTotal = () => GTAchieve.progress({}, trails()).reduce((a, x) => a + x.tiers.length, 0);
+  const achTotal = () => GTAchieve.LIST.reduce((a, x) => a + x.tiers.length, 0) + TRAILS.reduce((a, t) => a + (t.featured ? 4 : S.ach['trail_' + t.id] ? 1 : 0), 0);
   function achName(id) {
-    if (id.startsWith('trail_')) { const t = trails().find((x) => 'trail_' + x.id === id); return t ? (S.lang === 'he' ? t.he : t.en) : id; }
+    if (id.startsWith('trail_')) { const t = TRAILS.find((x) => 'trail_' + x.id === id); return t ? trailName(t) : T('trailsH'); }
     return T('a_' + id);
   }
   const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI'];
   function achRow(g) {
-    const a = GTAchieve.progress({}, trails()).find((x) => x.id === g.id) || { ic: '🏅', tiers: [] };
+    const tr = g.id.startsWith('trail_') ? TRAILS.filter((x) => 'trail_' + x.id === g.id) : [];
+    const a = GTAchieve.progress({}, tr).find((x) => x.id === g.id) || { ic: '🏅', tiers: [] };
     return row(a.ic, achName(g.id) + (a.tiers.length > 1 ? ' ' + ROMAN[g.tier] : ''), '', '+' + nf(g.pts) + ' ★', 'green');
   }
   function toastAch(got) {
@@ -682,7 +746,7 @@
     if (unit === 'km') return fmtM(v);
     if (unit === 'ele') return T('ele_s', { n: nf(v) });
     if (unit === 'days') return T('days_s', { n: nf(v) });
-    if (unit === 'pct') return nf(Math.min(100, v), v > 0 && v < 10 ? 1 : 0) + '%';
+    if (unit === 'pct') return nf(Math.min(100, v), v > 0 && v < 10 && v % 1 ? 1 : 0) + '%';
     return nf(v);
   }
   /** Achievements came with an update: players who already had trips get what they earned, once. */
@@ -705,16 +769,21 @@
       const goal = a.unit === 'pct' ? a.shown[a.tier] : a.next;
       const sub = all ? T('achAll') : fmtVal(a.unit, a.val) + ' / ' + fmtVal(a.unit, goal) + ' · +' + nf(a.pts[a.tier]) + ' ★';
       const dots = a.tiers.map((x, i) => `<i class="${i < a.tier ? 'on' : ''}"></i>`).join('');
-      return `<div class="row ach"><span class="ic ${a.tier ? 'green' : 'grey'}">${a.ic}</span><span class="tx"><b>${esc(achName(a.id))}${a.tier && a.tiers.length > 1 ? ' ' + ROMAN[a.tier] : ''}</b><small>${esc(a.trail ? T('d_trail') : T('d_' + a.id))}</small><small class="prog">${esc(sub)}</small></span><span class="dots">${dots}</span></div>`;
+      const tag = a.trail ? 'button' : 'div';
+      return `<${tag} class="row ach" ${a.trail ? 'data-trail="' + a.trail.id + '"' : ''}><span class="ic ${a.tier ? 'green' : a.trail ? '' : 'grey'}">${a.trail ? `<i class="swatch" style="background:${esc(a.trail.c)}"></i>` : a.ic}</span><span class="tx"><b>${esc(achName(a.id))}${a.tier && a.tiers.length > 1 ? ' ' + ROMAN[a.tier] : ''}</b><small>${esc(a.trail ? T(a.trail.k === 'n' ? 'kindN' : a.trail.k === 'r' ? 'kindR' : 'kindL') + ' · ' + fmtKm(a.trail.km) : T('d_' + a.id))}</small><small class="prog">${esc(sub)}</small></span><span class="dots">${dots}</span></${tag}>`;
     };
+    const trs = P.filter((a) => a.trail && (a.trail.featured || a.val >= 1)).sort((x, y) => (y.trail.featured - x.trail.featured) || (y.val - x.val) || (y.trail.km - x.trail.km));
     const nPk = Object.keys(S.peaks).length;
     return {
       title: T('achievements'),
       html: `<div class="hero"><div class="big">🏅</div><p><b>${T('achOf', { n: achCount(), m: achTotal() })}</b> · ★ ${nf(S.apts)} ${T('achPts')}</p></div>
         <div class="list">${P.filter((a) => !a.trail).map(r).join('')}</div>
-        ${P.some((a) => a.trail) ? `<div class="h2">${T('trailsH')}</div><div class="list">${P.filter((a) => a.trail).map(r).join('')}</div>` : ''}
+        ${trs.length ? `<div class="h2">${T('trailsH')}</div><p class="info">${T('trailsInfo')}</p><div class="list">${trs.map(r).join('')}</div>` : ''}
         ${nPk ? `<div class="h2">&nbsp;</div><div class="list">${row('⛰️', T('peaksList'), T('peaksN', { n: nPk }), '', '', 'data-p="peaks"')}</div>` : ''}`,
-      wire(b) { const x = b.querySelector('[data-p=peaks]'); if (x) x.onclick = () => openPage('peaks'); },
+      wire(b) {
+        const x = b.querySelector('[data-p=peaks]'); if (x) x.onclick = () => openPage('peaks');
+        b.querySelectorAll('[data-trail]').forEach((e) => { e.onclick = () => trailSheet(+e.dataset.trail); });
+      },
     };
   };
   PAGES.peaks = () => {
@@ -1006,6 +1075,7 @@
     pump();
     firstAch();
     setTimeout(syncSoon, 2500);
+    setTimeout(loadTrails, 600);
     setInterval(() => { if (cur) updDock(); }, 1000);
     setInterval(() => { if (cur || pend.length) pump(); }, 5000);
     setTimeout(() => checkUpd(false), 3000);
@@ -1027,7 +1097,7 @@
 
   // test hooks (used by tools/page_test.py)
   window.__gt = { S: () => S, cur: () => cur, pend: () => pend, painted: () => painted.size, GT, pump, map: () => map, ready: () => mapReady, T, setLang, showTab, stopTrip, startTrip,
-    net: () => net, sync, stats, awardAch, frCache: () => frCache, netErr: () => netErr };
+    net: () => net, sync, stats, awardAch, frCache: () => frCache, netErr: () => netErr, trails, trailSheet, trailPcts };
 
   boot().catch((e) => { console.error(e); });
 })();

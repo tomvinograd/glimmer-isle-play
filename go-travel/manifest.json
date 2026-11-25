@@ -1,12 +1,12 @@
 {
-"v": 1795597058,
+"v": 1795598313,
 "files": {
-"achieve.js": "7653bcebb5a1c6df331ff10351cdfece2f880d54",
+"achieve.js": "cc7af2413dd5504937d5c74e3c494fd0d4b300af",
 "engine.js": "4f5dc293ed40d1a4f90199e9cd40cdb0c0830a77",
-"game.css": "d446d09df8841694c67a5be10462ada0f17b6bda",
-"game.js": "5bac7135cefc0a1cb092f5eeb5c0cf5e113d9e5e",
-"i18n.js": "4c0398b94a40d36ea24a983f7eba36328a3f176b",
-"index.html": "b671930342f4244f1ba6eb74ea513e9165389f30",
+"game.css": "44c0c10ab48ae0ef2337868d0346eece99b595e5",
+"game.js": "8ae51f9cd41a2686f9bf62a28e82d9c07c600e25",
+"i18n.js": "8f829f32b4c85f60d13ef4fc339a86f9301ebb3b",
+"index.html": "20116e3056ecdba340b9375c74517a126eaee49f",
 "join.html": "66eea09a2178005d50823792254ddc17397affc4",
 "lib/capacitor.js": "16737d90b0c5c8457cfb5dfa844a4174eaa45f64",
 "lib/fonts/rubik-hebrew.woff2": "119f25217dbc125e0f189c59f5e514a3319d15a7",
@@ -15,6 +15,7 @@
 "lib/maplibre-gl.css": "e6e97fa50c63b44d3fa02e1ebe57c8a428845efa",
 "lib/maplibre-gl.js": "8d00c7860a886b9d3f95c2102f218609c55879bc",
 "lib/vt.js": "5f163b78d84f2d403902848bbccc67f434f3d719",
-"net.js": "3b521bc4c0d38ff157285faca3d61cac1e0b12c7"
+"net.js": "3b521bc4c0d38ff157285faca3d61cac1e0b12c7",
+"trails.json": "7858840043cdc9622887460d3f9a946fa27d805a"
 }
 }
