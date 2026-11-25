@@ -140,3 +140,28 @@ input.txt:focus { outline: none; border-color: var(--paint); }
 body.recording .me { background: var(--paint); box-shadow: 0 0 0 2px var(--paint-dk), 0 3px 8px rgba(0,0,0,.35); }
 body.recording .me::after { border-color: var(--paint); }
 @keyframes ping { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(1.2); opacity: 0; } }
+
+/* ---- friends, leaderboards, achievements ---- */
+.btn.red { background: var(--red); box-shadow: 0 4px 0 var(--red-dk); }
+a.btn { text-decoration: none; }
+.btn:disabled { opacity: .6; }
+.acts.center { justify-content: center; margin: 16px 0 4px; display: flex; }
+.row .ic.grey { background: #EFE9DF; filter: grayscale(1); opacity: .7; }
+.row .ic.rank { background: transparent; font-weight: 800; font-size: 17px; color: var(--ink2); }
+.row.me-row { background: #EEF5FF; }
+.row.ach .tx small { white-space: normal; }
+.row.ach .tx small.prog { color: var(--paint-dk); font-weight: 600; }
+.dots { display: flex; gap: 4px; flex: none; }
+.dots i { width: 9px; height: 9px; border-radius: 50%; background: #E3D8C6; }
+.dots i.on { background: var(--gold); box-shadow: 0 0 0 1px var(--sun-dk); }
+.list.gap { margin-top: 8px; }
+.note { background: #FFF1E0; border: 1px solid #F3C99A; color: #8A4B0B; border-radius: 7px; padding: 8px 10px; font-size: 14px; margin: 8px 0; }
+p.info { color: var(--ink2); margin: 4px 4px 12px; font-size: 14px; }
+.hero .big { font-size: 40px; line-height: 1.1; }
+.logo.small { font-size: 28px; overflow-wrap: anywhere; }
+.code { font-size: 36px; font-weight: 900; letter-spacing: 6px; text-align: center; direction: ltr; background: #fff; border: 2px solid var(--ink); border-radius: 10px; padding: 10px 8px; margin: 12px 0 4px; }
+input.code-in { font-size: 26px; font-weight: 800; letter-spacing: 5px; text-align: center; text-transform: uppercase; direction: ltr; }
+#fchip { position: fixed; top: calc(58px + var(--safe-top)); inset-inline-start: 10px; z-index: 5; display: flex; align-items: center; gap: 8px; background: var(--card); border: 2px solid var(--ink); border-radius: 9px; padding: 6px 10px; box-shadow: var(--shadow); font-size: 14px; font-weight: 600; max-width: calc(100% - 20px); }
+#fchip i { width: 18px; height: 5px; border-radius: 3px; background: #9B4DFF; flex: none; }
+#fchip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#fchip b { color: var(--ink2); font-size: 18px; line-height: 1; }

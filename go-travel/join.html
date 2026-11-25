@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FF8A1F">
+<title>Go Travel – invite</title>
+<style>
+  @font-face { font-family: Rubik; src: url(lib/fonts/rubik-latin.woff2) format('woff2'); font-weight: 300 900; unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: Rubik; src: url(lib/fonts/rubik-hebrew.woff2) format('woff2'); font-weight: 300 900; unicode-range: U+0590-05FF, U+200C-2010, U+FB1D-FB4F; }
+  :root { --sun: #FF8A1F; --sun-dk: #D96A05; --ink: #2B2118; --ink2: #6B5B4B; --line: #E7D9C3; --paper: #FFF8EC; --paint: #1E7BFF; --paint-dk: #0F55C4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.45 Rubik, system-ui, sans-serif; }
+  main { max-width: 460px; margin: 0 auto; padding: 28px 16px 40px; text-align: center; }
+  .logo { font-size: 38px; font-weight: 900; color: var(--sun); -webkit-text-stroke: 1.5px var(--sun-dk); text-shadow: 0 3px 0 var(--sun-dk); }
+  h1 { font-size: 22px; margin: 18px 0 6px; }
+  p { color: var(--ink2); margin: 6px 0; }
+  .code { font-size: 40px; font-weight: 900; letter-spacing: 6px; direction: ltr; background: #fff; border: 2px solid var(--ink); border-radius: 10px; padding: 12px 8px; margin: 18px 0 10px; }
+  button { font: inherit; font-weight: 800; color: #fff; background: var(--paint); box-shadow: 0 4px 0 var(--paint-dk); border: 0; border-radius: 9px; padding: 11px 22px; cursor: pointer; }
+  ol { text-align: start; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 34px; margin: 22px 0 0; }
+  li { margin: 4px 0; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
+  [lang=en] { direction: ltr; }
+</style>
+</head>
+<body>
+<main>
+  <div class="logo">Go Travel</div>
+  <section lang="he">
+    <h1>הוזמנת להיות חבר/ה ב-Go Travel</h1>
+    <p>זה הקוד של מי שהזמין אותך:</p>
+  </section>
+  <div class="code" id="code">––––––</div>
+  <button id="copy">העתקת הקוד · Copy code</button>
+  <section lang="he">
+    <ol>
+      <li>פתחו את Go Travel בטלפון.</li>
+      <li>לחצו על <b>חברים</b> ואז על <b>הזנת קוד של חבר</b>.</li>
+      <li>הדביקו את הקוד – ואתם חברים!</li>
+    </ol>
+  </section>
+  <hr>
+  <section lang="en">
+    <h1>You're invited to be friends on Go Travel</h1>
+    <ol>
+      <li>Open Go Travel on your phone.</li>
+      <li>Tap <b>Friends</b>, then <b>Enter a friend's code</b>.</li>
+      <li>Paste the code above – and you're friends!</li>
+    </ol>
+    <p style="margin-top:14px">No Go Travel yet? Ask the friend who invited you for the app.</p>
+  </section>
+</main>
+<script>
+  const c = (location.hash.slice(1) || new URLSearchParams(location.search).get('c') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+  if (c) document.getElementById('code').textContent = c;
+  document.getElementById('copy').onclick = async (e) => {
+    try { await navigator.clipboard.writeText(c); e.target.textContent = '✓'; } catch (x) { getSelection().selectAllChildren(document.getElementById('code')); }
+  };
+</script>
+</body>
+</html>

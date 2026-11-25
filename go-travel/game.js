@@ -47,7 +47,8 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* full or blocked */ } },
     del(k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } },
   };
-  const S = Object.assign({ v: 1, lang: (navigator.language || '').startsWith('he') ? 'he' : 'en', name: '', seen: 0, pts: 0, newM: 0, m: 0, steps: 0, natM: 0, trips: [] }, store.get('gt.s', {}));
+  const S = Object.assign({ v: 1, lang: (navigator.language || '').startsWith('he') ? 'he' : 'en', name: '', seen: 0, pts: 0, newM: 0, m: 0, steps: 0, natM: 0, trips: [],
+    dirtM: 0, peaks: {}, apts: 0, ach: {}, achLog: [], achV: 0, code: '', home: null, share: 1, upR: {}, nFr: 0, profH: '', pruneAt: 0, reup: 0, nameAsk: 0 }, store.get('gt.s', {}));
   let cells = store.get('gt.cells', []);       // painted cells of finished trips
   let lines = store.get('gt.lines', []);       // painted lines of finished trips
   let cur = store.get('gt.cur', null);         // the trip being recorded
@@ -78,7 +79,7 @@
   // ---------- levels ----------
   const lvlOf = (p) => Math.floor(Math.sqrt(p / 200)) + 1;
   const lvlAt = (l) => 200 * (l - 1) * (l - 1);
-  function totalPts() { let p = S.pts; for (const t of [cur, ...pend]) if (t) p += Math.round(t.pts); return p; }
+  function totalPts() { let p = S.pts + S.apts; for (const t of [cur, ...pend]) if (t) p += Math.round(t.pts); return p; }
 
   // ---------- engine ----------
   let tileUrl = null;
@@ -163,6 +164,8 @@
       map.addLayer({ id: 'painted', type: 'line', source: 'painted', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#1E7BFF', 'line-width': lw(2.5, 11) } }, 'road-name');
       map.addLayer({ id: 'cur-glow', type: 'line', source: 'cur', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#7FD3FF', 'line-width': lw(7, 24), 'line-blur': 4, 'line-opacity': 0.8 } }, 'road-name');
       map.addLayer({ id: 'cur', type: 'line', source: 'cur', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#1E7BFF', 'line-width': lw(3, 12) } }, 'road-name');
+      map.addSource('friend', { type: 'geojson', data: EMPTY });
+      map.addLayer({ id: 'friend', type: 'line', source: 'friend', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#9B4DFF', 'line-width': lw(2.5, 9), 'line-opacity': 0.85 } }, 'road-name');
       map.addLayer({ id: 'focus', type: 'line', source: 'focus', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#FF8A1F', 'line-width': lw(3, 10) } }, 'road-name');
       mapReady = true;
       drawPainted(); drawCur();
@@ -250,6 +253,7 @@
           if (res.mock) note('fakeGps', true);
           note('weakGps', !(f.ac <= 25), 15000);
           if (res.skip === 'outside') note('outside', true, 30000);
+          if (res.peaks && res.peaks.length) { const pk = res.peaks[0]; toast(T('summit', { n: peakName(pk) }) + (pk.ele ? ' · ' + T('ele_s', { n: nf(pk.ele) }) : '')); }
         }
         if (done) { cur.idx += done; changed = true; }
         if (cur.newM > before.newM) floatGain(cur.newM - before.newM, cur.natM > before.natM);
@@ -323,21 +327,27 @@
 
   /** A trip is fully counted: add it to the totals and the trips list. */
   function finalize(t, show) {
-    const sum = { id: t.id, start: t.start, end: Math.max(t.stopped || 0, t.end || 0), m: Math.round(t.m), newM: Math.round(t.newM), pts: Math.round(t.pts), natM: Math.round(t.natM), steps: t.steps, walkS: Math.round(t.walkS), cycleS: Math.round(t.cycleS), fastM: Math.round(t.fastM), mock: t.mock };
+    const sum = { id: t.id, start: t.start, end: Math.max(t.stopped || 0, t.end || 0), m: Math.round(t.m), newM: Math.round(t.newM), pts: Math.round(t.pts), natM: Math.round(t.natM), steps: t.steps, walkS: Math.round(t.walkS), cycleS: Math.round(t.cycleS), fastM: Math.round(t.fastM), mock: t.mock,
+      dirtM: Math.round(t.dirtM || 0), peaks: t.mock ? [] : Object.keys(t.peaks || {}) };
     S.trips.unshift(sum);
-    S.pts += sum.pts; S.newM += sum.newM; S.m += sum.m; S.steps += t.steps; S.natM += sum.natM;
+    S.pts += sum.pts; S.newM += sum.newM; S.m += sum.m; S.steps += t.steps; S.natM += sum.natM; S.dirtM += sum.dirtM;
+    if (!t.mock) for (const id in t.peaks || {}) if (!S.peaks[id]) S.peaks[id] = t.peaks[id];
     for (const c of t.cells) cells.push(c);
     for (const s of t.segs) if (s.length > 1) lines.push(s);
     store.set('gt.t.' + t.id, { segs: t.segs, raw: t.raw });
     store.set('gt.cells', cells);
     store.set('gt.lines', lines);
+    const got = awardAch();
     saveS(); saveCur();
     drawPainted();
-    if (show) summary(sum);
+    if (show) summary(sum, got); else if (got.length) toastAch(got);
+    syncSoon();
   }
 
-  function summary(t) {
-    const before = S.pts - t.pts, l0 = lvlOf(before), l1 = lvlOf(S.pts);
+  function summary(t, got) {
+    const gotPts = (got || []).reduce((a, g) => a + g.pts, 0);
+    const before = S.pts + S.apts - t.pts - gotPts, l0 = lvlOf(before), l1 = lvlOf(S.pts + S.apts);
+    const peaks = (t.peaks || []).map((id) => S.peaks[id]).filter(Boolean);
     sheet(`<div class="hero"><h2>${T('tripDone')}</h2><div class="plus"><span class="star">★</span> +${nf(t.pts)}</div>
       ${l1 > l0 ? `<p><b>${T('level', { n: l1 })}!</b></p>` : ''}</div>
       <div class="list">
@@ -348,7 +358,9 @@
         ${t.natM ? row('🌲', T('natureBonus'), '', fmtM(t.natM), 'green') : ''}
         ${t.fastM > 50 ? row('🚗', T('fastPart'), '', fmtM(t.fastM)) : ''}
         ${t.mock ? row('⚠️', T('mockTrip'), '', '') : ''}
+        ${peaks.map((pk) => row('⛰️', T('summit', { n: peakName(pk) }), pk.ele ? T('ele_s', { n: nf(pk.ele) }) : '', '', 'green')).join('')}
       </div>
+      ${got && got.length ? `<div class="h2">${T('newAch')}</div><div class="list">${got.map((g) => achRow(g)).join('')}</div>` : ''}
       <div class="acts"><button class="btn blue" data-close>${T('done')}</button></div>`);
   }
 
@@ -409,28 +421,32 @@
   function showTab(name) {
     document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.go === name));
     pageStack = [];
-    if (name === 'map') { $('#page').hidden = true; if (map) map.resize(); return; }
+    if (name === 'map') { $('#page').hidden = true; curPage = null; if (map) map.resize(); return; }
     openPage(name, true);
+    if (name === 'friends') sync();
   }
-  function openPage(name, root) {
-    if (!root) pageStack.push(curPage); else pageStack = [];
-    curPage = name;
+  function openPage(name, root, arg) {
+    if (!root) pageStack.push({ n: curPage, a: curArg }); else pageStack = [];
+    show(name, arg, false);
+  }
+  function show(name, arg, keepScroll) {
+    curPage = name; curArg = arg;
     $('#page').hidden = false;
     $('#pBack').hidden = !pageStack.length;
-    const P = PAGES[name]();
+    const P = PAGES[name](arg);
+    const top = $('#pBody').scrollTop;
     $('#pTitle').textContent = P.title;
     $('#pBody').innerHTML = P.html;
-    $('#pBody').scrollTop = 0;
+    $('#pBody').scrollTop = keepScroll ? top : 0;
     if (P.wire) P.wire($('#pBody'));
   }
-  let curPage = null;
+  /** Draws the open page again (new data), keeping Back and the scroll place. */
+  function rerender(name) { if (curPage && !$('#page').hidden && (!name || curPage === name)) show(curPage, curArg, true); }
+  let curPage = null, curArg = null;
   function pageBack() {
     if (!pageStack.length) { showTab('map'); return; }
     const p = pageStack.pop();
-    const keep = pageStack.slice();
-    openPage(p, true);
-    pageStack = keep;
-    $('#pBack').hidden = !pageStack.length;
+    show(p.n, p.a, false);
   }
 
   const PAGES = {
@@ -459,14 +475,21 @@
           </div>
           <div class="h2">&nbsp;</div>
           <div class="list">
+            ${row('🏅', T('achievements'), T('achOf', { n: achCount(), m: achTotal() }), '', 'green', 'data-p="ach"')}
+          </div>
+          <div class="h2">&nbsp;</div>
+          <div class="list">
             ${row('✏️', T('name'), S.name || T('namePh'), '', '', 'data-p="name"')}
+            ${row('🔒', T('privacy'), S.share ? (S.home ? T('privOnHome') : T('privOn')) : T('privOff'), '', '', 'data-p="privacy"')}
             ${row('🌐', T('language'), S.lang === 'he' ? 'עברית' : 'English', '', '', 'data-p="lang"')}
             ${row('📱', T('phone'), T('phoneInfo'), '', '', 'data-p="phone"')}
             ${row('❓', T('howTitle'), T('howInfo'), '', '', 'data-p="how"')}
             ${row('🔄', T('app'), T('version') + ' ' + verText(), '', '', 'data-p="app"')}
           </div>`,
         wire(b) {
-          b.querySelector('[data-p=name]').onclick = nameSheet;
+          b.querySelector('[data-p=name]').onclick = () => nameSheet();
+          b.querySelector('[data-p=ach]').onclick = () => openPage('ach');
+          b.querySelector('[data-p=privacy]').onclick = () => openPage('privacy');
           b.querySelector('[data-p=lang]').onclick = langSheet;
           b.querySelector('[data-p=phone]').onclick = () => openPage('phone');
           b.querySelector('[data-p=how]').onclick = () => openPage('how');
@@ -476,7 +499,7 @@
     },
     phone() { return { title: T('phone'), html: '<div id="permList"></div>', wire: () => fillPerms($('#permList')) }; },
     how() {
-      return { title: T('howTitle'), html: '<div class="list">' + row('🖌️', T('how1'), '', '', 'blue') + row('🌲', T('how2'), '', '', 'green') + row('🚲', T('how3'), '', '') + row('🔁', T('how4'), '', '') + '</div>' };
+      return { title: T('howTitle'), html: '<div class="list">' + row('🖌️', T('how1'), '', '', 'blue') + row('🌲', T('how2'), '', '', 'green') + row('🚲', T('how3'), '', '') + row('🔁', T('how4'), '', '') + row('🏅', T('how5'), '', '', 'green') + row('🤝', T('how6'), '', '', 'blue') + '</div>' };
     },
     app() {
       return {
@@ -523,10 +546,10 @@
     setTimeout(() => { if (mapReady) map.getSource('focus').setData(EMPTY); }, 12000);
   }
 
-  function nameSheet() {
+  function nameSheet(after) {
     sheet(`<h2>${T('name')}</h2><input class="txt" id="nm" maxlength="24" placeholder="${esc(T('namePh'))}" value="${esc(S.name)}">
       <div class="acts"><button class="btn blue" id="nmok">${T('done')}</button></div>`);
-    const save = () => { S.name = $('#nm').value.trim().slice(0, 24); saveS(); closeSheet(); if (curPage === 'me') openPage('me', true); };
+    const save = () => { S.name = $('#nm').value.trim().slice(0, 24); saveS(); closeSheet(); rerender(); syncSoon(); if (after && S.name) after(); };
     $('#nmok').onclick = save;
     $('#nm').onkeydown = (e) => { if (e.key === 'Enter') save(); };
   }
@@ -546,7 +569,7 @@
   }
   function langSheet() {
     const s = sheet(`<h2>${T('language')}</h2>${langButtons()}<div class="acts"><button class="btn blue" data-close>${T('done')}</button></div>`);
-    wireLang(s, () => { langSheet(); if (curPage) openPage(curPage, true); });
+    wireLang(s, () => { langSheet(); rerender(); });
   }
 
   // ---------- permissions ----------
@@ -612,9 +635,341 @@
     } catch (e) { if (manual) toast(String((e && e.message) || e)); }
   }
 
+
+  // ---------- achievements ----------
+  const trails = () => window.GT_TRAILS || [];
+  const peakName = (pk) => (S.lang === 'he' ? pk.he : pk.en) || pk.n;
+  function stats() {
+    const ok = S.trips.filter((t) => !t.mock);
+    let maxEle = 0;
+    for (const id in S.peaks) maxEle = Math.max(maxEle, S.peaks[id].ele || 0);
+    const trail = {};
+    if (trails().length) { const done = new Set(cells); for (const t of trails()) trail[t.id] = GTAchieve.trailPct(t.p, done, GTEngine.R.CELL); }
+    return {
+      trips: ok.length, newM: S.newM, natM: S.natM, dirtM: S.dirtM,
+      longestM: Math.max(0, ...ok.map((t) => t.m)),
+      longestBikeM: Math.max(0, ...ok.filter((t) => t.cycleS > t.walkS).map((t) => t.m)),
+      maxSteps: Math.max(0, ...ok.map((t) => t.steps || 0)),
+      peaks: Object.keys(S.peaks).length, maxEle,
+      streak: GTAchieve.bestStreak(ok.map((t) => t.start)),
+      dawn: ok.filter((t) => new Date(t.start).getHours() < 7 && t.m >= 500).length,
+      friends: S.nFr, trail,
+    };
+  }
+  /** Gives the points of every tier newly reached; returns them [{id, tier, pts}]. */
+  function awardAch() {
+    const got = GTAchieve.check(stats(), S.ach, trails());
+    for (const g of got) { S.ach[g.id] = g.tier; S.apts += g.pts; S.achLog.push({ ...g, t: Date.now() }); }
+    if (got.length) { saveS(); updHud(); }
+    return got;
+  }
+  const achCount = () => Object.values(S.ach).reduce((a, b) => a + b, 0);
+  const achTotal = () => GTAchieve.progress({}, trails()).reduce((a, x) => a + x.tiers.length, 0);
+  function achName(id) {
+    if (id.startsWith('trail_')) { const t = trails().find((x) => 'trail_' + x.id === id); return t ? (S.lang === 'he' ? t.he : t.en) : id; }
+    return T('a_' + id);
+  }
+  const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI'];
+  function achRow(g) {
+    const a = GTAchieve.progress({}, trails()).find((x) => x.id === g.id) || { ic: '🏅', tiers: [] };
+    return row(a.ic, achName(g.id) + (a.tiers.length > 1 ? ' ' + ROMAN[g.tier] : ''), '', '+' + nf(g.pts) + ' ★', 'green');
+  }
+  function toastAch(got) {
+    const p = got.reduce((a, g) => a + g.pts, 0);
+    toast(got.length === 1 ? T('achGot', { n: achName(got[0].id), p: nf(p) }) : T('achGotN', { n: got.length, p: nf(p) }));
+  }
+  function fmtVal(unit, v) {
+    if (unit === 'km') return fmtM(v);
+    if (unit === 'ele') return T('ele_s', { n: nf(v) });
+    if (unit === 'days') return T('days_s', { n: nf(v) });
+    if (unit === 'pct') return nf(Math.min(100, v), v > 0 && v < 10 ? 1 : 0) + '%';
+    return nf(v);
+  }
+  /** Achievements came with an update: players who already had trips get what they earned, once. */
+  function firstAch() {
+    if (S.achV >= 1) return;
+    S.achV = 1;
+    const got = awardAch();
+    saveS();
+    if (got.length && S.seen && !sheetOpen()) {
+      sheet(`<div class="hero"><div class="big">🏅</div><h2>${T('achNew')}</h2><p>${T('achNewText', { n: got.length, p: nf(got.reduce((a, g) => a + g.pts, 0)) })}</p></div>
+        <div class="list">${got.map(achRow).join('')}</div>
+        <div class="acts"><button class="btn blue" id="achGo">${T('achievements')}</button></div>`);
+      $('#achGo').onclick = () => { closeSheet(); showTab('me'); openPage('ach'); };
+    }
+  }
+  PAGES.ach = () => {
+    const P = GTAchieve.progress(stats(), trails());
+    const r = (a) => {
+      const all = a.tier >= a.tiers.length;
+      const goal = a.unit === 'pct' ? a.shown[a.tier] : a.next;
+      const sub = all ? T('achAll') : fmtVal(a.unit, a.val) + ' / ' + fmtVal(a.unit, goal) + ' · +' + nf(a.pts[a.tier]) + ' ★';
+      const dots = a.tiers.map((x, i) => `<i class="${i < a.tier ? 'on' : ''}"></i>`).join('');
+      return `<div class="row ach"><span class="ic ${a.tier ? 'green' : 'grey'}">${a.ic}</span><span class="tx"><b>${esc(achName(a.id))}${a.tier && a.tiers.length > 1 ? ' ' + ROMAN[a.tier] : ''}</b><small>${esc(a.trail ? T('d_trail') : T('d_' + a.id))}</small><small class="prog">${esc(sub)}</small></span><span class="dots">${dots}</span></div>`;
+    };
+    const nPk = Object.keys(S.peaks).length;
+    return {
+      title: T('achievements'),
+      html: `<div class="hero"><div class="big">🏅</div><p><b>${T('achOf', { n: achCount(), m: achTotal() })}</b> · ★ ${nf(S.apts)} ${T('achPts')}</p></div>
+        <div class="list">${P.filter((a) => !a.trail).map(r).join('')}</div>
+        ${P.some((a) => a.trail) ? `<div class="h2">${T('trailsH')}</div><div class="list">${P.filter((a) => a.trail).map(r).join('')}</div>` : ''}
+        ${nPk ? `<div class="h2">&nbsp;</div><div class="list">${row('⛰️', T('peaksList'), T('peaksN', { n: nPk }), '', '', 'data-p="peaks"')}</div>` : ''}`,
+      wire(b) { const x = b.querySelector('[data-p=peaks]'); if (x) x.onclick = () => openPage('peaks'); },
+    };
+  };
+  PAGES.peaks = () => {
+    const l = Object.values(S.peaks).sort((a, b) => b.t - a.t);
+    return { title: T('peaksList'), html: '<div class="list">' + l.map((pk) => row('⛰️', peakName(pk), fmtDate(pk.t), pk.ele ? T('ele_s', { n: nf(pk.ele) }) : '', 'green')).join('') + '</div>' };
+  };
+
+  // ---------- online: friends, leaderboards, shared routes ----------
+  const net = GTNet.create({ fetch: window.GT_FETCH, load: () => store.get('gt.acct', null), save: (a) => store.set('gt.acct', a) });
+  let frCache = store.get('gt.fr', []), boardCache = {}, netErr = false, syncing = null, syncT = 0, boardWeek = true;
+  function weekKey(t) {
+    const d = new Date(t || Date.now()); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - d.getDay()); // weeks start on Sunday
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function weekPts() {
+    const a = new Date(weekKey() + 'T00:00:00').getTime();
+    let p = 0;
+    for (const t of S.trips) if (t.start >= a) p += t.pts;
+    for (const g of S.achLog) if (g.t >= a) p += g.pts;
+    return p;
+  }
+  function profile() {
+    const p = S.pts + S.apts;
+    return { n: S.name || T('namePh'), pts: p, nm: S.newM, m: S.m, st: S.steps, tr: S.trips.length, ac: achCount(), lv: lvlOf(p), wk: weekKey(), wp: Math.min(p, weekPts()) };
+  }
+  const HOME_M = 300;
+  function cutHome(segs) {
+    if (!S.home) return segs;
+    const out = [];
+    for (const s of segs) {
+      let part = [];
+      for (const q of s) {
+        if (GTEngine.dist(q[0], q[1], S.home[0], S.home[1]) < HOME_M) { if (part.length > 1) out.push(part); part = []; } else part.push(q);
+      }
+      if (part.length > 1) out.push(part);
+    }
+    return out;
+  }
+  function routeText(segs) {
+    let g = GTNet.encodeLines(cutHome(segs));
+    for (let k = 0; g.length > 60000 && k < 6; k++) { segs = segs.map((s) => s.filter((q, i) => i % 2 === 0 || i === s.length - 1)); g = GTNet.encodeLines(cutHome(segs)); }
+    return g.length > 60000 ? '' : g;
+  }
+  function syncSoon() { clearTimeout(syncT); syncT = setTimeout(() => { sync().catch(() => {}); }, 1500); }
+  /** Sends my profile and my new routes; reads my friends. Quietly does nothing more when offline. */
+  function sync() {
+    if (syncing) return syncing;
+    syncing = (async () => {
+      try {
+        const p = profile(), h = JSON.stringify(p);
+        if (h !== S.profH) { await net.pushProfile(p); S.profH = h; saveS(); }
+        if (!S.code) { S.code = await net.myCode(''); saveS(); }
+        if (S.reup) await unshareAll();
+        if (S.share) {
+          const todo = S.trips.filter((t) => !S.upR[t.id] && !t.mock && t.newM > 0).slice(0, net.KEEP_ROUTES);
+          for (const t of todo) {
+            const g = store.get('gt.t.' + t.id, null);
+            const txt = g ? routeText(g.segs) : '';
+            if (txt) await net.pushRoute(t.id, { s: t.start, n: t.newM, g: txt });
+            S.upR[t.id] = 1; saveS();
+          }
+          if (todo.length && Date.now() - S.pruneAt > 864e5) { await net.pruneRoutes(); S.pruneAt = Date.now(); saveS(); }
+        }
+        frCache = await net.friends();
+        store.set('gt.fr', frCache);
+        if (S.nFr !== frCache.length) { S.nFr = frCache.length; saveS(); const got = awardAch(); if (got.length) toastAch(got); }
+        netErr = false;
+      } catch (e) {
+        netErr = true;
+      } finally {
+        syncing = null;
+      }
+      if (S.profH !== JSON.stringify(profile())) syncSoon(); // something changed meanwhile (new friend's achievement)
+      rerender('friends'); rerender('friend');
+    })();
+    return syncing;
+  }
+  /** Takes my routes off the server, so friends no longer see them. */
+  async function unshareAll() {
+    S.reup = 1; saveS(); // if this stops halfway (offline), the next sync finishes it
+    for (const id of Object.keys(S.upR)) { await net.delRoute(id); delete S.upR[id]; saveS(); }
+    S.reup = 0; saveS();
+  }
+  const medal = (i) => ['🥇', '🥈', '🥉'][i] || String(i + 1);
+  function boardRows(list, meUid) {
+    if (!list.length) return `<div class="row"><span class="tx"><small>${T('boardEmpty')}</small></span></div>`;
+    return list.map((p, i) => {
+      const me = p.uid === meUid, open = !me && frCache.some((f) => f.uid === p.uid), tag = open ? 'button' : 'div';
+      return `<${tag} class="row ${me ? 'me-row' : ''}" ${open ? 'data-fr="' + esc(p.uid) + '"' : ''}><span class="ic rank">${medal(i)}</span><span class="tx"><b>${esc(me ? T('you') + ' · ' + p.n : p.n)}</b><small>${T('level', { n: p.lv || 1 })}</small></span><span class="end pts">★ ${nf(p.pts)}</span></${tag}>`;
+    }).join('');
+  }
+  function weekSeg() {
+    return `<div class="seg"><button data-wk="1" class="${boardWeek ? 'on' : ''}">${T('thisWeek')}</button><button data-wk="0" class="${boardWeek ? '' : 'on'}">${T('allTime')}</button></div>`;
+  }
+  function wireBoard(b, name) {
+    b.querySelectorAll('[data-wk]').forEach((x) => { x.onclick = () => { boardWeek = x.dataset.wk === '1'; rerender(name); if (name === 'board') loadBoard(); }; });
+    b.querySelectorAll('[data-fr]').forEach((x) => { x.onclick = () => openPage('friend', false, x.dataset.fr); });
+  }
+  PAGES.friends = () => {
+    const me = { ...profile(), uid: net.uid() };
+    if (boardWeek) me.pts = me.wp;
+    const list = [me, ...frCache.map((f) => ({ ...f, pts: boardWeek ? (f.wk === weekKey() ? f.wp : 0) : f.pts }))].sort((a, b) => b.pts - a.pts);
+    return {
+      title: T('friends'),
+      html: `${netErr ? `<div class="note">${T('netErr')}</div>` : ''}
+        <div class="h2">${T('friendsBoard')}</div>
+        ${weekSeg()}
+        <div class="list gap">${frCache.length ? boardRows(list, me.uid) : `<div class="row"><span class="ic">👋</span><span class="tx"><b>${T('noFriends')}</b><small>${T('noFriendsInfo')}</small></span></div>`}</div>
+        <div class="h2">${T('addFriends')}</div>
+        <div class="list">
+          ${row('📨', T('invite'), S.code ? T('yourCode', { c: S.code }) : T('inviteInfo'), '', 'blue', 'data-p="invite"')}
+          ${row('🔑', T('enterCode'), T('enterCodeInfo'), '', '', 'data-p="code"')}
+        </div>
+        <div class="h2">&nbsp;</div>
+        <div class="list">${row('🏆', T('everyone'), T('everyoneInfo'), '', '', 'data-p="board"')}</div>`,
+      wire(b) {
+        wireBoard(b, 'friends');
+        b.querySelector('[data-p=invite]').onclick = inviteSheet;
+        b.querySelector('[data-p=code]').onclick = codeSheet;
+        b.querySelector('[data-p=board]').onclick = () => { openPage('board'); loadBoard(); };
+        if (!S.name && !S.nameAsk && !sheetOpen()) { S.nameAsk = 1; saveS(); nameSheet(); }
+      },
+    };
+  };
+  async function loadBoard() {
+    const k = boardWeek ? 'w' : 'a';
+    try { boardCache[k] = await net.board(boardWeek ? weekKey() : ''); netErr = false; } catch (e) { netErr = true; }
+    rerender('board');
+  }
+  PAGES.board = () => {
+    const l = boardCache[boardWeek ? 'w' : 'a'];
+    return {
+      title: T('everyone'),
+      html: `${netErr ? `<div class="note">${T('netErr')}</div>` : ''}${weekSeg()}<div class="list gap">${l ? boardRows(l, net.uid()) : `<div class="row"><span class="tx"><small>${T('loading')}</small></span></div>`}</div>`,
+      wire(b) { wireBoard(b, 'board'); },
+    };
+  };
+  PAGES.friend = (uid) => {
+    const f = frCache.find((x) => x.uid === uid);
+    if (!f) return { title: T('friends'), html: `<div class="empty"><p>${T('notFriend')}</p></div>` };
+    return {
+      title: f.n,
+      html: `<div class="hero"><div class="logo small">${esc(f.n)}</div><p><b>${T('level', { n: f.lv || 1 })}</b> · 🏅 ${T('achOf', { n: f.ac || 0, m: achTotal() })}</p></div>
+        <div class="bigstats">
+          <div><b>★ ${nf(f.pts)}</b><small>${T('ptsTotal')}</small></div>
+          <div><b>★ ${nf(f.wk === weekKey() ? f.wp : 0)}</b><small>${T('thisWeek')}</small></div>
+          <div><b>${fmtM(f.nm || 0)}</b><small>${T('newTotal')}</small></div>
+          <div><b>${nf(f.tr || 0)}</b><small>${T('tripsTotal')}</small></div>
+        </div>
+        <div class="acts center"><button class="btn blue" id="fRoutes">${T('showRoutes')}</button></div>
+        <div class="h2">&nbsp;</div>
+        <div class="list">${row('➖', T('removeFriend'), '', '', '', 'data-p="rm"')}</div>`,
+      wire(b) {
+        b.querySelector('#fRoutes').onclick = (e) => { const x = e.currentTarget; x.textContent = T('loading'); showFriendRoutes(f).finally(() => { x.textContent = T('showRoutes'); }); };
+        b.querySelector('[data-p=rm]').onclick = () => {
+          sheet(`<h2>${T('removeAsk', { n: esc(f.n) })}</h2><div class="acts"><button class="btn plain" data-close>${T('keep')}</button><button class="btn red" id="rmok">${T('remove')}</button></div>`);
+          $('#rmok').onclick = async () => {
+            closeSheet();
+            try { await net.removeFriend(f.uid); } catch (e) { toast(T('netErr')); return; }
+            frCache = frCache.filter((x) => x.uid !== f.uid); store.set('gt.fr', frCache); S.nFr = frCache.length; saveS();
+            pageBack();
+          };
+        };
+      },
+    };
+  };
+  async function showFriendRoutes(f) {
+    let rs;
+    try { rs = await net.routes(f.uid); } catch (e) { toast(T('netErr')); return; }
+    const segs = [];
+    for (const k in rs) for (const s of GTNet.decodeLines(rs[k].g)) segs.push(s);
+    if (!segs.length) { toast(T('noRoutes', { n: f.n })); return; }
+    showTab('map');
+    if (!mapReady) return;
+    map.getSource('friend').setData({ type: 'FeatureCollection', features: [segFeature(segs)] });
+    const pts = segs.flat(), bb = new maplibregl.LngLatBounds(pts[0], pts[0]);
+    for (const p of pts) bb.extend(p);
+    setFollow(false);
+    map.fitBounds(bb, { padding: { top: 110, bottom: 200, left: 40, right: 40 }, maxZoom: 16, duration: 800 });
+    const c = $('#fchip');
+    c.innerHTML = `<i></i><span>${esc(T('routesOf', { n: f.n }))}</span><b>×</b>`;
+    c.hidden = false;
+  }
+  function hideFriendRoutes() {
+    $('#fchip').hidden = true;
+    if (mapReady) map.getSource('friend').setData(EMPTY);
+  }
+  async function inviteSheet() {
+    if (!S.name) { nameSheet(inviteSheet); return; }
+    const s = sheet(`<h2>${T('invite')}</h2><p>${T('inviteText')}</p><div class="code" id="myCode">${S.code ? esc(S.code) : '…'}</div>
+      <div class="acts" id="invActs"></div>`);
+    if (!S.code) {
+      await sync();
+      const c = s.querySelector('#myCode');
+      if (!c) return;
+      if (!S.code) { c.textContent = '–'; c.insertAdjacentHTML('afterend', `<div class="note">${T('netErr')}</div>`); return; }
+      c.textContent = S.code;
+    }
+    const link = SITE + 'join.html#' + S.code;
+    const text = T('inviteMsg', { c: S.code, l: link });
+    const acts = s.querySelector('#invActs');
+    if (!acts) return;
+    acts.innerHTML = (navigator.share ? `<button class="btn blue" id="shr">${T('share')}</button>` : `<a class="btn green" id="wa" href="https://wa.me/?text=${encodeURIComponent(text)}">WhatsApp</a>`) + `<button class="btn plain" id="cpy">${T('copy')}</button>`;
+    const sh = s.querySelector('#shr');
+    if (sh) sh.onclick = () => navigator.share({ text }).catch(() => {});
+    s.querySelector('#cpy').onclick = async () => {
+      try { await navigator.clipboard.writeText(text); toast(T('copied')); } catch (e) { toast(S.code); }
+    };
+  }
+  function codeSheet() {
+    sheet(`<h2>${T('enterCode')}</h2><p>${T('enterCodeText')}</p><input class="txt code-in" id="cin" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC234">
+      <div class="note" id="cerr" hidden></div>
+      <div class="acts"><button class="btn blue" id="cok">${T('addFriend')}</button></div>`);
+    const go = async () => {
+      const b = $('#cok');
+      if (!b || b.disabled) return;
+      b.disabled = true; b.textContent = T('loading');
+      let r;
+      try { await sync(); r = await net.addByCode($('#cin').value); } catch (x) { r = { err: 'net' }; }
+      if (!$('#cok')) return;
+      b.disabled = false; b.textContent = T('addFriend');
+      if (r.err) { const e = $('#cerr'); e.hidden = false; e.textContent = T(r.err === 'self' ? 'codeSelf' : r.err === 'net' ? 'netErr' : 'codeBad'); return; }
+      closeSheet();
+      await sync();
+      const f = frCache.find((x) => x.uid === r.uid);
+      toast(T('friendAdded', { n: f ? f.n : '' }));
+    };
+    $('#cok').onclick = go;
+    $('#cin').onkeydown = (e) => { if (e.key === 'Enter') go(); };
+    setTimeout(() => { const i = $('#cin'); if (i) i.focus(); }, 250);
+  }
+  PAGES.privacy = () => ({
+    title: T('privacy'),
+    html: `<p class="info">${T('privText')}</p>
+      <div class="list">
+        <div class="row"><span class="ic blue">🗺️</span><span class="tx"><b>${T('shareRoutes')}</b><small>${T('shareRoutesInfo')}</small></span><button class="btn small ${S.share ? 'blue' : 'plain'}" id="pShare">${S.share ? T('on') : T('off')}</button></div>
+        <div class="row"><span class="ic">🏠</span><span class="tx"><b>${T('homeZone')}</b><small>${S.home ? T('homeSet') : T('homeInfo')}</small></span><button class="btn small ${S.home ? 'plain' : 'blue'}" id="pHome">${S.home ? T('remove') : T('setHere')}</button></div>
+      </div>`,
+    wire(b) {
+      b.querySelector('#pShare').onclick = async () => { S.share = S.share ? 0 : 1; saveS(); rerender(); if (!S.share) { try { await unshareAll(); } catch (e) { /* finished by the next sync */ } } else syncSoon(); };
+      b.querySelector('#pHome').onclick = async () => {
+        if (S.home) S.home = null;
+        else if (lastPos) S.home = [Math.round(lastPos.lo * 1e4) / 1e4, Math.round(lastPos.la * 1e4) / 1e4];
+        else { toast(T('noFix')); return; }
+        saveS(); rerender();
+        try { await unshareAll(); } catch (e) { /* finished by the next sync */ } // routes go again with the new hidden area
+        syncSoon();
+      };
+    },
+  });
+
   // ---------- back button ----------
   function onBack() {
     if (sheetOpen()) { const x = $('#layer [data-close]'); if (x) closeSheet(); return; }
+    if (!$('#fchip').hidden && $('#page').hidden) { hideFriendRoutes(); return; }
     if (!$('#page').hidden) { pageBack(); return; }
     if (AppP && appInfo.platform !== 'ios') AppP.minimizeApp().catch(() => {});
   }
@@ -637,7 +992,8 @@
       moveMe(f);
       if (!f.live && cur) { clearTimeout(pumpSoon); pumpSoon = setTimeout(pump, 800); }
     });
-    GT.addListener('resume', () => { pump(); checkUpd(false); });
+    GT.addListener('resume', () => { pump(); checkUpd(false); syncSoon(); });
+    $('#fchip').onclick = hideFriendRoutes;
     if (AppP) AppP.addListener('backButton', onBack);
     // a trip may be running in the app (page reloaded / updated mid-trip), or have stopped while the page was closed
     const st = await GT.status();
@@ -648,6 +1004,8 @@
     if (p.location) GT.watch({ on: true });
     if (!S.seen) welcome();
     pump();
+    firstAch();
+    setTimeout(syncSoon, 2500);
     setInterval(() => { if (cur) updDock(); }, 1000);
     setInterval(() => { if (cur || pend.length) pump(); }, 5000);
     setTimeout(() => checkUpd(false), 3000);
@@ -668,7 +1026,8 @@
   }
 
   // test hooks (used by tools/page_test.py)
-  window.__gt = { S: () => S, cur: () => cur, pend: () => pend, painted: () => painted.size, GT, pump, map: () => map, ready: () => mapReady, T, setLang, showTab, stopTrip, startTrip };
+  window.__gt = { S: () => S, cur: () => cur, pend: () => pend, painted: () => painted.size, GT, pump, map: () => map, ready: () => mapReady, T, setLang, showTab, stopTrip, startTrip,
+    net: () => net, sync, stats, awardAch, frCache: () => frCache, netErr: () => netErr };
 
   boot().catch((e) => { console.error(e); });
 })();

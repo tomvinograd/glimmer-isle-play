@@ -7,6 +7,7 @@
  * before are new metres (1 point each); a cell is painted for good once you enter it.
  * Forests and nature reserves (layers "landcover" class wood, "park" classes nature_reserve/national_park/protected_area)
  * give double points.
+ * Also counted for achievements: metres on paths and tracks (dirt), and summits (layer "mountain_peak") you reach.
  */
 (function (root) {
   'use strict';
@@ -22,7 +23,9 @@
     GAP_S: 120, GAP_M: 400, // a longer GPS gap is not painted (we don't know which way you went)
     JOIN_M: 30,           // snapped points closer than this continue the same painted line
     BOX: [34.2, 29.45, 35.95, 33.35], // the game counts trips in Israel only (lon/lat box)
+    PEAK_M: 80,           // m: this close to a summit = you reached it
   };
+  const DIRT = { path: 1, track: 1 };
   const SKIP_CLASS = { motorway: 1, rail: 1, transit: 1, ferry: 1, aerialway: 1, raceway: 1, busway: 1, bridge: 1 };
   const NATURE_PARK = { nature_reserve: 1, national_park: 1, protected_area: 1 };
 
@@ -45,7 +48,7 @@
     const VT = root.VT || (typeof require === 'function' ? requireVT() : null);
     const vt = new VT.VectorTile(new VT.Pbf(new Uint8Array(buf)));
     const lo0 = tileLo(x), lo1 = tileLo(x + 1), la0 = tileLa(y), la1 = tileLa(y + 1);
-    const t = { x, y, lo0, lo1, la0, la1, segs: [], idx: new Array(G * G), nature: [] };
+    const t = { x, y, lo0, lo1, la0, la1, segs: [], idx: new Array(G * G), nature: [], peaks: [] };
     for (let i = 0; i < G * G; i++) t.idx[i] = [];
     const conv = (ext) => (p) => [lo0 + (lo1 - lo0) * p.x / ext, la0 + (la1 - la0) * p.y / ext];
     const tr = vt.layers.transportation;
@@ -78,6 +81,13 @@
         t.nature.push(f.loadGeometry().map((ring) => ring.map(cv)));
       }
     };
+    const pk = vt.layers.mountain_peak;
+    if (pk) for (let i = 0; i < pk.length; i++) {
+      const f = pk.feature(i), p = f.properties;
+      if (f.type !== 1 || (p.class !== 'peak' && p.class !== 'volcano') || !p.name) continue;
+      const q = conv(f.extent)(f.loadGeometry()[0][0]);
+      t.peaks.push({ id: Math.round(q[1] * 1000) + ':' + Math.round(q[0] * 1000), lo: q[0], la: q[1], n: p.name, en: p['name:en'] || p['name:latin'] || p.name, he: p['name:he'] || p.name, ele: Math.round(+p.ele || 0) });
+    }
     addPolys(vt.layers.landcover, (p) => p.class === 'wood');
     addPolys(vt.layers.park, (p) => NATURE_PARK[p.class]);
     return t;
@@ -150,6 +160,13 @@
       }
       return best;
     }
+    /** Summits within PEAK_M of the point. */
+    async function peaksNear(lo, la) {
+      const ts = await tilesAround(lo, la, R.PEAK_M);
+      const out = [];
+      for (const t of ts) for (const p of t.peaks) if (dist(lo, la, p.lo, p.la) <= R.PEAK_M) out.push(p);
+      return out;
+    }
     async function nature(lo, la) {
       const t = await getTile(...tileOf(lo, la));
       for (const rings of t.nature) if (inPoly(lo, la, rings)) return true;
@@ -158,7 +175,7 @@
 
     /** A new trip record. */
     function newTrip(t) {
-      return { start: t, end: t, m: 0, newM: 0, pts: 0, natM: 0, steps: 0, walkS: 0, cycleS: 0, fastM: 0, fastS: 0,
+      return { start: t, end: t, m: 0, newM: 0, pts: 0, natM: 0, steps: 0, walkS: 0, cycleS: 0, fastM: 0, fastS: 0, dirtM: 0, peaks: {},
         last: null, snapLast: null, segs: [], raw: [], idx: 0, mock: 0, cells: [], win: [] };
     }
 
@@ -170,10 +187,11 @@
         if (w.mode === 'f') continue; // already booked as too fast
         for (const key of w.cells) painted.delete(key);
         trip.cells.length -= w.cells.length;
-        trip.newM -= w.gain; trip.natM -= w.nat; trip.pts -= w.gain + w.nat * (R.NATURE_X - 1);
+        trip.newM -= w.gain; trip.natM -= w.nat; trip.pts -= w.gain + w.nat * (R.NATURE_X - 1); trip.dirtM -= w.dirt || 0;
+        for (const id of w.peaks || []) delete trip.peaks[id];
         if (w.mode === 'w') trip.walkS -= w.dt; else trip.cycleS -= w.dt;
         trip.m -= w.d; trip.fastM += w.d; trip.fastS += w.dt;
-        w.mode = 'f'; w.cells = []; w.gain = 0; w.nat = 0;
+        w.mode = 'f'; w.cells = []; w.gain = 0; w.nat = 0; w.dirt = 0; w.peaks = [];
       }
       trip.segs.length = e.segN;
       if (e.segN) trip.segs[e.segN - 1].length = e.segLastN;
@@ -225,7 +243,7 @@
       need.push(tilesAround(f.lo, f.la, tol + 5));
       await Promise.all(need);
       const cells = [];
-      let gain = 0, natGain = 0;
+      let gain = 0, natGain = 0, dirt = 0;
       for (let i = 1; i <= n; i++) {
         const lo = last.lo + (f.lo - last.lo) * i / n, la = last.la + (f.la - last.la) * i / n;
         const s = await snap(lo, la, tol);
@@ -247,6 +265,7 @@
           gain += dm;
           if (trip.openNat) natGain += dm;
         }
+        if (joined && DIRT[s.c]) dirt += dist(sl[0], sl[1], p[0], p[1]);
         if (joined) {
           const seg = trip.segs[trip.segs.length - 1];
           const q = seg[seg.length - 1];
@@ -254,7 +273,10 @@
         } else trip.segs.push([p]);
         trip.snapLast = p;
       }
-      trip.newM += gain; trip.natM += natGain; trip.pts += gain + natGain * (R.NATURE_X - 1);
+      trip.newM += gain; trip.natM += natGain; trip.pts += gain + natGain * (R.NATURE_X - 1); trip.dirtM = (trip.dirtM || 0) + dirt;
+      if (!trip.peaks) trip.peaks = {};
+      const newPeaks = [];
+      for (const pk of await peaksNear(f.lo, f.la)) if (!trip.peaks[pk.id]) { trip.peaks[pk.id] = { n: pk.n, en: pk.en, he: pk.he, ele: pk.ele, t: f.t }; newPeaks.push(pk.id); }
       trip.m += d; trip.all = (trip.all || 0) + d;
       trip.end = f.t;
       trip.last = fix;
@@ -268,13 +290,13 @@
       const mode = wv < R.WALK_SPEED ? 'w' : 'c';
       if (mode === 'w') trip.walkS += dt; else trip.cycleS += dt;
       const lastSeg = trip.segs[trip.segs.length - 1];
-      W.push({ t: f.t, all: trip.all, cells, gain, nat: natGain, segN: trip.segs.length, segLastN: lastSeg ? lastSeg.length : 0, mode, dt, d });
+      W.push({ t: f.t, all: trip.all, cells, gain, nat: natGain, dirt, peaks: newPeaks, segN: trip.segs.length, segLastN: lastSeg ? lastSeg.length : 0, mode, dt, d });
       if (span >= 20 && wv > R.MAX_SPEED) { undoAfter(trip, k, painted); return { fast: true, v: wv }; }
       while (W.length > 2 && f.t - W[1].t > 60000) W.shift();
-      return { gain: Math.round(gain) };
+      return { gain: Math.round(gain), peaks: newPeaks.map((id) => trip.peaks[id]) };
     }
 
-    return { snap, nature, newTrip, addFix, getTile };
+    return { snap, nature, peaksNear, newTrip, addFix, getTile };
   }
 
   const api = { create, dist, cellKey, tileOf, R, Z };
